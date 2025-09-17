@@ -21,7 +21,7 @@ had some conditions that you had to manually accept:
 """
 
 device = "cpu"
-audio_file = "single_speaker_sample.wav"
+audio_file = "multi_speaker_sample.mp3"
 batch_size = 4 # reduce if low on GPU mem
 # compute_type = "float16" # change to "int8" if low on GPU mem (may reduce accuracy)
 compute_type = "int8" # for testing on Mac OSX

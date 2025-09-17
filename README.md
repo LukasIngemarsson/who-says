@@ -11,7 +11,7 @@ and activate using `conda activate who-says`.
 (Will be done automatically by Docker after that is setup, but use the above in the meantime.)
 
 To update the conda environment before comitting, run `conda activate who-says` followed by 
-`conda env export --from-history > env.yml`.
+`conda env export > env.yml`.
 
 
 ... TODO

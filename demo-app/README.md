@@ -1,24 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Project Structure (preliminary) 
 
-## Getting Started
+src/
+├── app/
+│   ├── page.tsx
+│   ├── layout.tsx
+│   └── globals.css
+├── components/
+│   └── AudioUploader.tsx
+└── types/
+    └── audio.ts
 
-First, run the development server:
+
+### Layer Explanation
+
+### `app/` 
+The Nextjs App router (each subfolder here with a page.tsx file will be a route) directory containing:
+- **`page.tsx`** - Root page component that renders the landing page
+- **`layout.tsx`** - Root layout wrapper that applies to all pages
+- **`globals.css`** - Global CSS styles and Tailwind directives
+
+### `components/` 
+React components used throughout the application:
+- **`AudioUploader.tsx`** - Main audio upload and player component
+- Future components can be added here as the app grows
+
+### `types/` 
+TypeScript interfaces and type definitions 
+
+
+## Setup
+
+
+1. **Install dependencies**
+
+```bash
+npm install
+```
+
+2. **Run the development server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 

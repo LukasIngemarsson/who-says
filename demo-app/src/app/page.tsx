@@ -1,3 +1,5 @@
+import AudioUploader from "@/components/AudioUploader";
+
 export default function Home() {
-  return <p>Hello, world!</p>;
+  return <AudioUploader />;
 }

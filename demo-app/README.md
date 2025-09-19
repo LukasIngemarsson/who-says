@@ -1,5 +1,6 @@
 ## Project Structure (preliminary) 
 
+```bash
 src/
 ├── app/
 │   ├── page.tsx
@@ -9,6 +10,7 @@ src/
 │   └── AudioUploader.tsx
 └── types/
     └── audio.ts
+```
 
 
 ### Layer Explanation

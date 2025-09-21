@@ -5,6 +5,7 @@ import { AudioPlayer } from "../components/AudioPlayer";
 import { downloadJson } from "../utils/download";
 import { useUndoRedo } from "../hooks/useUndoRedo";
 import type { WhisperDoc, Segment } from "../types/whisperx";
+import { fromTxtToWhisperDoc } from "../utils/convert";
 
 export function Home() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -52,8 +53,25 @@ export function Home() {
     if (!files?.length) return;
     const list = Array.from(files);
     const json = list.find(f => f.name.toLowerCase().endsWith(".json"));
+    const txt = list.find(f => f.name.toLowerCase().endsWith(".txt"));
     const audio = list.find(f => /(mp3|wav|m4a|ogg|flac)$/i.test(f.name));
+
     if (json) loadJsonFile(json).catch(e => alert(e.message));
+
+    if (txt) {
+      txt.text().then(raw => {
+        try {
+          const doc = fromTxtToWhisperDoc(raw, txt.name);
+          setData(doc);
+          setSelected(0);
+          const uniq = Array.from(new Set(doc.segments.map(s => s.speaker).filter(Boolean))) as string[];
+          if (uniq.length) setSpeakers(prev => Array.from(new Set([...uniq, ...prev])));
+        } catch (err: any) {
+          alert("Failed to parse .txt: " + err?.message);
+        }
+      });
+    }
+
     if (audio && audioRef.current) {
       const url = URL.createObjectURL(audio);
       audioRef.current.src = url;
@@ -93,7 +111,7 @@ export function Home() {
         <div className="rounded-xl border bg-white p-4">
           <h2 className="font-medium mb-2">Load files</h2>
           <div className="flex gap-2">
-            <input type="file" accept="application/json" onChange={(e) => handleFileList(e.target.files)} />
+            <input type="file" accept=".json,.txt" onChange={(e) => handleFileList(e.target.files)} />
             <input type="file" accept="audio/*" onChange={(e) => handleFileList(e.target.files)} />
           </div>
           <AudioPlayer ref={audioRef} className="mt-3" />

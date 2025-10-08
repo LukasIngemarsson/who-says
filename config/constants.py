@@ -1,0 +1,3 @@
+
+
+DESIRED_FREQUENCY = 16000 # kHz

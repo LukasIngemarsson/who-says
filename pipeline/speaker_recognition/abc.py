@@ -1,5 +1,6 @@
-import soundfile as sf
-import torchaudio
+from utils import load_audio_from_file, match_frequency
+from config.constants import DESIRED_FREQUENCY
+
 from speechbrain.inference.speaker import EncoderClassifier, SpeakerRecognition
 from sklearn.cluster import AgglomerativeClustering # used directly w/o wrapper class
 from speechbrain.inference.separation import SepformerSeparation
@@ -8,26 +9,9 @@ from dotenv import load_dotenv
 from pyannote.audio import Model, Inference
 from torch import Tensor
 
+
 # TODO: Add types to class/function args
-# TODO: Set up general class for different models later (if wanted/needed)
-
-DESIRED_FREQUENCY = 16000
-
-def load_from_file(file_path):
-    if file_path.endswith(".wav"):
-        audio, frequency = sf.read(file_path)
-    elif file_path.endswith(".mp3") or file_path.endswith(".flac"):
-        audio, frequency = torchaudio.load(file_path)
-    else:
-        raise ValueError(f"Unsupported audio format for file: {file_path}")
-
-    return audio, frequency
-
-def match_frequency(audio, frequency):
-    if frequency != DESIRED_FREQUENCY:
-        audio = torchaudio.functional.resample(audio, orig_freq=frequency, new_freq=DESIRED_FREQUENCY)
-    return audio
-
+# TODO: Set up general class for different models later (if wanted)
 
 class SpeechBrainEmbedding:
     def __init__(self, model="speechbrain/spkrec-ecapa-voxceleb"):
@@ -43,7 +27,7 @@ class SpeechBrainEmbedding:
         return embedding
 
     def embed_from_file(self, file_path):
-        audio, frequency = load_from_file(file_path)
+        audio, frequency = load_audio_from_file(file_path)
         return self.embed(audio, frequency)
     
 
@@ -98,5 +82,8 @@ class SourceSeparation:
         self.model = SepformerSeparation.from_hparams(source=model)
     
     def separate(self, file_path):
+        if not self.model:
+            raise ValueError("Model is None.")
+
         separation = self.model.separate_file(file_path)
         return separation

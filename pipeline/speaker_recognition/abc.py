@@ -25,27 +25,27 @@ def match_frequency(audio, frequency):
 
 
 class SpeechBrainEmbedding:
-    def __init__(model="speechbrain/spkrec-ecapa-voxceleb"):
+    def __init__(self, model="speechbrain/spkrec-ecapa-voxceleb"):
         self.model = EncoderClassifier.from_hparams(source=model)
 
-    def embed(audio, frequency):
+    def embed(self, audio, frequency):
         audio = match_frequency(audio, frequency)
-        embedding = model.encode_batch(audio)
+        embedding = self.model.encode_batch(audio)
         return embedding
 
-    def embed_from_file(file_path):
-        audio, _ = load_from_file(file_path)
-        return embed(audio)
+    def embed_from_file(self, file_path):
+        audio, frequency = load_from_file(file_path)
+        return self.embed(audio, frequency)
 
 
 class SpeechBrainSpeakerRecognition:
-    def __init__(model="speechbrain/spkrec-ecapa-voxceleb"):
+    def __init__(self, model="speechbrain/spkrec-ecapa-voxceleb"):
         self.model = SpeakerRecognition.from_hparams(source=model)
 
-    def verify(audio1, audio2):
-        audio1 = match_frequency(audio1, frequency)
-        audio2 = match_frequency(audio2, frequency)
-        score, prediction = model.verify_files(audio1, audio2)
+    def verify(self, audio1, frequency1, audio2, frequency2):
+        audio1 = match_frequency(audio1, frequency1)
+        audio2 = match_frequency(audio2, frequency2)
+        score, prediction = self.model.verify_files(audio1, audio2)
         return score, prediction
 
 

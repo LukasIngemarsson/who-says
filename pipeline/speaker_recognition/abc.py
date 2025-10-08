@@ -1,5 +1,4 @@
 from utils import load_audio_from_file, match_frequency
-from config.constants import DESIRED_FREQUENCY
 
 from speechbrain.inference.speaker import EncoderClassifier, SpeakerRecognition
 from sklearn.cluster import AgglomerativeClustering # used directly w/o wrapper class
@@ -54,7 +53,7 @@ class PyAnnoteEmbedding:
         elif audio.ndim > 2:
             raise ValueError(f"Unexpected audio shape: {audio.shape}")
         
-        embedding = self.inference({"waveform": audio, "sample_rate": DESIRED_FREQUENCY})
+        embedding = self.inference({"waveform": audio, "sample_rate": frequency})
         return embedding
 
     def embed_from_file(self, file_path):

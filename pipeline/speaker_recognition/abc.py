@@ -33,7 +33,11 @@ class SpeechBrainEmbedding:
     def __init__(self, model="speechbrain/spkrec-ecapa-voxceleb"):
         self.model = EncoderClassifier.from_hparams(source=model)
 
+
     def embed(self, audio, frequency):
+        if not self.model:
+            raise ValueError("Model is None.")
+
         audio = match_frequency(audio, frequency)
         embedding = self.model.encode_batch(audio)
         return embedding
@@ -80,6 +84,9 @@ class SpeechBrainSpeakerRecognition:
         self.model = SpeakerRecognition.from_hparams(source=model)
 
     def verify(self, audio1, frequency1, audio2, frequency2):
+        if not self.model:
+            raise ValueError("Model is None.")
+
         audio1 = match_frequency(audio1, frequency1)
         audio2 = match_frequency(audio2, frequency2)
         score, prediction = self.model.verify_files(audio1, audio2)

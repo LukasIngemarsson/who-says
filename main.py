@@ -1,2 +1,2 @@
-# from pipeline.VAD.abc import x, y, z
+# e.g., from pipeline.VAD import x, y, z
 # ...

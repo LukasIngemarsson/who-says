@@ -1,4 +1,4 @@
-from .abc import SpeechBrainEmbedding, AgglomerativeClustering, SpeechBrainSpeakerRecognition
+from .abc import SpeechBrainEmbedding, PyAnnoteEmbedding, AgglomerativeClustering, SpeechBrainSpeakerRecognition
 
-__all__ = ["SpeechBrainEmbedding", "AgglomerativeClustering", "SpeechBrainSpeakerRecognition"]
+__all__ = ["SpeechBrainEmbedding", "PyAnnoteEmbedding", "AgglomerativeClustering", "SpeechBrainSpeakerRecognition"]
 

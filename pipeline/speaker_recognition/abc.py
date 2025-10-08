@@ -2,6 +2,7 @@ import soundfile as sf
 import torchaudio
 from speechbrain.inference.speaker import EncoderClassifier, SpeakerRecognition
 from sklearn.cluster import AgglomerativeClustering # used directly w/o wrapper class
+from speechbrain.inference.separation import SepformerSeparation
 import os
 from dotenv import load_dotenv
 from pyannote.audio import Model, Inference
@@ -85,3 +86,10 @@ class SpeechBrainSpeakerRecognition:
         return score, prediction
 
 
+class SourceSeparation:
+    def __init__(self, model="speechbrain/sepformer-wsj02mix"):
+        self.model = SepformerSeparation.from_hparams(source=model)
+    
+    def separate(self, file_path):
+        separation = self.model.separate_file(file_path)
+        return separation

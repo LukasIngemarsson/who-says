@@ -1,15 +1,23 @@
-# Who says
+# Who says pipeline
 
-TODO: Overview and introduction to the project. What is it about, what does it consist of, what can it do?
+## Run with docker
 
-## Installation instruction
+Build image
 
-TODO: Set up global Docker env. w/ instructions here.
+```bash
+docker build -t who-says-pipeline .
+```
 
-## Usage
+Run the container
+```bash
+docker run --rm who-says-pipeline python main.py multi_speaker_sample.mp3
+```
 
-TODO
 
-## License
+## Adding new pipeline components
 
-The project is licensed under the MIT license (https://opensource.org/license/mit).
+1. Create module in `pipeline/[component_name]/`
+2. Add dependencies to `requirements.txt`
+3. Import and use in `main.py`
+4. Rebuild Docker: `docker build -t who-says-pipeline .`
+5. Run the container `docker run --rm who-says-pipeline python main.py <audiofile>`

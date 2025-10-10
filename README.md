@@ -17,8 +17,12 @@ To get docker to run you need to have Docker Desktop or similar running in the b
 
 ## Adding new pipeline components
 
-1. Create module in `pipeline/[component_name]/`
-2. Add dependencies to `requirements.txt`
-3. Import and use in `main.py`
-4. Rebuild Docker: `docker build -t who-says-pipeline .`
-5. Run the container `docker run --rm who-says-pipeline python main.py <audiofile>`
+1. Create your class in `pipeline/[component]/your_file.py`
+2. Export it in `pipeline/[component]/__init__.py`:
+   ```python
+   from .your_file import YourClass
+   __all__ = ["YourClass"]
+   ```
+3. Import in `main.py`: `from pipeline.[component] import YourClass`
+4. Add dependencies to `requirements.txt`
+5. Rebuild Docker: `docker build -t who-says-pipeline .`

@@ -1,5 +1,4 @@
 from config.constants import DESIRED_FREQUENCY
-
 import torch
 import torchaudio
 

@@ -1,9 +1,3 @@
-"""
-Main pipeline test script
-
-Usage:
-    python main.py path/to/audio.wav
-"""
 import sys
 
 from pipeline.VAD import SileroVAD

@@ -1,4 +1,4 @@
-# from .abc import x, y, z
+from .abc import SileroVAD
 
-# __all__ = ["a", "b", "c"]
+__all__ = ["SileroVAD"]
 

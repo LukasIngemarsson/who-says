@@ -13,6 +13,7 @@ Run the container
 docker run --rm who-says-pipeline python main.py multi_speaker_sample.mp3
 ```
 
+To get docker to run you need to have Docker Desktop or similar running in the background.
 
 ## Adding new pipeline components
 

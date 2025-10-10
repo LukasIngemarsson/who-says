@@ -1,7 +1,7 @@
 import React from "react";
 import type { Segment } from "../types/whisperx";
-import { formatTime, parseTime } from "../utils/time";
 import clsx from "clsx";
+import { TimeField } from "./TimeField";
 
 type Props = {
   segments: Segment[];
@@ -12,7 +12,14 @@ type Props = {
   onRemove: (i: number) => void;
 };
 
-export function SegmentTable({ segments, selected, onSelect, onChange, onInsertAfter, onRemove }: Props) {
+export function SegmentTable({
+  segments,
+  selected,
+  onSelect,
+  onChange,
+  onInsertAfter,
+  onRemove,
+}: Props) {
   return (
     <div className="overflow-auto">
       <table className="w-full text-sm">
@@ -29,22 +36,27 @@ export function SegmentTable({ segments, selected, onSelect, onChange, onInsertA
           {segments.map((s, i) => (
             <tr
               key={s.id}
-              className={clsx("border-b cursor-pointer hover:bg-slate-50", i === selected && "bg-slate-100")}
+              className={clsx(
+                "border-b cursor-pointer hover:bg-slate-50",
+                i === selected && "bg-slate-100"
+              )}
               onClick={() => onSelect(i)}
             >
               <td className="p-2 text-slate-500">{i}</td>
               <td className="p-2">
-                <input
-                  className="w-full rounded border px-2 py-1"
-                  value={formatTime(s.start)}
-                  onChange={(e) => onChange(i, { start: parseTime(e.target.value) })}
+                <TimeField
+                  aria-label={`Start ${i}`}
+                  value={s.start}
+                  onChange={(v) => onChange(i, { start: v })}
+                  min={0}
                 />
               </td>
               <td className="p-2">
-                <input
-                  className="w-full rounded border px-2 py-1"
-                  value={formatTime(s.end)}
-                  onChange={(e) => onChange(i, { end: parseTime(e.target.value) })}
+                <TimeField
+                  aria-label={`End ${i}`}
+                  value={s.end}
+                  onChange={(v) => onChange(i, { end: v })}
+                  min={0}
                 />
               </td>
               <td className="p-2">
@@ -52,7 +64,9 @@ export function SegmentTable({ segments, selected, onSelect, onChange, onInsertA
                   className="w-full rounded border px-2 py-1"
                   placeholder="—"
                   value={s.speaker ?? ""}
-                  onChange={(e) => onChange(i, { speaker: e.target.value || null })}
+                  onChange={(e) =>
+                    onChange(i, { speaker: e.target.value || null })
+                  }
                 />
               </td>
               <td className="p-2 text-right">

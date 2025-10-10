@@ -144,7 +144,6 @@ export function Home() {
             segment={segs[selected]}
             speakers={speakers}
             onChange={(patch) => updateSeg(selected, patch)}
-            onJumpTo={(t) => { if (audioRef.current) audioRef.current.currentTime = t; }}
           />
           <div className="mt-3">
             {validation.length ? (

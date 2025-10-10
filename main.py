@@ -6,7 +6,7 @@ Usage:
 """
 import sys
 
-from pipeline.VAD.silero import SileroVAD
+from pipeline.VAD import SileroVAD
 
 if len(sys.argv) < 2:
     print("Usage: python main.py <audio_file>")

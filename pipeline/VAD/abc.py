@@ -1,13 +1,3 @@
-"""
-Example usage:
-    from pipeline.VAD.silero import SileroVAD
-
-    vad = SileroVAD()
-    segments = vad.predict('path/to/audio.wav')
-
-    for seg in segments:
-        print(f"Speech: {seg['start']:.2f}s - {seg['end']:.2f}s")
-"""
 import torch
 import torchaudio
 
@@ -19,6 +9,15 @@ class SileroVAD:
 
         Args:
             sample_rate: Target sample rate (8000 or 16000)
+
+        Example usage:
+            from pipeline.VAD.silero import SileroVAD
+
+            vad = SileroVAD()
+            segments = vad.predict('path/to/audio.wav')
+
+            for seg in segments:
+                print(f"Speech: {seg['start']:.2f}s - {seg['end']:.2f}s")
         """
         self.sample_rate = sample_rate
         self.model = None

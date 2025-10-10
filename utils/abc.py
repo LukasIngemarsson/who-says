@@ -2,11 +2,13 @@ from config.constants import DESIRED_FREQUENCY
 
 import soundfile as sf
 import torchaudio
+import torch
 
 
 def load_audio_from_file(file_path):
     if file_path.endswith(".wav"):
         audio, frequency = sf.read(file_path)
+        audio = torch.tensor(audio, dtype=torch.float32)
     elif file_path.endswith(".mp3") or file_path.endswith(".flac"):
         audio, frequency = torchaudio.load(file_path)
     else:

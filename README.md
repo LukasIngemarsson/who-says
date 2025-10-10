@@ -26,3 +26,19 @@ To get docker to run you need to have Docker Desktop or similar running in the b
 3. Import in `main.py`: `from pipeline.[component] import YourClass`
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
+
+## Update `requirements.txt`
+
+Install `pipreqs`
+
+```bash
+pip install pipreqs
+```
+
+Use this command to create a new version of `requirements.txt` while in the root directory
+
+```bash
+python -m pipreqs.pipreqs . --force
+```
+
+This will override the current `requirements.txt´ file with a new one. 

@@ -41,4 +41,4 @@ Use this command to create a new version of `requirements.txt` while in the root
 python -m pipreqs.pipreqs . --force
 ```
 
-This will override the current `requirements.txt´ file with a new one. 
+This will override the current `requirements.txt file with a new one. 

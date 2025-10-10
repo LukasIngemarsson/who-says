@@ -1,4 +1,4 @@
-from .abc import WhsiperXForcedAlignment
+from .whipserx import WhsiperXForcedAlignment
 
 __all__ = ["WhsiperXForcedAlignment"]
 

@@ -1,6 +1,6 @@
 """
 Example usage:
-    from pipeline.VAD.silero import SileroVAD
+    from pipeline.VAD import SileroVAD
 
     vad = SileroVAD()
     segments = vad.predict('path/to/audio.wav')

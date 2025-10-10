@@ -1,4 +1,4 @@
-from .abc import WhsiperXASR
+from .whisperx import WhsiperXASR
 
 __all__ = ["WhsiperXASR"]
 

@@ -1,4 +1,4 @@
-from .abc import SileroVAD
+from .silero import SileroVAD
 
 __all__ = ["SileroVAD"]
 

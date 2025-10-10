@@ -9,11 +9,19 @@ docker build -t who-says-pipeline .
 ```
 
 Run the container
+> To get docker to run you need to have Docker Desktop or similar running in the background.
 ```bash
 docker run --rm who-says-pipeline python main.py multi_speaker_sample.mp3
 ```
+To run any module that isn’t at the project root, use the -m flag so Python treats the project as a package.
+```bash
+docker run --rm who-says-pipeline python -m pipeline.<component_name>.<library_name>.<etc.>
+```
+This ensures imports (e.g. from utils/) work correctly.
 
-To get docker to run you need to have Docker Desktop or similar running in the background.
+> **Note:**  
+> Every code-containing subfolder (e.g. `pipeline/`, `speaker_recognition/`, `embedding/`, `utils/`, etc.)  
+> must include an empty `__init__.py` file so Python recognizes it as a package.
 
 ## Adding new pipeline components
 
@@ -41,4 +49,4 @@ Use this command to create a new version of `requirements.txt` while in the root
 python -m pipreqs.pipreqs . --force
 ```
 
-This will override the current `requirements.txt file with a new one. 
+This will override the current `requirements.txt` file with a new one. 

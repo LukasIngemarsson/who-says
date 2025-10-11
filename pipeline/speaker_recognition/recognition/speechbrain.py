@@ -16,10 +16,10 @@ class SpeechBrainSpeakerRecognition:
         return score, prediction
 
 if __name__ == "__main__":
-    path_multi = "multi_speaker_sample.mp3"
-    path_sep_1 = "sep_1.wav" #should be true
-    path_sep_2 = "sep_2.wav" #should be true
-    path_false = "single_speaker_sample.wav" #should be false
+    path_multi = "samples/multi_speaker_sample.mp3"
+    path_sep_1 = "samples/sep_1.wav" #should be true
+    path_sep_2 = "samples/sep_2.wav" #should be true
+    path_false = "samples/single_speaker_sample.wav" #should be false
     recognizer = SpeechBrainSpeakerRecognition()
     score_1, prediction_1 = recognizer.verify(path_multi, path_sep_1)
     score_2, prediction_2 = recognizer.verify(path_multi, path_sep_2)

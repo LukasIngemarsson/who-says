@@ -41,7 +41,7 @@ class PyAnnoteEmbedding:
         return self.embed(audio, frequency)
 
 if __name__ == "__main__":
-    file_path = "single_speaker_sample.wav"
+    file_path = "samples/single_speaker_sample.wav"
 
     audio, frequency = load_audio_from_file(file_path)
 

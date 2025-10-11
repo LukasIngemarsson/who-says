@@ -2,7 +2,8 @@ import time
 import numpy as np
 
 from utils import load_audio_from_file
-from ..abc import PyAnnoteEmbedding, SpeechBrainEmbedding
+from .pyannote import PyAnnoteEmbedding
+from .speechbrain import SpeechBrainEmbedding
 
 def time_function(func, *args, repeat=3, **kwargs):
     """Utility to measure average runtime of a function."""

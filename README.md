@@ -17,7 +17,7 @@ To run any module that isn’t at the project root, use the -m flag so Python tr
 ```bash
 docker run --rm who-says-pipeline python -m pipeline.<component_name>.<library_name>.<etc.>
 ```
-This ensures imports (e.g. from utils/) work correctly.
+This ensures imports (e.g. from `utils/`) work correctly.
 
 > **Note:**  
 > Every code-containing subfolder (e.g. `pipeline/`, `speaker_recognition/`, `embedding/`, `utils/`, etc.)  

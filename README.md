@@ -2,22 +2,31 @@
 
 ## Run with docker
 
-Build image
+You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.
+Use `chmod +x docker_run.py` to make the script runnable as `./docker_run.py` (only needed once).
+> **Note:**  
+> To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
 
+Usage:
 ```bash
-docker build -t who-says-pipeline .
+./docker_run.py pipeline <audio_file> # (runs main / full pipeline)
+./docker_run.py component <module_path> # (runs specified module / isolated component)
 ```
 
-Run the container
-> To get docker to run you need to have Docker Desktop or similar running in the background.
-```bash
-docker run --rm who-says-pipeline python main.py multi_speaker_sample.mp3
-```
-To run any module that isn’t at the project root, use the -m flag so Python treats the project as a package.
-```bash
-docker run --rm who-says-pipeline python -m pipeline.<component_name>.<library_name>.<etc.>
-```
-This ensures imports (e.g. from `utils/`) work correctly.
+<!-- Running w/o the script: -->
+<!-- Build image -->
+<!---->
+<!-- ```bash -->
+<!-- docker build -t who-says-pipeline . -->
+<!-- ``` -->
+<!-- ```bash -->
+<!-- docker run --rm who-says-pipeline python main.py multi_speaker_sample.mp3 -->
+<!-- ``` -->
+<!-- To run any module that isn’t at the project root, use the -m flag so Python treats the project as a package. -->
+<!-- ```bash -->
+<!-- docker run --rm who-says-pipeline python -m pipeline.<component_name>.<library_name>.<etc.> -->
+<!-- ``` -->
+<!-- This ensures imports (e.g. from `utils/`) work correctly. -->
 
 > **Note:**  
 > Every code-containing subfolder (e.g. `pipeline/`, `speaker_recognition/`, `embedding/`, `utils/`, etc.)  
@@ -37,16 +46,21 @@ This ensures imports (e.g. from `utils/`) work correctly.
 
 ## Update `requirements.txt`
 
-Install `pipreqs`
+For now, manually add necessary packages that are not yet installed in the Docker container, i.e., 
+add the library (and if needed, the specific version) as a new line in `requirements.txt`.
 
-```bash
-pip install pipreqs
-```
-
-Use this command to create a new version of `requirements.txt` while in the root directory
-
-```bash
-python -m pipreqs.pipreqs . --force
-```
-
-This will override the current `requirements.txt` file with a new one. 
+<!-- We can try this more automated alternative as well, but we need to ensure that it properly includes -->
+<!-- the necessary packages (and their version requirements). -->
+<!-- Install `pipreqs` -->
+<!---->
+<!-- ```bash -->
+<!-- pip install pipreqs -->
+<!-- ``` -->
+<!---->
+<!-- Use this command to create a new version of `requirements.txt` while in the root directory -->
+<!---->
+<!-- ```bash -->
+<!-- python -m pipreqs.pipreqs . --force -->
+<!-- ``` -->
+<!---->
+<!-- This will override the current `requirements.txt` file with a new one.  -->

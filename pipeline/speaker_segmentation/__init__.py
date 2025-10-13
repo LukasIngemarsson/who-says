@@ -1,4 +1,10 @@
-# from .abc import x, y, z
+from pipeline.speaker_segmentation.SO import SO
+from pipeline.speaker_segmentation.SCD import SCD
+from pipeline.speaker_segmentation.VAD import SileroVAD
 
-# __all__ = ["a", "b", "c"]
+__all__ = [
+    SCD,
+    SileroVAD,
+    SO
+]
 

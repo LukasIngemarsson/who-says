@@ -1,5 +1,11 @@
 # Who says pipeline
 
+In many real-world speech systems—like smart home assistants, meeting transcribers, or secure voice interfaces—it's crucial not only to transcribe multi-person conversations accurately but also to distinguish who spoke when and to recognize specific users for access control or personalization. This project will build a pipeline that integrates voice activity detection (VAD), speaker diarization, and speaker recognition, enabling systems to selectively trust and process commands from authorized individuals.
+
+The following diagram illustrates the complete pipeline flow, showing how audio input is processed through VAD, speaker diarization, speaker recognition, and ASR components to produce the final transcribed output with speaker labels:
+
+![Pipeline Architecture](Pipeline.png)
+
 ## Run with docker
 
 You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.

@@ -1,4 +1,5 @@
 import torch
 
-DESIRED_FREQUENCY = 16000 # Hz
+
 TENSOR_DTYPE = torch.float32
+SR = 16000

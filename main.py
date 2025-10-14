@@ -1,20 +1,68 @@
-import sys
+from loguru import logger
+import argparse
+from pathlib import Path
 
-from pipeline.VAD import SileroVAD
+from dotenv import load_dotenv
 
-if len(sys.argv) < 2:
-    print("Usage: python main.py <audio_file>")
-    sys.exit(1)
+from pipeline.speaker_segmentation import SO, SCD
+from utils import load_audio_from_file
+from config import PipelineConfig as config
 
-audio_path = sys.argv[1]
+load_dotenv(".env")
 
-vad = SileroVAD()
-segments = vad.predict(audio_path)
+class WhoSays(object):
+    def __init__(self):
+        self.config = config()
+        
+        self.sod = SO(
+            self.config.SOConfig()
+        )
+        self.scd = SCD(
+            **self.config.SCDConfig().to_dict()
+        )
+        self.vad = ...
+        self.asr = ...
+    
+    def __call__(
+        self,
+        audio_file: str,
+        num_speakers: int
+    ):
+        waveform, sr = load_audio_from_file(
+            file_path=audio_file,
+            sr=self.config.sr
+        )
+        
+        """
+        seperated_segments = self.sod(
+            waveform,
+            sample_rate=sr
+        )
+        
+        segments = self.scd(
+            waveform,
+            sample_rate=sr 
+        )
+        """
+        
+        #print(segments)
 
-print(f"\nFound {len(segments)} speech segments:")
-for i, seg in enumerate(segments, 1):
-    duration = seg['end'] - seg['start']
-    print(f"  {i}. {seg['start']:.2f}s - {seg['end']:.2f}s (duration: {duration:.2f}s)")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="WhoSays - Speaker diarization pipeline")
+    parser.add_argument("audio_file", type=Path, help="Path to the audio file to process")
+    parser.add_argument("--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)")
 
-total_speech = sum(seg['end'] - seg['start'] for seg in segments)
-print(f"\nTotal speech time: {total_speech:.2f}s")
+    args = parser.parse_args()
+
+    if not args.audio_file.exists():
+        parser.error(f"Audio file not found: {args.audio_file}")
+
+    pipeline = WhoSays()
+
+    logger.info(f"Processing: {args.audio_file}, num speakers: {args.num_speakers}")
+    
+    output = pipeline(
+        args.audio_file,
+        args.num_speakers
+    )
+    

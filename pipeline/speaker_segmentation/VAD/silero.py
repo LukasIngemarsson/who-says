@@ -1,10 +1,14 @@
-from config.constants import DESIRED_FREQUENCY
 import torch
 import torchaudio
 
+from utils.constants import SR
+
 class SileroVAD:
 
-    def __init__(self, sample_rate=DESIRED_FREQUENCY):
+    def __init__(
+        self,
+        sample_rate=SR
+    ):
         """
         Initialize SileroVAD.
 

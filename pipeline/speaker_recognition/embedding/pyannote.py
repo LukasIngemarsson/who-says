@@ -1,4 +1,4 @@
-from config.constants import TENSOR_DTYPE
+from utils.constants import TENSOR_DTYPE
 from utils import match_frequency
 
 import os

@@ -54,7 +54,7 @@ def main():
     if mode == "pipeline":
         run_pipeline(sys.argv[2])
     elif mode == "component":
-        run_component(sys.argv[2], *sys.argv[3:])
+        run_component(sys.argv[2])
     else:
         print(f"Unknown mode: {mode}")
         sys.exit(1)

@@ -1,6 +1,6 @@
 from pipeline.speaker_segmentation.SO import SO
 from pipeline.speaker_segmentation.SCD import SCD
-from pipeline.speaker_segmentation.VAD import SileroVAD
+from pipeline.speaker_segmentation.VAD.silero import SileroVAD
 
 __all__ = [
     SCD,

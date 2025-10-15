@@ -1,7 +1,7 @@
 import torch
 from dataclasses import dataclass, asdict
 
-from utils.constants import SR
+from utils.constants import SR, TENSOR_DTYPE
 from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
 
 @dataclass
@@ -17,7 +17,10 @@ class PipelineConfig:
     
     @dataclass
     class ASRConfig(BaseConfig):
-        model: str = "openai/whisper-large-v3-turbo"
+        class Whisper:
+            model: str = "openai/whisper-large-v3-turbo"
+            device: str = "cuda",
+            torch_dtype: torch.dtype = TENSOR_DTYPE
     
     @dataclass
     class SCDConfig(BaseConfig):
@@ -25,6 +28,19 @@ class PipelineConfig:
         onset: float = 0.5
         offset: float = 0.5
         min_duration: float = 0.0
+
+    @dataclass
+    class EmbeddingConfig(BaseConfig):
+        class PyAnnote:
+            model: str = "pyannote/embedding"
+            batch_size: int = 1
+        class SpeechBrain:
+            model: str = "speechbrain/spkrec-ecapa-voxceleb"
+
+    @dataclass
+    class RecognitionConfig(BaseConfig):
+        class SpeechBrain:
+            model: str = "speechbrain/spkrec-ecapa-voxceleb"
 
     class SOConfig:
         @dataclass

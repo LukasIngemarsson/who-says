@@ -1,28 +1,14 @@
+from config.constants import DESIRED_FREQUENCY
 import torch
-import torchaudio
-
-from utils.constants import SR
 
 class SileroVAD:
 
-    def __init__(
-        self,
-        sample_rate=SR
-    ):
+    def __init__(self, sample_rate=DESIRED_FREQUENCY):
         """
         Initialize SileroVAD.
 
         Args:
             sample_rate: Target sample rate (8000 or 16000)
-
-        Example usage:
-            from pipeline.VAD.silero import SileroVAD
-
-            vad = SileroVAD()
-            segments = vad.predict('path/to/audio.wav')
-
-            for seg in segments:
-                print(f"Speech: {seg['start']:.2f}s - {seg['end']:.2f}s")
         """
         self.sample_rate = sample_rate
         self.model = None
@@ -36,12 +22,12 @@ class SileroVAD:
                 trust_repo=True
             )
 
-    def predict(self, audio_path):
+    def __call__(self, waveform):
         """
-        Detect speech segments in audio file.
+        Run VAD on waveform tensor.
 
         Args:
-            audio_path: Path to audio file
+            waveform: Audio tensor
 
         Returns:
             List of dicts with 'start' and 'end' timestamps in seconds
@@ -49,27 +35,60 @@ class SileroVAD:
         if self.model is None:
             self.load()
 
-        wav, sr = torchaudio.load(audio_path)
-
-        # Resample if needed
-        if sr != self.sample_rate:
-            wav = torchaudio.transforms.Resample(sr, self.sample_rate)(wav)
-
         # Convert to mono if needed
-        if wav.shape[0] > 1:
-            wav = torch.mean(wav, dim=0, keepdim=True)
+        if waveform.dim() == 2 and waveform.shape[0] > 1:
+            waveform = torch.mean(waveform, dim=0)
+        elif waveform.dim() == 2:
+            waveform = waveform[0]
 
         # Get speech timestamps
         get_speech_timestamps = self.utils[0]
         speech_timestamps = get_speech_timestamps(
-            wav[0],
+            waveform,
             self.model,
             sampling_rate=self.sample_rate,
             return_seconds=True
         )
 
-        # Format output
         return [
             {'start': seg['start'], 'end': seg['end']}
             for seg in speech_timestamps
         ]
+    
+    # def predict(self, audio_path):
+    #     """
+    #     Detect speech segments in audio file.
+
+    #     Args:
+    #         audio_path: Path to audio file
+
+    #     Returns:
+    #         List of dicts with 'start' and 'end' timestamps in seconds
+    #     """
+    #     if self.model is None:
+    #         self.load()
+
+    #     wav, sr = torchaudio.load(audio_path)
+
+    #     # Resample if needed
+    #     if sr != self.sample_rate:
+    #         wav = torchaudio.transforms.Resample(sr, self.sample_rate)(wav)
+
+    #     # Convert to mono if needed
+    #     if wav.shape[0] > 1:
+    #         wav = torch.mean(wav, dim=0, keepdim=True)
+
+    #     # Get speech timestamps
+    #     get_speech_timestamps = self.utils[0]
+    #     speech_timestamps = get_speech_timestamps(
+    #         wav[0],
+    #         self.model,
+    #         sampling_rate=self.sample_rate,
+    #         return_seconds=True
+    #     )
+
+    #     # Format output
+    #     return [
+    #         {'start': seg['start'], 'end': seg['end']}
+    #         for seg in speech_timestamps
+    #     ]

@@ -56,8 +56,6 @@ class PyannoteSOS(object):
             Audio waveform, shape (num_samples,) or (1, num_samples)
         sample_rate : int
             Sample rate of the audio
-        num_speakers : int, optional
-            Expected number of speakers (if known)
 
         Returns
         -------

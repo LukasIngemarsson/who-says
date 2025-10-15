@@ -4,7 +4,12 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from pipeline.ASR import WhisperASR
 from pipeline.speaker_segmentation import SO, SCD
+from pipeline.speaker_recognition import AgglomerativeClustering
+from pipeline.speaker_recognition import PyAnnoteEmbedding
+from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
+from pipeline.speaker_segmentation.VAD import SileroVAD
 from utils import load_audio_from_file
 from config import PipelineConfig as config
 
@@ -20,30 +25,54 @@ class WhoSays(object):
         self.scd = SCD(
             **self.config.SCDConfig().to_dict()
         )
-        self.vad = ...
-        self.asr = ...
+        
+        self.vad = SileroVAD(self.config.sr)
+        self.asr = WhisperASR(self.config.ASRConfig.Whisper.to_dict())
+
+        self.embedder = PyAnnoteEmbedding(**self.config.EmbeddingConfig.PyAnnote.to_dict())
+        # self.clustering = AgglomerativeClustering() # TODO: fix clustering + config
+        self.recognition = SpeechBrainSpeakerRecognition(**self.config.RecognitionConfig.SpeechBrain.to_dict())
     
     def __call__(
         self,
         audio_file: str,
-        num_speakers: int
+        num_speakers: int = 2
     ):
         waveform, sr = load_audio_from_file(
             file_path=audio_file,
             sr=self.config.sr
         )
         
-        """
+        print(waveform)
+        
+        speech_segments = self.vad(waveform) # [{'start': 0.7, 'end': 3.5}, {'start': 4.0, 'end': 4.8}]
+
+        print("VAD speech segments: ", speech_segments)
+
+        # TODO: handle so that input params match output of previous component
+        # transriptions = self.asr.transcribe(audio, return_timestamps, language)
+        
         seperated_segments = self.sod(
             waveform,
             sample_rate=sr
-        )
+        ) # []
         
         segments = self.scd(
             waveform,
             sample_rate=sr 
-        )
-        """
+        ) # 
+        
+        # TODO: ensure function handles input format correctly
+        # segment_embeddings = self.embedder.embed(
+        #     segments,
+        # ) #
+        
+        # TODO: set up clustering alg. w/ keyword params
+        # segment_clusters = self.clustering.cluster()
+
+        # TODO: change so that the audio object is passed instead of file paths
+        # recognized_speakers = self.recognition.verify(file1_path, file2_path)
+        
         
         #print(segments)
 

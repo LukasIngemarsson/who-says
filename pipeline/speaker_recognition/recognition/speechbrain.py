@@ -2,8 +2,6 @@ from utils import match_frequency, load_audio_from_file
 
 from speechbrain.inference.speaker import SpeakerRecognition
 
-# TODO: Set up general class for different models later (if wanted)
-
 class SpeechBrainSpeakerRecognition:
     def __init__(self, model: str = "speechbrain/spkrec-ecapa-voxceleb") -> None:
         self.model = SpeakerRecognition.from_hparams(source=model)

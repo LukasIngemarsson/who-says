@@ -26,7 +26,7 @@ def run_pipeline(audio_file: str):
         DOCKER_IMAGE,
         "python", "main.py", audio_file
     ]
-    log(f"Running: {' '.join(cmd)}\n")
+    log(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
 

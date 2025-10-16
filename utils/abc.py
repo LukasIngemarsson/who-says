@@ -1,4 +1,4 @@
-from utils.constants import TENSOR_DTYPE
+from utils.constants import TENSOR_DTYPE, SR
 from pathlib import Path
 
 import soundfile as sf
@@ -6,7 +6,7 @@ import torchaudio
 import torch
 
 
-def load_audio_from_file(file_path: str | Path, sr: int) -> tuple[torch.Tensor, int]:
+def load_audio_from_file(file_path: str | Path, sr: int = SR) -> tuple[torch.Tensor, int]:
     file_path = str(file_path)
     if file_path.endswith(".wav"):
         audio, sr = sf.read(file_path, samplerate=sr)
@@ -20,7 +20,7 @@ def load_audio_from_file(file_path: str | Path, sr: int) -> tuple[torch.Tensor, 
     return audio, sr
 
 
-def match_frequency(audio: torch.Tensor, frequency: int, sr: int) -> torch.Tensor:
+def match_frequency(audio: torch.Tensor, frequency: int, sr: int = SR) -> torch.Tensor:
     if frequency != sr:
         audio = torchaudio.functional.resample(audio, orig_freq=frequency, new_freq=sr)
     return audio

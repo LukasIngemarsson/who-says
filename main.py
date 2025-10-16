@@ -5,11 +5,12 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from pipeline.ASR import WhisperASR
+from pipeline.speaker_recognition.clustering.sklearn import SklearnClustering
 from pipeline.speaker_segmentation import SO, SCD
 from pipeline.speaker_recognition import AgglomerativeClustering
-from pipeline.speaker_recognition import PyAnnoteEmbedding
+from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
-from pipeline.speaker_segmentation.VAD import SileroVAD
+from pipeline.speaker_segmentation import SileroVAD
 from utils import load_audio_from_file
 from config import PipelineConfig as config
 
@@ -27,10 +28,10 @@ class WhoSays(object):
         )
         
         self.vad = SileroVAD(self.config.sr)
-        self.asr = WhisperASR(self.config.ASRConfig.Whisper.to_dict())
+        self.asr = WhisperASR(self.config.ASRConfig.Whisper().to_dict())
 
-        self.embedder = PyAnnoteEmbedding(**self.config.EmbeddingConfig.PyAnnote.to_dict())
-        # self.clustering = AgglomerativeClustering() # TODO: fix clustering + config
+        self.embedder = SpeechBrainEmbedding(**self.config.EmbeddingConfig.SpeechBrain.to_dict())
+        self.clustering = SklearnClustering(**self.config.ClusteringConfig.KMeans.to_dict()) 
         self.recognition = SpeechBrainSpeakerRecognition(**self.config.RecognitionConfig.SpeechBrain.to_dict())
     
     def __call__(
@@ -61,11 +62,12 @@ class WhoSays(object):
             waveform,
             sample_rate=sr 
         ) # 
+
+        print("Segements after speaker segmentation:", segments)
         
-        # TODO: ensure function handles input format correctly
-        # segment_embeddings = self.embedder.embed(
-        #     segments,
-        # ) #
+        segment_embeddings = self.embedder.embed_segments(waveform, sr, segments)
+
+        print("Embeddings shape:", segment_embeddings.shape)
         
         # TODO: set up clustering alg. w/ keyword params
         # segment_clusters = self.clustering.cluster()
@@ -73,8 +75,6 @@ class WhoSays(object):
         # TODO: change so that the audio object is passed instead of file paths
         # recognized_speakers = self.recognition.verify(file1_path, file2_path)
         
-        
-        #print(segments)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="WhoSays - Speaker diarization pipeline")

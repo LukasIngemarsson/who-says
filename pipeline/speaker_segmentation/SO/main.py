@@ -14,8 +14,8 @@ class SO(object):
     def __init__(
         self, config
     ):
-        self.sod_pipeline = config.Detection()
-        self.sos_pipeline = config.Seperation()
+        self.sod_pipeline = config.detection_pyannote
+        self.sos_pipeline = config.separation_pyannote
         
     @property
     def sod_pipeline(self):

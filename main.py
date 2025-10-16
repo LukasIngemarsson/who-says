@@ -26,7 +26,7 @@ class WhoSays(object):
             **self.config.scd.pyannote.to_dict()
         )
         
-        self.vad = SileroVAD(self.config.sr)
+        self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = WhisperASR(self.config.asr.whisper.to_dict())
 
         self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())

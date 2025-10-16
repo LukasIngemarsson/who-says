@@ -68,13 +68,22 @@ class SCDConfig:
 # -----------------------------
 
 @dataclass
-class SomeVADLibraryConfig(BaseConfig):
-    raise NotImplementedError
+class VADSileroConfig(BaseConfig):
+    model_repo: str = "snakers4/silero-vad"
+    model_name: str = "silero_vad"
+    sample_rate: int = SR
+    threshold: float = 0.5
+    min_speech_duration_ms: int = 250
+    max_speech_duration_s: float = float('inf')
+    min_silence_duration_ms: int = 100
+    window_size_samples: int = 512
+    speech_pad_ms: int = 30
+    return_seconds: bool = True
 
 
 @dataclass
 class VADConfig:
-    raise NotImplementedError
+    silero: VADSileroConfig = field(default_factory=VADSileroConfig)
 
 # -----------------------------
 # ASR

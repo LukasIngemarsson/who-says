@@ -5,34 +5,33 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from pipeline.ASR import WhisperASR
-from pipeline.speaker_recognition.clustering.sklearn import SklearnClustering
 from pipeline.speaker_segmentation import SO, SCD
-from pipeline.speaker_recognition import AgglomerativeClustering
+from pipeline.speaker_recognition import SklearnClustering
 from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
 from pipeline.speaker_segmentation import SileroVAD
 from utils import load_audio_from_file
-from config import PipelineConfig as config
+from config import PipelineConfig as Config
 
 load_dotenv(".env")
 
 class WhoSays(object):
     def __init__(self):
-        self.config = config()
+        self.config = Config()
         
         self.sod = SO(
-            self.config.SOConfig()
+            self.config.so.detection_pyannote.to_dict()
         )
         self.scd = SCD(
-            **self.config.SCDConfig().to_dict()
+            **self.config.scd.pyannote.to_dict()
         )
         
         self.vad = SileroVAD(self.config.sr)
-        self.asr = WhisperASR(self.config.ASRConfig.Whisper().to_dict())
+        self.asr = WhisperASR(self.config.asr.whisper.to_dict())
 
-        self.embedder = SpeechBrainEmbedding(**self.config.EmbeddingConfig.SpeechBrain.to_dict())
-        self.clustering = SklearnClustering(**self.config.ClusteringConfig.KMeans.to_dict()) 
-        self.recognition = SpeechBrainSpeakerRecognition(**self.config.RecognitionConfig.SpeechBrain.to_dict())
+        self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
+        self.clustering = SklearnClustering(**self.config.clustering.kmeans.to_dict()) 
+        self.recognition = SpeechBrainSpeakerRecognition(**self.config.recognition.speechbrain.to_dict())
     
     def __call__(
         self,
@@ -69,11 +68,10 @@ class WhoSays(object):
 
         print("Embeddings shape:", segment_embeddings.shape)
         
-        # TODO: set up clustering alg. w/ keyword params
-        # segment_clusters = self.clustering.cluster()
+        segment_clusters = self.clustering.cluster_segments(segment_embeddings)
 
-        # TODO: change so that the audio object is passed instead of file paths
-        # recognized_speakers = self.recognition.verify(file1_path, file2_path)
+        # TODO: figure out how we should perform recognition in real-time
+        # recognized_speakers = self.recognition.verify(emb1, emb2)
         
 
 if __name__ == "__main__":

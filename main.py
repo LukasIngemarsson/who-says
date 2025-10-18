@@ -20,7 +20,7 @@ class WhoSays(object):
         self.config = Config()
         
         self.sod = SO(
-            self.config.so.detection_pyannote.to_dict()
+            self.config.so
         )
         self.scd = SCD(
             **self.config.scd.pyannote.to_dict()

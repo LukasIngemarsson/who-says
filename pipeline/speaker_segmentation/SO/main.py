@@ -2,7 +2,7 @@ from enum import Enum
 from loguru import logger
 
 from pipeline.speaker_segmentation.SO.Detection import PyannoteSOD
-from pipeline.speaker_segmentation.SO.Seperation import PyannoteSOS
+from pipeline.speaker_segmentation.SO.Separation import PyannoteSOS
 
 class TypeSOD(Enum):
     PYANNOTE = "pyannote"
@@ -38,14 +38,14 @@ class SO(object):
 
     @sos_pipeline.setter
     def sos_pipeline(self, sos_config):
-        match(sos_config.seperation_type):
+        match(sos_config.separation_type):
             case TypeSOS.PYANNOTE:
-                logger.info(f"Initializing SOS with type: {sos_config.seperation_type}")
+                logger.info(f"Initializing SOS with type: {sos_config.separation_type}")
                 self._sod_pipeline = PyannoteSOS(
                     **sos_config.to_dict()
                 )
             case _:
-                raise ValueError(f"Invalid SOD Type {sos_config.seperation_type}")            
+                raise ValueError(f"Invalid SOD Type {sos_config.separation_type}")            
     
     
     def __call__(self, *args, **kwds):

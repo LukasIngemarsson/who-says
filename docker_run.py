@@ -23,6 +23,7 @@ def run_pipeline(audio_file: str):
 
     cmd = [
         "docker", "run", "--rm",
+        "--env-file", ".env",
         DOCKER_IMAGE,
         "python", "main.py", audio_file
     ]
@@ -33,6 +34,7 @@ def run_pipeline(audio_file: str):
 def run_component(module_path: str):
     cmd = [
         "docker", "run", "--rm",
+        "--env-file", ".env",
         DOCKER_IMAGE,
         "python", "-m", module_path
     ]

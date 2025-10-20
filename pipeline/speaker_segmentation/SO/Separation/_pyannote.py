@@ -39,7 +39,8 @@ class PyannoteSOS(object):
 
         self.model = Model.from_pretrained(
             model_name,
-            use_auth_token=use_auth_token
+            use_auth_token=use_auth_token,
+            force_reload=True
         ).to(self.device)
         self.model.eval()
 

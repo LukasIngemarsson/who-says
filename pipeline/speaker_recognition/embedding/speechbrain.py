@@ -18,7 +18,9 @@ class SpeechBrainEmbedding:
         Embed each segment between speaker change points and return stacked embeddings.
     """
 
-    def __init__(self, model: str = "speechbrain/spkrec-ecapa-voxceleb") -> None:
+    def __init__(self, 
+                 model: str = "speechbrain/spkrec-ecapa-voxceleb",
+                 device: str = "cuda") -> None:
         """
         Initialize SpeechBrainEmbedding with a pretrained model.
 
@@ -29,6 +31,9 @@ class SpeechBrainEmbedding:
         """
 
         self.model = EncoderClassifier.from_hparams(source=model)
+        self.device = device
+        if model is not None:
+            self.model.to(self.device)        
 
 
     def embed(self, audio: torch.Tensor, frequency: int) -> torch.Tensor:

@@ -27,7 +27,7 @@ class WhoSays(object):
         )
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
-        self.asr = WhisperASR(self.config.asr.whisper.to_dict())
+        self.asr = WhisperASR(**self.config.asr.whisper.to_dict())
 
         self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
         self.clustering = SklearnClustering(**self.config.clustering.kmeans.to_dict()) 

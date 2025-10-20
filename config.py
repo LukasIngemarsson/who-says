@@ -91,7 +91,7 @@ class VADConfig:
 @dataclass
 class ASRWhisperConfig(BaseConfig):
     model: str = "openai/whisper-large-v3-turbo"
-    device: str = "cuda"
+    device: str = "cuda" if torch.cuda.is_available() else "cpu"
     torch_dtype: torch.dtype = TENSOR_DTYPE
 
 
@@ -122,8 +122,22 @@ class EmbeddingConfig:
 # -----------------------------
 # Clustering
 # -----------------------------
+@dataclass 
+class BaseConfigClustering:
+    def to_dict(self):
+        """Convert to a nested dictionary (recursively)."""
+        def _to_dict(obj):
+            if hasattr(obj, "__dataclass_fields__"):
+                return {k: _to_dict(v) for k, v in asdict(obj).items()}
+            elif isinstance(obj, list):
+                return [_to_dict(i) for i in obj]
+            else:
+                return obj
+        return _to_dict(self)
+
 @dataclass
-class KMeansConfig:
+class KMeansConfig(BaseConfigClustering):
+    algorithm: str = "kmeans"
     n_clusters: int = 8
     init: str = "k-means++"
     n_init: int = 10
@@ -131,14 +145,16 @@ class KMeansConfig:
 
 
 @dataclass
-class AgglomerativeConfig:
+class AgglomerativeConfig(BaseConfigClustering):
+    algorithm: str = "agglomerative"
     n_clusters: int = 2
     affinity: str = "euclidean"
     linkage: str = "ward"
 
 
 @dataclass
-class DBSCANConfig:
+class DBSCANConfig(BaseConfigClustering):
+    algorithm: str = "dbscan"
     eps: float = 0.5
     min_samples: int = 5
     metric: str = "euclidean"

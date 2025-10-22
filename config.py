@@ -91,7 +91,7 @@ class VADConfig:
 @dataclass
 class ASRWhisperConfig(BaseConfig):
     model: str = "openai/whisper-large-v3-turbo"
-    device: str = "cuda"
+    device: str = "cuda" if torch.cuda.is_available() else "cpu"
     torch_dtype: torch.dtype = TENSOR_DTYPE
 
 
@@ -123,7 +123,24 @@ class EmbeddingConfig:
 # Clustering
 # -----------------------------
 @dataclass
-class KMeansConfig:
+class BaseClusteringConfig(BaseConfig):
+    def to_dict(self):
+        """
+        Convert to a nested dictionary, but exclude the 'device' field
+        that scikit-learn doesn't accept.
+        """
+        # Call the parent's (BaseConfig) to_dict method
+        data = super().to_dict()
+        
+        # Remove 'device' from the resulting dictionary
+        data.pop('device', None)
+        
+        return data
+            
+
+@dataclass
+class KMeansConfig(BaseClusteringConfig):
+    algorithm: str = "kmeans"
     n_clusters: int = 8
     init: str = "k-means++"
     n_init: int = 10
@@ -131,14 +148,16 @@ class KMeansConfig:
 
 
 @dataclass
-class AgglomerativeConfig:
+class AgglomerativeConfig(BaseClusteringConfig):
+    algorithm: str = "agglomerative"
     n_clusters: int = 2
     affinity: str = "euclidean"
     linkage: str = "ward"
 
 
 @dataclass
-class DBSCANConfig:
+class DBSCANConfig(BaseClusteringConfig):
+    algorithm: str = "dbscan"
     eps: float = 0.5
     min_samples: int = 5
     metric: str = "euclidean"

@@ -10,7 +10,10 @@ class SpeechBrainSpeakerRecognition:
     Speaker recognition using SpeechBrain's ECAPA-TDNN model.
     """
 
-    def __init__(self, model: str = "speechbrain/spkrec-ecapa-voxceleb", threshold: float = 0.6) -> None:
+    def __init__(self, 
+                 model: str = "speechbrain/spkrec-ecapa-voxceleb", 
+                 threshold: float = 0.6,
+                 device: str = "cuda" if torch.cuda.is_available() else "cpu") -> None:
         """
         Initialize the speaker recognition model.
 
@@ -19,6 +22,7 @@ class SpeechBrainSpeakerRecognition:
         """
         self.model = SpeakerRecognition.from_hparams(source=model)
         self.threshold = threshold
+        self.device = device
 
     def verify(self, emb1: torch.Tensor, emb2: torch.Tensor) -> tuple[float, bool]:
         """

@@ -39,7 +39,8 @@ class PyannoteSOS(object):
 
         self.model = Model.from_pretrained(
             model_name,
-            use_auth_token=use_auth_token
+            use_auth_token=use_auth_token,
+            force_reload=True
         ).to(self.device)
         self.model.eval()
 
@@ -81,7 +82,7 @@ class PyannoteSOS(object):
 
         # Convert to dictionary of individual speaker waveforms
         separated_waveforms = {}
-        num_sources = separated.shape[1]
+        num_sources = torch.tensor(separated).shape[1]
 
         for i in range(num_sources):
             # Extract each speaker's waveform and move to CPU

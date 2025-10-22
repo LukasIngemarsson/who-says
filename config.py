@@ -122,21 +122,24 @@ class EmbeddingConfig:
 # -----------------------------
 # Clustering
 # -----------------------------
-@dataclass 
-class BaseConfigClustering:
+@dataclass
+class BaseClusteringConfig(BaseConfig):
     def to_dict(self):
-        """Convert to a nested dictionary (recursively)."""
-        def _to_dict(obj):
-            if hasattr(obj, "__dataclass_fields__"):
-                return {k: _to_dict(v) for k, v in asdict(obj).items()}
-            elif isinstance(obj, list):
-                return [_to_dict(i) for i in obj]
-            else:
-                return obj
-        return _to_dict(self)
+        """
+        Convert to a nested dictionary, but exclude the 'device' field
+        that scikit-learn doesn't accept.
+        """
+        # Call the parent's (BaseConfig) to_dict method
+        data = super().to_dict()
+        
+        # Remove 'device' from the resulting dictionary
+        data.pop('device', None)
+        
+        return data
+            
 
 @dataclass
-class KMeansConfig(BaseConfigClustering):
+class KMeansConfig(BaseClusteringConfig):
     algorithm: str = "kmeans"
     n_clusters: int = 8
     init: str = "k-means++"
@@ -145,7 +148,7 @@ class KMeansConfig(BaseConfigClustering):
 
 
 @dataclass
-class AgglomerativeConfig(BaseConfigClustering):
+class AgglomerativeConfig(BaseClusteringConfig):
     algorithm: str = "agglomerative"
     n_clusters: int = 2
     affinity: str = "euclidean"
@@ -153,7 +156,7 @@ class AgglomerativeConfig(BaseConfigClustering):
 
 
 @dataclass
-class DBSCANConfig(BaseConfigClustering):
+class DBSCANConfig(BaseClusteringConfig):
     algorithm: str = "dbscan"
     eps: float = 0.5
     min_samples: int = 5

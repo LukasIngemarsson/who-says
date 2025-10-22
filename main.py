@@ -19,12 +19,8 @@ class WhoSays(object):
     def __init__(self):
         self.config = Config()
         
-        self.sod = SO(
-            self.config.so
-        )
-        self.scd = SCD(
-            **self.config.scd.pyannote.to_dict()
-        )
+        self.sod = SO(self.config.so)
+        self.scd = SCD(**self.config.scd.pyannote.to_dict())
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = WhisperASR(**self.config.asr.whisper.to_dict())
@@ -52,15 +48,11 @@ class WhoSays(object):
         # TODO: handle so that input params match output of previous component
         # transriptions = self.asr.transcribe(audio, return_timestamps, language)
         
-        seperated_segments = self.sod(
-            waveform,
-            sample_rate=sr
-        ) # []
+        seperated_segments = self.sod(waveform)
+
+        print("Segments after speaker overlap detection:", seperated_segments)
         
-        segments = self.scd(
-            waveform,
-            sample_rate=sr 
-        ) # 
+        segments = self.scd(waveform)
 
         print("Segements after speaker segmentation:", segments)
         
@@ -69,6 +61,8 @@ class WhoSays(object):
         print("Embeddings shape:", segment_embeddings.shape)
         
         segment_clusters = self.clustering.cluster_segments(segment_embeddings)
+
+        print("Segment clusters:", segment_clusters)
 
         # TODO: figure out how we should perform recognition in real-time
         # recognized_speakers = self.recognition.verify(emb1, emb2)
@@ -92,4 +86,6 @@ if __name__ == "__main__":
         args.audio_file,
         args.num_speakers
     )
+
+    print("Done")
     

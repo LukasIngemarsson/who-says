@@ -23,7 +23,7 @@ class SklearnClustering:
         else:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
 
-    def cluster_segments(self, embeddings: torch.Tensor) -> torch.Tensor:
+    def cluster_segments(self, embeddings: torch.Tensor, n_clusters: int = None) -> torch.Tensor:
         """
         Assign clusters to segment embeddings.
 
@@ -31,11 +31,17 @@ class SklearnClustering:
         ----------
         embeddings : torch.Tensor
             Embeddings for segments (shape: [num_segments, embedding_dim]).
+        n_clusters : int, optional
+            Number of clusters to create. If provided, overrides the model's n_clusters.
 
         Returns
         -------
         torch.Tensor
             Cluster labels for each segment.
         """
+        # If n_clusters is provided and the model supports it, update it
+        if n_clusters is not None and hasattr(self.model, 'n_clusters'):
+            self.model.n_clusters = n_clusters
+
         labels = self.model.fit_predict(embeddings.cpu().numpy())
         return torch.tensor(labels)

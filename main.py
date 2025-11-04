@@ -19,7 +19,7 @@ class WhoSays(object):
     def __init__(self):
         self.config = Config()
         
-        self.sod = SO(self.config.so)
+        #self.sod = SO(self.config.so)
         self.scd = SCD(**self.config.scd.pyannote.to_dict())
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
@@ -34,44 +34,180 @@ class WhoSays(object):
         audio_file: str,
         num_speakers: int = 2
     ):
+        """
+        Process audio file through the complete speaker diarization pipeline.
+
+        Args:
+            audio_file: Path to audio file
+            num_speakers: Expected number of speakers
+
+        Returns:
+            dict: Structured diarization results containing:
+                - transcription: List of transcribed segments with timestamps
+                - speakers: List of speaker segments with IDs and timestamps
+                - segments: Detailed segment information with speaker assignments
+        """
+        logger.info(f"Loading audio from {audio_file}")
         waveform, sr = load_audio_from_file(
             file_path=audio_file,
             sr=self.config.sr
         )
-        
-        print(waveform)
-        
-        speech_segments = self.vad(waveform) # [{'start': 0.7, 'end': 3.5}, {'start': 4.0, 'end': 4.8}]
 
-        print("VAD speech segments: ", speech_segments)
+        # Ensure mono audio for pipeline processing
+        if waveform.dim() > 1:
+            if waveform.shape[0] > 1 and waveform.shape[0] < waveform.shape[1]:
+                # Shape is (n_channels, n_samples) - average channels
+                waveform = waveform.mean(dim=0)
+            elif waveform.shape[1] > 1 and waveform.shape[1] < waveform.shape[0]:
+                # Shape is (n_samples, n_channels) - average channels
+                waveform = waveform.mean(dim=1)
+            else:
+                # Ambiguous shape, assume first dim is channels
+                waveform = waveform.squeeze()
+                if waveform.dim() > 1:
+                    waveform = waveform.mean(dim=0)
 
-        # TODO: handle so that input params match output of previous component
-        # transriptions = self.asr.transcribe(audio, return_timestamps, language)
-        
-        seperated_segments = self.sod(waveform)
+        logger.info(f"Audio shape: {waveform.shape}, sample rate: {sr}Hz")
 
-        print("Segments after speaker overlap detection:", seperated_segments)
-        
-        segments = self.scd(waveform)
+        # Step 1: Voice Activity Detection
+        logger.info("Running Voice Activity Detection (VAD)...")
+        speech_segments = self.vad(waveform)
+        logger.info(f"Found {len(speech_segments)} speech segments")
 
-        print("Segements after speaker segmentation:", segments)
-        
-        segment_embeddings = self.embedder.embed_segments(waveform, sr, segments)
+        # Step 2: Automatic Speech Recognition
+        logger.info("Transcribing speech segments...")
+        transcriptions = self.asr.transcribe_segments(
+            waveform,
+            speech_segments,
+            return_timestamps=True
+        )
+        logger.info(f"Transcribed {len(transcriptions)} segments")
 
-        print("Embeddings shape:", segment_embeddings.shape)
-        
-        segment_clusters = self.clustering.cluster_segments(segment_embeddings)
+        # Step 3: Speaker Overlap Detection
+        logger.info("Detecting speaker overlaps...")
+        #overlap_segments = self.sod.sod_pipeline(waveform)
+        #logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
 
-        print("Segment clusters:", segment_clusters)
+        # Step 4: Speaker Change Detection
+        logger.info("Detecting speaker change points...")
+        change_points = self.scd(waveform)
+        logger.info(f"Found {len(change_points)} speaker change points")
 
-        # TODO: figure out how we should perform recognition in real-time
-        # recognized_speakers = self.recognition.verify(emb1, emb2)
-        
+        # Step 5: Speaker Embedding
+        logger.info("Extracting speaker embeddings...")
+        segment_embeddings = self.embedder.embed_segments(waveform, sr, change_points)
+        logger.info(f"Extracted embeddings for {segment_embeddings.shape[0]} segments")
+
+        # Step 6: Speaker Clustering
+        logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
+        segment_clusters = self.clustering.cluster_segments(segment_embeddings, n_clusters=num_speakers)
+        logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
+
+        # Step 7: Merge results into structured output
+        logger.info("Merging results...")
+        result = self._format_output(
+            change_points=change_points,
+            clusters=segment_clusters,
+            transcriptions=transcriptions,
+            overlap_segments= [],# overlap_segments,
+            waveform_duration=waveform.shape[-1] / sr
+        )
+
+        logger.info("Pipeline complete!")
+        return result
+
+    def _format_output(
+        self,
+        change_points: list[float],
+        clusters: list[int],
+        transcriptions: list[dict],
+        overlap_segments: list[tuple[float, float]],
+        waveform_duration: float
+    ) -> dict:
+        """
+        Format pipeline outputs into a structured result.
+
+        Args:
+            change_points: Speaker change timestamps
+            clusters: Cluster IDs for each segment
+            transcriptions: Transcription results with timestamps
+            overlap_segments: List of (start, end) tuples where speaker overlap occurs
+            waveform_duration: Total audio duration in seconds
+
+        Returns:
+            dict: Structured output with speaker segments and transcriptions
+        """
+        # Create speaker segments from change points and clusters
+        speaker_segments = []
+        segment_times = [0.0] + change_points + [waveform_duration]
+
+        for i in range(len(segment_times) - 1):
+            speaker_segments.append({
+                'start': segment_times[i],
+                'end': segment_times[i + 1],
+                'speaker': f"SPEAKER_{int(clusters[i])}" if i < len(clusters) else "UNKNOWN",
+                'duration': segment_times[i + 1] - segment_times[i]
+            })
+
+        # Align transcriptions with speaker segments and check for overlaps
+        segments_with_text = []
+        for segment in speaker_segments:
+            # Find overlapping transcriptions
+            segment_text = []
+            for trans in transcriptions:
+                # Check if transcription overlaps with this speaker segment
+                overlap_start = max(segment['start'], trans['start'])
+                overlap_end = min(segment['end'], trans['end'])
+
+                if overlap_start < overlap_end:
+                    # There's overlap
+                    segment_text.append({
+                        'text': trans['text'],
+                        'start': trans['start'],
+                        'end': trans['end'],
+                        'chunks': trans.get('chunks', [])
+                    })
+
+            # Check if this segment has speaker overlap
+            has_overlap = False
+            for ovlp_start, ovlp_end in overlap_segments:
+                # Check if overlap region intersects with this speaker segment
+                if max(segment['start'], ovlp_start) < min(segment['end'], ovlp_end):
+                    has_overlap = True
+                    break
+
+            segments_with_text.append({
+                **segment,
+                'transcriptions': segment_text,
+                'text': ' '.join([t['text'] for t in segment_text]).strip(),
+                'has_overlap': has_overlap
+            })
+
+        # Format overlap segments for output
+        overlap_regions = [
+            {'start': start, 'end': end, 'duration': end - start}
+            for start, end in overlap_segments
+        ]
+
+        # Create final structured output
+        return {
+            'duration': waveform_duration,
+            'num_speakers': len(set(clusters.tolist())),
+            'num_overlaps': len(overlap_segments),
+            'transcription': transcriptions,
+            'speaker_segments': speaker_segments,
+            'overlap_regions': overlap_regions,
+            'segments': segments_with_text
+        }
 
 if __name__ == "__main__":
+    import json
+
     parser = argparse.ArgumentParser(description="WhoSays - Speaker diarization pipeline")
     parser.add_argument("audio_file", type=Path, help="Path to the audio file to process")
     parser.add_argument("--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)")
+    parser.add_argument("--output", "-o", type=Path, help="Output JSON file path (optional)")
+    parser.add_argument("--pretty", action="store_true", help="Pretty print the output")
 
     args = parser.parse_args()
 
@@ -81,11 +217,53 @@ if __name__ == "__main__":
     pipeline = WhoSays()
 
     logger.info(f"Processing: {args.audio_file}, num speakers: {args.num_speakers}")
-    
-    output = pipeline(
+
+    result = pipeline(
         args.audio_file,
         args.num_speakers
     )
 
-    print("Done")
-    
+    # Display summary
+    print("\n" + "="*60)
+    print("DIARIZATION RESULTS")
+    print("="*60)
+    print(f"Duration: {result['duration']:.2f}s")
+    print(f"Detected speakers: {result['num_speakers']}")
+    print(f"Total segments: {len(result['segments'])}")
+    print(f"Overlap regions: {result['num_overlaps']}")
+
+    if result['overlap_regions']:
+        print("\n" + "-"*60)
+        print("OVERLAPPING SPEECH REGIONS")
+        print("-"*60)
+        for overlap in result['overlap_regions']:
+            print(f"  [{overlap['start']:.2f}s - {overlap['end']:.2f}s] ({overlap['duration']:.2f}s)")
+
+    print("\n" + "-"*60)
+    print("SPEAKER TIMELINE")
+    print("-"*60)
+
+    for segment in result['segments']:
+        speaker = segment['speaker']
+        start = segment['start']
+        end = segment['end']
+        text = segment['text'] if segment['text'] else "[no speech detected]"
+        overlap_marker = " [OVERLAP]" if segment.get('has_overlap') else ""
+        print(f"\n[{start:.2f}s - {end:.2f}s] {speaker}{overlap_marker}")
+        print(f"  {text}")
+
+    print("\n" + "="*60)
+
+    # Save to file if requested
+    if args.output:
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(result, f, indent=2 if args.pretty else None, ensure_ascii=False)
+        logger.info(f"Results saved to {args.output}")
+
+    # Print JSON if pretty flag is set
+    if args.pretty and not args.output:
+        print("\nJSON OUTPUT:")
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    logger.info("Done!")
+

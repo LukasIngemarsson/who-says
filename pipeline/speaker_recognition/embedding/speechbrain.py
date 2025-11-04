@@ -43,7 +43,7 @@ class SpeechBrainEmbedding:
         Parameters
         ----------
         audio : torch.Tensor
-            Audio tensor to embed.
+            Audio tensor to embed (1D: n_samples or 2D: batch x n_samples).
         frequency : int
             Sample rate of the audio.
 
@@ -61,6 +61,11 @@ class SpeechBrainEmbedding:
             raise ValueError("Model is None.")
 
         audio = match_frequency(audio, frequency)
+
+        # Ensure audio has batch dimension for encode_batch
+        if audio.dim() == 1:
+            audio = audio.unsqueeze(0)  # Add batch dimension: (n_samples,) -> (1, n_samples)
+
         embedding = self.model.encode_batch(audio)
         return embedding
 
@@ -88,7 +93,7 @@ class SpeechBrainEmbedding:
         Parameters
         ----------
         audio : torch.Tensor
-            Loaded audio tensor.
+            Loaded audio tensor (1D: n_samples).
         frequency : int
             Sample rate of the audio.
         change_points : list of float
@@ -99,14 +104,31 @@ class SpeechBrainEmbedding:
         torch.Tensor
             Tensor of shape (num_segments, embedding_dim)
         """
-        points = [0.0] + change_points + [audio.shape[-1] / frequency]
+        # Ensure audio is 1D
+        if audio.dim() > 1:
+            audio = audio.squeeze()
+
+        # Calculate audio duration
+        audio_duration = audio.shape[0] / frequency
+        points = [0.0] + change_points + [audio_duration]
+
         embeddings = []
         for i in range(len(points) - 1):
             start = int(points[i] * frequency)
             end = int(points[i+1] * frequency)
-            segment = audio[..., start:end]
+
+            # Extract segment
+            segment = audio[start:end]
+
+            # Embed the segment
             emb = self.embed(segment, frequency)
-            embeddings.append(emb.squeeze(0))
+
+            # Squeeze all batch dimensions to get (embedding_dim,)
+            while emb.dim() > 1:
+                emb = emb.squeeze(0)
+
+            embeddings.append(emb)
+
         return torch.stack(embeddings)
 
 

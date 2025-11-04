@@ -6,8 +6,6 @@ import torch
 import numpy as np
 from typing import Optional, Dict, List
 from pyannote.audio import Model
-from pyannote.audio.pipelines.utils import PipelineModel
-
 
 class PyannoteSOS(object):
     """

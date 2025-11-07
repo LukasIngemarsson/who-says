@@ -16,17 +16,28 @@ def build_image():
     subprocess.run(["docker", "build", "-t", DOCKER_IMAGE, "."], check=True)
 
 
-def run_pipeline(audio_file: str):
+def run_pipeline(audio_file: str, annotation_file: str = None):
     if not Path(audio_file).is_file():
         log(f"File not found: {audio_file}")
         sys.exit(1)
 
+    if annotation_file and not Path(annotation_file).is_file():
+        log(f"Annotation file not found: {annotation_file}")
+        sys.exit(1)
+
+    samples_dir = Path.cwd() / "samples"
+
     cmd = [
         "docker", "run", "--rm",
+        "-v", f"{samples_dir.absolute()}:/app/samples:ro",
         "--env-file", ".env",
         DOCKER_IMAGE,
         "python", "main.py", audio_file
     ]
+
+    if annotation_file:
+        cmd.extend(["--annotation", annotation_file])
+
     log(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
@@ -45,8 +56,8 @@ def run_component(module_path: str):
 def main():
     if len(sys.argv) < 3:
         print("Usage:")
-        print("\t./docker_run.py pipeline <audio_file> (runs main)")
-        print("\t./docker_run.py component <module_path> (runs specified module)")
+        print("\t./docker_run.py pipeline <audio_file> [--annotation <annotation_file>]")
+        print("\t./docker_run.py component <module_path>")
         sys.exit(1)
 
     # always build the Docker image first
@@ -54,7 +65,16 @@ def main():
 
     mode = sys.argv[1]
     if mode == "pipeline":
-        run_pipeline(sys.argv[2])
+        audio_file = sys.argv[2]
+        annotation_file = None
+        
+        if len(sys.argv) > 3 and sys.argv[3] == "--annotation":
+            if len(sys.argv) < 5:
+                print("Error: --annotation requires a file path")
+                sys.exit(1)
+            annotation_file = sys.argv[4]
+
+        run_pipeline(audio_file, annotation_file)
     elif mode == "component":
         run_component(sys.argv[2])
     else:

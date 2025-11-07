@@ -19,6 +19,16 @@ Usage:
 ./docker_run.py component <module_path> # (runs specified module / isolated component)
 ```
 
+### Running with evaluation metrics
+
+To evaluate pipeline performance against gold standard annotations, use the `--annotation` flag:
+
+For example:
+```bash
+./docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json
+```
+
+
 <!-- Running w/o the script: -->
 <!-- Build image -->
 <!---->

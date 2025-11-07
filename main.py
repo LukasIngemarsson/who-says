@@ -11,6 +11,7 @@ from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
 from pipeline.speaker_segmentation import SileroVAD
 from utils import load_audio_from_file
+from utils import load_annotation_file, evaluate_pipeline, format_metrics_report
 from config import PipelineConfig as Config
 
 load_dotenv(".env")
@@ -206,6 +207,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="WhoSays - Speaker diarization pipeline")
     parser.add_argument("audio_file", type=Path, help="Path to the audio file to process")
     parser.add_argument("--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)")
+    parser.add_argument("--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)")
     parser.add_argument("--output", "-o", type=Path, help="Output JSON file path (optional)")
     parser.add_argument("--pretty", action="store_true", help="Pretty print the output")
 
@@ -222,6 +224,26 @@ if __name__ == "__main__":
         args.audio_file,
         args.num_speakers
     )
+
+    # Compute metrics if annotation file provided
+    metrics = None
+    if args.annotation:
+        if not args.annotation.exists():
+            logger.warning(f"Annotation file not found: {args.annotation}. Skipping metrics computation.")
+        else:
+            try:
+                logger.info(f"Loading annotation from {args.annotation}")
+                annotation_data = load_annotation_file(args.annotation)
+
+                logger.info("Computing metrics...")
+                metrics = evaluate_pipeline(result, annotation_data)
+
+                result['metrics'] = metrics
+
+                logger.info("Metrics computation complete!")
+            except Exception as e:
+                logger.error(f"Error computing metrics: {e}")
+                metrics = None
 
     # Display summary
     print("\n" + "="*60)
@@ -253,6 +275,9 @@ if __name__ == "__main__":
         print(f"  {text}")
 
     print("\n" + "="*60)
+
+    if metrics:
+        print(format_metrics_report(metrics))
 
     # Save to file if requested
     if args.output:

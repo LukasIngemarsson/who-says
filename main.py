@@ -10,6 +10,7 @@ from pipeline.speaker_recognition import SklearnClustering
 from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
 from pipeline.speaker_segmentation import SileroVAD
+from pipeline.phoene import SpeechBrainPhoneme
 from utils import load_audio_from_file
 from utils import load_annotation_file, evaluate_pipeline, format_metrics_report
 from config import PipelineConfig as Config
@@ -25,6 +26,7 @@ class WhoSays(object):
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = WhisperASR(**self.config.asr.whisper.to_dict())
+        self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
 
         self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
         self.clustering = SklearnClustering(**self.config.clustering.kmeans.to_dict()) 

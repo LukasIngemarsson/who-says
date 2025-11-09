@@ -1,4 +1,3 @@
-# from .abc import x, y, z
+from .speechbrain_phoneme import SpeechBrainPhoneme
 
-# __all__ = ["a", "b", "c"]
-
+__all__ = ["SpeechBrainPhoneme"]

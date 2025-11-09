@@ -100,6 +100,19 @@ class ASRConfig:
     whisper: ASRWhisperConfig = field(default_factory=ASRWhisperConfig)
 
 # -----------------------------
+# Phoneme
+# -----------------------------
+@dataclass
+class PhonemeSpeechbrainConfig(BaseConfig):
+    model: str = "speechbrain/soundchoice-g2p"
+    savedir: str = "pretrained_models/soundchoice-g2p"
+
+
+@dataclass
+class PhonemeConfig:
+    speechbrain: PhonemeSpeechbrainConfig = field(default_factory=PhonemeSpeechbrainConfig)
+
+# -----------------------------
 # Speaker Embeddings
 # -----------------------------
 @dataclass
@@ -197,3 +210,4 @@ class PipelineConfig:
     embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
     clustering: ClusteringConfig = field(default_factory=ClusteringConfig)
     recognition: RecognitionConfig = field(default_factory=RecognitionConfig)
+    phoneme: PhonemeConfig = field(default_factory=PhonemeConfig)

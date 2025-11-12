@@ -16,4 +16,8 @@ RUN pip install --no-cache-dir --use-pep517 -r requirements.txt
 
 COPY . .
 
-CMD ["python", "main.py"]
+EXPOSE 8000
+
+CMD ["gunicorn", "--workers", "1", "--timeout", "300", "--bind", "0.0.0.0:8000", "app:app"]
+
+# CMD ["python", "main.py"]

@@ -10,10 +10,12 @@ The following diagram illustrates the complete pipeline flow, showing how audio 
 
 You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.
 Use `chmod +x docker_run.py` to make the script runnable as `./docker_run.py` (only needed once).
+
 > **Note:**  
 > To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
 
 Usage:
+
 ```bash
 ./docker_run.py pipeline <audio_file> # (runs main / full pipeline)
 ./docker_run.py component <module_path> # (runs specified module / isolated component)
@@ -24,10 +26,15 @@ Usage:
 To evaluate pipeline performance against gold standard annotations, use the `--annotation` flag:
 
 For example:
+
 ```bash
 ./docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json
 ```
 
+```bash
+docker build -t my-diarization-api .
+docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
+```
 
 <!-- Running w/o the script: -->
 <!-- Build image -->
@@ -62,7 +69,7 @@ For example:
 
 ## Update `requirements.txt`
 
-For now, manually add necessary packages that are not yet installed in the Docker container, i.e., 
+For now, manually add necessary packages that are not yet installed in the Docker container, i.e.,
 add the library (and if needed, the specific version) as a new line in `requirements.txt`.
 
 <!-- We can try this more automated alternative as well, but we need to ensure that it properly includes -->

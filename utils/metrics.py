@@ -123,3 +123,62 @@ def format_metrics_report(metrics):
     report = "\n".join(lines)
 
     return report
+
+
+def format_timing_report(timing, total_time):
+    """
+    Format timing metrics with bar graph visualization.
+
+    Args:
+        timing: Dictionary with timing for each component
+        total_time: Total pipeline execution time
+
+    Returns:
+        str: Formatted timing report with bar graphs
+    """
+    lines = []
+
+    lines.append("")
+    lines.append("=" * 60)
+    lines.append("TIMING METRICS")
+    lines.append("=" * 60)
+
+    # Component display names
+    component_names = {
+        'audio_loading': 'Audio Loading',
+        'vad': 'Voice Activity Detection',
+        'asr': 'Automatic Speech Recognition',
+        'scd': 'Speaker Change Detection',
+        'embedding': 'Speaker Embedding',
+        'clustering': 'Speaker Clustering',
+        'formatting': 'Result Formatting'
+    }
+
+    # Find the maximum time for scaling the bar graph
+    max_time = max(timing.values()) if timing else 1.0
+    bar_width = 40  # Width of the bar in characters
+
+    # Sort components by time (descending)
+    sorted_timing = sorted(timing.items(), key=lambda x: x[1], reverse=True)
+
+    for component, time_val in sorted_timing:
+        # Get display name
+        display_name = component_names.get(component, component.replace('_', ' ').title())
+
+        # Calculate percentage
+        percentage = (time_val / total_time) * 100 if total_time > 0 else 0
+
+        # Create bar graph
+        bar_length = int((time_val / max_time) * bar_width)
+        bar = '█' * bar_length
+
+        # Format the line with component name, bar, time, and percentage
+        lines.append(f"{display_name:30} {bar:40} {time_val:6.2f}s ({percentage:5.1f}%)")
+
+    lines.append("-" * 60)
+    lines.append(f"{'Total Time':30} {'':<40} {total_time:6.2f}s (100.0%)")
+    lines.append("=" * 60)
+
+    report = "\n".join(lines)
+
+    return report

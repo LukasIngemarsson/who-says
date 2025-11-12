@@ -1,10 +1,11 @@
 from loguru import logger
 import argparse
 from pathlib import Path
+import time
 
 from dotenv import load_dotenv
 
-from pipeline.ASR import WhisperASR
+from pipeline.ASR import ASR
 from pipeline.speaker_segmentation import SO, SCD
 from pipeline.speaker_recognition import SklearnClustering
 from pipeline.speaker_recognition import SpeechBrainEmbedding
@@ -12,7 +13,7 @@ from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
 from pipeline.speaker_segmentation import SileroVAD
 from pipeline.phoene import SpeechBrainPhoneme
 from utils import load_audio_from_file
-from utils import load_annotation_file, evaluate_pipeline, format_metrics_report
+from utils import load_annotation_file, evaluate_pipeline, format_metrics_report, format_timing_report
 from config import PipelineConfig as Config
 
 load_dotenv(".env")
@@ -25,7 +26,7 @@ class WhoSays(object):
         self.scd = SCD(**self.config.scd.pyannote.to_dict())
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
-        self.asr = WhisperASR(**self.config.asr.whisper.to_dict())
+        self.asr = ASR(**self.config.asr.to_dict())
         self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
 
         self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
@@ -35,7 +36,8 @@ class WhoSays(object):
     def __call__(
         self,
         audio_file: str,
-        num_speakers: int = 2
+        num_speakers: int = 2,
+        include_timing: bool = False
     ):
         """
         Process audio file through the complete speaker diarization pipeline.
@@ -43,18 +45,26 @@ class WhoSays(object):
         Args:
             audio_file: Path to audio file
             num_speakers: Expected number of speakers
+            include_timing: Whether to include timing metrics for each model run
 
         Returns:
             dict: Structured diarization results containing:
                 - transcription: List of transcribed segments with timestamps
                 - speakers: List of speaker segments with IDs and timestamps
                 - segments: Detailed segment information with speaker assignments
+                - timing: (optional) Timing information for each pipeline step
         """
+        timing = {} if include_timing else None
+
         logger.info(f"Loading audio from {audio_file}")
+        if include_timing:
+            start_time = time.time()
         waveform, sr = load_audio_from_file(
             file_path=audio_file,
             sr=self.config.sr
         )
+        if include_timing:
+            timing['audio_loading'] = time.time() - start_time
 
         # Ensure mono audio for pipeline processing
         if waveform.dim() > 1:
@@ -74,16 +84,24 @@ class WhoSays(object):
 
         # Step 1: Voice Activity Detection
         logger.info("Running Voice Activity Detection (VAD)...")
+        if include_timing:
+            start_time = time.time()
         speech_segments = self.vad(waveform)
+        if include_timing:
+            timing['vad'] = time.time() - start_time
         logger.info(f"Found {len(speech_segments)} speech segments")
 
         # Step 2: Automatic Speech Recognition
         logger.info("Transcribing speech segments...")
+        if include_timing:
+            start_time = time.time()
         transcriptions = self.asr.transcribe_segments(
             waveform,
             speech_segments,
             return_timestamps=True
         )
+        if include_timing:
+            timing['asr'] = time.time() - start_time
         logger.info(f"Transcribed {len(transcriptions)} segments")
 
         # Step 3: Speaker Overlap Detection
@@ -93,21 +111,35 @@ class WhoSays(object):
 
         # Step 4: Speaker Change Detection
         logger.info("Detecting speaker change points...")
+        if include_timing:
+            start_time = time.time()
         change_points = self.scd(waveform)
+        if include_timing:
+            timing['scd'] = time.time() - start_time
         logger.info(f"Found {len(change_points)} speaker change points")
 
         # Step 5: Speaker Embedding
         logger.info("Extracting speaker embeddings...")
+        if include_timing:
+            start_time = time.time()
         segment_embeddings = self.embedder.embed_segments(waveform, sr, change_points)
+        if include_timing:
+            timing['embedding'] = time.time() - start_time
         logger.info(f"Extracted embeddings for {segment_embeddings.shape[0]} segments")
 
         # Step 6: Speaker Clustering
         logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
+        if include_timing:
+            start_time = time.time()
         segment_clusters = self.clustering.cluster_segments(segment_embeddings, n_clusters=num_speakers)
+        if include_timing:
+            timing['clustering'] = time.time() - start_time
         logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
 
         # Step 7: Merge results into structured output
         logger.info("Merging results...")
+        if include_timing:
+            start_time = time.time()
         result = self._format_output(
             change_points=change_points,
             clusters=segment_clusters,
@@ -115,6 +147,15 @@ class WhoSays(object):
             overlap_segments= [],# overlap_segments,
             waveform_duration=waveform.shape[-1] / sr
         )
+        if include_timing:
+            timing['formatting'] = time.time() - start_time
+
+        # Add timing to result if requested
+        if include_timing:
+            result['timing'] = timing
+            total_time = sum(timing.values())
+            result['total_time'] = total_time
+            logger.info(f"Total pipeline time: {total_time:.2f}s")
 
         logger.info("Pipeline complete!")
         return result
@@ -212,6 +253,7 @@ if __name__ == "__main__":
     parser.add_argument("--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)")
     parser.add_argument("--output", "-o", type=Path, help="Output JSON file path (optional)")
     parser.add_argument("--pretty", action="store_true", help="Pretty print the output")
+    parser.add_argument("--timing", action="store_true", help="Include timing metrics for each model run")
 
     args = parser.parse_args()
 
@@ -224,7 +266,8 @@ if __name__ == "__main__":
 
     result = pipeline(
         args.audio_file,
-        args.num_speakers
+        args.num_speakers,
+        include_timing=args.timing
     )
 
     # Compute metrics if annotation file provided
@@ -280,6 +323,10 @@ if __name__ == "__main__":
 
     if metrics:
         print(format_metrics_report(metrics))
+
+    # Display timing if available
+    if 'timing' in result:
+        print(format_timing_report(result['timing'], result['total_time']))
 
     # Save to file if requested
     if args.output:

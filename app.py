@@ -1,7 +1,7 @@
 import os
 import tempfile
 from pathlib import Path
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from loguru import logger
 from dotenv import load_dotenv
 
@@ -209,6 +209,11 @@ app = Flask(__name__)
 logger.info("Loading WhoSays pipeline... This may take a moment.")
 pipeline = WhoSays()
 logger.info("Pipeline loaded successfully. Server is ready.")
+
+@app.route('/')
+def index():
+    logger.info("Serving index.html")
+    return send_from_directory('.', 'index.html')
 
 @app.route('/status', methods=['GET'])
 def status():

@@ -8,6 +8,11 @@ import type { WhisperDoc, Segment } from "../types/whisperx";
 import { fromTxtToWhisperDoc } from "../utils/convert";
 
 export function Home() {
+  function setAudioTime(seconds: number) {
+    if (audioRef.current) {
+      audioRef.current.currentTime = seconds;
+    }
+  }
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [projectName, setProjectName] = useState("who-says-edit");
   const { state: data, set: setData, undo, redo } = useUndoRedo<WhisperDoc>({ segments: [] });
@@ -137,6 +142,7 @@ export function Home() {
             onChange={(i, patch) => updateSeg(i, patch)}
             onInsertAfter={insertAfter}
             onRemove={removeSeg}
+            onJumpToTime={setAudioTime}
           />
         </div>
         <div className="md:col-span-3 rounded-xl border bg-white p-4">

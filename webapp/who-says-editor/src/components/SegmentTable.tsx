@@ -10,6 +10,7 @@ type Props = {
   onChange: (i: number, patch: Partial<Segment>) => void;
   onInsertAfter: (i: number) => void;
   onRemove: (i: number) => void;
+  onJumpToTime?: (seconds: number) => void;
 };
 
 export function SegmentTable({
@@ -19,6 +20,7 @@ export function SegmentTable({
   onChange,
   onInsertAfter,
   onRemove,
+  onJumpToTime,
 }: Props) {
   return (
     <div className="overflow-auto">
@@ -40,7 +42,10 @@ export function SegmentTable({
                 "border-b cursor-pointer hover:bg-slate-50",
                 i === selected && "bg-slate-100"
               )}
-              onClick={() => onSelect(i)}
+              onClick={() => {
+                onSelect(i);
+                if (typeof onJumpToTime === "function") onJumpToTime(s.start);
+              }}
             >
               <td className="p-2 text-slate-500">{i}</td>
               <td className="p-2">

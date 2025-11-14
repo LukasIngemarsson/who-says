@@ -1,7 +1,8 @@
 import torch
 from dataclasses import dataclass, asdict, field
-from utils.constants import SR, TENSOR_DTYPE
+from utils.constants import SR
 from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
+from pipeline.ASR import TypeASR
 
 
 # -----------------------------
@@ -89,16 +90,13 @@ class VADConfig:
 # ASR
 # -----------------------------
 @dataclass
-class ASRWhisperConfig(BaseConfig):
-    model: str = "openai/whisper-large-v3-turbo"
+class ASRConfig(BaseConfig):
+    asr_type: TypeASR = TypeASR.FASTER_WHISPER
+    model: str = "large-v3-turbo"
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    torch_dtype: torch.dtype = TENSOR_DTYPE
-
-
-@dataclass
-class ASRConfig:
-    whisper: ASRWhisperConfig = field(default_factory=ASRWhisperConfig)
-
+    compute_type: str = "float16" if torch.cuda.is_available() else "float32"
+    language: str = "sv"  # Swedish language code
+    
 # -----------------------------
 # Phoneme
 # -----------------------------

@@ -16,7 +16,7 @@ def build_image():
     subprocess.run(["docker", "build", "-t", DOCKER_IMAGE, "."], check=True)
 
 
-def run_pipeline(audio_file: str, annotation_file: str = None):
+def run_pipeline(audio_file: str, annotation_file: str = None, extra_args: list = None):
     if not Path(audio_file).is_file():
         log(f"File not found: {audio_file}")
         sys.exit(1)
@@ -38,6 +38,9 @@ def run_pipeline(audio_file: str, annotation_file: str = None):
     if annotation_file:
         cmd.extend(["--annotation", annotation_file])
 
+    if extra_args:
+        cmd.extend(extra_args)
+
     log(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
@@ -56,7 +59,7 @@ def run_component(module_path: str):
 def main():
     if len(sys.argv) < 3:
         print("Usage:")
-        print("\t./docker_run.py pipeline <audio_file> [--annotation <annotation_file>]")
+        print("\t./docker_run.py pipeline <audio_file> [--annotation <annotation_file>] [--timing] [other args...]")
         print("\t./docker_run.py component <module_path>")
         sys.exit(1)
 
@@ -67,14 +70,21 @@ def main():
     if mode == "pipeline":
         audio_file = sys.argv[2]
         annotation_file = None
-        
-        if len(sys.argv) > 3 and sys.argv[3] == "--annotation":
-            if len(sys.argv) < 5:
-                print("Error: --annotation requires a file path")
-                sys.exit(1)
-            annotation_file = sys.argv[4]
+        extra_args = []
 
-        run_pipeline(audio_file, annotation_file)
+        i = 3
+        while i < len(sys.argv):
+            if sys.argv[i] == "--annotation":
+                if i + 1 >= len(sys.argv):
+                    print("Error: --annotation requires a file path")
+                    sys.exit(1)
+                annotation_file = sys.argv[i + 1]
+                i += 2
+            else:
+                extra_args.append(sys.argv[i])
+                i += 1
+
+        run_pipeline(audio_file, annotation_file, extra_args)
     elif mode == "component":
         run_component(sys.argv[2])
     else:

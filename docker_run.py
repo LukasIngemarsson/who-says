@@ -45,13 +45,25 @@ def run_pipeline(audio_file: str, annotation_file: str = None, extra_args: list 
     subprocess.run(cmd, check=True)
 
 
-def run_component(module_path: str):
+def run_component(module_path: str, extra_args: list = None):
+    samples_dir = Path.cwd() / "samples"
+
     cmd = [
-        "docker", "run", "--rm",
+        "docker", "run", "--rm"
+    ]
+
+    if samples_dir.is_dir():
+        cmd.extend(["-v", f"{samples_dir.absolute()}:/app/samples:ro"])
+
+    cmd.extend([
         "--env-file", ".env",
         DOCKER_IMAGE,
         "python", "-m", module_path
-    ]
+    ])
+
+    if extra_args:
+        cmd.extend(extra_args)
+
     log(f"Running: {' '.join(cmd)}")
     subprocess.run(cmd, check=True)
 
@@ -60,7 +72,7 @@ def main():
     if len(sys.argv) < 3:
         print("Usage:")
         print("\t./docker_run.py pipeline <audio_file> [--annotation <annotation_file>] [--timing] [other args...]")
-        print("\t./docker_run.py component <module_path>")
+        print("\t./docker_run.py component <module_path> [args...]")
         sys.exit(1)
 
     # always build the Docker image first
@@ -86,7 +98,9 @@ def main():
 
         run_pipeline(audio_file, annotation_file, extra_args)
     elif mode == "component":
-        run_component(sys.argv[2])
+        module_path = sys.argv[2]
+        extra_args = sys.argv[3:] if len(sys.argv) > 3 else []
+        run_component(module_path, extra_args)
     else:
         print(f"Unknown mode: {mode}")
         sys.exit(1)

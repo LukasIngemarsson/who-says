@@ -59,7 +59,11 @@ def compute_f1(reference_frames, prediction_frames):
     return f1_percentage
 
 
-def evaluate_vad(reference_segments, prediction_segments, total_duration):
+def evaluate_segmentation(reference_segments, prediction_segments, total_duration):
+    """
+    Evaluate segmentation quality by comparing prediction against reference.
+    Works for VAD, SCD, or any segment based evaluation.
+    """
     frame_size = 0.01
 
     ref_frames = segments_to_frames(reference_segments, total_duration, frame_size)
@@ -90,19 +94,27 @@ def evaluate_vad(reference_segments, prediction_segments, total_duration):
 
 def evaluate_pipeline(pipeline_output, annotation_data):
     # TODO: Add other component metrics
-    logger.info("Computing VAD metrics...")
+    logger.info("Computing metrics...")
 
     total_duration = pipeline_output['duration']
     reference_segments = annotation_data['segments']
-    prediction_segments = pipeline_output['speaker_segments']
 
-    vad_metrics = evaluate_vad(reference_segments, prediction_segments, total_duration)
+    vad_metrics = evaluate_segmentation(
+        reference_segments,
+        pipeline_output['vad_segments'],
+        total_duration
+    )
 
-    results = {
-        'vad': vad_metrics
+    scd_metrics = evaluate_segmentation(
+        reference_segments,
+        pipeline_output['speaker_segments'],
+        total_duration
+    )
+
+    return {
+        'vad': vad_metrics,
+        'scd': scd_metrics
     }
-
-    return results
 
 
 def format_metrics_report(metrics):
@@ -110,13 +122,16 @@ def format_metrics_report(metrics):
 
     lines.append("")
     lines.append("=" * 60)
-    lines.append("VAD METRICS")
+    lines.append("EVALUATION METRICS")
     lines.append("=" * 60)
+    lines.append(f"{'Component':<25} {'Precision':>10} {'Recall':>10} {'F1':>10}")
+    lines.append("-" * 60)
 
     vad = metrics['vad']
-    lines.append(f"Precision: {vad['precision']:.2f}%")
-    lines.append(f"Recall:    {vad['recall']:.2f}%")
-    lines.append(f"F1 Score:  {vad['f1']:.2f}%")
+    lines.append(f"{'Voice Activity (VAD)':<25} {vad['precision']:>9.2f}% {vad['recall']:>9.2f}% {vad['f1']:>9.2f}%")
+
+    scd = metrics['scd']
+    lines.append(f"{'Speaker Change (SCD)':<25} {scd['precision']:>9.2f}% {scd['recall']:>9.2f}% {scd['f1']:>9.2f}%")
 
     lines.append("=" * 60)
 

@@ -2,7 +2,6 @@ import torch
 from dataclasses import dataclass, asdict, field
 from utils.constants import SR
 from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
-from pipeline.speaker_segmentation.VAD.main import TypeVAD
 from pipeline.ASR import TypeASR
 
 
@@ -93,8 +92,7 @@ class VADPyannoteConfig(BaseConfig):
 
 
 @dataclass
-class VADConfig(BaseConfig):
-    vad_type: TypeVAD = TypeVAD.SILERO
+class VADConfig:
     silero: VADSileroConfig = field(default_factory=VADSileroConfig)
     pyannote: VADPyannoteConfig = field(default_factory=VADPyannoteConfig)
 

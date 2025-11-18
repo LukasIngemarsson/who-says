@@ -2,7 +2,7 @@ from .abc import load_audio_from_file, match_frequency
 from .metrics import (
     load_annotation_file,
     evaluate_pipeline,
-    evaluate_vad,
+    evaluate_segmentation,
     format_metrics_report,
     format_timing_report
 )
@@ -12,7 +12,7 @@ __all__ = [
     "match_frequency",
     "load_annotation_file",
     "evaluate_pipeline",
-    "evaluate_vad",
+    "evaluate_segmentation",
     "format_metrics_report",
     "format_timing_report"
 ]

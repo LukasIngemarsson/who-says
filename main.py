@@ -6,11 +6,10 @@ import time
 from dotenv import load_dotenv
 
 from pipeline.ASR import ASR
-from pipeline.speaker_segmentation import SO, SCD
+from pipeline.speaker_segmentation import SO, SCD, SileroVAD
 from pipeline.speaker_recognition import SklearnClustering
 from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
-from pipeline.speaker_segmentation import SileroVAD
 from pipeline.phoene import SpeechBrainPhoneme
 from utils import load_audio_from_file
 from utils import load_annotation_file, evaluate_pipeline, format_metrics_report, format_timing_report
@@ -145,7 +144,8 @@ class WhoSays(object):
             clusters=segment_clusters,
             transcriptions=transcriptions,
             overlap_segments= [],# overlap_segments,
-            waveform_duration=waveform.shape[-1] / sr
+            waveform_duration=waveform.shape[-1] / sr,
+            vad_segments=speech_segments
         )
         if include_timing:
             timing['formatting'] = time.time() - start_time
@@ -166,7 +166,8 @@ class WhoSays(object):
         clusters: list[int],
         transcriptions: list[dict],
         overlap_segments: list[tuple[float, float]],
-        waveform_duration: float
+        waveform_duration: float,
+        vad_segments: list[dict]
     ) -> dict:
         """
         Format pipeline outputs into a structured result.
@@ -240,6 +241,7 @@ class WhoSays(object):
             'num_overlaps': len(overlap_segments),
             'transcription': transcriptions,
             'speaker_segments': speaker_segments,
+            'vad_segments': vad_segments,
             'overlap_regions': overlap_regions,
             'segments': segments_with_text
         }
@@ -294,9 +296,11 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("DIARIZATION RESULTS")
     print("="*60)
+    print(f"VAD Model: silero")
     print(f"Duration: {result['duration']:.2f}s")
+    print(f"VAD segments: {len(result['vad_segments'])}")
     print(f"Detected speakers: {result['num_speakers']}")
-    print(f"Total segments: {len(result['segments'])}")
+    print(f"Speaker segments: {len(result['segments'])}")
     print(f"Overlap regions: {result['num_overlaps']}")
 
     if result['overlap_regions']:

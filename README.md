@@ -24,7 +24,7 @@ Usage:
 To evaluate pipeline performance against gold standard annotations, use the `--annotation` and `--timing` flags:
 
 ```bash
-/docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json --timing
+./docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json --timing
 ```
 
 #### Evaluating a specific module
@@ -33,6 +33,11 @@ To evaluate pipeline performance against gold standard annotations, use the `--a
 ./docker_run.py component pipeline.speaker_segmentation.VAD.silero samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json --timing
 ```
 
+#### Comparing VAD models
+
+```bash
+./docker_run.py component pipeline.speaker_segmentation.VAD.compare_vad_models samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json
+```
 
 <!-- Running w/o the script: -->
 <!-- Build image -->

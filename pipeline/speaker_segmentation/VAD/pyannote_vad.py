@@ -1,75 +1,62 @@
+import os
 import argparse
 import time
+import numpy as np
 import torch
 from pathlib import Path
 from typing import Optional
 from loguru import logger
+from pyannote.audio import Model, Inference
 from utils import load_audio_from_file, load_annotation_file, evaluate_segmentation, format_metrics_report
 from utils.constants import SR
 
 
-class SileroVAD:
+class PyannoteVAD:
 
     def __init__(
         self,
-        model_repo: str = "snakers4/silero-vad",
-        model_name: str = "silero_vad",
-        sample_rate: int = SR,
-        threshold: float = 0.5,
-        min_speech_duration_ms: int = 250,
-        max_speech_duration_s: float = float('inf'),
-        min_silence_duration_ms: int = 100,
-        window_size_samples: int = 512,
-        speech_pad_ms: int = 30,
-        return_seconds: bool = True,
-        device: Optional[torch.device] = None
+        model: str = "pyannote/segmentation-3.0",
+        device: Optional[torch.device] = None,
+        onset: float = 0.5,
+        offset: float = 0.5,
+        min_duration_on: float = 0.0,
+        min_duration_off: float = 0.0
     ):
         """
         Parameters:
-            model_repo : str
-                HuggingFace/GitHub model repository
-            model_name : str
-                Model name to load from repository
-            sample_rate : int
-                Target sample rate (8000 or 16000 Hz)
-            threshold : float
-                Speech threshold (0.0 to 1.0)
-            min_speech_duration_ms : int
-                Minimum speech segment duration in milliseconds
-            max_speech_duration_s : float
-                Maximum speech segment duration in seconds
-            min_silence_duration_ms : int
-                Minimum silence duration between segments in milliseconds
-            window_size_samples : int
-                Window size for VAD model
-            speech_pad_ms : int
-                Padding added to speech segments in milliseconds
-            return_seconds : bool
-                Return timestamps in seconds (True) or samples (False)
+            model : str
+                HuggingFace model identifier
             device : torch.device
                 Device to run inference on
+            onset : float
+                Onset threshold for speech detection
+            offset : float
+                Offset threshold for speech detection
+            min_duration_on : float
+                Minimum duration of speech region in seconds
+            min_duration_off : float
+                Minimum duration of silence region in seconds
         """
-        self.model_repo = model_repo
-        self.model_name = model_name
-        self.sample_rate = sample_rate
-        self.threshold = threshold
-        self.min_speech_duration_ms = min_speech_duration_ms
-        self.max_speech_duration_s = max_speech_duration_s
-        self.min_silence_duration_ms = min_silence_duration_ms
-        self.window_size_samples = window_size_samples
-        self.speech_pad_ms = speech_pad_ms
-        self.return_seconds = return_seconds
+        self.model_name = model
         self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.onset = onset
+        self.offset = offset
+        self.min_duration_on = min_duration_on
+        self.min_duration_off = min_duration_off
         self.model = None
-        self.utils = None
+        self.inference = None
 
     def load(self):
         if self.model is None:
-            self.model, self.utils = torch.hub.load(
-                repo_or_dir=self.model_repo,
-                model=self.model_name,
-                trust_repo=True
+            use_auth_token = os.getenv("HF_TOKEN")
+            if use_auth_token is None:
+                raise ValueError("HF_TOKEN not set")
+
+            self.model = Model.from_pretrained(
+                self.model_name,
+                use_auth_token=use_auth_token
             )
+            self.inference = Inference(self.model, device=self.device)
 
     def __call__(
         self,
@@ -89,41 +76,82 @@ class SileroVAD:
             segments : List[dict]
                 List of speech segments with 'start' and 'end' timestamps.
         """
-        if self.model is None:
+        if self.inference is None:
             self.load()
 
-        # Convert to mono if needed
         if waveform.dim() == 2 and waveform.shape[0] > 1:
             waveform = torch.mean(waveform, dim=0)
         elif waveform.dim() == 2:
             waveform = waveform[0]
 
-        # Get speech timestamps
-        get_speech_timestamps = self.utils[0]
-        speech_timestamps = get_speech_timestamps(
-            waveform,
-            self.model,
-            sampling_rate=self.sample_rate,
-            threshold=self.threshold,
-            min_speech_duration_ms=self.min_speech_duration_ms,
-            max_speech_duration_s=self.max_speech_duration_s,
-            min_silence_duration_ms=self.min_silence_duration_ms,
-            window_size_samples=self.window_size_samples,
-            speech_pad_ms=self.speech_pad_ms,
-            return_seconds=self.return_seconds
-        )
+        waveform_2d = waveform.unsqueeze(0) if waveform.dim() == 1 else waveform
+        audio_dict = {
+            'waveform': waveform_2d,
+            'sample_rate': sample_rate
+        }
 
-        return [
-            {'start': seg['start'], 'end': seg['end']}
-            for seg in speech_timestamps
-        ]
+        output = self.inference(audio_dict)
+
+        if output.data.ndim > 1:
+            speech_probs = np.max(output.data, axis=1)
+        else:
+            speech_probs = output.data
+
+        speech_probs = np.asarray(speech_probs).flatten()
+
+        segments = []
+        is_speech = False
+        current_start = None
+        frame_step = output.sliding_window.step
+
+        for i in range(len(speech_probs)):
+            prob = float(speech_probs[i])
+            time = i * frame_step
+
+            if not is_speech:
+                if prob > self.onset:
+                    is_speech = True
+                    current_start = time
+            else:
+                if prob < self.offset:
+                    is_speech = False
+                    if current_start is not None:
+                        duration = time - current_start
+                        if self.min_duration_on == 0 or duration >= self.min_duration_on:
+                            segments.append({
+                                'start': current_start,
+                                'end': time
+                            })
+                        current_start = None
+
+        if is_speech and current_start is not None:
+            end_time = len(speech_probs) * frame_step
+            duration = end_time - current_start
+            if self.min_duration_on == 0 or duration >= self.min_duration_on:
+                segments.append({
+                    'start': current_start,
+                    'end': end_time
+                })
+
+        if self.min_duration_off > 0 and len(segments) > 1:
+            filtered_segments = [segments[0]]
+            for i in range(1, len(segments)):
+                silence_duration = segments[i]['start'] - filtered_segments[-1]['end']
+                if silence_duration < self.min_duration_off:
+                    filtered_segments[-1]['end'] = segments[i]['end']
+                else:
+                    filtered_segments.append(segments[i])
+            segments = filtered_segments
+
+        return segments
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Silero VAD - Voice Activity Detection")
+    parser = argparse.ArgumentParser(description="Pyannote VAD - Voice Activity Detection")
     parser.add_argument("audio_file", type=Path, help="Path to the audio file to process")
     parser.add_argument("--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation")
-    parser.add_argument("--threshold", type=float, default=0.5, help="Speech threshold (0.0-1.0, default: 0.5)")
+    parser.add_argument("--onset", type=float, default=0.5, help="Onset threshold (0.0-1.0, default: 0.5)")
+    parser.add_argument("--offset", type=float, default=0.5, help="Offset threshold (0.0-1.0, default: 0.5)")
     parser.add_argument("--timing", action="store_true", help="Show timing metrics")
 
     args = parser.parse_args()
@@ -151,7 +179,7 @@ if __name__ == "__main__":
 
     logger.info(f"Audio shape: {waveform.shape}, sample rate: {sr}Hz")
 
-    vad = SileroVAD(threshold=args.threshold)
+    vad = PyannoteVAD(onset=args.onset, offset=args.offset)
 
     logger.info("Running Voice Activity Detection...")
     if args.timing:

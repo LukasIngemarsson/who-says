@@ -1,0 +1,196 @@
+{
+  "segments": [
+    {
+      "start": 6.427,
+      "end": 9.433,
+      "text": " I guess we said in the segments, is there an impulse or something?",
+      "words": [
+        {
+          "word": "I",
+          "start": 6.427,
+          "end": 6.508,
+          "score": 0.748,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "guess",
+          "start": 6.528,
+          "end": 6.649,
+          "score": 0.535,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "we",
+          "start": 6.689,
+          "end": 6.77,
+          "score": 0.961,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "said",
+          "start": 6.81,
+          "end": 6.931,
+          "score": 0.496,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "in",
+          "start": 6.972,
+          "end": 7.012,
+          "score": 0.8,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 7.073,
+          "end": 7.153,
+          "score": 0.937,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "segments,",
+          "start": 7.254,
+          "end": 7.839,
+          "score": 0.475,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "is",
+          "start": 7.859,
+          "end": 7.96,
+          "score": 0.635,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "there",
+          "start": 7.981,
+          "end": 8.122,
+          "score": 0.455,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "an",
+          "start": 8.202,
+          "end": 8.324,
+          "score": 0.895,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "impulse",
+          "start": 8.424,
+          "end": 8.666,
+          "score": 0.387,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "or",
+          "start": 8.909,
+          "end": 8.989,
+          "score": 0.802,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "something?",
+          "start": 9.03,
+          "end": 9.433,
+          "score": 0.926,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "I",
+      "start": 6.427,
+      "end": 6.508,
+      "score": 0.748,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "guess",
+      "start": 6.528,
+      "end": 6.649,
+      "score": 0.535,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "we",
+      "start": 6.689,
+      "end": 6.77,
+      "score": 0.961,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "said",
+      "start": 6.81,
+      "end": 6.931,
+      "score": 0.496,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "in",
+      "start": 6.972,
+      "end": 7.012,
+      "score": 0.8,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 7.073,
+      "end": 7.153,
+      "score": 0.937,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "segments,",
+      "start": 7.254,
+      "end": 7.839,
+      "score": 0.475,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "is",
+      "start": 7.859,
+      "end": 7.96,
+      "score": 0.635,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "there",
+      "start": 7.981,
+      "end": 8.122,
+      "score": 0.455,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "an",
+      "start": 8.202,
+      "end": 8.324,
+      "score": 0.895,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "impulse",
+      "start": 8.424,
+      "end": 8.666,
+      "score": 0.387,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "or",
+      "start": 8.909,
+      "end": 8.989,
+      "score": 0.802,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "something?",
+      "start": 9.03,
+      "end": 9.433,
+      "score": 0.926,
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

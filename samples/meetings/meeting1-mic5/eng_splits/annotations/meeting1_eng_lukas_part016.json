@@ -1,0 +1,1482 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 3.415,
+      "text": " Like, those are the actual components, and they consist of several different models, right?",
+      "words": [
+        {
+          "word": "Like,",
+          "start": 0.031,
+          "end": 0.291,
+          "score": 0.724,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "those",
+          "start": 0.311,
+          "end": 0.411,
+          "score": 0.988,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "are",
+          "start": 0.452,
+          "end": 0.512,
+          "score": 0.33,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 0.532,
+          "end": 0.592,
+          "score": 0.826,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "actual",
+          "start": 0.652,
+          "end": 0.872,
+          "score": 0.856,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "components,",
+          "start": 0.912,
+          "end": 1.293,
+          "score": 0.851,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "and",
+          "start": 1.333,
+          "end": 1.393,
+          "score": 0.875,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "they",
+          "start": 1.413,
+          "end": 1.513,
+          "score": 0.917,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "consist",
+          "start": 1.553,
+          "end": 1.893,
+          "score": 0.83,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "of",
+          "start": 1.953,
+          "end": 1.993,
+          "score": 0.998,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "several",
+          "start": 2.013,
+          "end": 2.414,
+          "score": 0.824,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "different",
+          "start": 2.494,
+          "end": 2.734,
+          "score": 0.851,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "models,",
+          "start": 2.774,
+          "end": 3.075,
+          "score": 0.883,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "right?",
+          "start": 3.195,
+          "end": 3.415,
+          "score": 0.534,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 3.675,
+      "end": 5.217,
+      "text": "Like, several different classes.",
+      "words": [
+        {
+          "word": "Like,",
+          "start": 3.675,
+          "end": 3.776,
+          "score": 0.127,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "several",
+          "start": 3.796,
+          "end": 3.996,
+          "score": 0.461,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "different",
+          "start": 4.036,
+          "end": 4.236,
+          "score": 0.258,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "classes.",
+          "start": 5.057,
+          "end": 5.217,
+          "score": 0.025,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 5.237,
+      "end": 9.162,
+      "text": "At least for the stitch overlap part, then we have the detection and separation.",
+      "words": [
+        {
+          "word": "At",
+          "start": 5.237,
+          "end": 5.297,
+          "score": 0.641,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "least",
+          "start": 5.377,
+          "end": 5.478,
+          "score": 0.357,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "for",
+          "start": 5.518,
+          "end": 5.618,
+          "score": 0.491,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 5.658,
+          "end": 5.958,
+          "score": 0.839,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "stitch",
+          "start": 5.978,
+          "end": 6.158,
+          "score": 0.389,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "overlap",
+          "start": 6.238,
+          "end": 6.559,
+          "score": 0.74,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "part,",
+          "start": 6.639,
+          "end": 6.839,
+          "score": 0.863,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "then",
+          "start": 6.959,
+          "end": 7.1,
+          "score": 0.936,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "we",
+          "start": 7.14,
+          "end": 7.24,
+          "score": 0.863,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "have",
+          "start": 7.26,
+          "end": 7.36,
+          "score": 0.554,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 7.38,
+          "end": 7.44,
+          "score": 0.84,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "detection",
+          "start": 7.48,
+          "end": 7.9,
+          "score": 0.82,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "and",
+          "start": 7.941,
+          "end": 8.081,
+          "score": 0.341,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "separation.",
+          "start": 8.221,
+          "end": 9.162,
+          "score": 0.87,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 9.182,
+      "end": 9.402,
+      "text": "Right.",
+      "words": [
+        {
+          "word": "Right.",
+          "start": 9.182,
+          "end": 9.402,
+          "score": 0.832,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 9.683,
+      "end": 13.788,
+      "text": "But not for the speaker change point detection.",
+      "words": [
+        {
+          "word": "But",
+          "start": 9.683,
+          "end": 9.843,
+          "score": 0.907,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "not",
+          "start": 9.903,
+          "end": 10.063,
+          "score": 0.959,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "for",
+          "start": 10.123,
+          "end": 10.283,
+          "score": 0.733,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 10.303,
+          "end": 10.564,
+          "score": 0.754,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "speaker",
+          "start": 11.084,
+          "end": 11.805,
+          "score": 0.81,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "change",
+          "start": 12.146,
+          "end": 12.266,
+          "score": 0.236,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "point",
+          "start": 12.286,
+          "end": 12.526,
+          "score": 0.901,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "detection.",
+          "start": 13.427,
+          "end": 13.788,
+          "score": 0.243,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 13.808,
+      "end": 14.088,
+      "text": "Okay.",
+      "words": [
+        {
+          "word": "Okay.",
+          "start": 13.808,
+          "end": 14.088,
+          "score": 0.575,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 14.428,
+      "end": 21.016,
+      "text": "Because, like, as you can see here, like, this is, like, just straight up the name of the class for, like, some clustering.",
+      "words": [
+        {
+          "word": "Because,",
+          "start": 14.428,
+          "end": 14.689,
+          "score": 0.846,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like,",
+          "start": 15.049,
+          "end": 15.169,
+          "score": 0.832,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "as",
+          "start": 15.229,
+          "end": 15.269,
+          "score": 0.959,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you",
+          "start": 15.309,
+          "end": 15.369,
+          "score": 0.985,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "can",
+          "start": 15.389,
+          "end": 15.51,
+          "score": 0.863,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "see",
+          "start": 15.53,
+          "end": 15.65,
+          "score": 0.611,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "here,",
+          "start": 15.69,
+          "end": 15.85,
+          "score": 0.785,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like,",
+          "start": 15.99,
+          "end": 16.13,
+          "score": 0.976,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "this",
+          "start": 16.15,
+          "end": 16.311,
+          "score": 0.891,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "is,",
+          "start": 16.411,
+          "end": 16.511,
+          "score": 0.939,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like,",
+          "start": 17.152,
+          "end": 17.292,
+          "score": 0.855,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "just",
+          "start": 17.332,
+          "end": 17.472,
+          "score": 0.777,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "straight",
+          "start": 17.532,
+          "end": 17.852,
+          "score": 0.718,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "up",
+          "start": 17.892,
+          "end": 17.973,
+          "score": 0.868,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 18.013,
+          "end": 18.113,
+          "score": 0.666,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "name",
+          "start": 18.173,
+          "end": 18.333,
+          "score": 0.724,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "of",
+          "start": 18.393,
+          "end": 18.433,
+          "score": 0.988,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 18.513,
+          "end": 18.673,
+          "score": 0.969,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "class",
+          "start": 18.874,
+          "end": 19.154,
+          "score": 0.743,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "for,",
+          "start": 19.434,
+          "end": 19.615,
+          "score": 0.814,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like,",
+          "start": 19.635,
+          "end": 20.015,
+          "score": 0.73,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "some",
+          "start": 20.375,
+          "end": 20.556,
+          "score": 0.841,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "clustering.",
+          "start": 20.596,
+          "end": 21.016,
+          "score": 0.897,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 21.297,
+      "end": 21.537,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 21.297,
+          "end": 21.537,
+          "score": 0.585,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 21.557,
+      "end": 22.338,
+      "text": "And the same thing for these.",
+      "words": [
+        {
+          "word": "And",
+          "start": 21.557,
+          "end": 21.617,
+          "score": 0.657,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 21.637,
+          "end": 21.697,
+          "score": 0.867,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "same",
+          "start": 21.737,
+          "end": 21.857,
+          "score": 0.816,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "thing",
+          "start": 21.897,
+          "end": 22.017,
+          "score": 0.879,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "for",
+          "start": 22.057,
+          "end": 22.138,
+          "score": 0.968,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "these.",
+          "start": 22.178,
+          "end": 22.338,
+          "score": 0.698,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 22.518,
+      "end": 24.861,
+      "text": "Should we change so that it's instead import clustering?",
+      "words": [
+        {
+          "word": "Should",
+          "start": 22.518,
+          "end": 22.678,
+          "score": 0.853,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we",
+          "start": 22.698,
+          "end": 22.778,
+          "score": 0.87,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "change",
+          "start": 22.818,
+          "end": 23.059,
+          "score": 0.811,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "so",
+          "start": 23.099,
+          "end": 23.139,
+          "score": 0.558,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "that",
+          "start": 23.179,
+          "end": 23.279,
+          "score": 0.937,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it's",
+          "start": 23.319,
+          "end": 23.399,
+          "score": 0.732,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "instead",
+          "start": 23.439,
+          "end": 23.679,
+          "score": 0.853,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "import",
+          "start": 23.719,
+          "end": 24.26,
+          "score": 0.749,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "clustering?",
+          "start": 24.38,
+          "end": 24.861,
+          "score": 0.825,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 25.301,
+      "end": 28.766,
+      "text": "And then that from clustering, you can... Oh, I don't think that's too...",
+      "words": [
+        {
+          "word": "And",
+          "start": 25.301,
+          "end": 25.361,
+          "score": 0.965,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "then",
+          "start": 25.381,
+          "end": 25.482,
+          "score": 0.866,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "that",
+          "start": 25.522,
+          "end": 25.622,
+          "score": 0.961,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "from",
+          "start": 25.682,
+          "end": 25.842,
+          "score": 0.936,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "clustering,",
+          "start": 25.922,
+          "end": 26.383,
+          "score": 0.813,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you",
+          "start": 26.423,
+          "end": 26.523,
+          "score": 0.637,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "can...",
+          "start": 26.543,
+          "end": 27.224,
+          "score": 0.926,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "Oh,",
+          "start": 27.244,
+          "end": 27.544,
+          "score": 0.789,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "I",
+          "start": 27.564,
+          "end": 27.604,
+          "score": 0.955,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "don't",
+          "start": 27.624,
+          "end": 27.764,
+          "score": 0.737,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "think",
+          "start": 27.784,
+          "end": 27.925,
+          "score": 0.97,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "that's",
+          "start": 27.965,
+          "end": 28.165,
+          "score": 0.67,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "too...",
+          "start": 28.365,
+          "end": 28.766,
+          "score": 0.695,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 28.786,
+      "end": 29.346,
+      "text": "It doesn't matter?",
+      "words": [
+        {
+          "word": "It",
+          "start": 28.786,
+          "end": 28.846,
+          "score": 0.922,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "doesn't",
+          "start": 28.866,
+          "end": 29.066,
+          "score": 0.897,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "matter?",
+          "start": 29.126,
+          "end": 29.346,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 29.406,
+      "end": 29.987,
+      "text": "No.",
+      "words": [
+        {
+          "word": "No.",
+          "start": 29.406,
+          "end": 29.987,
+          "score": 0.792,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Like,",
+      "start": 0.031,
+      "end": 0.291,
+      "score": 0.724,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "those",
+      "start": 0.311,
+      "end": 0.411,
+      "score": 0.988,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "are",
+      "start": 0.452,
+      "end": 0.512,
+      "score": 0.33,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 0.532,
+      "end": 0.592,
+      "score": 0.826,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "actual",
+      "start": 0.652,
+      "end": 0.872,
+      "score": 0.856,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "components,",
+      "start": 0.912,
+      "end": 1.293,
+      "score": 0.851,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "and",
+      "start": 1.333,
+      "end": 1.393,
+      "score": 0.875,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "they",
+      "start": 1.413,
+      "end": 1.513,
+      "score": 0.917,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "consist",
+      "start": 1.553,
+      "end": 1.893,
+      "score": 0.83,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "of",
+      "start": 1.953,
+      "end": 1.993,
+      "score": 0.998,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "several",
+      "start": 2.013,
+      "end": 2.414,
+      "score": 0.824,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "different",
+      "start": 2.494,
+      "end": 2.734,
+      "score": 0.851,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "models,",
+      "start": 2.774,
+      "end": 3.075,
+      "score": 0.883,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "right?",
+      "start": 3.195,
+      "end": 3.415,
+      "score": 0.534,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Like,",
+      "start": 3.675,
+      "end": 3.776,
+      "score": 0.127,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "several",
+      "start": 3.796,
+      "end": 3.996,
+      "score": 0.461,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "different",
+      "start": 4.036,
+      "end": 4.236,
+      "score": 0.258,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "classes.",
+      "start": 5.057,
+      "end": 5.217,
+      "score": 0.025,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "At",
+      "start": 5.237,
+      "end": 5.297,
+      "score": 0.641,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "least",
+      "start": 5.377,
+      "end": 5.478,
+      "score": 0.357,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "for",
+      "start": 5.518,
+      "end": 5.618,
+      "score": 0.491,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 5.658,
+      "end": 5.958,
+      "score": 0.839,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "stitch",
+      "start": 5.978,
+      "end": 6.158,
+      "score": 0.389,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "overlap",
+      "start": 6.238,
+      "end": 6.559,
+      "score": 0.74,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "part,",
+      "start": 6.639,
+      "end": 6.839,
+      "score": 0.863,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "then",
+      "start": 6.959,
+      "end": 7.1,
+      "score": 0.936,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "we",
+      "start": 7.14,
+      "end": 7.24,
+      "score": 0.863,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "have",
+      "start": 7.26,
+      "end": 7.36,
+      "score": 0.554,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 7.38,
+      "end": 7.44,
+      "score": 0.84,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "detection",
+      "start": 7.48,
+      "end": 7.9,
+      "score": 0.82,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "and",
+      "start": 7.941,
+      "end": 8.081,
+      "score": 0.341,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "separation.",
+      "start": 8.221,
+      "end": 9.162,
+      "score": 0.87,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "Right.",
+      "start": 9.182,
+      "end": 9.402,
+      "score": 0.832,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "But",
+      "start": 9.683,
+      "end": 9.843,
+      "score": 0.907,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "not",
+      "start": 9.903,
+      "end": 10.063,
+      "score": 0.959,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "for",
+      "start": 10.123,
+      "end": 10.283,
+      "score": 0.733,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 10.303,
+      "end": 10.564,
+      "score": 0.754,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "speaker",
+      "start": 11.084,
+      "end": 11.805,
+      "score": 0.81,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "change",
+      "start": 12.146,
+      "end": 12.266,
+      "score": 0.236,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "point",
+      "start": 12.286,
+      "end": 12.526,
+      "score": 0.901,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "detection.",
+      "start": 13.427,
+      "end": 13.788,
+      "score": 0.243,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "Okay.",
+      "start": 13.808,
+      "end": 14.088,
+      "score": 0.575,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Because,",
+      "start": 14.428,
+      "end": 14.689,
+      "score": 0.846,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like,",
+      "start": 15.049,
+      "end": 15.169,
+      "score": 0.832,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "as",
+      "start": 15.229,
+      "end": 15.269,
+      "score": 0.959,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "you",
+      "start": 15.309,
+      "end": 15.369,
+      "score": 0.985,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "can",
+      "start": 15.389,
+      "end": 15.51,
+      "score": 0.863,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "see",
+      "start": 15.53,
+      "end": 15.65,
+      "score": 0.611,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "here,",
+      "start": 15.69,
+      "end": 15.85,
+      "score": 0.785,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like,",
+      "start": 15.99,
+      "end": 16.13,
+      "score": 0.976,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "this",
+      "start": 16.15,
+      "end": 16.311,
+      "score": 0.891,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "is,",
+      "start": 16.411,
+      "end": 16.511,
+      "score": 0.939,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like,",
+      "start": 17.152,
+      "end": 17.292,
+      "score": 0.855,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "just",
+      "start": 17.332,
+      "end": 17.472,
+      "score": 0.777,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "straight",
+      "start": 17.532,
+      "end": 17.852,
+      "score": 0.718,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "up",
+      "start": 17.892,
+      "end": 17.973,
+      "score": 0.868,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 18.013,
+      "end": 18.113,
+      "score": 0.666,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "name",
+      "start": 18.173,
+      "end": 18.333,
+      "score": 0.724,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "of",
+      "start": 18.393,
+      "end": 18.433,
+      "score": 0.988,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 18.513,
+      "end": 18.673,
+      "score": 0.969,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "class",
+      "start": 18.874,
+      "end": 19.154,
+      "score": 0.743,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "for,",
+      "start": 19.434,
+      "end": 19.615,
+      "score": 0.814,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like,",
+      "start": 19.635,
+      "end": 20.015,
+      "score": 0.73,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "some",
+      "start": 20.375,
+      "end": 20.556,
+      "score": 0.841,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "clustering.",
+      "start": 20.596,
+      "end": 21.016,
+      "score": 0.897,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Yeah.",
+      "start": 21.297,
+      "end": 21.537,
+      "score": 0.585,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "And",
+      "start": 21.557,
+      "end": 21.617,
+      "score": 0.657,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 21.637,
+      "end": 21.697,
+      "score": 0.867,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "same",
+      "start": 21.737,
+      "end": 21.857,
+      "score": 0.816,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "thing",
+      "start": 21.897,
+      "end": 22.017,
+      "score": 0.879,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "for",
+      "start": 22.057,
+      "end": 22.138,
+      "score": 0.968,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "these.",
+      "start": 22.178,
+      "end": 22.338,
+      "score": 0.698,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Should",
+      "start": 22.518,
+      "end": 22.678,
+      "score": 0.853,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we",
+      "start": 22.698,
+      "end": 22.778,
+      "score": 0.87,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "change",
+      "start": 22.818,
+      "end": 23.059,
+      "score": 0.811,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "so",
+      "start": 23.099,
+      "end": 23.139,
+      "score": 0.558,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "that",
+      "start": 23.179,
+      "end": 23.279,
+      "score": 0.937,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it's",
+      "start": 23.319,
+      "end": 23.399,
+      "score": 0.732,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "instead",
+      "start": 23.439,
+      "end": 23.679,
+      "score": 0.853,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "import",
+      "start": 23.719,
+      "end": 24.26,
+      "score": 0.749,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "clustering?",
+      "start": 24.38,
+      "end": 24.861,
+      "score": 0.825,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "And",
+      "start": 25.301,
+      "end": 25.361,
+      "score": 0.965,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "then",
+      "start": 25.381,
+      "end": 25.482,
+      "score": 0.866,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "that",
+      "start": 25.522,
+      "end": 25.622,
+      "score": 0.961,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "from",
+      "start": 25.682,
+      "end": 25.842,
+      "score": 0.936,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "clustering,",
+      "start": 25.922,
+      "end": 26.383,
+      "score": 0.813,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "you",
+      "start": 26.423,
+      "end": 26.523,
+      "score": 0.637,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "can...",
+      "start": 26.543,
+      "end": 27.224,
+      "score": 0.926,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Oh,",
+      "start": 27.244,
+      "end": 27.544,
+      "score": 0.789,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "I",
+      "start": 27.564,
+      "end": 27.604,
+      "score": 0.955,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "don't",
+      "start": 27.624,
+      "end": 27.764,
+      "score": 0.737,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "think",
+      "start": 27.784,
+      "end": 27.925,
+      "score": 0.97,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "that's",
+      "start": 27.965,
+      "end": 28.165,
+      "score": 0.67,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "too...",
+      "start": 28.365,
+      "end": 28.766,
+      "score": 0.695,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "It",
+      "start": 28.786,
+      "end": 28.846,
+      "score": 0.922,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "doesn't",
+      "start": 28.866,
+      "end": 29.066,
+      "score": 0.897,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "matter?",
+      "start": 29.126,
+      "end": 29.346,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "No.",
+      "start": 29.406,
+      "end": 29.987,
+      "score": 0.792,
+      "speaker": "SPEAKER_02"
+    }
+  ]
+}

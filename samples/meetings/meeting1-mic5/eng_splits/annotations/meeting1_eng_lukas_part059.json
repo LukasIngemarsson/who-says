@@ -1,0 +1,1244 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 14.368,
+      "text": " and you can compare the two and then create like, how alike they are, and create a normal distribution of them and see like making the probability of seeing what the odds are, but that's actually being true.",
+      "words": [
+        {
+          "word": "and",
+          "start": 0.031,
+          "end": 1.172,
+          "score": 0.301,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 1.192,
+          "end": 1.252,
+          "score": 0.026,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "can",
+          "start": 1.272,
+          "end": 1.333,
+          "score": 0.183,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "compare",
+          "start": 1.353,
+          "end": 1.673,
+          "score": 0.731,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 1.693,
+          "end": 1.913,
+          "score": 0.668,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "two",
+          "start": 2.053,
+          "end": 2.334,
+          "score": 0.779,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "and",
+          "start": 2.414,
+          "end": 2.494,
+          "score": 0.516,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "then",
+          "start": 2.514,
+          "end": 2.734,
+          "score": 0.366,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "create",
+          "start": 2.794,
+          "end": 3.015,
+          "score": 0.72,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like,",
+          "start": 3.055,
+          "end": 3.275,
+          "score": 0.823,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "how",
+          "start": 5.177,
+          "end": 5.458,
+          "score": 0.966,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "alike",
+          "start": 5.698,
+          "end": 5.998,
+          "score": 0.861,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "they",
+          "start": 6.038,
+          "end": 6.138,
+          "score": 0.755,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "are,",
+          "start": 6.198,
+          "end": 6.379,
+          "score": 0.862,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "and",
+          "start": 6.559,
+          "end": 6.679,
+          "score": 0.586,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "create",
+          "start": 6.719,
+          "end": 6.919,
+          "score": 0.822,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "a",
+          "start": 6.959,
+          "end": 7.039,
+          "score": 0.489,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "normal",
+          "start": 7.059,
+          "end": 7.36,
+          "score": 0.82,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "distribution",
+          "start": 7.38,
+          "end": 7.86,
+          "score": 0.252,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "of",
+          "start": 8.001,
+          "end": 8.041,
+          "score": 0.008,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "them",
+          "start": 8.061,
+          "end": 8.141,
+          "score": 0.004,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "and",
+          "start": 8.161,
+          "end": 8.221,
+          "score": 0.225,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "see",
+          "start": 8.261,
+          "end": 8.501,
+          "score": 0.889,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 8.601,
+          "end": 8.802,
+          "score": 0.786,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "making",
+          "start": 9.663,
+          "end": 9.943,
+          "score": 0.841,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 10.003,
+          "end": 10.143,
+          "score": 0.652,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "probability",
+          "start": 10.383,
+          "end": 10.964,
+          "score": 0.21,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "of",
+          "start": 10.984,
+          "end": 11.024,
+          "score": 0.393,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "seeing",
+          "start": 11.064,
+          "end": 11.285,
+          "score": 0.547,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "what",
+          "start": 12.025,
+          "end": 12.186,
+          "score": 0.629,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 12.206,
+          "end": 12.306,
+          "score": 0.376,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "odds",
+          "start": 12.346,
+          "end": 12.666,
+          "score": 0.526,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "are,",
+          "start": 12.686,
+          "end": 12.846,
+          "score": 0.812,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "but",
+          "start": 13.207,
+          "end": 13.387,
+          "score": 0.675,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that's",
+          "start": 13.407,
+          "end": 13.587,
+          "score": 0.537,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "actually",
+          "start": 13.667,
+          "end": 14.028,
+          "score": 0.162,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "being",
+          "start": 14.048,
+          "end": 14.148,
+          "score": 0.298,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "true.",
+          "start": 14.168,
+          "end": 14.368,
+          "score": 0.624,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 18.834,
+      "end": 21.557,
+      "text": "Yeah, cool, I guess we can, we'll try to figure something out there.",
+      "words": [
+        {
+          "word": "Yeah,",
+          "start": 18.834,
+          "end": 19.374,
+          "score": 0.594,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "cool,",
+          "start": 19.394,
+          "end": 19.494,
+          "score": 0.0,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "I",
+          "start": 19.514,
+          "end": 19.534,
+          "score": 0.0,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "guess",
+          "start": 19.554,
+          "end": 19.675,
+          "score": 0.29,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we",
+          "start": 19.715,
+          "end": 19.795,
+          "score": 0.518,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "can,",
+          "start": 19.815,
+          "end": 20.255,
+          "score": 0.514,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we'll",
+          "start": 20.275,
+          "end": 20.416,
+          "score": 0.504,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "try",
+          "start": 20.436,
+          "end": 20.556,
+          "score": 0.566,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "to",
+          "start": 20.596,
+          "end": 20.656,
+          "score": 0.698,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "figure",
+          "start": 20.696,
+          "end": 20.916,
+          "score": 0.673,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "something",
+          "start": 20.936,
+          "end": 21.277,
+          "score": 0.363,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "out",
+          "start": 21.337,
+          "end": 21.397,
+          "score": 0.066,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "there.",
+          "start": 21.417,
+          "end": 21.557,
+          "score": 0.653,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 22.158,
+      "end": 25.542,
+      "text": "I think it would be fun nonetheless just to visualize it and stuff, especially with our own voices.",
+      "words": [
+        {
+          "word": "I",
+          "start": 22.158,
+          "end": 22.198,
+          "score": 0.789,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "think",
+          "start": 22.238,
+          "end": 22.338,
+          "score": 0.939,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it",
+          "start": 22.378,
+          "end": 22.418,
+          "score": 0.788,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "would",
+          "start": 22.438,
+          "end": 22.558,
+          "score": 0.507,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "be",
+          "start": 22.598,
+          "end": 22.658,
+          "score": 0.962,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "fun",
+          "start": 22.698,
+          "end": 22.858,
+          "score": 0.813,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "nonetheless",
+          "start": 22.898,
+          "end": 23.259,
+          "score": 0.812,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "just",
+          "start": 23.279,
+          "end": 23.439,
+          "score": 0.766,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "to",
+          "start": 23.479,
+          "end": 23.539,
+          "score": 0.565,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "visualize",
+          "start": 23.559,
+          "end": 24.06,
+          "score": 0.628,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it",
+          "start": 24.08,
+          "end": 24.12,
+          "score": 0.362,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "and",
+          "start": 24.14,
+          "end": 24.22,
+          "score": 0.805,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "stuff,",
+          "start": 24.24,
+          "end": 24.42,
+          "score": 0.447,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "especially",
+          "start": 24.44,
+          "end": 24.741,
+          "score": 0.919,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "with",
+          "start": 24.761,
+          "end": 24.861,
+          "score": 0.872,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "our",
+          "start": 24.921,
+          "end": 24.981,
+          "score": 0.701,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "own",
+          "start": 25.021,
+          "end": 25.101,
+          "score": 0.695,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "voices.",
+          "start": 25.181,
+          "end": 25.542,
+          "score": 0.992,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 25.742,
+      "end": 25.862,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 25.742,
+          "end": 25.862,
+          "score": 0.144,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 25.882,
+      "end": 26.983,
+      "text": "Just to see how it divides.",
+      "words": [
+        {
+          "word": "Just",
+          "start": 25.882,
+          "end": 25.982,
+          "score": 0.584,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 26.022,
+          "end": 26.102,
+          "score": 0.658,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "see",
+          "start": 26.122,
+          "end": 26.243,
+          "score": 0.958,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "how",
+          "start": 26.283,
+          "end": 26.383,
+          "score": 0.913,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it",
+          "start": 26.463,
+          "end": 26.543,
+          "score": 0.957,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "divides.",
+          "start": 26.583,
+          "end": 26.983,
+          "score": 0.94,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 27.444,
+      "end": 29.987,
+      "text": "I would suggest just using like, I think we,",
+      "words": [
+        {
+          "word": "I",
+          "start": 27.444,
+          "end": 27.544,
+          "score": 0.472,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "would",
+          "start": 27.564,
+          "end": 27.664,
+          "score": 0.182,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "suggest",
+          "start": 27.684,
+          "end": 28.085,
+          "score": 0.747,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just",
+          "start": 28.105,
+          "end": 28.325,
+          "score": 0.289,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "using",
+          "start": 28.345,
+          "end": 28.585,
+          "score": 0.675,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like,",
+          "start": 28.665,
+          "end": 29.046,
+          "score": 0.722,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 29.166,
+          "end": 29.186,
+          "score": 0.451,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "think",
+          "start": 29.206,
+          "end": 29.346,
+          "score": 0.617,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we,",
+          "start": 29.426,
+          "end": 29.987,
+          "score": 0.897,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "and",
+      "start": 0.031,
+      "end": 1.172,
+      "score": 0.301,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "you",
+      "start": 1.192,
+      "end": 1.252,
+      "score": 0.026,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "can",
+      "start": 1.272,
+      "end": 1.333,
+      "score": 0.183,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "compare",
+      "start": 1.353,
+      "end": 1.673,
+      "score": 0.731,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 1.693,
+      "end": 1.913,
+      "score": 0.668,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "two",
+      "start": 2.053,
+      "end": 2.334,
+      "score": 0.779,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "and",
+      "start": 2.414,
+      "end": 2.494,
+      "score": 0.516,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "then",
+      "start": 2.514,
+      "end": 2.734,
+      "score": 0.366,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "create",
+      "start": 2.794,
+      "end": 3.015,
+      "score": 0.72,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like,",
+      "start": 3.055,
+      "end": 3.275,
+      "score": 0.823,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "how",
+      "start": 5.177,
+      "end": 5.458,
+      "score": 0.966,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "alike",
+      "start": 5.698,
+      "end": 5.998,
+      "score": 0.861,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "they",
+      "start": 6.038,
+      "end": 6.138,
+      "score": 0.755,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "are,",
+      "start": 6.198,
+      "end": 6.379,
+      "score": 0.862,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "and",
+      "start": 6.559,
+      "end": 6.679,
+      "score": 0.586,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "create",
+      "start": 6.719,
+      "end": 6.919,
+      "score": 0.822,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "a",
+      "start": 6.959,
+      "end": 7.039,
+      "score": 0.489,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "normal",
+      "start": 7.059,
+      "end": 7.36,
+      "score": 0.82,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "distribution",
+      "start": 7.38,
+      "end": 7.86,
+      "score": 0.252,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "of",
+      "start": 8.001,
+      "end": 8.041,
+      "score": 0.008,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "them",
+      "start": 8.061,
+      "end": 8.141,
+      "score": 0.004,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "and",
+      "start": 8.161,
+      "end": 8.221,
+      "score": 0.225,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "see",
+      "start": 8.261,
+      "end": 8.501,
+      "score": 0.889,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like",
+      "start": 8.601,
+      "end": 8.802,
+      "score": 0.786,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "making",
+      "start": 9.663,
+      "end": 9.943,
+      "score": 0.841,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 10.003,
+      "end": 10.143,
+      "score": 0.652,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "probability",
+      "start": 10.383,
+      "end": 10.964,
+      "score": 0.21,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "of",
+      "start": 10.984,
+      "end": 11.024,
+      "score": 0.393,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "seeing",
+      "start": 11.064,
+      "end": 11.285,
+      "score": 0.547,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "what",
+      "start": 12.025,
+      "end": 12.186,
+      "score": 0.629,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 12.206,
+      "end": 12.306,
+      "score": 0.376,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "odds",
+      "start": 12.346,
+      "end": 12.666,
+      "score": 0.526,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "are,",
+      "start": 12.686,
+      "end": 12.846,
+      "score": 0.812,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "but",
+      "start": 13.207,
+      "end": 13.387,
+      "score": 0.675,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "that's",
+      "start": 13.407,
+      "end": 13.587,
+      "score": 0.537,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "actually",
+      "start": 13.667,
+      "end": 14.028,
+      "score": 0.162,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "being",
+      "start": 14.048,
+      "end": 14.148,
+      "score": 0.298,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "true.",
+      "start": 14.168,
+      "end": 14.368,
+      "score": 0.624,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Yeah,",
+      "start": 18.834,
+      "end": 19.374,
+      "score": 0.594,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "cool,",
+      "start": 19.394,
+      "end": 19.494,
+      "score": 0.0,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "I",
+      "start": 19.514,
+      "end": 19.534,
+      "score": 0.0,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "guess",
+      "start": 19.554,
+      "end": 19.675,
+      "score": 0.29,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we",
+      "start": 19.715,
+      "end": 19.795,
+      "score": 0.518,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "can,",
+      "start": 19.815,
+      "end": 20.255,
+      "score": 0.514,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we'll",
+      "start": 20.275,
+      "end": 20.416,
+      "score": 0.504,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "try",
+      "start": 20.436,
+      "end": 20.556,
+      "score": 0.566,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "to",
+      "start": 20.596,
+      "end": 20.656,
+      "score": 0.698,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "figure",
+      "start": 20.696,
+      "end": 20.916,
+      "score": 0.673,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "something",
+      "start": 20.936,
+      "end": 21.277,
+      "score": 0.363,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "out",
+      "start": 21.337,
+      "end": 21.397,
+      "score": 0.066,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "there.",
+      "start": 21.417,
+      "end": 21.557,
+      "score": 0.653,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 22.158,
+      "end": 22.198,
+      "score": 0.789,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "think",
+      "start": 22.238,
+      "end": 22.338,
+      "score": 0.939,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it",
+      "start": 22.378,
+      "end": 22.418,
+      "score": 0.788,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "would",
+      "start": 22.438,
+      "end": 22.558,
+      "score": 0.507,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "be",
+      "start": 22.598,
+      "end": 22.658,
+      "score": 0.962,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "fun",
+      "start": 22.698,
+      "end": 22.858,
+      "score": 0.813,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "nonetheless",
+      "start": 22.898,
+      "end": 23.259,
+      "score": 0.812,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "just",
+      "start": 23.279,
+      "end": 23.439,
+      "score": 0.766,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "to",
+      "start": 23.479,
+      "end": 23.539,
+      "score": 0.565,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "visualize",
+      "start": 23.559,
+      "end": 24.06,
+      "score": 0.628,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it",
+      "start": 24.08,
+      "end": 24.12,
+      "score": 0.362,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "and",
+      "start": 24.14,
+      "end": 24.22,
+      "score": 0.805,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "stuff,",
+      "start": 24.24,
+      "end": 24.42,
+      "score": 0.447,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "especially",
+      "start": 24.44,
+      "end": 24.741,
+      "score": 0.919,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "with",
+      "start": 24.761,
+      "end": 24.861,
+      "score": 0.872,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "our",
+      "start": 24.921,
+      "end": 24.981,
+      "score": 0.701,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "own",
+      "start": 25.021,
+      "end": 25.101,
+      "score": 0.695,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "voices.",
+      "start": 25.181,
+      "end": 25.542,
+      "score": 0.992,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Yeah.",
+      "start": 25.742,
+      "end": 25.862,
+      "score": 0.144,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Just",
+      "start": 25.882,
+      "end": 25.982,
+      "score": 0.584,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 26.022,
+      "end": 26.102,
+      "score": 0.658,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "see",
+      "start": 26.122,
+      "end": 26.243,
+      "score": 0.958,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "how",
+      "start": 26.283,
+      "end": 26.383,
+      "score": 0.913,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it",
+      "start": 26.463,
+      "end": 26.543,
+      "score": 0.957,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "divides.",
+      "start": 26.583,
+      "end": 26.983,
+      "score": 0.94,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "I",
+      "start": 27.444,
+      "end": 27.544,
+      "score": 0.472,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "would",
+      "start": 27.564,
+      "end": 27.664,
+      "score": 0.182,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "suggest",
+      "start": 27.684,
+      "end": 28.085,
+      "score": 0.747,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "just",
+      "start": 28.105,
+      "end": 28.325,
+      "score": 0.289,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "using",
+      "start": 28.345,
+      "end": 28.585,
+      "score": 0.675,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like,",
+      "start": 28.665,
+      "end": 29.046,
+      "score": 0.722,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 29.166,
+      "end": 29.186,
+      "score": 0.451,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "think",
+      "start": 29.206,
+      "end": 29.346,
+      "score": 0.617,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we,",
+      "start": 29.426,
+      "end": 29.987,
+      "score": 0.897,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

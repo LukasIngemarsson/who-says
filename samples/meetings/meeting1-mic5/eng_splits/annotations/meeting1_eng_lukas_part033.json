@@ -1,0 +1,182 @@
+{
+  "segments": [
+    {
+      "start": 23.015,
+      "end": 29.987,
+      "text": " This one I will not touch because it's for the whole thing.",
+      "words": [
+        {
+          "word": "This",
+          "start": 23.015,
+          "end": 25.949,
+          "score": 0.649,
+          "speaker": "SPEAKER_03"
+        },
+        {
+          "word": "one",
+          "start": 26.029,
+          "end": 26.129,
+          "score": 0.761,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "I",
+          "start": 26.149,
+          "end": 26.17,
+          "score": 0.381,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "will",
+          "start": 26.23,
+          "end": 26.35,
+          "score": 0.519,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "not",
+          "start": 26.37,
+          "end": 26.451,
+          "score": 0.903,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "touch",
+          "start": 26.471,
+          "end": 26.612,
+          "score": 0.287,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "because",
+          "start": 26.632,
+          "end": 26.853,
+          "score": 0.64,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "it's",
+          "start": 26.893,
+          "end": 27.013,
+          "score": 0.722,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "for",
+          "start": 27.234,
+          "end": 27.415,
+          "score": 0.895,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 27.435,
+          "end": 27.596,
+          "score": 0.9,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "whole",
+          "start": 27.737,
+          "end": 27.918,
+          "score": 0.664,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "thing.",
+          "start": 27.978,
+          "end": 29.987,
+          "score": 0.79,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "This",
+      "start": 23.015,
+      "end": 25.949,
+      "score": 0.649,
+      "speaker": "SPEAKER_03"
+    },
+    {
+      "word": "one",
+      "start": 26.029,
+      "end": 26.129,
+      "score": 0.761,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "I",
+      "start": 26.149,
+      "end": 26.17,
+      "score": 0.381,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "will",
+      "start": 26.23,
+      "end": 26.35,
+      "score": 0.519,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "not",
+      "start": 26.37,
+      "end": 26.451,
+      "score": 0.903,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "touch",
+      "start": 26.471,
+      "end": 26.612,
+      "score": 0.287,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "because",
+      "start": 26.632,
+      "end": 26.853,
+      "score": 0.64,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "it's",
+      "start": 26.893,
+      "end": 27.013,
+      "score": 0.722,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "for",
+      "start": 27.234,
+      "end": 27.415,
+      "score": 0.895,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 27.435,
+      "end": 27.596,
+      "score": 0.9,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "whole",
+      "start": 27.737,
+      "end": 27.918,
+      "score": 0.664,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "thing.",
+      "start": 27.978,
+      "end": 29.987,
+      "score": 0.79,
+      "speaker": "SPEAKER_02"
+    }
+  ]
+}

@@ -25,7 +25,7 @@ def get_audio_duration(file_path):
     return float(result.stdout.strip())
 
 
-def split_audio(input_file, output_dir, chunk_duration_minutes=5):
+def split_audio(input_file, output_dir, chunk_duration_minutes=0.5):
     """
     Split audio file into chunks of specified duration.
 
@@ -70,7 +70,7 @@ def split_audio(input_file, output_dir, chunk_duration_minutes=5):
             'ffmpeg',
             '-i', str(input_path),
             '-ss', str(start_time),
-            '-t', str(chunk_duration_seconds),
+            '-t', str(int(chunk_duration_seconds)),
             '-c', 'copy',  # Copy codec without re-encoding for speed
             '-y',  # Overwrite output file if exists
             str(output_file)
@@ -95,9 +95,9 @@ def main():
     )
     parser.add_argument(
         "-d", "--duration",
-        type=int,
-        default=5,
-        help="Duration of each chunk in minutes (default: 5)"
+        type=float,
+        default=0.5,
+        help="Duration of each chunk in minutes (default: 0.5)"
     )
 
     args = parser.parse_args()

@@ -1,0 +1,49 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 3.615,
+      "speakerId": "SPEAKER_01",
+      "transcription": " the frames that are that people are talking."
+    },
+    {
+      "startTime": 4.376,
+      "endTime": 11.645,
+      "speakerId": "SPEAKER_00",
+      "transcription": "The next component just takes in the same file and then the predictions as what?"
+    },
+    {
+      "startTime": 13.107,
+      "endTime": 18.073,
+      "speakerId": "SPEAKER_00",
+      "transcription": "Because currently I just have a dictionary with like a start, end, start, end, with the speech."
+    },
+    {
+      "startTime": 19.414,
+      "endTime": 20.876,
+      "speakerId": "SPEAKER_00",
+      "transcription": "I think I need to change that, right?"
+    },
+    {
+      "startTime": 21.5,
+      "endTime": 22.2,
+      "speakerId": "SPEAKER_01",
+      "transcription": "uh yeah"
+    },
+    {
+      "startTime": 22.8,
+      "endTime": 24.2,
+      "speakerId": "SPEAKER_00",
+      "transcription": "Yes, to what?"
+    },
+    {
+      "startTime": 24.2,
+      "endTime": 29.2,
+      "speakerId": "SPEAKER_03",
+      "transcription": "start and end speech thingy, that's what you're gonna' send to ASR model and phoneme"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T14:45:14.922Z"
+  }
+}

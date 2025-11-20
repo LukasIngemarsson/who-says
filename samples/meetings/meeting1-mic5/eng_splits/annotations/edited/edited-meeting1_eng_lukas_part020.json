@@ -1,0 +1,43 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 6.939,
+      "speakerId": "SPEAKER_02",
+      "transcription": "because you have one class where you pass the model and if it's pyannote or speech brain, it will do different things."
+    },
+    {
+      "startTime": 8.141,
+      "endTime": 12.446,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Well, you can still like."
+    },
+    {
+      "startTime": 12.486,
+      "endTime": 14.448,
+      "speakerId": "SPEAKER_01",
+      "transcription": "This is just a way of doing it."
+    },
+    {
+      "startTime": 15.109,
+      "endTime": 16.251,
+      "speakerId": "SPEAKER_01",
+      "transcription": "It doesn't have to be like this."
+    },
+    {
+      "startTime": 17.132,
+      "endTime": 28.265,
+      "speakerId": "SPEAKER_01",
+      "transcription": "We can also like, if we want to add another class or maybe one thing that we could do is just go over to a YAML file, for example, that's also common."
+    },
+    {
+      "startTime": 28.285,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_01",
+      "transcription": "And then we know the YAML file, which"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T15:43:31.397Z"
+  }
+}

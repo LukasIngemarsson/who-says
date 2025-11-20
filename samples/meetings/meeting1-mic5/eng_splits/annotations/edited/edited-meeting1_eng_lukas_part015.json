@@ -1,0 +1,37 @@
+{
+  "annotations": [
+    {
+      "startTime": 1.297,
+      "endTime": 11.047,
+      "speakerId": "SPEAKER_02",
+      "transcription": " Those are like the actual component names, because the way we did it in recognition was that recognition, which consists of embedding, clustering, recognition, whatever."
+    },
+    {
+      "startTime": 12.228,
+      "endTime": 19.036,
+      "speakerId": "SPEAKER_02",
+      "transcription": "We just import all of, like every import will just be the actual name of the class, if that makes sense."
+    },
+    {
+      "startTime": 19.056,
+      "endTime": 21.558,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Do you want us to change that so that it works differently?"
+    },
+    {
+      "startTime": 23.58,
+      "endTime": 24.701,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Wait, say that again."
+    },
+    {
+      "startTime": 24.722,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Because if you look, for example, here, like you have from speaker segmentation, import SO SCD,"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T15:32:39.075Z"
+  }
+}

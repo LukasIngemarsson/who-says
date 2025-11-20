@@ -1,0 +1,37 @@
+{
+  "annotations": [
+    {
+      "startTime": 2,
+      "endTime": 5.467,
+      "speakerId": "SPEAKER_00",
+      "transcription": "can also just take an audio file and do... do everything from the..."
+    },
+    {
+      "startTime": 5.487,
+      "endTime": 6.669,
+      "speakerId": "SPEAKER_02",
+      "transcription": "You mean they're independent of each other?"
+    },
+    {
+      "startTime": 6.709,
+      "endTime": 7.33,
+      "speakerId": "SPEAKER_00",
+      "transcription": "Yeah exactly."
+    },
+    {
+      "startTime": 7.35,
+      "endTime": 12.118,
+      "speakerId": "SPEAKER_00",
+      "transcription": "It doesn't seem like he needs my VAD to do something."
+    },
+    {
+      "startTime": 12.398,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Well, no because when we send in the segments that are noise versus actual people talking, we're not doing like unnecessary work."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T14:16:22.902Z"
+  }
+}

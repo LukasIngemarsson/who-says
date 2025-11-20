@@ -1,0 +1,43 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.368,
+      "endTime": 8.876,
+      "speakerId": "SPEAKER_01",
+      "transcription": " No, I think my... like the best thing to do right now is probably just try to add all the different inferences to the who says class."
+    },
+    {
+      "startTime": 10.598,
+      "endTime": 16.023,
+      "speakerId": "SPEAKER_01",
+      "transcription": "And just try to get everything together so we have the baseline."
+    },
+    {
+      "startTime": 16.824,
+      "endTime": 17.404,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Sounds good."
+    },
+    {
+      "startTime": 19.907,
+      "endTime": 20.768,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Just start by importing."
+    },
+    {
+      "startTime": 20.808,
+      "endTime": 25.332,
+      "speakerId": "SPEAKER_00",
+      "transcription": "For me, it's still hard to understand the input and output between them."
+    },
+    {
+      "startTime": 25.372,
+      "endTime": 29.616,
+      "speakerId": "SPEAKER_00",
+      "transcription": "Because each component can take just the audio file and understand"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-19T22:00:13.693Z"
+  }
+}

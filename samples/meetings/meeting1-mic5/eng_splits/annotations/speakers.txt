@@ -1,0 +1,8 @@
+SPEAKER_00 - Abbas
+
+SPEAKER_01 - Mårten
+
+SPEAKER_02 - Lukas
+
+SPEAKER_03 - ...
+

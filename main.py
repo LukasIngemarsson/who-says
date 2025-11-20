@@ -103,12 +103,21 @@ class WhoSays(object):
             timing['asr'] = time.time() - start_time
         logger.info(f"Transcribed {len(transcriptions)} segments")
 
-        # Step 3: Speaker Overlap Detection
+        # Step 3: Phoneme Conversion
+        logger.info("Converting transcriptions to phonemes...")
+        if include_timing:
+            start_time = time.time()
+        transcriptions = self.phoneme(transcriptions)
+        if include_timing:
+            timing['phoneme'] = time.time() - start_time
+        logger.info(f"Added phonemes to {len(transcriptions)} segments")
+
+        # Step 4: Speaker Overlap Detection
         logger.info("Detecting speaker overlaps...")
         #overlap_segments = self.sod.sod_pipeline(waveform)
         #logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
 
-        # Step 4: Speaker Change Detection
+        # Step 5: Speaker Change Detection
         logger.info("Detecting speaker change points...")
         if include_timing:
             start_time = time.time()
@@ -117,7 +126,7 @@ class WhoSays(object):
             timing['scd'] = time.time() - start_time
         logger.info(f"Found {len(change_points)} speaker change points")
 
-        # Step 5: Speaker Embedding
+        # Step 6: Speaker Embedding
         logger.info("Extracting speaker embeddings...")
         if include_timing:
             start_time = time.time()
@@ -126,7 +135,7 @@ class WhoSays(object):
             timing['embedding'] = time.time() - start_time
         logger.info(f"Extracted embeddings for {segment_embeddings.shape[0]} segments")
 
-        # Step 6: Speaker Clustering
+        # Step 7: Speaker Clustering
         logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
         if include_timing:
             start_time = time.time()
@@ -135,7 +144,7 @@ class WhoSays(object):
             timing['clustering'] = time.time() - start_time
         logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
 
-        # Step 7: Merge results into structured output
+        # Step 8: Merge results into structured output
         logger.info("Merging results...")
         if include_timing:
             start_time = time.time()

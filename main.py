@@ -3,6 +3,8 @@ import argparse
 from pathlib import Path
 import time
 
+import torch
+
 from dotenv import load_dotenv
 
 from pipeline.ASR import ASR
@@ -18,8 +20,10 @@ from config import PipelineConfig as Config
 load_dotenv(".env")
 
 class WhoSays(object):
-    def __init__(self):
-        self.config = Config()
+    def __init__(self, config=Config):
+        self.config = config()
+        
+        logger.info(f"Using device: {self.config.device}")
         
         #self.sod = SO(self.config.so)
         self.scd = SCD(**self.config.scd.pyannote.to_dict())
@@ -53,55 +57,55 @@ class WhoSays(object):
                 - segments: Detailed segment information with speaker assignments
                 - timing: (optional) Timing information for each pipeline step
         """
-        timing = {} if include_timing else None
+        with torch.no_grad():
+            timing = {} if include_timing else None
 
-        logger.info(f"Loading audio from {audio_file}")
-        if include_timing:
-            start_time = time.time()
-        waveform, sr = load_audio_from_file(
-            file_path=audio_file,
-            sr=self.config.sr
-        )
-        if include_timing:
-            timing['audio_loading'] = time.time() - start_time
+            logger.info(f"Loading audio from {audio_file}")
+            if include_timing:
+                start_time = time.time()
+            waveform, sr = load_audio_from_file(
+                file_path=audio_file,
+                sr=self.config.sr
+            )
+            if include_timing:
+                timing['audio_loading'] = time.time() - start_time
 
-        # Ensure mono audio for pipeline processing
-        if waveform.dim() > 1:
-            if waveform.shape[0] > 1 and waveform.shape[0] < waveform.shape[1]:
-                # Shape is (n_channels, n_samples) - average channels
-                waveform = waveform.mean(dim=0)
-            elif waveform.shape[1] > 1 and waveform.shape[1] < waveform.shape[0]:
-                # Shape is (n_samples, n_channels) - average channels
-                waveform = waveform.mean(dim=1)
-            else:
-                # Ambiguous shape, assume first dim is channels
-                waveform = waveform.squeeze()
-                if waveform.dim() > 1:
+            # Ensure mono audio for pipeline processing
+            if waveform.dim() > 1:
+                if waveform.shape[0] > 1 and waveform.shape[0] < waveform.shape[1]:
+                    # Shape is (n_channels, n_samples) - average channels
                     waveform = waveform.mean(dim=0)
+                elif waveform.shape[1] > 1 and waveform.shape[1] < waveform.shape[0]:
+                    # Shape is (n_samples, n_channels) - average channels
+                    waveform = waveform.mean(dim=1)
+                else:
+                    # Ambiguous shape, assume first dim is channels
+                    waveform = waveform.squeeze()
+                    if waveform.dim() > 1:
+                        waveform = waveform.mean(dim=0)
 
-        logger.info(f"Audio shape: {waveform.shape}, sample rate: {sr}Hz")
+            logger.info(f"Audio shape: {waveform.shape}, sample rate: {sr}Hz")
+            waveform = waveform.to(self.config.device)
+            logger.info(f"Audio Waveform is on device: {waveform.device}")
 
-        # Step 1: Voice Activity Detection
-        logger.info("Running Voice Activity Detection (VAD)...")
-        if include_timing:
-            start_time = time.time()
-        speech_segments = self.vad(waveform)
-        if include_timing:
-            timing['vad'] = time.time() - start_time
-        logger.info(f"Found {len(speech_segments)} speech segments")
+            # Step 1: Voice Activity Detection
+            logger.info("Running Voice Activity Detection (VAD)...")
+            if include_timing:
+                start_time = time.time()
+            speech_segments = self.vad(waveform)
+            if include_timing:
+                timing['vad'] = time.time() - start_time
+            logger.info(f"Found {len(speech_segments)} speech segments")
 
-        # Step 2: Automatic Speech Recognition
-        logger.info("Transcribing speech segments...")
-        if include_timing:
-            start_time = time.time()
-        transcriptions = self.asr.transcribe_segments(
-            waveform,
-            speech_segments,
-            return_timestamps=True
-        )
-        if include_timing:
-            timing['asr'] = time.time() - start_time
-        logger.info(f"Transcribed {len(transcriptions)} segments")
+            # Step 2: Automatic Speech Recognition
+            logger.info("Transcribing speech segments...")
+            if include_timing:
+                start_time = time.time()
+            transcriptions = self.asr.transcribe_segments(
+                waveform,
+                speech_segments,
+                return_timestamps=True
+            )
 
         # Step 3: Phoneme Conversion
         logger.info("Converting transcriptions to phonemes...")
@@ -159,14 +163,37 @@ class WhoSays(object):
         if include_timing:
             timing['formatting'] = time.time() - start_time
 
-        # Add timing to result if requested
-        if include_timing:
-            result['timing'] = timing
-            total_time = sum(timing.values())
-            result['total_time'] = total_time
-            logger.info(f"Total pipeline time: {total_time:.2f}s")
+            # Step 6: Speaker Clustering
+            logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
+            if include_timing:
+                start_time = time.time()
+            segment_clusters = self.clustering.cluster_segments(segment_embeddings, n_clusters=min(segment_embeddings.shape[0], num_speakers))
+            if include_timing:
+                timing['clustering'] = time.time() - start_time
+            logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
 
-        logger.info("Pipeline complete!")
+            # Step 7: Merge results into structured output
+            logger.info("Merging results...")
+            if include_timing:
+                start_time = time.time()
+            result = self._format_output(
+                change_points=change_points,
+                clusters=segment_clusters,
+                transcriptions=transcriptions,
+                overlap_segments= [],# overlap_segments,
+                waveform_duration=waveform.shape[-1] / sr
+            )
+            if include_timing:
+                timing['formatting'] = time.time() - start_time
+
+            # Add timing to result if requested
+            if include_timing:
+                result['timing'] = timing
+                total_time = sum(timing.values())
+                result['total_time'] = total_time
+                logger.info(f"Total pipeline time: {total_time:.2f}s")
+
+            logger.info("Pipeline complete!")
         return result
 
     def _format_output(

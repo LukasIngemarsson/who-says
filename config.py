@@ -102,10 +102,10 @@ class VADConfig:
 @dataclass
 class ASRConfig(BaseConfig):
     asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "large-v3-turbo"
+    model: str = "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    compute_type: str = "float16" if torch.cuda.is_available() else "float32"
-    language: str = "sv"  # Swedish language code
+    compute_type: str = "float32"
+    language: str = "en"  # Swedish language code
     
 # -----------------------------
 # Phoneme
@@ -208,7 +208,7 @@ class RecognitionConfig:
 # PipelineConfig (main container)
 # -----------------------------
 @dataclass
-class PipelineConfig:
+class PipelineConfig(BaseConfig):
     sr: int = SR  # Sample Rate
 
     so: SOConfig = field(default_factory=SOConfig)

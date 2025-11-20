@@ -71,6 +71,8 @@ class SileroVAD:
                 trust_repo=True
             )
 
+            self.model.to(self.device)
+
     def __call__(
         self,
         waveform: torch.Tensor,

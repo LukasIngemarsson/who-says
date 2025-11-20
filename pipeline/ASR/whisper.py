@@ -26,6 +26,7 @@ class WhisperASR:
         self.device = device
         self.torch_dtype = torch_dtype
 
+        print(model)
         # Load model and processor
         self.model = AutoModelForSpeechSeq2Seq.from_pretrained(
             model,
@@ -72,6 +73,7 @@ class WhisperASR:
 
         # Convert tensor to numpy if needed
         if isinstance(audio, torch.Tensor):
+            audio = audio.to("cpu")
             audio_input = audio.numpy()
         else:
             audio_input = audio

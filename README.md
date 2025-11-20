@@ -8,37 +8,23 @@ The following diagram illustrates the complete pipeline flow, showing how audio 
 
 ## Run with docker
 
-You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.
-Use `chmod +x docker_run.py` to make the script runnable as `./docker_run.py` (only needed once).
-> **Note:**  
-> To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
+Use `chmod +x ./run.sh` to make the script runnable as `./run.sh` (only needed once).
 
-Usage:
-```bash
-./docker_run.py pipeline <audio_file> # (runs main / full pipeline)
-./docker_run.py component <module_path> # (runs specified module / isolated component)
-```
+#### Build
+./run.sh build
 
-### Running with evaluation metrics and timing
+#### Run
+./run.sh start
 
-To evaluate pipeline performance against gold standard annotations, use the `--annotation` and `--timing` flags:
+Now that your in the docker filer, you can use the following parameters when working with main.py
 
-```bash
-./docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json --timing
-```
-
-#### Evaluating a specific module
-
-```bash
-./docker_run.py component pipeline.speaker_segmentation.VAD.silero samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json --timing
-```
-
-#### Comparing VAD models
-
-```bash
-./docker_run.py component pipeline.speaker_segmentation.VAD.compare_vad_models samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json
-```
-
+ - "audio_file", type=Path, help="Path to the audio file to process"
+ - "--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)"
+ - "--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)"
+ - "--output", "-o", type=Path, help="Output JSON file path (optional)"
+ - "--pretty", action="store_true", help="Pretty print the output"
+ - "--timing", action="store_true", help="Include timing metrics for each model run"
+ 
 <!-- Running w/o the script: -->
 <!-- Build image -->
 <!---->

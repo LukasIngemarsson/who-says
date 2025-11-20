@@ -10,7 +10,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb 
 RUN dpkg -i cuda-keyring_1.0-1_all.deb 
-RUN apt-get update && apt-get upgrade && apt-get install -y --no-install-recommends libcudnn8 libcudnn8-dev
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libcudnn8 libcudnn8-dev
 
 COPY ../../ /app
 EXPOSE 6006

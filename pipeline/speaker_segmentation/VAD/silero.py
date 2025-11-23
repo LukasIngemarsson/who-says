@@ -99,6 +99,8 @@ class SileroVAD:
             waveform = torch.mean(waveform, dim=0)
         elif waveform.dim() == 2:
             waveform = waveform[0]
+            
+        waveform = waveform.to(self.device)
 
         # Get speech timestamps
         get_speech_timestamps = self.utils[0]

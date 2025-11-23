@@ -2,10 +2,13 @@ import argparse
 import time
 from pathlib import Path
 from loguru import logger
+from dotenv import load_dotenv
 from utils import load_audio_from_file, load_annotation_file, evaluate_segmentation
 from utils.constants import SR
 from pipeline.speaker_segmentation.VAD.silero import SileroVAD
 from pipeline.speaker_segmentation.VAD.pyannote_vad import PyannoteVAD
+
+load_dotenv(".env")
 
 
 def compare_vad_models(audio_file: Path, annotation_file: Path = None):

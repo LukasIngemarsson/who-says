@@ -56,6 +56,12 @@ Now that your in the docker filer, you can use the following parameters when wor
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
 
+ #### Compare VAD models on single audio file
+
+ ```bash
+ python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
+ ```
+
 ## Update `requirements.txt`
 
 For now, manually add necessary packages that are not yet installed in the Docker container, i.e., 

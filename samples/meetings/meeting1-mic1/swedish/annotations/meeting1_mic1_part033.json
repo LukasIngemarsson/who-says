@@ -1,0 +1,567 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 7.4,
+      "text": " Sen, som sagt, jag kollade på det här Fornem, det står ju fel här.",
+      "words": [
+        {
+          "word": " Sen,",
+          "start": 0.0,
+          "end": 0.1,
+          "score": 0.77734375
+        },
+        {
+          "word": " som",
+          "start": 0.28,
+          "end": 0.94,
+          "score": 0.6728515625
+        },
+        {
+          "word": " sagt,",
+          "start": 0.94,
+          "end": 1.18,
+          "score": 0.5810546875
+        },
+        {
+          "word": " jag",
+          "start": 1.24,
+          "end": 1.34,
+          "score": 0.63720703125
+        },
+        {
+          "word": " kollade",
+          "start": 1.34,
+          "end": 1.58,
+          "score": 0.8798828125
+        },
+        {
+          "word": " på",
+          "start": 1.58,
+          "end": 1.8,
+          "score": 0.62060546875
+        },
+        {
+          "word": " det",
+          "start": 1.8,
+          "end": 1.88,
+          "score": 0.427734375
+        },
+        {
+          "word": " här",
+          "start": 1.88,
+          "end": 2.16,
+          "score": 0.726776123046875
+        },
+        {
+          "word": " Fornem,",
+          "start": 2.16,
+          "end": 3.86,
+          "score": 0.28061676025390625
+        },
+        {
+          "word": " det",
+          "start": 4.0,
+          "end": 5.32,
+          "score": 0.1749267578125
+        },
+        {
+          "word": " står",
+          "start": 5.32,
+          "end": 6.46,
+          "score": 0.68310546875
+        },
+        {
+          "word": " ju",
+          "start": 6.46,
+          "end": 6.46,
+          "score": 0.6572265625
+        },
+        {
+          "word": " fel",
+          "start": 6.46,
+          "end": 6.76,
+          "score": 0.56591796875
+        },
+        {
+          "word": " här.",
+          "start": 6.76,
+          "end": 7.4,
+          "score": 0.726226806640625
+        }
+      ]
+    },
+    {
+      "start": 8.46,
+      "end": 12.7,
+      "text": " Jag sökte på det här som står här. Jag bara, nej, vänta, jag hittar inte det.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 8.46,
+          "end": 8.86,
+          "score": 0.7392578125
+        },
+        {
+          "word": " sökte",
+          "start": 8.86,
+          "end": 9.2,
+          "score": 0.8564453125
+        },
+        {
+          "word": " på",
+          "start": 9.2,
+          "end": 9.36,
+          "score": 0.60986328125
+        },
+        {
+          "word": " det",
+          "start": 9.36,
+          "end": 9.48,
+          "score": 0.697265625
+        },
+        {
+          "word": " här",
+          "start": 9.48,
+          "end": 9.68,
+          "score": 0.5302734375
+        },
+        {
+          "word": " som",
+          "start": 9.68,
+          "end": 9.9,
+          "score": 0.51025390625
+        },
+        {
+          "word": " står",
+          "start": 9.9,
+          "end": 10.28,
+          "score": 0.68670654296875
+        },
+        {
+          "word": " här.",
+          "start": 10.28,
+          "end": 10.44,
+          "score": 0.59521484375
+        },
+        {
+          "word": " Jag",
+          "start": 10.62,
+          "end": 10.9,
+          "score": 0.52734375
+        },
+        {
+          "word": " bara,",
+          "start": 10.9,
+          "end": 11.14,
+          "score": 0.405029296875
+        },
+        {
+          "word": " nej,",
+          "start": 11.22,
+          "end": 11.64,
+          "score": 0.78125
+        },
+        {
+          "word": " vänta,",
+          "start": 11.64,
+          "end": 11.98,
+          "score": 0.8497721354166666
+        },
+        {
+          "word": " jag",
+          "start": 11.98,
+          "end": 12.08,
+          "score": 0.619140625
+        },
+        {
+          "word": " hittar",
+          "start": 12.08,
+          "end": 12.44,
+          "score": 0.9596354166666666
+        },
+        {
+          "word": " inte",
+          "start": 12.44,
+          "end": 12.6,
+          "score": 0.5859375
+        },
+        {
+          "word": " det.",
+          "start": 12.6,
+          "end": 12.7,
+          "score": 0.383544921875
+        }
+      ]
+    },
+    {
+      "start": 12.84,
+      "end": 16.48,
+      "text": " Vad har de skrivit? Är det jag såg nu? Nej, det var en bokstav fel.",
+      "words": [
+        {
+          "word": " Vad",
+          "start": 12.84,
+          "end": 13.22,
+          "score": 0.62548828125
+        },
+        {
+          "word": " har",
+          "start": 13.22,
+          "end": 13.36,
+          "score": 0.67529296875
+        },
+        {
+          "word": " de",
+          "start": 13.36,
+          "end": 13.52,
+          "score": 0.716796875
+        },
+        {
+          "word": " skrivit?",
+          "start": 13.52,
+          "end": 13.9,
+          "score": 0.89111328125
+        },
+        {
+          "word": " Är",
+          "start": 13.98,
+          "end": 14.06,
+          "score": 0.7121988932291666
+        },
+        {
+          "word": " det",
+          "start": 14.06,
+          "end": 14.1,
+          "score": 0.75244140625
+        },
+        {
+          "word": " jag",
+          "start": 14.1,
+          "end": 14.16,
+          "score": 0.50244140625
+        },
+        {
+          "word": " såg",
+          "start": 14.16,
+          "end": 14.4,
+          "score": 0.7470703125
+        },
+        {
+          "word": " nu?",
+          "start": 14.4,
+          "end": 14.5,
+          "score": 0.68115234375
+        },
+        {
+          "word": " Nej,",
+          "start": 14.72,
+          "end": 15.12,
+          "score": 0.6416015625
+        },
+        {
+          "word": " det",
+          "start": 15.22,
+          "end": 15.42,
+          "score": 0.7333984375
+        },
+        {
+          "word": " var",
+          "start": 15.42,
+          "end": 15.56,
+          "score": 0.85400390625
+        },
+        {
+          "word": " en",
+          "start": 15.56,
+          "end": 15.86,
+          "score": 0.63623046875
+        },
+        {
+          "word": " bokstav",
+          "start": 15.86,
+          "end": 16.32,
+          "score": 0.9168294270833334
+        },
+        {
+          "word": " fel.",
+          "start": 16.32,
+          "end": 16.48,
+          "score": 0.6328125
+        }
+      ]
+    },
+    {
+      "start": 17.32,
+      "end": 22.8,
+      "text": " Ja, så jag kollade på den. Det som koden gör just nu, för den finns inte här så jag kan inte riktigt visa.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 17.32,
+          "end": 17.72,
+          "score": 0.55078125
+        },
+        {
+          "word": " så",
+          "start": 17.84,
+          "end": 18.0,
+          "score": 0.603515625
+        },
+        {
+          "word": " jag",
+          "start": 18.0,
+          "end": 18.14,
+          "score": 0.65185546875
+        },
+        {
+          "word": " kollade",
+          "start": 18.14,
+          "end": 18.46,
+          "score": 0.8671875
+        },
+        {
+          "word": " på",
+          "start": 18.46,
+          "end": 18.64,
+          "score": 0.60693359375
+        },
+        {
+          "word": " den.",
+          "start": 18.64,
+          "end": 18.84,
+          "score": 0.81298828125
+        },
+        {
+          "word": " Det",
+          "start": 18.94,
+          "end": 19.2,
+          "score": 0.8203125
+        },
+        {
+          "word": " som",
+          "start": 19.2,
+          "end": 19.6,
+          "score": 0.62744140625
+        },
+        {
+          "word": " koden",
+          "start": 19.6,
+          "end": 20.38,
+          "score": 0.856689453125
+        },
+        {
+          "word": " gör",
+          "start": 20.38,
+          "end": 20.64,
+          "score": 0.7059326171875
+        },
+        {
+          "word": " just",
+          "start": 20.64,
+          "end": 20.78,
+          "score": 0.873046875
+        },
+        {
+          "word": " nu,",
+          "start": 20.78,
+          "end": 20.9,
+          "score": 0.734375
+        },
+        {
+          "word": " för",
+          "start": 20.98,
+          "end": 21.06,
+          "score": 0.59814453125
+        },
+        {
+          "word": " den",
+          "start": 21.06,
+          "end": 21.16,
+          "score": 0.767578125
+        },
+        {
+          "word": " finns",
+          "start": 21.16,
+          "end": 21.52,
+          "score": 0.83251953125
+        },
+        {
+          "word": " inte",
+          "start": 21.52,
+          "end": 21.74,
+          "score": 0.59375
+        },
+        {
+          "word": " här",
+          "start": 21.74,
+          "end": 21.88,
+          "score": 0.49072265625
+        },
+        {
+          "word": " så",
+          "start": 21.88,
+          "end": 22.0,
+          "score": 0.35546875
+        },
+        {
+          "word": " jag",
+          "start": 22.0,
+          "end": 22.1,
+          "score": 0.64453125
+        },
+        {
+          "word": " kan",
+          "start": 22.1,
+          "end": 22.2,
+          "score": 0.8369140625
+        },
+        {
+          "word": " inte",
+          "start": 22.2,
+          "end": 22.28,
+          "score": 0.58447265625
+        },
+        {
+          "word": " riktigt",
+          "start": 22.28,
+          "end": 22.58,
+          "score": 0.75732421875
+        },
+        {
+          "word": " visa.",
+          "start": 22.58,
+          "end": 22.8,
+          "score": 0.56591796875
+        }
+      ]
+    },
+    {
+      "start": 23.06,
+      "end": 29.38,
+      "text": " Men det som den gör just nu, kommer ni ihåg de här JSON-filen som vi har med tider och",
+      "words": [
+        {
+          "word": " Men",
+          "start": 23.06,
+          "end": 23.46,
+          "score": 0.8408203125
+        },
+        {
+          "word": " det",
+          "start": 23.46,
+          "end": 23.6,
+          "score": 0.73681640625
+        },
+        {
+          "word": " som",
+          "start": 23.6,
+          "end": 23.76,
+          "score": 0.63818359375
+        },
+        {
+          "word": " den",
+          "start": 23.76,
+          "end": 23.86,
+          "score": 0.80078125
+        },
+        {
+          "word": " gör",
+          "start": 23.86,
+          "end": 24.08,
+          "score": 0.52392578125
+        },
+        {
+          "word": " just",
+          "start": 24.08,
+          "end": 24.3,
+          "score": 0.85302734375
+        },
+        {
+          "word": " nu,",
+          "start": 24.3,
+          "end": 24.48,
+          "score": 0.75048828125
+        },
+        {
+          "word": " kommer",
+          "start": 24.7,
+          "end": 25.28,
+          "score": 0.353515625
+        },
+        {
+          "word": " ni",
+          "start": 25.28,
+          "end": 25.44,
+          "score": 0.62939453125
+        },
+        {
+          "word": " ihåg",
+          "start": 25.44,
+          "end": 25.62,
+          "score": 0.9212239583333334
+        },
+        {
+          "word": " de",
+          "start": 25.62,
+          "end": 25.72,
+          "score": 0.7197265625
+        },
+        {
+          "word": " här",
+          "start": 25.72,
+          "end": 25.88,
+          "score": 0.51123046875
+        },
+        {
+          "word": " JSON",
+          "start": 25.88,
+          "end": 26.3,
+          "score": 0.55615234375
+        },
+        {
+          "word": "-filen",
+          "start": 26.3,
+          "end": 26.72,
+          "score": 0.6158854166666666
+        },
+        {
+          "word": " som",
+          "start": 26.72,
+          "end": 26.92,
+          "score": 0.64306640625
+        },
+        {
+          "word": " vi",
+          "start": 26.92,
+          "end": 27.08,
+          "score": 0.73486328125
+        },
+        {
+          "word": " har",
+          "start": 27.08,
+          "end": 27.22,
+          "score": 0.66259765625
+        },
+        {
+          "word": " med",
+          "start": 27.22,
+          "end": 28.18,
+          "score": 0.5635986328125
+        },
+        {
+          "word": " tider",
+          "start": 28.18,
+          "end": 28.94,
+          "score": 0.85693359375
+        },
+        {
+          "word": " och",
+          "start": 28.94,
+          "end": 29.38,
+          "score": 0.81689453125
+        }
+      ]
+    }
+  ]
+}

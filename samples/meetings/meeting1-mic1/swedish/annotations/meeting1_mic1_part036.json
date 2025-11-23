@@ -1,0 +1,461 @@
+{
+  "segments": [
+    {
+      "start": 1.9800000000000026,
+      "end": 6.66,
+      "text": " Jag såg också, det är bra om du skriver om det så att det funkar för dockor också.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 1.9800000000000026,
+          "end": 2.3800000000000012,
+          "score": 0.1776123046875
+        },
+        {
+          "word": " såg",
+          "start": 2.3800000000000012,
+          "end": 2.78,
+          "score": 0.81201171875
+        },
+        {
+          "word": " också,",
+          "start": 2.78,
+          "end": 2.88,
+          "score": 0.67236328125
+        },
+        {
+          "word": " det",
+          "start": 3.12,
+          "end": 3.46,
+          "score": 0.75830078125
+        },
+        {
+          "word": " är",
+          "start": 3.46,
+          "end": 3.52,
+          "score": 0.501953125
+        },
+        {
+          "word": " bra",
+          "start": 3.52,
+          "end": 3.68,
+          "score": 0.673828125
+        },
+        {
+          "word": " om",
+          "start": 3.68,
+          "end": 3.78,
+          "score": 0.6318359375
+        },
+        {
+          "word": " du",
+          "start": 3.78,
+          "end": 3.92,
+          "score": 0.6357421875
+        },
+        {
+          "word": " skriver",
+          "start": 3.92,
+          "end": 5.18,
+          "score": 0.91455078125
+        },
+        {
+          "word": " om",
+          "start": 5.18,
+          "end": 5.32,
+          "score": 0.6318359375
+        },
+        {
+          "word": " det",
+          "start": 5.32,
+          "end": 5.38,
+          "score": 0.66650390625
+        },
+        {
+          "word": " så",
+          "start": 5.38,
+          "end": 5.48,
+          "score": 0.59375
+        },
+        {
+          "word": " att",
+          "start": 5.48,
+          "end": 5.5,
+          "score": 0.3076171875
+        },
+        {
+          "word": " det",
+          "start": 5.5,
+          "end": 5.6,
+          "score": 0.7490234375
+        },
+        {
+          "word": " funkar",
+          "start": 5.6,
+          "end": 5.72,
+          "score": 0.822021484375
+        },
+        {
+          "word": " för",
+          "start": 5.72,
+          "end": 5.86,
+          "score": 0.54443359375
+        },
+        {
+          "word": " dockor",
+          "start": 5.86,
+          "end": 6.1,
+          "score": 0.845703125
+        },
+        {
+          "word": " också.",
+          "start": 6.1,
+          "end": 6.66,
+          "score": 0.389892578125
+        }
+      ]
+    },
+    {
+      "start": 8.38,
+      "end": 9.84,
+      "text": " Nu var det typ såhär pip and stall.",
+      "words": [
+        {
+          "word": " Nu",
+          "start": 8.38,
+          "end": 8.78,
+          "score": 0.3466796875
+        },
+        {
+          "word": " var",
+          "start": 8.78,
+          "end": 8.92,
+          "score": 0.86083984375
+        },
+        {
+          "word": " det",
+          "start": 8.92,
+          "end": 9.04,
+          "score": 0.7421875
+        },
+        {
+          "word": " typ",
+          "start": 9.04,
+          "end": 9.2,
+          "score": 0.62890625
+        },
+        {
+          "word": " såhär",
+          "start": 9.2,
+          "end": 9.34,
+          "score": 0.6191813151041666
+        },
+        {
+          "word": " pip",
+          "start": 9.34,
+          "end": 9.48,
+          "score": 0.220458984375
+        },
+        {
+          "word": " and",
+          "start": 9.48,
+          "end": 9.62,
+          "score": 0.53955078125
+        },
+        {
+          "word": " stall.",
+          "start": 9.62,
+          "end": 9.84,
+          "score": 0.8271484375
+        }
+      ]
+    },
+    {
+      "start": 11.920000000000003,
+      "end": 14.3,
+      "text": " Det var typ ingenting att installera.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 11.920000000000003,
+          "end": 12.320000000000002,
+          "score": 0.58984375
+        },
+        {
+          "word": " var",
+          "start": 12.320000000000002,
+          "end": 12.72,
+          "score": 0.8212890625
+        },
+        {
+          "word": " typ",
+          "start": 12.72,
+          "end": 12.98,
+          "score": 0.47265625
+        },
+        {
+          "word": " ingenting",
+          "start": 12.98,
+          "end": 13.56,
+          "score": 0.8603515625
+        },
+        {
+          "word": " att",
+          "start": 13.56,
+          "end": 13.68,
+          "score": 0.568359375
+        },
+        {
+          "word": " installera.",
+          "start": 13.68,
+          "end": 14.3,
+          "score": 0.95166015625
+        }
+      ]
+    },
+    {
+      "start": 14.32,
+      "end": 19.04,
+      "text": " Det mesta var bara en speech brain-grej.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 14.32,
+          "end": 14.4,
+          "score": 0.77001953125
+        },
+        {
+          "word": " mesta",
+          "start": 14.4,
+          "end": 14.58,
+          "score": 0.718994140625
+        },
+        {
+          "word": " var",
+          "start": 14.58,
+          "end": 14.78,
+          "score": 0.8369140625
+        },
+        {
+          "word": " bara",
+          "start": 14.78,
+          "end": 15.18,
+          "score": 0.2447509765625
+        },
+        {
+          "word": " en",
+          "start": 15.18,
+          "end": 16.6,
+          "score": 0.4013671875
+        },
+        {
+          "word": " speech",
+          "start": 16.6,
+          "end": 17.08,
+          "score": 0.341064453125
+        },
+        {
+          "word": " brain",
+          "start": 17.08,
+          "end": 17.4,
+          "score": 0.494140625
+        },
+        {
+          "word": "-grej.",
+          "start": 17.4,
+          "end": 19.04,
+          "score": 0.7025553385416666
+        }
+      ]
+    },
+    {
+      "start": 19.24,
+      "end": 20.18,
+      "text": " Kanske det inte finns allt?",
+      "words": [
+        {
+          "word": " Kanske",
+          "start": 19.24,
+          "end": 19.64,
+          "score": 0.5380045572916666
+        },
+        {
+          "word": " det",
+          "start": 19.64,
+          "end": 19.72,
+          "score": 0.491455078125
+        },
+        {
+          "word": " inte",
+          "start": 19.72,
+          "end": 19.82,
+          "score": 0.1907958984375
+        },
+        {
+          "word": " finns",
+          "start": 19.82,
+          "end": 20.0,
+          "score": 0.427001953125
+        },
+        {
+          "word": " allt?",
+          "start": 20.0,
+          "end": 20.18,
+          "score": 0.52490234375
+        }
+      ]
+    },
+    {
+      "start": 22.200000000000003,
+      "end": 24.26,
+      "text": " Det var en grej som man behövde installera.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 22.200000000000003,
+          "end": 22.6,
+          "score": 0.477294921875
+        },
+        {
+          "word": " var",
+          "start": 22.6,
+          "end": 23.0,
+          "score": 0.86376953125
+        },
+        {
+          "word": " en",
+          "start": 23.0,
+          "end": 23.12,
+          "score": 0.63134765625
+        },
+        {
+          "word": " grej",
+          "start": 23.12,
+          "end": 23.34,
+          "score": 0.947998046875
+        },
+        {
+          "word": " som",
+          "start": 23.34,
+          "end": 23.48,
+          "score": 0.61669921875
+        },
+        {
+          "word": " man",
+          "start": 23.48,
+          "end": 23.6,
+          "score": 0.62451171875
+        },
+        {
+          "word": " behövde",
+          "start": 23.6,
+          "end": 23.84,
+          "score": 0.8805338541666666
+        },
+        {
+          "word": " installera.",
+          "start": 23.84,
+          "end": 24.26,
+          "score": 0.9521484375
+        }
+      ]
+    },
+    {
+      "start": 24.42,
+      "end": 29.76,
+      "text": " Men jag måste lära mig dockor för jag förstår fortfarande inte riktigt hur den funkar.",
+      "words": [
+        {
+          "word": " Men",
+          "start": 24.42,
+          "end": 24.82,
+          "score": 0.83837890625
+        },
+        {
+          "word": " jag",
+          "start": 24.82,
+          "end": 25.04,
+          "score": 0.17578125
+        },
+        {
+          "word": " måste",
+          "start": 25.04,
+          "end": 26.18,
+          "score": 0.453125
+        },
+        {
+          "word": " lära",
+          "start": 26.18,
+          "end": 26.6,
+          "score": 0.875732421875
+        },
+        {
+          "word": " mig",
+          "start": 26.6,
+          "end": 26.66,
+          "score": 0.6455078125
+        },
+        {
+          "word": " dockor",
+          "start": 26.66,
+          "end": 27.16,
+          "score": 0.8974609375
+        },
+        {
+          "word": " för",
+          "start": 27.16,
+          "end": 27.34,
+          "score": 0.365234375
+        },
+        {
+          "word": " jag",
+          "start": 27.34,
+          "end": 27.46,
+          "score": 0.64111328125
+        },
+        {
+          "word": " förstår",
+          "start": 27.46,
+          "end": 27.9,
+          "score": 0.890380859375
+        },
+        {
+          "word": " fortfarande",
+          "start": 27.9,
+          "end": 28.32,
+          "score": 0.8600260416666666
+        },
+        {
+          "word": " inte",
+          "start": 28.32,
+          "end": 28.52,
+          "score": 0.6064453125
+        },
+        {
+          "word": " riktigt",
+          "start": 28.52,
+          "end": 29.14,
+          "score": 0.796142578125
+        },
+        {
+          "word": " hur",
+          "start": 29.14,
+          "end": 29.22,
+          "score": 0.771484375
+        },
+        {
+          "word": " den",
+          "start": 29.22,
+          "end": 29.36,
+          "score": 0.52783203125
+        },
+        {
+          "word": " funkar.",
+          "start": 29.36,
+          "end": 29.76,
+          "score": 0.88427734375
+        }
+      ]
+    }
+  ]
+}

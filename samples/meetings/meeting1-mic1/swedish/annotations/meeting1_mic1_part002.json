@@ -1,0 +1,477 @@
+{
+  "segments": [
+    {
+      "start": 4.320000000000001,
+      "end": 5.34,
+      "text": " Kan ni höra av?",
+      "words": [
+        {
+          "word": " Kan",
+          "start": 4.320000000000001,
+          "end": 4.72,
+          "score": 0.64892578125
+        },
+        {
+          "word": " ni",
+          "start": 4.72,
+          "end": 4.96,
+          "score": 0.63818359375
+        },
+        {
+          "word": " höra",
+          "start": 4.96,
+          "end": 5.24,
+          "score": 0.80029296875
+        },
+        {
+          "word": " av?",
+          "start": 5.24,
+          "end": 5.34,
+          "score": 0.5751953125
+        }
+      ]
+    },
+    {
+      "start": 5.860000000000001,
+      "end": 9.24,
+      "text": " Vänta, någon annan kan ju bara joina, alltså Discord, kan ju bara snacka igenom en.",
+      "words": [
+        {
+          "word": " Vänta,",
+          "start": 5.860000000000001,
+          "end": 6.26,
+          "score": 0.7611490885416666
+        },
+        {
+          "word": " någon",
+          "start": 6.26,
+          "end": 6.4,
+          "score": 0.391357421875
+        },
+        {
+          "word": " annan",
+          "start": 6.4,
+          "end": 6.7,
+          "score": 0.781982421875
+        },
+        {
+          "word": " kan",
+          "start": 6.7,
+          "end": 6.76,
+          "score": 0.8115234375
+        },
+        {
+          "word": " ju",
+          "start": 6.76,
+          "end": 6.86,
+          "score": 0.72607421875
+        },
+        {
+          "word": " bara",
+          "start": 6.86,
+          "end": 6.96,
+          "score": 0.5390625
+        },
+        {
+          "word": " joina,",
+          "start": 6.96,
+          "end": 7.24,
+          "score": 0.833984375
+        },
+        {
+          "word": " alltså",
+          "start": 7.34,
+          "end": 7.86,
+          "score": 0.5979817708333334
+        },
+        {
+          "word": " Discord,",
+          "start": 7.86,
+          "end": 8.04,
+          "score": 0.1907958984375
+        },
+        {
+          "word": " kan",
+          "start": 8.2,
+          "end": 8.34,
+          "score": 0.318603515625
+        },
+        {
+          "word": " ju",
+          "start": 8.34,
+          "end": 8.46,
+          "score": 0.57470703125
+        },
+        {
+          "word": " bara",
+          "start": 8.46,
+          "end": 8.56,
+          "score": 0.533203125
+        },
+        {
+          "word": " snacka",
+          "start": 8.56,
+          "end": 8.92,
+          "score": 0.6951904296875
+        },
+        {
+          "word": " igenom",
+          "start": 8.92,
+          "end": 9.14,
+          "score": 0.7425537109375
+        },
+        {
+          "word": " en.",
+          "start": 9.14,
+          "end": 9.24,
+          "score": 0.638671875
+        }
+      ]
+    },
+    {
+      "start": 10.160000000000002,
+      "end": 12.6,
+      "text": " Jag kan joina till exempel, så kan vi bara snacka igenom.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 10.160000000000002,
+          "end": 10.56,
+          "score": 0.44970703125
+        },
+        {
+          "word": " kan",
+          "start": 10.56,
+          "end": 10.72,
+          "score": 0.8388671875
+        },
+        {
+          "word": " joina",
+          "start": 10.72,
+          "end": 10.92,
+          "score": 0.6904296875
+        },
+        {
+          "word": " till",
+          "start": 10.92,
+          "end": 11.06,
+          "score": 0.63623046875
+        },
+        {
+          "word": " exempel,",
+          "start": 11.06,
+          "end": 11.26,
+          "score": 0.6484375
+        },
+        {
+          "word": " så",
+          "start": 11.4,
+          "end": 11.44,
+          "score": 0.603515625
+        },
+        {
+          "word": " kan",
+          "start": 11.44,
+          "end": 11.44,
+          "score": 0.82861328125
+        },
+        {
+          "word": " vi",
+          "start": 11.44,
+          "end": 11.54,
+          "score": 0.72998046875
+        },
+        {
+          "word": " bara",
+          "start": 11.54,
+          "end": 12.34,
+          "score": 0.43115234375
+        },
+        {
+          "word": " snacka",
+          "start": 12.34,
+          "end": 12.6,
+          "score": 0.794921875
+        },
+        {
+          "word": " igenom.",
+          "start": 12.6,
+          "end": 12.6,
+          "score": 0.671630859375
+        }
+      ]
+    },
+    {
+      "start": 12.6,
+      "end": 13.68,
+      "text": " Ja, nu hörs vi bra alltså.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 12.6,
+          "end": 12.66,
+          "score": 0.2548828125
+        },
+        {
+          "word": " nu",
+          "start": 12.7,
+          "end": 12.78,
+          "score": 0.67041015625
+        },
+        {
+          "word": " hörs",
+          "start": 12.78,
+          "end": 13.28,
+          "score": 0.6875
+        },
+        {
+          "word": " vi",
+          "start": 13.28,
+          "end": 13.28,
+          "score": 0.498046875
+        },
+        {
+          "word": " bra",
+          "start": 13.28,
+          "end": 13.5,
+          "score": 0.61767578125
+        },
+        {
+          "word": " alltså.",
+          "start": 13.5,
+          "end": 13.68,
+          "score": 0.331298828125
+        }
+      ]
+    },
+    {
+      "start": 14.820000000000002,
+      "end": 16.72,
+      "text": " Nu har vi ljud från noten.",
+      "words": [
+        {
+          "word": " Nu",
+          "start": 14.820000000000002,
+          "end": 15.22,
+          "score": 0.2420654296875
+        },
+        {
+          "word": " har",
+          "start": 15.22,
+          "end": 15.62,
+          "score": 0.33642578125
+        },
+        {
+          "word": " vi",
+          "start": 15.62,
+          "end": 15.74,
+          "score": 0.75048828125
+        },
+        {
+          "word": " ljud",
+          "start": 15.74,
+          "end": 16.02,
+          "score": 0.8505859375
+        },
+        {
+          "word": " från",
+          "start": 16.02,
+          "end": 16.24,
+          "score": 0.5693359375
+        },
+        {
+          "word": " noten.",
+          "start": 16.24,
+          "end": 16.72,
+          "score": 0.39501953125
+        }
+      ]
+    },
+    {
+      "start": 16.82,
+      "end": 17.38,
+      "text": " Ja, precis.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 16.82,
+          "end": 17.04,
+          "score": 0.705078125
+        },
+        {
+          "word": " precis.",
+          "start": 17.14,
+          "end": 17.38,
+          "score": 0.4501953125
+        }
+      ]
+    },
+    {
+      "start": 17.58,
+      "end": 18.86,
+      "text": " Ja, men vi snackar bara ljud.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 17.58,
+          "end": 17.74,
+          "score": 0.50439453125
+        },
+        {
+          "word": " men",
+          "start": 17.76,
+          "end": 17.76,
+          "score": 0.76025390625
+        },
+        {
+          "word": " vi",
+          "start": 17.76,
+          "end": 17.88,
+          "score": 0.73388671875
+        },
+        {
+          "word": " snackar",
+          "start": 17.88,
+          "end": 18.32,
+          "score": 0.88134765625
+        },
+        {
+          "word": " bara",
+          "start": 18.32,
+          "end": 18.32,
+          "score": 0.55517578125
+        },
+        {
+          "word": " ljud.",
+          "start": 18.32,
+          "end": 18.86,
+          "score": 0.6787109375
+        }
+      ]
+    },
+    {
+      "start": 19.520000000000003,
+      "end": 20.26,
+      "text": " Vad är nu muten?",
+      "words": [
+        {
+          "word": " Vad",
+          "start": 19.520000000000003,
+          "end": 19.92,
+          "score": 0.2890625
+        },
+        {
+          "word": " är",
+          "start": 19.92,
+          "end": 19.92,
+          "score": 0.49658203125
+        },
+        {
+          "word": " nu",
+          "start": 19.92,
+          "end": 19.98,
+          "score": 0.556640625
+        },
+        {
+          "word": " muten?",
+          "start": 19.98,
+          "end": 20.26,
+          "score": 0.6025390625
+        }
+      ]
+    },
+    {
+      "start": 20.5,
+      "end": 20.9,
+      "text": " Nästa.",
+      "words": [
+        {
+          "word": " Nästa.",
+          "start": 20.5,
+          "end": 20.9,
+          "score": 0.851318359375
+        }
+      ]
+    },
+    {
+      "start": 25.700000000000003,
+      "end": 27.42,
+      "text": " Du får muta dig själv också.",
+      "words": [
+        {
+          "word": " Du",
+          "start": 25.700000000000003,
+          "end": 26.1,
+          "score": 0.615234375
+        },
+        {
+          "word": " får",
+          "start": 26.1,
+          "end": 26.32,
+          "score": 0.460693359375
+        },
+        {
+          "word": " muta",
+          "start": 26.32,
+          "end": 26.7,
+          "score": 0.7218017578125
+        },
+        {
+          "word": " dig",
+          "start": 26.7,
+          "end": 26.8,
+          "score": 0.7412109375
+        },
+        {
+          "word": " själv",
+          "start": 26.8,
+          "end": 27.12,
+          "score": 0.6954752604166666
+        },
+        {
+          "word": " också.",
+          "start": 27.12,
+          "end": 27.42,
+          "score": 0.7216796875
+        }
+      ]
+    },
+    {
+      "start": 27.94,
+      "end": 29.18,
+      "text": " Annars kommer de höra dig.",
+      "words": [
+        {
+          "word": " Annars",
+          "start": 27.94,
+          "end": 28.34,
+          "score": 0.96533203125
+        },
+        {
+          "word": " kommer",
+          "start": 28.34,
+          "end": 28.48,
+          "score": 0.6650390625
+        },
+        {
+          "word": " de",
+          "start": 28.48,
+          "end": 28.62,
+          "score": 0.68896484375
+        },
+        {
+          "word": " höra",
+          "start": 28.62,
+          "end": 29.02,
+          "score": 0.784912109375
+        },
+        {
+          "word": " dig.",
+          "start": 29.02,
+          "end": 29.18,
+          "score": 0.76318359375
+        }
+      ]
+    }
+  ]
+}

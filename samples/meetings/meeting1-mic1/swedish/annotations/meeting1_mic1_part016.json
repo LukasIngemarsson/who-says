@@ -1,0 +1,283 @@
+{
+  "segments": [
+    {
+      "start": 4.58,
+      "end": 6.96,
+      "text": " Första delarna är väl att köra egentligen",
+      "words": [
+        {
+          "word": " Första",
+          "start": 4.58,
+          "end": 5.3,
+          "score": 0.66455078125
+        },
+        {
+          "word": " delarna",
+          "start": 5.3,
+          "end": 5.68,
+          "score": 0.795654296875
+        },
+        {
+          "word": " är",
+          "start": 5.68,
+          "end": 5.84,
+          "score": 0.7210693359375
+        },
+        {
+          "word": " väl",
+          "start": 5.84,
+          "end": 6.02,
+          "score": 0.70745849609375
+        },
+        {
+          "word": " att",
+          "start": 6.02,
+          "end": 6.14,
+          "score": 0.59765625
+        },
+        {
+          "word": " köra",
+          "start": 6.14,
+          "end": 6.62,
+          "score": 0.6802978515625
+        },
+        {
+          "word": " egentligen",
+          "start": 6.62,
+          "end": 6.96,
+          "score": 0.5659027099609375
+        }
+      ]
+    },
+    {
+      "start": 10.440000000000001,
+      "end": 12.08,
+      "text": " Vad här också",
+      "words": [
+        {
+          "word": " Vad",
+          "start": 10.440000000000001,
+          "end": 11.16,
+          "score": 0.07403564453125
+        },
+        {
+          "word": " här",
+          "start": 11.16,
+          "end": 11.88,
+          "score": 0.517578125
+        },
+        {
+          "word": " också",
+          "start": 11.88,
+          "end": 12.08,
+          "score": 0.7177734375
+        }
+      ]
+    },
+    {
+      "start": 14.280000000000001,
+      "end": 15.82,
+      "text": " Och sen köra igenom",
+      "words": [
+        {
+          "word": " Och",
+          "start": 14.280000000000001,
+          "end": 15.0,
+          "score": 0.199462890625
+        },
+        {
+          "word": " sen",
+          "start": 15.0,
+          "end": 15.2,
+          "score": 0.50341796875
+        },
+        {
+          "word": " köra",
+          "start": 15.2,
+          "end": 15.44,
+          "score": 0.67352294921875
+        },
+        {
+          "word": " igenom",
+          "start": 15.44,
+          "end": 15.82,
+          "score": 0.818115234375
+        }
+      ]
+    },
+    {
+      "start": 16.38,
+      "end": 19.5,
+      "text": " Bara följa den här pipeline ritningen i sig",
+      "words": [
+        {
+          "word": " Bara",
+          "start": 16.38,
+          "end": 17.04,
+          "score": 0.54833984375
+        },
+        {
+          "word": " följa",
+          "start": 17.04,
+          "end": 17.38,
+          "score": 0.8914388020833334
+        },
+        {
+          "word": " den",
+          "start": 17.38,
+          "end": 17.58,
+          "score": 0.79296875
+        },
+        {
+          "word": " här",
+          "start": 17.58,
+          "end": 17.74,
+          "score": 0.60888671875
+        },
+        {
+          "word": " pipeline",
+          "start": 17.74,
+          "end": 18.3,
+          "score": 0.4442138671875
+        },
+        {
+          "word": " ritningen",
+          "start": 18.3,
+          "end": 19.18,
+          "score": 0.73828125
+        },
+        {
+          "word": " i",
+          "start": 19.18,
+          "end": 19.38,
+          "score": 0.47119140625
+        },
+        {
+          "word": " sig",
+          "start": 19.38,
+          "end": 19.5,
+          "score": 0.77783203125
+        }
+      ]
+    },
+    {
+      "start": 19.5,
+      "end": 20.16,
+      "text": " Ja",
+      "words": [
+        {
+          "word": " Ja",
+          "start": 19.5,
+          "end": 20.16,
+          "score": 0.01207733154296875
+        }
+      ]
+    },
+    {
+      "start": 20.16,
+      "end": 23.1,
+      "text": " Och sen skicka tillbaka",
+      "words": [
+        {
+          "word": " Och",
+          "start": 20.16,
+          "end": 20.58,
+          "score": 0.54931640625
+        },
+        {
+          "word": " sen",
+          "start": 20.58,
+          "end": 22.34,
+          "score": 0.70703125
+        },
+        {
+          "word": " skicka",
+          "start": 22.34,
+          "end": 22.58,
+          "score": 0.9078776041666666
+        },
+        {
+          "word": " tillbaka",
+          "start": 22.58,
+          "end": 23.1,
+          "score": 0.8650716145833334
+        }
+      ]
+    },
+    {
+      "start": 23.1,
+      "end": 23.56,
+      "text": " Då",
+      "words": [
+        {
+          "word": " Då",
+          "start": 23.1,
+          "end": 23.56,
+          "score": 0.1767578125
+        }
+      ]
+    },
+    {
+      "start": 25.1,
+      "end": 26.9,
+      "text": " Det vi har fått ut egentligen",
+      "words": [
+        {
+          "word": " Det",
+          "start": 25.1,
+          "end": 25.82,
+          "score": 0.3515625
+        },
+        {
+          "word": " vi",
+          "start": 25.82,
+          "end": 26.08,
+          "score": 0.72119140625
+        },
+        {
+          "word": " har",
+          "start": 26.08,
+          "end": 26.18,
+          "score": 0.36865234375
+        },
+        {
+          "word": " fått",
+          "start": 26.18,
+          "end": 26.34,
+          "score": 0.7578125
+        },
+        {
+          "word": " ut",
+          "start": 26.34,
+          "end": 26.48,
+          "score": 0.6396484375
+        },
+        {
+          "word": " egentligen",
+          "start": 26.48,
+          "end": 26.9,
+          "score": 0.6358642578125
+        }
+      ]
+    },
+    {
+      "start": 28.400000000000002,
+      "end": 28.68,
+      "text": " Sen ja",
+      "words": [
+        {
+          "word": " Sen",
+          "start": 28.060000000000002,
+          "end": 28.42,
+          "score": 0.62841796875
+        },
+        {
+          "word": " ja",
+          "start": 28.42,
+          "end": 28.68,
+          "score": 0.374267578125
+        }
+      ]
+    }
+  ]
+}

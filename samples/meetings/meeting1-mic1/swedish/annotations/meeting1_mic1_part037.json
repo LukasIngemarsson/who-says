@@ -1,0 +1,582 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 7.3,
+      "text": " Alltså, jag måste kolla igenom lite mer för att jag tror jag skulle kunna använda den utan att fucka upp någonting på det.",
+      "words": [
+        {
+          "word": " Alltså,",
+          "start": 0.0,
+          "end": 0.42,
+          "score": 0.69140625
+        },
+        {
+          "word": " jag",
+          "start": 0.42,
+          "end": 1.64,
+          "score": 0.56689453125
+        },
+        {
+          "word": " måste",
+          "start": 1.64,
+          "end": 2.14,
+          "score": 0.541015625
+        },
+        {
+          "word": " kolla",
+          "start": 2.14,
+          "end": 2.42,
+          "score": 0.800048828125
+        },
+        {
+          "word": " igenom",
+          "start": 2.42,
+          "end": 2.74,
+          "score": 0.822021484375
+        },
+        {
+          "word": " lite",
+          "start": 2.74,
+          "end": 2.9,
+          "score": 0.79248046875
+        },
+        {
+          "word": " mer",
+          "start": 2.9,
+          "end": 3.12,
+          "score": 0.6083984375
+        },
+        {
+          "word": " för",
+          "start": 3.12,
+          "end": 3.34,
+          "score": 0.33447265625
+        },
+        {
+          "word": " att",
+          "start": 3.34,
+          "end": 3.56,
+          "score": 0.3056640625
+        },
+        {
+          "word": " jag",
+          "start": 3.56,
+          "end": 4.02,
+          "score": 0.156982421875
+        },
+        {
+          "word": " tror",
+          "start": 4.02,
+          "end": 4.02,
+          "score": 0.50537109375
+        },
+        {
+          "word": " jag",
+          "start": 4.02,
+          "end": 4.14,
+          "score": 0.386962890625
+        },
+        {
+          "word": " skulle",
+          "start": 4.14,
+          "end": 4.26,
+          "score": 0.53662109375
+        },
+        {
+          "word": " kunna",
+          "start": 4.26,
+          "end": 4.44,
+          "score": 0.419189453125
+        },
+        {
+          "word": " använda",
+          "start": 4.44,
+          "end": 5.52,
+          "score": 0.6229248046875
+        },
+        {
+          "word": " den",
+          "start": 5.52,
+          "end": 5.62,
+          "score": 0.8095703125
+        },
+        {
+          "word": " utan",
+          "start": 5.62,
+          "end": 6.1,
+          "score": 0.68017578125
+        },
+        {
+          "word": " att",
+          "start": 6.1,
+          "end": 6.36,
+          "score": 0.59326171875
+        },
+        {
+          "word": " fucka",
+          "start": 6.36,
+          "end": 6.64,
+          "score": 0.789794921875
+        },
+        {
+          "word": " upp",
+          "start": 6.64,
+          "end": 6.68,
+          "score": 0.65234375
+        },
+        {
+          "word": " någonting",
+          "start": 6.68,
+          "end": 7.04,
+          "score": 0.573974609375
+        },
+        {
+          "word": " på",
+          "start": 7.04,
+          "end": 7.2,
+          "score": 0.5166015625
+        },
+        {
+          "word": " det.",
+          "start": 7.2,
+          "end": 7.3,
+          "score": 0.452880859375
+        }
+      ]
+    },
+    {
+      "start": 7.5,
+      "end": 12.16,
+      "text": " Jag har en liten Rydme som hjälper mig att förstå lite i alla fall.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 7.5,
+          "end": 7.92,
+          "score": 0.480712890625
+        },
+        {
+          "word": " har",
+          "start": 7.92,
+          "end": 8.14,
+          "score": 0.6630859375
+        },
+        {
+          "word": " en",
+          "start": 8.14,
+          "end": 8.2,
+          "score": 0.63623046875
+        },
+        {
+          "word": " liten",
+          "start": 8.2,
+          "end": 8.48,
+          "score": 0.884765625
+        },
+        {
+          "word": " Rydme",
+          "start": 8.48,
+          "end": 9.18,
+          "score": 0.4825846354166667
+        },
+        {
+          "word": " som",
+          "start": 9.18,
+          "end": 9.86,
+          "score": 0.595703125
+        },
+        {
+          "word": " hjälper",
+          "start": 9.86,
+          "end": 10.72,
+          "score": 0.7626953125
+        },
+        {
+          "word": " mig",
+          "start": 10.72,
+          "end": 10.94,
+          "score": 0.65087890625
+        },
+        {
+          "word": " att",
+          "start": 10.94,
+          "end": 11.04,
+          "score": 0.33203125
+        },
+        {
+          "word": " förstå",
+          "start": 11.04,
+          "end": 11.48,
+          "score": 0.8447265625
+        },
+        {
+          "word": " lite",
+          "start": 11.48,
+          "end": 11.7,
+          "score": 0.7958984375
+        },
+        {
+          "word": " i",
+          "start": 11.7,
+          "end": 11.88,
+          "score": 0.78369140625
+        },
+        {
+          "word": " alla",
+          "start": 11.88,
+          "end": 11.96,
+          "score": 0.57861328125
+        },
+        {
+          "word": " fall.",
+          "start": 11.96,
+          "end": 12.16,
+          "score": 0.6318359375
+        }
+      ]
+    },
+    {
+      "start": 12.600000000000001,
+      "end": 15.04,
+      "text": " Fast den dockor bråkar lite med mig.",
+      "words": [
+        {
+          "word": " Fast",
+          "start": 12.600000000000001,
+          "end": 13.04,
+          "score": 0.374267578125
+        },
+        {
+          "word": " den",
+          "start": 13.04,
+          "end": 13.2,
+          "score": 0.72998046875
+        },
+        {
+          "word": " dockor",
+          "start": 13.2,
+          "end": 13.88,
+          "score": 0.8251953125
+        },
+        {
+          "word": " bråkar",
+          "start": 13.88,
+          "end": 14.32,
+          "score": 0.8375651041666666
+        },
+        {
+          "word": " lite",
+          "start": 14.32,
+          "end": 14.54,
+          "score": 0.79833984375
+        },
+        {
+          "word": " med",
+          "start": 14.54,
+          "end": 14.82,
+          "score": 0.75732421875
+        },
+        {
+          "word": " mig.",
+          "start": 14.82,
+          "end": 15.04,
+          "score": 0.6455078125
+        }
+      ]
+    },
+    {
+      "start": 15.26,
+      "end": 21.04,
+      "text": " Är det någon annan som bestämmer sig för att ominstallera allting?",
+      "words": [
+        {
+          "word": " Är",
+          "start": 15.26,
+          "end": 15.7,
+          "score": 0.08087158203125
+        },
+        {
+          "word": " det",
+          "start": 15.7,
+          "end": 15.72,
+          "score": 0.74658203125
+        },
+        {
+          "word": " någon",
+          "start": 15.72,
+          "end": 16.28,
+          "score": 0.56787109375
+        },
+        {
+          "word": " annan",
+          "start": 16.28,
+          "end": 16.74,
+          "score": 0.794189453125
+        },
+        {
+          "word": " som",
+          "start": 16.74,
+          "end": 16.86,
+          "score": 0.6318359375
+        },
+        {
+          "word": " bestämmer",
+          "start": 16.86,
+          "end": 19.1,
+          "score": 0.7333984375
+        },
+        {
+          "word": " sig",
+          "start": 19.1,
+          "end": 19.14,
+          "score": 0.7470703125
+        },
+        {
+          "word": " för",
+          "start": 19.14,
+          "end": 19.34,
+          "score": 0.57763671875
+        },
+        {
+          "word": " att",
+          "start": 19.34,
+          "end": 19.52,
+          "score": 0.59326171875
+        },
+        {
+          "word": " ominstallera",
+          "start": 19.52,
+          "end": 20.52,
+          "score": 0.9547119140625
+        },
+        {
+          "word": " allting?",
+          "start": 20.52,
+          "end": 21.04,
+          "score": 0.9599609375
+        }
+      ]
+    },
+    {
+      "start": 21.32,
+      "end": 24.68,
+      "text": " Alltså när han bildar så tar det skitlång tid istället för att han kommer ihåg grejer.",
+      "words": [
+        {
+          "word": " Alltså",
+          "start": 21.32,
+          "end": 21.76,
+          "score": 0.69921875
+        },
+        {
+          "word": " när",
+          "start": 21.76,
+          "end": 21.84,
+          "score": 0.461181640625
+        },
+        {
+          "word": " han",
+          "start": 21.84,
+          "end": 21.94,
+          "score": 0.65576171875
+        },
+        {
+          "word": " bildar",
+          "start": 21.94,
+          "end": 22.44,
+          "score": 0.7305908203125
+        },
+        {
+          "word": " så",
+          "start": 22.44,
+          "end": 22.58,
+          "score": 0.443359375
+        },
+        {
+          "word": " tar",
+          "start": 22.58,
+          "end": 22.78,
+          "score": 0.5859375
+        },
+        {
+          "word": " det",
+          "start": 22.78,
+          "end": 23.06,
+          "score": 0.7490234375
+        },
+        {
+          "word": " skitlång",
+          "start": 23.06,
+          "end": 23.4,
+          "score": 0.82525634765625
+        },
+        {
+          "word": " tid",
+          "start": 23.4,
+          "end": 23.54,
+          "score": 0.72607421875
+        },
+        {
+          "word": " istället",
+          "start": 23.54,
+          "end": 23.9,
+          "score": 0.7109375
+        },
+        {
+          "word": " för",
+          "start": 23.9,
+          "end": 23.98,
+          "score": 0.269287109375
+        },
+        {
+          "word": " att",
+          "start": 23.98,
+          "end": 24.04,
+          "score": 0.58056640625
+        },
+        {
+          "word": " han",
+          "start": 24.04,
+          "end": 24.14,
+          "score": 0.4853515625
+        },
+        {
+          "word": " kommer",
+          "start": 24.14,
+          "end": 24.28,
+          "score": 0.6796875
+        },
+        {
+          "word": " ihåg",
+          "start": 24.28,
+          "end": 24.48,
+          "score": 0.9073893229166666
+        },
+        {
+          "word": " grejer.",
+          "start": 24.48,
+          "end": 24.68,
+          "score": 0.890869140625
+        }
+      ]
+    },
+    {
+      "start": 24.8,
+      "end": 26.4,
+      "text": " Ja, det är ju när den inte är cashad.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 24.8,
+          "end": 24.92,
+          "score": 0.599609375
+        },
+        {
+          "word": " det",
+          "start": 24.94,
+          "end": 25.06,
+          "score": 0.75390625
+        },
+        {
+          "word": " är",
+          "start": 25.06,
+          "end": 25.6,
+          "score": 0.51611328125
+        },
+        {
+          "word": " ju",
+          "start": 25.6,
+          "end": 25.66,
+          "score": 0.3701171875
+        },
+        {
+          "word": " när",
+          "start": 25.66,
+          "end": 25.7,
+          "score": 0.5166015625
+        },
+        {
+          "word": " den",
+          "start": 25.7,
+          "end": 25.78,
+          "score": 0.76123046875
+        },
+        {
+          "word": " inte",
+          "start": 25.78,
+          "end": 25.96,
+          "score": 0.56005859375
+        },
+        {
+          "word": " är",
+          "start": 25.96,
+          "end": 26.0,
+          "score": 0.29541015625
+        },
+        {
+          "word": " cashad.",
+          "start": 26.0,
+          "end": 26.4,
+          "score": 0.6986083984375
+        }
+      ]
+    },
+    {
+      "start": 26.7,
+      "end": 27.14,
+      "text": " Ja.",
+      "words": [
+        {
+          "word": " Ja.",
+          "start": 26.7,
+          "end": 27.14,
+          "score": 0.52197265625
+        }
+      ]
+    },
+    {
+      "start": 27.46,
+      "end": 29.2,
+      "text": " Man måste ju köra om allting.",
+      "words": [
+        {
+          "word": " Man",
+          "start": 27.46,
+          "end": 27.9,
+          "score": 0.177001953125
+        },
+        {
+          "word": " måste",
+          "start": 27.9,
+          "end": 28.18,
+          "score": 0.4599609375
+        },
+        {
+          "word": " ju",
+          "start": 28.18,
+          "end": 28.24,
+          "score": 0.7158203125
+        },
+        {
+          "word": " köra",
+          "start": 28.24,
+          "end": 28.86,
+          "score": 0.812255859375
+        },
+        {
+          "word": " om",
+          "start": 28.86,
+          "end": 28.94,
+          "score": 0.64306640625
+        },
+        {
+          "word": " allting.",
+          "start": 28.94,
+          "end": 29.2,
+          "score": 0.96875
+        }
+      ]
+    }
+  ]
+}

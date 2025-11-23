@@ -1,0 +1,760 @@
+{
+  "segments": [
+    {
+      "start": 1.0599999999999996,
+      "end": 4.96,
+      "text": " Ja, alltså nej, det är inget avancerat, det var nog mer vad jag tänkte om vi skulle komma fram till.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 1.0599999999999996,
+          "end": 1.38,
+          "score": 0.08807373046875
+        },
+        {
+          "word": " alltså",
+          "start": 1.4,
+          "end": 1.56,
+          "score": 0.299560546875
+        },
+        {
+          "word": " nej,",
+          "start": 1.56,
+          "end": 1.72,
+          "score": 0.64453125
+        },
+        {
+          "word": " det",
+          "start": 1.76,
+          "end": 1.82,
+          "score": 0.74951171875
+        },
+        {
+          "word": " är",
+          "start": 1.82,
+          "end": 1.82,
+          "score": 0.50439453125
+        },
+        {
+          "word": " inget",
+          "start": 1.82,
+          "end": 2.22,
+          "score": 0.8330078125
+        },
+        {
+          "word": " avancerat,",
+          "start": 2.22,
+          "end": 3.28,
+          "score": 0.9070638020833334
+        },
+        {
+          "word": " det",
+          "start": 3.28,
+          "end": 3.36,
+          "score": 0.61865234375
+        },
+        {
+          "word": " var",
+          "start": 3.36,
+          "end": 3.4,
+          "score": 0.8271484375
+        },
+        {
+          "word": " nog",
+          "start": 3.4,
+          "end": 3.54,
+          "score": 0.439697265625
+        },
+        {
+          "word": " mer",
+          "start": 3.54,
+          "end": 3.64,
+          "score": 0.67041015625
+        },
+        {
+          "word": " vad",
+          "start": 3.64,
+          "end": 3.78,
+          "score": 0.4912109375
+        },
+        {
+          "word": " jag",
+          "start": 3.78,
+          "end": 3.88,
+          "score": 0.63623046875
+        },
+        {
+          "word": " tänkte",
+          "start": 3.88,
+          "end": 4.06,
+          "score": 0.724609375
+        },
+        {
+          "word": " om",
+          "start": 4.06,
+          "end": 4.16,
+          "score": 0.34912109375
+        },
+        {
+          "word": " vi",
+          "start": 4.16,
+          "end": 4.18,
+          "score": 0.6826171875
+        },
+        {
+          "word": " skulle",
+          "start": 4.18,
+          "end": 4.34,
+          "score": 0.6187337239583334
+        },
+        {
+          "word": " komma",
+          "start": 4.34,
+          "end": 4.48,
+          "score": 0.58251953125
+        },
+        {
+          "word": " fram",
+          "start": 4.48,
+          "end": 4.66,
+          "score": 0.53662109375
+        },
+        {
+          "word": " till.",
+          "start": 4.66,
+          "end": 4.96,
+          "score": 0.775390625
+        }
+      ]
+    },
+    {
+      "start": 5.68,
+      "end": 10.26,
+      "text": " Det kanske inte är så viktigt att vi kör någon sorts global convention för hur det ska se ut.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 5.68,
+          "end": 6.0,
+          "score": 0.74169921875
+        },
+        {
+          "word": " kanske",
+          "start": 6.0,
+          "end": 6.18,
+          "score": 0.5712890625
+        },
+        {
+          "word": " inte",
+          "start": 6.18,
+          "end": 6.38,
+          "score": 0.5986328125
+        },
+        {
+          "word": " är",
+          "start": 6.38,
+          "end": 6.52,
+          "score": 0.497314453125
+        },
+        {
+          "word": " så",
+          "start": 6.52,
+          "end": 6.56,
+          "score": 0.61767578125
+        },
+        {
+          "word": " viktigt",
+          "start": 6.56,
+          "end": 6.78,
+          "score": 0.5146484375
+        },
+        {
+          "word": " att",
+          "start": 6.78,
+          "end": 7.02,
+          "score": 0.576171875
+        },
+        {
+          "word": " vi",
+          "start": 7.02,
+          "end": 7.18,
+          "score": 0.62353515625
+        },
+        {
+          "word": " kör",
+          "start": 7.18,
+          "end": 8.26,
+          "score": 0.6856689453125
+        },
+        {
+          "word": " någon",
+          "start": 8.26,
+          "end": 8.3,
+          "score": 0.443603515625
+        },
+        {
+          "word": " sorts",
+          "start": 8.3,
+          "end": 8.54,
+          "score": 0.6162109375
+        },
+        {
+          "word": " global",
+          "start": 8.54,
+          "end": 8.86,
+          "score": 0.67626953125
+        },
+        {
+          "word": " convention",
+          "start": 8.86,
+          "end": 9.4,
+          "score": 0.353759765625
+        },
+        {
+          "word": " för",
+          "start": 9.4,
+          "end": 9.82,
+          "score": 0.5458984375
+        },
+        {
+          "word": " hur",
+          "start": 9.82,
+          "end": 9.92,
+          "score": 0.7177734375
+        },
+        {
+          "word": " det",
+          "start": 9.92,
+          "end": 9.96,
+          "score": 0.755859375
+        },
+        {
+          "word": " ska",
+          "start": 9.96,
+          "end": 10.04,
+          "score": 0.51806640625
+        },
+        {
+          "word": " se",
+          "start": 10.04,
+          "end": 10.14,
+          "score": 0.71435546875
+        },
+        {
+          "word": " ut.",
+          "start": 10.14,
+          "end": 10.26,
+          "score": 0.6474609375
+        }
+      ]
+    },
+    {
+      "start": 10.34,
+      "end": 16.56,
+      "text": " Jag tänkte till exempel i de fallen där vi vet att vi förväntar oss att man loadar från audiofile och får sample-ratin också,",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 10.34,
+          "end": 10.38,
+          "score": 0.72802734375
+        },
+        {
+          "word": " tänkte",
+          "start": 10.38,
+          "end": 10.56,
+          "score": 0.723388671875
+        },
+        {
+          "word": " till",
+          "start": 10.56,
+          "end": 10.64,
+          "score": 0.6640625
+        },
+        {
+          "word": " exempel",
+          "start": 10.64,
+          "end": 10.96,
+          "score": 0.66552734375
+        },
+        {
+          "word": " i",
+          "start": 10.96,
+          "end": 11.64,
+          "score": 0.50732421875
+        },
+        {
+          "word": " de",
+          "start": 11.64,
+          "end": 11.72,
+          "score": 0.6953125
+        },
+        {
+          "word": " fallen",
+          "start": 11.72,
+          "end": 12.04,
+          "score": 0.5400390625
+        },
+        {
+          "word": " där",
+          "start": 12.04,
+          "end": 12.28,
+          "score": 0.41943359375
+        },
+        {
+          "word": " vi",
+          "start": 12.28,
+          "end": 12.38,
+          "score": 0.74853515625
+        },
+        {
+          "word": " vet",
+          "start": 12.38,
+          "end": 12.56,
+          "score": 0.54345703125
+        },
+        {
+          "word": " att",
+          "start": 12.56,
+          "end": 12.72,
+          "score": 0.591796875
+        },
+        {
+          "word": " vi",
+          "start": 12.72,
+          "end": 12.76,
+          "score": 0.71337890625
+        },
+        {
+          "word": " förväntar",
+          "start": 12.76,
+          "end": 13.16,
+          "score": 0.970458984375
+        },
+        {
+          "word": " oss",
+          "start": 13.16,
+          "end": 13.28,
+          "score": 0.5126953125
+        },
+        {
+          "word": " att",
+          "start": 13.28,
+          "end": 13.76,
+          "score": 0.418701171875
+        },
+        {
+          "word": " man",
+          "start": 13.76,
+          "end": 14.08,
+          "score": 0.74609375
+        },
+        {
+          "word": " loadar",
+          "start": 14.08,
+          "end": 14.64,
+          "score": 0.6880696614583334
+        },
+        {
+          "word": " från",
+          "start": 14.64,
+          "end": 14.74,
+          "score": 0.5400390625
+        },
+        {
+          "word": " audiofile",
+          "start": 14.74,
+          "end": 15.48,
+          "score": 0.586669921875
+        },
+        {
+          "word": " och",
+          "start": 15.48,
+          "end": 15.58,
+          "score": 0.69775390625
+        },
+        {
+          "word": " får",
+          "start": 15.58,
+          "end": 15.8,
+          "score": 0.51025390625
+        },
+        {
+          "word": " sample",
+          "start": 15.8,
+          "end": 16.16,
+          "score": 0.7216796875
+        },
+        {
+          "word": "-ratin",
+          "start": 16.16,
+          "end": 16.42,
+          "score": 0.4236653645833333
+        },
+        {
+          "word": " också,",
+          "start": 16.42,
+          "end": 16.56,
+          "score": 0.6494140625
+        }
+      ]
+    },
+    {
+      "start": 16.78,
+      "end": 19.9,
+      "text": " att man kanske har en viss struktur på det varje gång.",
+      "words": [
+        {
+          "word": " att",
+          "start": 16.78,
+          "end": 16.88,
+          "score": 0.58984375
+        },
+        {
+          "word": " man",
+          "start": 16.88,
+          "end": 17.06,
+          "score": 0.74462890625
+        },
+        {
+          "word": " kanske",
+          "start": 17.06,
+          "end": 17.28,
+          "score": 0.5947265625
+        },
+        {
+          "word": " har",
+          "start": 17.28,
+          "end": 18.06,
+          "score": 0.66552734375
+        },
+        {
+          "word": " en",
+          "start": 18.06,
+          "end": 18.7,
+          "score": 0.6455078125
+        },
+        {
+          "word": " viss",
+          "start": 18.7,
+          "end": 18.92,
+          "score": 0.875244140625
+        },
+        {
+          "word": " struktur",
+          "start": 18.92,
+          "end": 19.12,
+          "score": 0.750244140625
+        },
+        {
+          "word": " på",
+          "start": 19.12,
+          "end": 19.26,
+          "score": 0.60986328125
+        },
+        {
+          "word": " det",
+          "start": 19.26,
+          "end": 19.34,
+          "score": 0.75390625
+        },
+        {
+          "word": " varje",
+          "start": 19.34,
+          "end": 19.66,
+          "score": 0.9150390625
+        },
+        {
+          "word": " gång.",
+          "start": 19.66,
+          "end": 19.9,
+          "score": 0.49853515625
+        }
+      ]
+    },
+    {
+      "start": 20.42,
+      "end": 24.46,
+      "text": " Till exempel om man implementerar, nu vet jag att man inte kan ha det på alla grejer,",
+      "words": [
+        {
+          "word": " Till",
+          "start": 20.42,
+          "end": 20.74,
+          "score": 0.475830078125
+        },
+        {
+          "word": " exempel",
+          "start": 20.74,
+          "end": 20.96,
+          "score": 0.65869140625
+        },
+        {
+          "word": " om",
+          "start": 20.96,
+          "end": 21.12,
+          "score": 0.5859375
+        },
+        {
+          "word": " man",
+          "start": 21.12,
+          "end": 21.5,
+          "score": 0.73828125
+        },
+        {
+          "word": " implementerar,",
+          "start": 21.5,
+          "end": 22.1,
+          "score": 0.9220377604166666
+        },
+        {
+          "word": " nu",
+          "start": 22.1,
+          "end": 22.92,
+          "score": 0.5322265625
+        },
+        {
+          "word": " vet",
+          "start": 22.92,
+          "end": 23.08,
+          "score": 0.56689453125
+        },
+        {
+          "word": " jag",
+          "start": 23.08,
+          "end": 23.14,
+          "score": 0.6171875
+        },
+        {
+          "word": " att",
+          "start": 23.14,
+          "end": 23.2,
+          "score": 0.53271484375
+        },
+        {
+          "word": " man",
+          "start": 23.2,
+          "end": 23.24,
+          "score": 0.71142578125
+        },
+        {
+          "word": " inte",
+          "start": 23.24,
+          "end": 23.36,
+          "score": 0.58154296875
+        },
+        {
+          "word": " kan",
+          "start": 23.36,
+          "end": 23.48,
+          "score": 0.810546875
+        },
+        {
+          "word": " ha",
+          "start": 23.48,
+          "end": 23.86,
+          "score": 0.71337890625
+        },
+        {
+          "word": " det",
+          "start": 23.86,
+          "end": 23.96,
+          "score": 0.75048828125
+        },
+        {
+          "word": " på",
+          "start": 23.96,
+          "end": 24.04,
+          "score": 0.5986328125
+        },
+        {
+          "word": " alla",
+          "start": 24.04,
+          "end": 24.18,
+          "score": 0.67919921875
+        },
+        {
+          "word": " grejer,",
+          "start": 24.18,
+          "end": 24.46,
+          "score": 0.92626953125
+        }
+      ]
+    },
+    {
+      "start": 24.52,
+      "end": 29.96,
+      "text": " men för de grejerna som är samma, som förväntas i samma input, att de ska vara samma sak, så att det inte till exempel en vektor i flykt,",
+      "words": [
+        {
+          "word": " men",
+          "start": 24.52,
+          "end": 24.54,
+          "score": 0.76513671875
+        },
+        {
+          "word": " för",
+          "start": 24.54,
+          "end": 24.64,
+          "score": 0.578125
+        },
+        {
+          "word": " de",
+          "start": 24.64,
+          "end": 24.74,
+          "score": 0.68408203125
+        },
+        {
+          "word": " grejerna",
+          "start": 24.74,
+          "end": 24.94,
+          "score": 0.7887369791666666
+        },
+        {
+          "word": " som",
+          "start": 24.94,
+          "end": 25.04,
+          "score": 0.671875
+        },
+        {
+          "word": " är",
+          "start": 25.04,
+          "end": 25.18,
+          "score": 0.484619140625
+        },
+        {
+          "word": " samma,",
+          "start": 25.18,
+          "end": 25.68,
+          "score": 0.66015625
+        },
+        {
+          "word": " som",
+          "start": 25.8,
+          "end": 25.86,
+          "score": 0.630859375
+        },
+        {
+          "word": " förväntas",
+          "start": 25.86,
+          "end": 26.18,
+          "score": 0.8680419921875
+        },
+        {
+          "word": " i",
+          "start": 26.18,
+          "end": 26.24,
+          "score": 0.59521484375
+        },
+        {
+          "word": " samma",
+          "start": 26.24,
+          "end": 26.4,
+          "score": 0.68994140625
+        },
+        {
+          "word": " input,",
+          "start": 26.4,
+          "end": 26.62,
+          "score": 0.80712890625
+        },
+        {
+          "word": " att",
+          "start": 26.68,
+          "end": 26.8,
+          "score": 0.57666015625
+        },
+        {
+          "word": " de",
+          "start": 26.8,
+          "end": 26.86,
+          "score": 0.72802734375
+        },
+        {
+          "word": " ska",
+          "start": 26.86,
+          "end": 27.04,
+          "score": 0.52978515625
+        },
+        {
+          "word": " vara",
+          "start": 27.04,
+          "end": 27.22,
+          "score": 0.60009765625
+        },
+        {
+          "word": " samma",
+          "start": 27.22,
+          "end": 27.38,
+          "score": 0.6669921875
+        },
+        {
+          "word": " sak,",
+          "start": 27.38,
+          "end": 27.68,
+          "score": 0.6708984375
+        },
+        {
+          "word": " så",
+          "start": 27.74,
+          "end": 27.86,
+          "score": 0.603515625
+        },
+        {
+          "word": " att",
+          "start": 27.86,
+          "end": 27.9,
+          "score": 0.5771484375
+        },
+        {
+          "word": " det",
+          "start": 27.9,
+          "end": 27.94,
+          "score": 0.68017578125
+        },
+        {
+          "word": " inte",
+          "start": 27.94,
+          "end": 28.08,
+          "score": 0.6044921875
+        },
+        {
+          "word": " till",
+          "start": 28.08,
+          "end": 28.16,
+          "score": 0.470703125
+        },
+        {
+          "word": " exempel",
+          "start": 28.16,
+          "end": 28.42,
+          "score": 0.6416015625
+        },
+        {
+          "word": " en",
+          "start": 28.42,
+          "end": 29.08,
+          "score": 0.082763671875
+        },
+        {
+          "word": " vektor",
+          "start": 29.08,
+          "end": 29.66,
+          "score": 0.83984375
+        },
+        {
+          "word": " i",
+          "start": 29.66,
+          "end": 29.78,
+          "score": 0.60205078125
+        },
+        {
+          "word": " flykt,",
+          "start": 29.78,
+          "end": 29.96,
+          "score": 0.6357421875
+        }
+      ]
+    }
+  ]
+}

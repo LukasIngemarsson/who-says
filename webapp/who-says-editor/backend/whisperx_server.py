@@ -29,20 +29,19 @@ LANGUAGE = "sv"        # Swedish as in your original script
 
 app = FastAPI()
 
-# Allow the Vite dev server to talk to this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # adjust if frontend runs elsewhere
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # -----------------------------
-# Load WhisperX model once
+# Load WhisperX ASR model once
 # -----------------------------
 
-print(f"Loading WhisperX model on {DEVICE}...")
+print(f"Loading WhisperX ASR model on {DEVICE}...")
 base_model = whisperx.load_model(
     "large-v2",
     device=DEVICE,
@@ -50,13 +49,36 @@ base_model = whisperx.load_model(
     language=LANGUAGE,
 )
 
+# -----------------------------
+# Load diarization model (lazy)
+# -----------------------------
+
+from whisperx.diarize import DiarizationPipeline
+
+diarize_model: Optional[DiarizationPipeline] = None
+
+
+def get_diarize_model() -> DiarizationPipeline:
+    global diarize_model
+
+    if diarize_model is None:
+        if not HF_TOKEN:
+            raise RuntimeError(
+                "HF_TOKEN is not set in the environment, "
+                "but diarization was requested."
+            )
+        print(f"Loading diarization model on {DEVICE}...")
+        diarize_model = DiarizationPipeline(
+            use_auth_token=HF_TOKEN,
+            device=DEVICE,
+        )
+    return diarize_model
+
 
 def cleanup_gpu():
-  if DEVICE == "cuda":
-      gc.collect()
-      torch.cuda.empty_cache()
-  else:
-      gc.collect()
+    gc.collect()
+    if DEVICE == "cuda":
+        torch.cuda.empty_cache()
 
 
 # -----------------------------
@@ -64,18 +86,34 @@ def cleanup_gpu():
 # -----------------------------
 
 @app.post("/annotate")
-async def annotate(audio: UploadFile = File(...)):
+async def annotate(
+    audio: UploadFile = File(...),
+    min_speakers: Optional[int] = None,
+    max_speakers: Optional[int] = None,
+):
     """
-    Accepts an audio file upload and returns WhisperX's JSON result:
-    {
-      "segments": [...],
-      "text": "...",
-      "language": "...",
-      ...
-    }
+    Accepts an audio file upload and returns WhisperX's JSON result with
+    transcription, alignment, AND speaker diarization.
 
-    NOTE: This version does *not* do diarization (no speakers),
-    only transcription + alignment + word timings.
+    Result example:
+    {
+      "segments": [
+        {
+          "id": 0,
+          "start": 0.5,
+          "end": 3.2,
+          "text": "...",
+          "speaker": "SPEAKER_00",
+          "words": [
+            {"word": "Hej", "start": 0.6, "end": 0.9, "speaker": "SPEAKER_00"},
+            ...
+          ]
+        },
+        ...
+      ],
+      "text": "...",
+      "language": "sv"
+    }
     """
     # Save uploaded file to a temp path
     suffix = os.path.splitext(audio.filename or "")[1] or ".wav"
@@ -86,8 +124,12 @@ async def annotate(audio: UploadFile = File(...)):
 
     try:
         print(f"Transcribing: {audio.filename} -> {temp_path}")
+
         # 1. Transcribe
-        result = base_model.transcribe(temp_path, batch_size=BATCH_SIZE)
+        result = base_model.transcribe(
+            temp_path,
+            batch_size=BATCH_SIZE,
+        )
 
         # 2. Alignment (adds per-word timestamps)
         audio_data = whisperx.load_audio(temp_path)
@@ -104,20 +146,41 @@ async def annotate(audio: UploadFile = File(...)):
             device=DEVICE,
         )
 
+        # Free alignment model from GPU
         del model_a
         cleanup_gpu()
 
-        # No diarization here to avoid pyannote / torchvision issues
-        result_final = result_aligned
-        return result_final
+        # 3. Diarization
+        diarizer = get_diarize_model()
+
+        # You can pass min/max_speakers from the frontend if you know them
+        if min_speakers is not None or max_speakers is not None:
+            diarize_segments = diarizer(
+                audio_data,
+                min_speakers=min_speakers,
+                max_speakers=max_speakers,
+            )
+        else:
+            diarize_segments = diarizer(audio_data)
+
+        # 4. Assign speakers to words/segments
+        result_with_speakers = whisperx.assign_word_speakers(
+            diarize_segments,
+            result_aligned,
+        )
+
+        cleanup_gpu()
+
+        return result_with_speakers
 
     except Exception as e:
-        # print full stack trace to the terminal so we can see what's wrong
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Annotation failed: {e}") from e
+        raise HTTPException(
+            status_code=500,
+            detail=f"Annotation failed: {e}"
+        ) from e
 
     finally:
-        # Clean up temp file
         try:
             os.unlink(temp_path)
         except OSError:

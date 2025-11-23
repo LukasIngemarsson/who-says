@@ -7,26 +7,46 @@ import { useUndoRedo } from "../hooks/useUndoRedo";
 import type { WhisperDoc, Segment } from "../types/whisperx";
 import { fromTxtToWhisperDoc } from "../utils/convert";
 
-export function Home() {
-  function setAudioTime(seconds: number) {
-    if (audioRef.current) {
-      audioRef.current.currentTime = seconds;
-    }
+// 🟢 helper: normalize any WhisperX-style object with segments[] to our WhisperDoc
+function toWhisperDoc(raw: any): WhisperDoc {
+  if (!raw?.segments || !Array.isArray(raw.segments)) {
+    throw new Error("Invalid JSON: missing segments");
   }
+  const segments: Segment[] = raw.segments.map((s: any, idx: number) => ({
+    id: s.id ?? idx,
+    start: Number(s.start ?? 0),
+    end: Number(s.end ?? 0),
+    text: String(s.text ?? ""),
+    speaker: s.speaker ?? null,
+    words: Array.isArray(s.words)
+      ? s.words.map((w: any) => ({
+          start: +w.start || 0,
+          end: +w.end || 0,
+          word: String(w.word || ""),
+        }))
+      : [],
+  }));
+  return { segments };
+}
+
+export function Home() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
   const [projectName, setProjectName] = useState("who-says-edit");
-  const {
-    state: data,
-    set: setData,
-    undo,
-    redo,
-  } = useUndoRedo<WhisperDoc>({ segments: [] });
+  const { state: data, set: setData, undo, redo } =
+    useUndoRedo<WhisperDoc>({ segments: [] });
   const [selected, setSelected] = useState(0);
   const segs = data.segments;
   const [speakers, setSpeakers] = useState<string[]>([
     "SPEAKER_00",
     "SPEAKER_01",
   ]);
+
+  // 🟢 track chosen files & annotation state
+  const [transcriptFileName, setTranscriptFileName] = useState("No file chosen");
+  const [audioFileName, setAudioFileName] = useState("No file chosen");
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [annotating, setAnnotating] = useState(false);
 
   function setSegments(next: Segment[]) {
     setData({ segments: next });
@@ -52,44 +72,28 @@ export function Home() {
   async function loadJsonFile(file: File) {
     const text = await file.text();
     const raw = JSON.parse(text);
-    if (!raw?.segments || !Array.isArray(raw.segments))
-      throw new Error("Invalid JSON: missing segments");
-    const normalized: Segment[] = raw.segments.map((s: any, idx: number) => ({
-      id: s.id ?? idx,
-      start: Number(s.start ?? 0),
-      end: Number(s.end ?? 0),
-      text: String(s.text ?? ""),
-      speaker: s.speaker ?? null,
-      words: Array.isArray(s.words)
-        ? s.words.map((w: any) => ({
-            start: +w.start || 0,
-            end: +w.end || 0,
-            word: String(w.word || ""),
-          }))
-        : [],
-    }));
-    setData({ segments: normalized });
+    const doc = toWhisperDoc(raw); // 🟢 reuse helper
+    setData(doc);
     setSelected(0);
     const uniq = Array.from(
-      new Set(normalized.map((s) => s.speaker).filter(Boolean))
+      new Set(doc.segments.map((s) => s.speaker).filter(Boolean))
     ) as string[];
     if (uniq.length)
       setSpeakers((prev) => Array.from(new Set([...uniq, ...prev])));
   }
 
-  function handleFileList(files: FileList | null) {
+  // 🟢 separate handlers so we know which file was chosen
+  function handleTranscriptFile(files: FileList | null) {
     if (!files?.length) return;
-    const list = Array.from(files);
-    const json = list.find((f) => f.name.toLowerCase().endsWith(".json"));
-    const txt = list.find((f) => f.name.toLowerCase().endsWith(".txt"));
-    const audio = list.find((f) => /(mp3|wav|m4a|ogg|flac)$/i.test(f.name));
+    const file = files[0];
+    setTranscriptFileName(file.name);
 
-    if (json) loadJsonFile(json).catch((e) => alert(e.message));
-
-    if (txt) {
-      txt.text().then((raw) => {
+    if (file.name.toLowerCase().endsWith(".json")) {
+      loadJsonFile(file).catch((e) => alert(e.message));
+    } else if (file.name.toLowerCase().endsWith(".txt")) {
+      file.text().then((raw) => {
         try {
-          const doc = fromTxtToWhisperDoc(raw, txt.name);
+          const doc = fromTxtToWhisperDoc(raw, file.name);
           setData(doc);
           setSelected(0);
           const uniq = Array.from(
@@ -101,12 +105,58 @@ export function Home() {
           alert("Failed to parse .txt: " + err?.message);
         }
       });
+    } else {
+      alert("Unsupported transcript file type. Use .json or .txt.");
     }
+  }
 
-    if (audio && audioRef.current) {
-      const url = URL.createObjectURL(audio);
+  function handleAudioFile(files: FileList | null) {
+    if (!files?.length) return;
+    const file = files[0];
+    setAudioFile(file);
+    setAudioFileName(file.name);
+
+    if (audioRef.current) {
+      const url = URL.createObjectURL(file);
       audioRef.current.src = url;
       audioRef.current.load();
+    }
+  }
+
+  // 🟢 call backend /annotate with current audio file
+  async function annotateAudio() {
+    if (!audioFile) {
+      alert("Please upload an audio file first.");
+      return;
+    }
+    setAnnotating(true);
+    try {
+      const form = new FormData();
+      form.append("audio", audioFile);
+
+      const resp = await fetch("http://localhost:8000/annotate", {
+        method: "POST",
+        body: form,
+      });
+
+      if (!resp.ok) {
+        const text = await resp.text();
+        throw new Error(`Backend error (${resp.status}): ${text}`);
+      }
+
+      const result = await resp.json();
+      const doc = toWhisperDoc(result); // 🔁 normalize backend output
+      setData(doc);
+      setSelected(0);
+      const uniq = Array.from(
+        new Set(doc.segments.map((s: Segment) => s.speaker).filter(Boolean))
+      ) as string[];
+      if (uniq.length)
+        setSpeakers((prev) => Array.from(new Set([...uniq, ...prev])));
+    } catch (err: any) {
+      alert("Annotation failed: " + (err?.message ?? String(err)));
+    } finally {
+      setAnnotating(false);
     }
   }
 
@@ -157,20 +207,60 @@ export function Home() {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border bg-white p-4">
           <h2 className="font-medium mb-2">Load files</h2>
-          <div className="flex gap-2">
-            <input
-              type="file"
-              accept=".json,.txt"
-              onChange={(e) => handleFileList(e.target.files)}
-            />
-            <input
-              type="file"
-              accept="audio/*"
-              onChange={(e) => handleFileList(e.target.files)}
-            />
+
+          {/* nice-looking upload controls with file names + annotation button */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-6">
+            {/* Transcript upload */}
+            <div className="flex flex-col">
+              <span className="text-sm text-slate-600 mb-1">Transcript</span>
+              <label className="inline-flex items-center">
+                <span className="rounded bg-blue-100 border px-3 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-blue-200">
+                  Select file
+                </span>
+                <input
+                  type="file"
+                  accept=".json,.txt"
+                  onChange={(e) => handleTranscriptFile(e.target.files)}
+                  className="hidden"
+                />
+              </label>
+              <span className="mt-1 text-xs text-slate-500 truncate max-w-xs">
+                {transcriptFileName}
+              </span>
+            </div>
+
+            {/* Audio upload + annotate */}
+            <div className="flex flex-col">
+              <span className="text-sm text-slate-600 mb-1">Audio</span>
+              <div className="flex items-center gap-2">
+                <label className="inline-flex items-center">
+                  <span className="rounded bg-blue-100 border px-3 py-1.5 text-sm text-slate-700 cursor-pointer hover:bg-blue-200">
+                    Select file
+                  </span>
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={(e) => handleAudioFile(e.target.files)}
+                    className="hidden"
+                  />
+                </label>
+                <button
+                  className="rounded bg-slate-900 px-3 py-1.5 text-sm text-white disabled:bg-slate-400"
+                  onClick={annotateAudio}
+                  disabled={!audioFile || annotating}
+                >
+                  {annotating ? "Annotating..." : "Create annotation"}
+                </button>
+              </div>
+              <span className="mt-1 text-xs text-slate-500 truncate max-w-xs">
+                {audioFileName}
+              </span>
+            </div>
           </div>
+
           <AudioPlayer ref={audioRef} className="mt-3" />
         </div>
+
         <div className="rounded-xl border bg-white p-4">
           <h2 className="font-medium mb-2">Project</h2>
           <label className="text-xs text-slate-500">Project name</label>

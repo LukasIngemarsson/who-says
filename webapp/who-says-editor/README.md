@@ -26,7 +26,25 @@ Instructions for setting up the project locally.
    ```bash
    npm run dev
    ```
-5. Opening the app:
+5. Install some packages for the backend if not already installed:
+   ```bash
+   pip install python-multipart fastapi uvicorn whisperx torch
+   ```
+   also make sure ffmpeg is installed and available in your system PATH.
+
+> ⚠️ **Work in Progress**  
+> The server is still under development and may not be fully functional.
+
+6. Start the backend server:
+   ```bash
+   uvicorn whisperx_server:app --reload --port 8000
+   ```
+   Wait until you see the message:
+   ```plaintext
+   INFO:     Application startup complete.
+   ```
+
+7. Opening the app:
    Follow the terminal instructions By clicking the on the given link.
 
 ## Functionality

@@ -20,8 +20,8 @@ from config import PipelineConfig as Config
 load_dotenv(".env")
 
 class WhoSays(object):
-    def __init__(self, config=Config):
-        self.config = config()
+    def __init__(self, config=Config()):
+        self.config = config
         
         logger.info(f"Using device: {self.config.device}")
         

@@ -90,6 +90,47 @@ def evaluate_segmentation(reference_segments, prediction_segments, total_duratio
     }
 
     return results
+ 
+
+# ASR
+def word_error_rate(reference: str, hypothesis: str) -> float:
+    """
+    Compute Word Error Rate (WER) between reference and hypothesis strings.
+    WER = (S + D + I) / N
+    S = substitutions, D = deletions, I = insertions, N = number of words in reference
+    """
+    ref_words = reference.strip().split()
+    hyp_words = hypothesis.strip().split()
+    N = len(ref_words)
+
+    d = np.zeros((len(ref_words)+1, len(hyp_words)+1), dtype=np.uint32)
+    for i in range(len(ref_words)+1):
+        d[i][0] = i
+    for j in range(len(hyp_words)+1):
+        d[0][j] = j
+
+    for i in range(1, len(ref_words)+1):
+        for j in range(1, len(hyp_words)+1):
+            if ref_words[i-1] == hyp_words[j-1]:
+                cost = 0
+            else:
+                cost = 1
+            d[i][j] = min(
+                d[i-1][j] + 1,      # deletion
+                d[i][j-1] + 1,      # insertion
+                d[i-1][j-1] + cost  # substitution
+            )
+    wer = 100 * d[len(ref_words)][len(hyp_words)] / N if N > 0 else 0.0
+    return wer
+
+def evaluate_asr(reference_transcriptions, hypothesis_transcriptions):
+    reference = " ".join(reference_transcriptions)
+    hypothesis = " ".join(hypothesis_transcriptions)
+    wer = word_error_rate(reference, hypothesis)
+
+    metrics = {"wer": wer}
+
+    return metrics
 
 
 def evaluate_pipeline(pipeline_output, annotation_data):
@@ -111,9 +152,14 @@ def evaluate_pipeline(pipeline_output, annotation_data):
         total_duration
     )
 
+    reference_transcriptions = [seg["text"] for seg in reference_segments]
+    output_transcriptions = [seg["text"] for seg in pipeline_output['transcription']]
+    asr_metrics = evaluate_asr(reference_transcriptions, output_transcriptions)
+
     return {
         'vad': vad_metrics,
-        'scd': scd_metrics
+        'scd': scd_metrics,
+        'asr': asr_metrics,
     }
 
 
@@ -124,14 +170,17 @@ def format_metrics_report(metrics):
     lines.append("=" * 60)
     lines.append("EVALUATION METRICS")
     lines.append("=" * 60)
-    lines.append(f"{'Component':<25} {'Precision':>10} {'Recall':>10} {'F1':>10}")
+    lines.append(f"{'Component':<25} {'Precision':>10} {'Recall':>10} {'F1':>10} {'WER':>10}")
     lines.append("-" * 60)
 
     vad = metrics['vad']
-    lines.append(f"{'Voice Activity (VAD)':<25} {vad['precision']:>9.2f}% {vad['recall']:>9.2f}% {vad['f1']:>9.2f}%")
+    lines.append(f"{'Voice Activity (VAD)':<25} {vad['precision']:>9.2f}% {vad['recall']:>9.2f}% {vad['f1']:>9.2f}% {0:>9.2f}%")
 
     scd = metrics['scd']
-    lines.append(f"{'Speaker Change (SCD)':<25} {scd['precision']:>9.2f}% {scd['recall']:>9.2f}% {scd['f1']:>9.2f}%")
+    lines.append(f"{'Speaker Change (SCD)':<25} {scd['precision']:>9.2f}% {scd['recall']:>9.2f}% {scd['f1']:>9.2f}% {0:>9.2f}%")
+
+    asr = metrics['asr']
+    lines.append(f"{'ASR':<25} {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {asr['wer']:>9.2f}%")
 
     lines.append("=" * 60)
 

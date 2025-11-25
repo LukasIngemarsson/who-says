@@ -153,6 +153,83 @@ def word_error_rate(reference: str, hypothesis: str) -> float:
     wer = 100 * d[len(ref_words)][len(hyp_words)] / N if N > 0 else 0.0
     return wer
 
+def extract_change_points(segments):
+    """
+    Extract change point timestamps from segment boundaries.
+
+    Parameters
+    ----------
+    segments : list of dict
+        Segments with 'start' and 'end' times.
+
+    Returns
+    -------
+    list of float
+        Change point timestamps (end of each segment except the last).
+    """
+    if len(segments) <= 1:
+        return []
+
+    change_points = []
+    for i in range(len(segments) - 1):
+        change_points.append(segments[i]['end'])
+
+    return change_points
+
+
+def evaluate_change_point_detection(reference_segments, predicted_segments, tolerance=0.5):
+    """
+    Evaluate speaker change point detection with tolerance window.
+
+    Params:
+    reference_segments : list of dict
+        Ground truth segments (to extract change points from).
+    predicted_segments : list of dict
+        Predicted segments (to extract change points from).
+    tolerance :
+        Time tolerance in seconds
+        A predicted change point matches a reference if within +-tolerance.
+
+    Returns
+    -------
+    dict
+        Precision, Recall, F1 scores for change point detection.
+    """
+    ref_change_points = extract_change_points(reference_segments)
+    pred_change_points = extract_change_points(predicted_segments)
+
+    if len(ref_change_points) == 0 and len(pred_change_points) == 0:
+        return {'precision': 100.0, 'recall': 100.0, 'f1': 100.0}
+
+    if len(ref_change_points) == 0:
+        return {'precision': 0.0, 'recall': 100.0, 'f1': 0.0}
+
+    if len(pred_change_points) == 0:
+        return {'precision': 100.0, 'recall': 0.0, 'f1': 0.0}
+
+    matched_predictions = set()
+    matched_references = set()
+
+    for i, pred_cp in enumerate(pred_change_points):
+        for j, ref_cp in enumerate(ref_change_points):
+            if abs(pred_cp - ref_cp) <= tolerance:
+                matched_predictions.add(i)
+                matched_references.add(j)
+                break 
+
+    true_positives = len(matched_predictions)
+
+    precision = (true_positives / len(pred_change_points) * 100.0) if len(pred_change_points) > 0 else 0.0
+    recall = (true_positives / len(ref_change_points) * 100.0) if len(ref_change_points) > 0 else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+
+    return {
+        'precision': precision,
+        'recall': recall,
+        'f1': f1
+    }
+
+
 def evaluate_asr(reference_transcriptions, hypothesis_transcriptions):
     reference = " ".join(reference_transcriptions)
     hypothesis = " ".join(hypothesis_transcriptions)
@@ -226,10 +303,10 @@ def evaluate_pipeline(pipeline_output, annotation_data):
         total_duration
     )
 
-    scd_metrics = evaluate_segmentation(
+    scd_metrics = evaluate_change_point_detection(
         reference_segments,
         pipeline_output['speaker_segments'],
-        total_duration
+        tolerance=0.5
     )
 
     reference_transcriptions = [seg["text"] for seg in reference_segments]

@@ -7,7 +7,7 @@ import { useUndoRedo } from "../hooks/useUndoRedo";
 import type { WhisperDoc, Segment } from "../types/whisperx";
 import { fromTxtToWhisperDoc } from "../utils/convert";
 
-// 🟢 helper: normalize any WhisperX-style object with segments[] to our WhisperDoc
+// helper: normalize any WhisperX-style object with segments[] to our WhisperDoc
 function toWhisperDoc(raw: any): WhisperDoc {
   if (!raw?.segments || !Array.isArray(raw.segments)) {
     throw new Error("Invalid JSON: missing segments");
@@ -18,13 +18,6 @@ function toWhisperDoc(raw: any): WhisperDoc {
     end: Number(s.end ?? 0),
     text: String(s.text ?? ""),
     speaker: s.speaker ?? null,
-    words: Array.isArray(s.words)
-      ? s.words.map((w: any) => ({
-          start: +w.start || 0,
-          end: +w.end || 0,
-          word: String(w.word || ""),
-        }))
-      : [],
   }));
   return { segments };
 }
@@ -39,10 +32,9 @@ export function Home() {
   const segs = data.segments;
   const [speakers, setSpeakers] = useState<string[]>([
     "SPEAKER_00",
-    "SPEAKER_01",
   ]);
 
-  // 🟢 track chosen files & annotation state
+  // track chosen files & annotation state
   const [transcriptFileName, setTranscriptFileName] = useState("No file chosen");
   const [audioFileName, setAudioFileName] = useState("No file chosen");
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -72,7 +64,7 @@ export function Home() {
   async function loadJsonFile(file: File) {
     const text = await file.text();
     const raw = JSON.parse(text);
-    const doc = toWhisperDoc(raw); // 🟢 reuse helper
+    const doc = toWhisperDoc(raw);
     setData(doc);
     setSelected(0);
     const uniq = Array.from(
@@ -82,7 +74,7 @@ export function Home() {
       setSpeakers((prev) => Array.from(new Set([...uniq, ...prev])));
   }
 
-  // 🟢 separate handlers so we know which file was chosen
+  // separate handlers so we know which file was chosen
   function handleTranscriptFile(files: FileList | null) {
     if (!files?.length) return;
     const file = files[0];
@@ -123,7 +115,7 @@ export function Home() {
     }
   }
 
-  // 🟢 call backend /annotate with current audio file
+  // call backend /annotate with current audio file
   async function annotateAudio() {
     if (!audioFile) {
       alert("Please upload an audio file first.");
@@ -145,7 +137,7 @@ export function Home() {
       }
 
       const result = await resp.json();
-      const doc = toWhisperDoc(result); // 🔁 normalize backend output
+      const doc = toWhisperDoc(result); // normalize backend output
       setData(doc);
       setSelected(0);
       const uniq = Array.from(
@@ -161,7 +153,7 @@ export function Home() {
   }
 
   function exportJson() {
-    downloadJson(`${projectName || "who-says-edit"}.clean.json`, {
+    downloadJson(`${projectName || "edited-transcript"}.json`, {
       meta: {
         exported_at: new Date().toISOString(),
         app: "who-says-editor",
@@ -184,8 +176,7 @@ export function Home() {
       start: here?.end ?? 0,
       end: (here?.end ?? 0) + 1,
       text: "",
-      speaker: here?.speaker ?? null,
-      words: [],
+      speaker: here?.speaker ?? null
     };
     const next = [...segs.slice(0, i + 1), newSeg, ...segs.slice(i + 1)].map(
       (s, idx) => ({ ...s, id: idx })

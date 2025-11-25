@@ -11,7 +11,7 @@ start: 0,
 end: 1.5,
 text: "hello",
 speaker: "SPEAKER_00",
-words: []
+// words: []
 };
 
 

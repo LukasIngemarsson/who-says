@@ -62,25 +62,6 @@ export function SegmentEditor({ segment, speakers, onChange }: Props) {
           onChange={(e) => onChange({ text: e.target.value })}
         />
       </label>
-
-      {segment.words?.length ? (
-        <div>
-          <div className="text-xs text-slate-500 mb-1">
-            Words (read-only in MVP)
-          </div>
-          <div className="max-h-32 overflow-auto text-xs border rounded p-2 bg-slate-50">
-            {segment.words.map((w, i) => (
-              <span
-                key={i}
-                className="px-1 py-0.5 inline-block m-0.5 rounded bg-white border"
-              >
-                {w.word}
-                <span className="text-slate-400">@{w.start.toFixed(3)}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

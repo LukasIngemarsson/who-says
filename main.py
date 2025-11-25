@@ -163,37 +163,14 @@ class WhoSays(object):
         if include_timing:
             timing['formatting'] = time.time() - start_time
 
-            # Step 6: Speaker Clustering
-            logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
-            if include_timing:
-                start_time = time.time()
-            segment_clusters = self.clustering.cluster_segments(segment_embeddings, n_clusters=min(segment_embeddings.shape[0], num_speakers))
-            if include_timing:
-                timing['clustering'] = time.time() - start_time
-            logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
+        # Add timing to result if requested
+        if include_timing:
+            result['timing'] = timing
+            total_time = sum(timing.values())
+            result['total_time'] = total_time
+            logger.info(f"Total pipeline time: {total_time:.2f}s")
 
-            # Step 7: Merge results into structured output
-            logger.info("Merging results...")
-            if include_timing:
-                start_time = time.time()
-            result = self._format_output(
-                change_points=change_points,
-                clusters=segment_clusters,
-                transcriptions=transcriptions,
-                overlap_segments= [],# overlap_segments,
-                waveform_duration=waveform.shape[-1] / sr
-            )
-            if include_timing:
-                timing['formatting'] = time.time() - start_time
-
-            # Add timing to result if requested
-            if include_timing:
-                result['timing'] = timing
-                total_time = sum(timing.values())
-                result['total_time'] = total_time
-                logger.info(f"Total pipeline time: {total_time:.2f}s")
-
-            logger.info("Pipeline complete!")
+        logger.info("Pipeline complete!")
         return result
 
     def _format_output(

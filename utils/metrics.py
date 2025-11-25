@@ -3,6 +3,8 @@ import numpy as np
 from pathlib import Path
 from sklearn.metrics import precision_score, recall_score, f1_score
 from loguru import logger
+from pyannote.core import Annotation, Segment
+from pyannote.metrics.diarization import DiarizationErrorRate
 
 
 def load_annotation_file(annotation_path):
@@ -57,6 +59,34 @@ def compute_f1(reference_frames, prediction_frames):
     f1_percentage = f1 * 100.0
 
     return f1_percentage
+
+
+def segments_to_annotation(segments, uri="audio"):
+    """
+    Convert segment list to pyannote.core.Annotation object.
+
+    Parameters
+    ----------
+    segments : list of dict
+        List of segments with 'start', 'end', and 'speaker' keys.
+    uri : str, optional
+        Uniform Resource Identifier for the annotation.
+
+    Returns
+    -------
+    pyannote.core.Annotation
+        Annotation object with segments mapped to speaker labels.
+    """
+    annotation = Annotation(uri=uri)
+
+    for segment in segments:
+        # Create a Segment object with start and end times
+        seg = Segment(segment['start'], segment['end'])
+
+        # Add the segment to the annotation with the speaker label
+        annotation[seg] = segment['speaker']
+
+    return annotation
 
 
 def evaluate_segmentation(reference_segments, prediction_segments, total_duration):
@@ -133,6 +163,56 @@ def evaluate_asr(reference_transcriptions, hypothesis_transcriptions):
     return metrics
 
 
+def evaluate_diarization(reference_segments, hypothesis_segments):
+    """
+    Compute Diarization Error Rate (DER) between reference and hypothesis.
+
+    Params:
+        reference_segments : list of dict
+            Gold-standard segments with start, end, and speaker keys.
+        hypothesis_segments : list of dict
+            Predicted segments with start, end, and speaker keys.
+
+    Returns:
+        Dictionary containing:
+        - der: Overall diarization error rate (percentage)
+        - miss: Miss rate (percentage)
+        - false_alarm: False alarm rate (percentage)
+        - confusion: Speaker confusion rate (percentage)
+    """
+    from pyannote.core import Timeline
+
+    reference = segments_to_annotation(reference_segments)
+    hypothesis = segments_to_annotation(hypothesis_segments)
+
+    uem = Timeline(uri="audio")
+    for seg in reference_segments:
+        uem.add(Segment(seg['start'], seg['end']))
+    uem = uem.support()  # Merge overlapping segments
+
+    metric = DiarizationErrorRate()
+    # Compute overall DER with UEM (returns a single value between 0 and 1)
+    der_value = metric(reference, hypothesis, uem=uem)
+    components = metric.compute_components(reference, hypothesis, uem=uem)
+
+    total = components['total']
+    confusion = components.get('confusion', 0.0)
+    miss = components.get('missed detection', 0.0)
+    false_alarm = components.get('false alarm', 0.0)
+
+    der_percentage = der_value * 100.0
+    miss_rate = (miss / total * 100.0) if total > 0 else 0.0
+    fa_rate = (false_alarm / total * 100.0) if total > 0 else 0.0
+    confusion_rate = (confusion / total * 100.0) if total > 0 else 0.0
+
+    return {
+        'der': der_percentage,
+        'miss': miss_rate,
+        'false_alarm': fa_rate,
+        'confusion': confusion_rate
+    }
+
+
 def evaluate_pipeline(pipeline_output, annotation_data):
     # TODO: Add other component metrics
     logger.info("Computing metrics...")
@@ -156,10 +236,16 @@ def evaluate_pipeline(pipeline_output, annotation_data):
     output_transcriptions = [seg["text"] for seg in pipeline_output['transcription']]
     asr_metrics = evaluate_asr(reference_transcriptions, output_transcriptions)
 
+    diarization_metrics = evaluate_diarization(
+        reference_segments,
+        pipeline_output['speaker_segments']
+    )
+
     return {
         'vad': vad_metrics,
         'scd': scd_metrics,
         'asr': asr_metrics,
+        'diarization': diarization_metrics,
     }
 
 
@@ -181,6 +267,16 @@ def format_metrics_report(metrics):
 
     asr = metrics['asr']
     lines.append(f"{'ASR':<25} {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {asr['wer']:>9.2f}%")
+
+    lines.append("")
+    lines.append("Diarization Error Rate (DER)")
+    lines.append("-" * 60)
+
+    der = metrics['diarization']
+    lines.append(f"  Overall DER:            {der['der']:>9.2f}%")
+    lines.append(f"  Miss Rate:              {der['miss']:>9.2f}%")
+    lines.append(f"  False Alarm:            {der['false_alarm']:>9.2f}%")
+    lines.append(f"  Speaker Confusion:      {der['confusion']:>9.2f}%")
 
     lines.append("=" * 60)
 

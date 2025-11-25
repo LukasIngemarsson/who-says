@@ -1,0 +1,350 @@
+{
+  "segments": [
+    {
+      "start": 10.949,
+      "end": 29.987,
+      "text": " recognition because some of the models actually take paths as their inputs like only like they don't they don't take the end memory right",
+      "words": [
+        {
+          "word": "recognition",
+          "start": 10.949,
+          "end": 11.891,
+          "score": 0.9,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "because",
+          "start": 16.099,
+          "end": 16.3,
+          "score": 0.941,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "some",
+          "start": 16.34,
+          "end": 16.46,
+          "score": 0.508,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "of",
+          "start": 16.5,
+          "end": 16.54,
+          "score": 0.983,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 16.58,
+          "end": 16.64,
+          "score": 0.994,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "models",
+          "start": 16.68,
+          "end": 16.941,
+          "score": 0.802,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "actually",
+          "start": 17.041,
+          "end": 17.322,
+          "score": 0.898,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "take",
+          "start": 17.362,
+          "end": 17.502,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "paths",
+          "start": 17.602,
+          "end": 17.903,
+          "score": 0.936,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "as",
+          "start": 18.163,
+          "end": 18.244,
+          "score": 0.986,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "their",
+          "start": 18.284,
+          "end": 18.424,
+          "score": 0.594,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "inputs",
+          "start": 18.504,
+          "end": 18.805,
+          "score": 0.772,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like",
+          "start": 19.266,
+          "end": 19.386,
+          "score": 0.707,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "only",
+          "start": 19.426,
+          "end": 19.847,
+          "score": 0.627,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like",
+          "start": 20.568,
+          "end": 20.668,
+          "score": 0.994,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "they",
+          "start": 20.709,
+          "end": 20.789,
+          "score": 0.824,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "don't",
+          "start": 20.829,
+          "end": 20.969,
+          "score": 0.797,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "they",
+          "start": 21.009,
+          "end": 21.109,
+          "score": 0.748,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "don't",
+          "start": 21.149,
+          "end": 21.29,
+          "score": 0.764,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "take",
+          "start": 21.33,
+          "end": 21.53,
+          "score": 0.852,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 21.55,
+          "end": 21.61,
+          "score": 0.333,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "end",
+          "start": 22.292,
+          "end": 22.472,
+          "score": 0.597,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "memory",
+          "start": 22.532,
+          "end": 22.893,
+          "score": 0.913,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "right",
+          "start": 23.474,
+          "end": 29.987,
+          "score": 0.323,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "recognition",
+      "start": 10.949,
+      "end": 11.891,
+      "score": 0.9,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "because",
+      "start": 16.099,
+      "end": 16.3,
+      "score": 0.941,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "some",
+      "start": 16.34,
+      "end": 16.46,
+      "score": 0.508,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "of",
+      "start": 16.5,
+      "end": 16.54,
+      "score": 0.983,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 16.58,
+      "end": 16.64,
+      "score": 0.994,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "models",
+      "start": 16.68,
+      "end": 16.941,
+      "score": 0.802,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "actually",
+      "start": 17.041,
+      "end": 17.322,
+      "score": 0.898,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "take",
+      "start": 17.362,
+      "end": 17.502,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "paths",
+      "start": 17.602,
+      "end": 17.903,
+      "score": 0.936,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "as",
+      "start": 18.163,
+      "end": 18.244,
+      "score": 0.986,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "their",
+      "start": 18.284,
+      "end": 18.424,
+      "score": 0.594,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "inputs",
+      "start": 18.504,
+      "end": 18.805,
+      "score": 0.772,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like",
+      "start": 19.266,
+      "end": 19.386,
+      "score": 0.707,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "only",
+      "start": 19.426,
+      "end": 19.847,
+      "score": 0.627,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like",
+      "start": 20.568,
+      "end": 20.668,
+      "score": 0.994,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "they",
+      "start": 20.709,
+      "end": 20.789,
+      "score": 0.824,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "don't",
+      "start": 20.829,
+      "end": 20.969,
+      "score": 0.797,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "they",
+      "start": 21.009,
+      "end": 21.109,
+      "score": 0.748,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "don't",
+      "start": 21.149,
+      "end": 21.29,
+      "score": 0.764,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "take",
+      "start": 21.33,
+      "end": 21.53,
+      "score": 0.852,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 21.55,
+      "end": 21.61,
+      "score": 0.333,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "end",
+      "start": 22.292,
+      "end": 22.472,
+      "score": 0.597,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "memory",
+      "start": 22.532,
+      "end": 22.893,
+      "score": 0.913,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "right",
+      "start": 23.474,
+      "end": 29.987,
+      "score": 0.323,
+      "speaker": "SPEAKER_02"
+    }
+  ]
+}

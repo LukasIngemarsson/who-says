@@ -1,0 +1,464 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 8.761,
+      "text": " Did we need the clustering now as well?",
+      "words": [
+        {
+          "word": "Did",
+          "start": 0.031,
+          "end": 1.252,
+          "score": 0.545,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 1.293,
+          "end": 3.335,
+          "score": 0.714,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "need",
+          "start": 3.976,
+          "end": 7.44,
+          "score": 0.74,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 7.48,
+          "end": 7.84,
+          "score": 0.659,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "clustering",
+          "start": 7.86,
+          "end": 8.301,
+          "score": 0.926,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "now",
+          "start": 8.341,
+          "end": 8.461,
+          "score": 0.743,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "as",
+          "start": 8.481,
+          "end": 8.541,
+          "score": 0.808,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "well?",
+          "start": 8.561,
+          "end": 8.761,
+          "score": 0.968,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 9.522,
+      "end": 14.508,
+      "text": "I don't think we've set that up in any good way.",
+      "words": [
+        {
+          "word": "I",
+          "start": 9.522,
+          "end": 9.663,
+          "score": 0.309,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "don't",
+          "start": 9.703,
+          "end": 9.823,
+          "score": 0.877,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "think",
+          "start": 9.843,
+          "end": 10.043,
+          "score": 0.27,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we've",
+          "start": 10.203,
+          "end": 10.343,
+          "score": 0.309,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "set",
+          "start": 10.383,
+          "end": 10.544,
+          "score": 0.911,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "that",
+          "start": 10.564,
+          "end": 10.684,
+          "score": 0.826,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "up",
+          "start": 10.744,
+          "end": 10.824,
+          "score": 0.875,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "in",
+          "start": 10.884,
+          "end": 10.944,
+          "score": 0.886,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "any",
+          "start": 10.984,
+          "end": 14.068,
+          "score": 0.808,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "good",
+          "start": 14.108,
+          "end": 14.268,
+          "score": 0.967,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "way.",
+          "start": 14.328,
+          "end": 14.508,
+          "score": 0.98,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 14.548,
+      "end": 29.987,
+      "text": "Yeah, I think we want to just... Because the clustering is just",
+      "words": [
+        {
+          "word": "Yeah,",
+          "start": 14.548,
+          "end": 17.752,
+          "score": 0.709,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 17.772,
+          "end": 17.792,
+          "score": 0.0,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "think",
+          "start": 17.812,
+          "end": 17.913,
+          "score": 0.189,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 17.953,
+          "end": 18.013,
+          "score": 0.481,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "want",
+          "start": 18.033,
+          "end": 18.433,
+          "score": 0.748,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 18.453,
+          "end": 18.533,
+          "score": 0.297,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just...",
+          "start": 18.653,
+          "end": 19.534,
+          "score": 0.768,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "Because",
+          "start": 22.318,
+          "end": 22.498,
+          "score": 0.421,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 29.226,
+          "end": 29.306,
+          "score": 0.896,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "clustering",
+          "start": 29.346,
+          "end": 29.827,
+          "score": 0.52,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "is",
+          "start": 29.847,
+          "end": 29.887,
+          "score": 0.001,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "just",
+          "start": 29.907,
+          "end": 29.987,
+          "score": 0.201,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Did",
+      "start": 0.031,
+      "end": 1.252,
+      "score": 0.545,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we",
+      "start": 1.293,
+      "end": 3.335,
+      "score": 0.714,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "need",
+      "start": 3.976,
+      "end": 7.44,
+      "score": 0.74,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 7.48,
+      "end": 7.84,
+      "score": 0.659,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "clustering",
+      "start": 7.86,
+      "end": 8.301,
+      "score": 0.926,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "now",
+      "start": 8.341,
+      "end": 8.461,
+      "score": 0.743,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "as",
+      "start": 8.481,
+      "end": 8.541,
+      "score": 0.808,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "well?",
+      "start": 8.561,
+      "end": 8.761,
+      "score": 0.968,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "I",
+      "start": 9.522,
+      "end": 9.663,
+      "score": 0.309,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "don't",
+      "start": 9.703,
+      "end": 9.823,
+      "score": 0.877,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "think",
+      "start": 9.843,
+      "end": 10.043,
+      "score": 0.27,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we've",
+      "start": 10.203,
+      "end": 10.343,
+      "score": 0.309,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "set",
+      "start": 10.383,
+      "end": 10.544,
+      "score": 0.911,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "that",
+      "start": 10.564,
+      "end": 10.684,
+      "score": 0.826,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "up",
+      "start": 10.744,
+      "end": 10.824,
+      "score": 0.875,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "in",
+      "start": 10.884,
+      "end": 10.944,
+      "score": 0.886,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "any",
+      "start": 10.984,
+      "end": 14.068,
+      "score": 0.808,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "good",
+      "start": 14.108,
+      "end": 14.268,
+      "score": 0.967,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "way.",
+      "start": 14.328,
+      "end": 14.508,
+      "score": 0.98,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Yeah,",
+      "start": 14.548,
+      "end": 17.752,
+      "score": 0.709,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 17.772,
+      "end": 17.792,
+      "score": 0.0,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "think",
+      "start": 17.812,
+      "end": 17.913,
+      "score": 0.189,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we",
+      "start": 17.953,
+      "end": 18.013,
+      "score": 0.481,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "want",
+      "start": 18.033,
+      "end": 18.433,
+      "score": 0.748,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 18.453,
+      "end": 18.533,
+      "score": 0.297,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "just...",
+      "start": 18.653,
+      "end": 19.534,
+      "score": 0.768,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Because",
+      "start": 22.318,
+      "end": 22.498,
+      "score": 0.421,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 29.226,
+      "end": 29.306,
+      "score": 0.896,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "clustering",
+      "start": 29.346,
+      "end": 29.827,
+      "score": 0.52,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "is",
+      "start": 29.847,
+      "end": 29.887,
+      "score": 0.001,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "just",
+      "start": 29.907,
+      "end": 29.987,
+      "score": 0.201,
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

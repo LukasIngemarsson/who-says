@@ -1,0 +1,448 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 2.08,
+      "text": " Vi har skapat en Who Ss-klass",
+      "words": [
+        {
+          "word": " Vi",
+          "start": 0.0,
+          "end": 0.3,
+          "score": 0.7236328125
+        },
+        {
+          "word": " har",
+          "start": 0.3,
+          "end": 0.48,
+          "score": 0.65869140625
+        },
+        {
+          "word": " skapat",
+          "start": 0.48,
+          "end": 0.8,
+          "score": 0.91552734375
+        },
+        {
+          "word": " en",
+          "start": 0.8,
+          "end": 0.98,
+          "score": 0.64599609375
+        },
+        {
+          "word": " Who",
+          "start": 0.98,
+          "end": 1.4,
+          "score": 0.47943115234375
+        },
+        {
+          "word": " Ss",
+          "start": 1.4,
+          "end": 1.7,
+          "score": 0.21661376953125
+        },
+        {
+          "word": "-klass",
+          "start": 1.7,
+          "end": 2.08,
+          "score": 0.7556966145833334
+        }
+      ]
+    },
+    {
+      "start": 2.08,
+      "end": 4.08,
+      "text": " Om vi lägger alla komponenter där",
+      "words": [
+        {
+          "word": " Om",
+          "start": 2.08,
+          "end": 2.36,
+          "score": 0.10565185546875
+        },
+        {
+          "word": " vi",
+          "start": 2.36,
+          "end": 2.56,
+          "score": 0.74169921875
+        },
+        {
+          "word": " lägger",
+          "start": 2.56,
+          "end": 2.84,
+          "score": 0.839599609375
+        },
+        {
+          "word": " alla",
+          "start": 2.84,
+          "end": 3.04,
+          "score": 0.6513671875
+        },
+        {
+          "word": " komponenter",
+          "start": 3.04,
+          "end": 3.84,
+          "score": 0.9263916015625
+        },
+        {
+          "word": " där",
+          "start": 3.84,
+          "end": 4.08,
+          "score": 0.54052734375
+        }
+      ]
+    },
+    {
+      "start": 4.08,
+      "end": 7.82,
+      "text": " så kan vi fippla i Carl-klassen där",
+      "words": [
+        {
+          "word": " så",
+          "start": 4.08,
+          "end": 4.38,
+          "score": 0.337158203125
+        },
+        {
+          "word": " kan",
+          "start": 4.38,
+          "end": 4.6,
+          "score": 0.80517578125
+        },
+        {
+          "word": " vi",
+          "start": 4.6,
+          "end": 4.78,
+          "score": 0.73486328125
+        },
+        {
+          "word": " fippla",
+          "start": 4.78,
+          "end": 6.18,
+          "score": 0.6468302408854166
+        },
+        {
+          "word": " i",
+          "start": 6.18,
+          "end": 6.36,
+          "score": 0.7919921875
+        },
+        {
+          "word": " Carl",
+          "start": 6.36,
+          "end": 7.18,
+          "score": 0.3896484375
+        },
+        {
+          "word": "-klassen",
+          "start": 7.18,
+          "end": 7.64,
+          "score": 0.8758138020833334
+        },
+        {
+          "word": " där",
+          "start": 7.64,
+          "end": 7.82,
+          "score": 0.310791015625
+        }
+      ]
+    },
+    {
+      "start": 7.82,
+      "end": 9.68,
+      "text": " och bara köra igenom hela pipelinen",
+      "words": [
+        {
+          "word": " och",
+          "start": 7.82,
+          "end": 8.58,
+          "score": 0.60595703125
+        },
+        {
+          "word": " bara",
+          "start": 8.58,
+          "end": 8.74,
+          "score": 0.515625
+        },
+        {
+          "word": " köra",
+          "start": 8.74,
+          "end": 8.98,
+          "score": 0.786865234375
+        },
+        {
+          "word": " igenom",
+          "start": 8.98,
+          "end": 9.16,
+          "score": 0.804931640625
+        },
+        {
+          "word": " hela",
+          "start": 9.16,
+          "end": 9.26,
+          "score": 0.56982421875
+        },
+        {
+          "word": " pipelinen",
+          "start": 9.26,
+          "end": 9.68,
+          "score": 0.8712565104166666
+        }
+      ]
+    },
+    {
+      "start": 10.559999999999999,
+      "end": 11.72,
+      "text": " Vart är det någonstans?",
+      "words": [
+        {
+          "word": " Vart",
+          "start": 10.559999999999999,
+          "end": 11.04,
+          "score": 0.5478515625
+        },
+        {
+          "word": " är",
+          "start": 11.04,
+          "end": 11.12,
+          "score": 0.39306640625
+        },
+        {
+          "word": " det",
+          "start": 11.12,
+          "end": 11.22,
+          "score": 0.7236328125
+        },
+        {
+          "word": " någonstans?",
+          "start": 11.22,
+          "end": 11.72,
+          "score": 0.9150390625
+        }
+      ]
+    },
+    {
+      "start": 11.9,
+      "end": 13.02,
+      "text": " I main of pie",
+      "words": [
+        {
+          "word": " I",
+          "start": 11.9,
+          "end": 12.06,
+          "score": 0.6845703125
+        },
+        {
+          "word": " main",
+          "start": 12.06,
+          "end": 12.18,
+          "score": 0.466552734375
+        },
+        {
+          "word": " of",
+          "start": 12.18,
+          "end": 12.7,
+          "score": 0.43017578125
+        },
+        {
+          "word": " pie",
+          "start": 12.7,
+          "end": 13.02,
+          "score": 0.334625244140625
+        }
+      ]
+    },
+    {
+      "start": 15.739999999999998,
+      "end": 17.46,
+      "text": " Ah, I see, I see",
+      "words": [
+        {
+          "word": " Ah,",
+          "start": 15.739999999999998,
+          "end": 16.22,
+          "score": 0.149658203125
+        },
+        {
+          "word": " I",
+          "start": 16.68,
+          "end": 16.98,
+          "score": 0.69287109375
+        },
+        {
+          "word": " see,",
+          "start": 16.98,
+          "end": 17.14,
+          "score": 0.68408203125
+        },
+        {
+          "word": " I",
+          "start": 17.16,
+          "end": 17.3,
+          "score": 0.79638671875
+        },
+        {
+          "word": " see",
+          "start": 17.3,
+          "end": 17.46,
+          "score": 0.85107421875
+        }
+      ]
+    },
+    {
+      "start": 17.46,
+      "end": 19.02,
+      "text": " Och så bara importerar man de som",
+      "words": [
+        {
+          "word": " Och",
+          "start": 17.46,
+          "end": 17.82,
+          "score": 0.2081298828125
+        },
+        {
+          "word": " så",
+          "start": 17.82,
+          "end": 18.0,
+          "score": 0.62109375
+        },
+        {
+          "word": " bara",
+          "start": 18.0,
+          "end": 18.1,
+          "score": 0.5146484375
+        },
+        {
+          "word": " importerar",
+          "start": 18.1,
+          "end": 18.64,
+          "score": 0.96435546875
+        },
+        {
+          "word": " man",
+          "start": 18.64,
+          "end": 18.64,
+          "score": 0.4453125
+        },
+        {
+          "word": " de",
+          "start": 18.64,
+          "end": 18.8,
+          "score": 0.302978515625
+        },
+        {
+          "word": " som",
+          "start": 18.8,
+          "end": 19.02,
+          "score": 0.591796875
+        }
+      ]
+    },
+    {
+      "start": 20.099999999999998,
+      "end": 20.98,
+      "text": " Ja, precis",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 20.099999999999998,
+          "end": 20.58,
+          "score": 0.2110595703125
+        },
+        {
+          "word": " precis",
+          "start": 20.76,
+          "end": 20.98,
+          "score": 0.85888671875
+        }
+      ]
+    },
+    {
+      "start": 20.98,
+      "end": 21.9,
+      "text": " Fattar",
+      "words": [
+        {
+          "word": " Fattar",
+          "start": 20.98,
+          "end": 21.9,
+          "score": 0.8875325520833334
+        }
+      ]
+    },
+    {
+      "start": 23.259999999999998,
+      "end": 24.4,
+      "text": " Det är ju dunder",
+      "words": [
+        {
+          "word": " Det",
+          "start": 23.259999999999998,
+          "end": 23.74,
+          "score": 0.6962890625
+        },
+        {
+          "word": " är",
+          "start": 23.74,
+          "end": 23.94,
+          "score": 0.51025390625
+        },
+        {
+          "word": " ju",
+          "start": 23.94,
+          "end": 24.0,
+          "score": 0.765625
+        },
+        {
+          "word": " dunder",
+          "start": 24.0,
+          "end": 24.4,
+          "score": 0.92578125
+        }
+      ]
+    },
+    {
+      "start": 27.84,
+      "end": 29.36,
+      "text": " Förresten, du får säga också om",
+      "words": [
+        {
+          "word": " Förresten,",
+          "start": 27.84,
+          "end": 28.32,
+          "score": 0.6923828125
+        },
+        {
+          "word": " du",
+          "start": 28.32,
+          "end": 28.38,
+          "score": 0.6171875
+        },
+        {
+          "word": " får",
+          "start": 28.38,
+          "end": 28.46,
+          "score": 0.51220703125
+        },
+        {
+          "word": " säga",
+          "start": 28.46,
+          "end": 28.72,
+          "score": 0.69482421875
+        },
+        {
+          "word": " också",
+          "start": 28.72,
+          "end": 29.0,
+          "score": 0.70166015625
+        },
+        {
+          "word": " om",
+          "start": 29.0,
+          "end": 29.36,
+          "score": 0.60791015625
+        }
+      ]
+    }
+  ]
+}

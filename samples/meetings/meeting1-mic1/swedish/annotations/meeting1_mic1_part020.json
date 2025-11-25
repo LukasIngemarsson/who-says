@@ -1,0 +1,501 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.96,
+      "text": " Han följer Lucas, då blir jag trött i sig.",
+      "words": [
+        {
+          "word": " Han",
+          "start": 0.0,
+          "end": 0.22,
+          "score": 0.6435546875
+        },
+        {
+          "word": " följer",
+          "start": 0.22,
+          "end": 0.3,
+          "score": 0.9347330729166666
+        },
+        {
+          "word": " Lucas,",
+          "start": 0.3,
+          "end": 0.6,
+          "score": 0.460693359375
+        },
+        {
+          "word": " då",
+          "start": 0.66,
+          "end": 0.86,
+          "score": 0.5224609375
+        },
+        {
+          "word": " blir",
+          "start": 0.86,
+          "end": 1.26,
+          "score": 0.70849609375
+        },
+        {
+          "word": " jag",
+          "start": 1.26,
+          "end": 1.34,
+          "score": 0.64892578125
+        },
+        {
+          "word": " trött",
+          "start": 1.34,
+          "end": 1.74,
+          "score": 0.55712890625
+        },
+        {
+          "word": " i",
+          "start": 1.74,
+          "end": 1.74,
+          "score": 0.3134765625
+        },
+        {
+          "word": " sig.",
+          "start": 1.74,
+          "end": 1.96,
+          "score": 0.69921875
+        }
+      ]
+    },
+    {
+      "start": 4.099999999999998,
+      "end": 6.04,
+      "text": " Och trycka på den där.",
+      "words": [
+        {
+          "word": " Och",
+          "start": 4.099999999999998,
+          "end": 4.559999999999999,
+          "score": 0.040283203125
+        },
+        {
+          "word": " trycka",
+          "start": 4.559999999999999,
+          "end": 5.02,
+          "score": 0.4820556640625
+        },
+        {
+          "word": " på",
+          "start": 5.02,
+          "end": 5.2,
+          "score": 0.6044921875
+        },
+        {
+          "word": " den",
+          "start": 5.2,
+          "end": 5.52,
+          "score": 0.55126953125
+        },
+        {
+          "word": " där.",
+          "start": 5.52,
+          "end": 6.04,
+          "score": 0.501953125
+        }
+      ]
+    },
+    {
+      "start": 6.26,
+      "end": 8.94,
+      "text": " Sen ger du dig val vem du ska följa.",
+      "words": [
+        {
+          "word": " Sen",
+          "start": 6.26,
+          "end": 6.52,
+          "score": 0.751953125
+        },
+        {
+          "word": " ger",
+          "start": 6.52,
+          "end": 7.12,
+          "score": 0.43621826171875
+        },
+        {
+          "word": " du",
+          "start": 7.12,
+          "end": 7.18,
+          "score": 0.54833984375
+        },
+        {
+          "word": " dig",
+          "start": 7.18,
+          "end": 7.46,
+          "score": 0.462646484375
+        },
+        {
+          "word": " val",
+          "start": 7.46,
+          "end": 7.82,
+          "score": 0.2303466796875
+        },
+        {
+          "word": " vem",
+          "start": 7.82,
+          "end": 8.14,
+          "score": 0.346435546875
+        },
+        {
+          "word": " du",
+          "start": 8.14,
+          "end": 8.4,
+          "score": 0.59912109375
+        },
+        {
+          "word": " ska",
+          "start": 8.4,
+          "end": 8.5,
+          "score": 0.529296875
+        },
+        {
+          "word": " följa.",
+          "start": 8.5,
+          "end": 8.94,
+          "score": 0.8837890625
+        }
+      ]
+    },
+    {
+      "start": 9.56,
+      "end": 12.78,
+      "text": " Fokus på dispens, då blir du diktator eller?",
+      "words": [
+        {
+          "word": " Fokus",
+          "start": 9.56,
+          "end": 10.02,
+          "score": 0.722900390625
+        },
+        {
+          "word": " på",
+          "start": 10.02,
+          "end": 10.24,
+          "score": 0.603515625
+        },
+        {
+          "word": " dispens,",
+          "start": 10.24,
+          "end": 10.8,
+          "score": 0.56256103515625
+        },
+        {
+          "word": " då",
+          "start": 10.8,
+          "end": 11.06,
+          "score": 0.5947265625
+        },
+        {
+          "word": " blir",
+          "start": 11.06,
+          "end": 11.88,
+          "score": 0.71044921875
+        },
+        {
+          "word": " du",
+          "start": 11.88,
+          "end": 12.08,
+          "score": 0.634765625
+        },
+        {
+          "word": " diktator",
+          "start": 12.08,
+          "end": 12.54,
+          "score": 0.8370768229166666
+        },
+        {
+          "word": " eller?",
+          "start": 12.54,
+          "end": 12.78,
+          "score": 0.28955078125
+        }
+      ]
+    },
+    {
+      "start": 12.96,
+      "end": 13.74,
+      "text": " Kan du följa Lucas?",
+      "words": [
+        {
+          "word": " Kan",
+          "start": 12.96,
+          "end": 13.24,
+          "score": 0.12158203125
+        },
+        {
+          "word": " du",
+          "start": 13.24,
+          "end": 13.38,
+          "score": 0.46337890625
+        },
+        {
+          "word": " följa",
+          "start": 13.38,
+          "end": 13.68,
+          "score": 0.8707682291666666
+        },
+        {
+          "word": " Lucas?",
+          "start": 13.68,
+          "end": 13.74,
+          "score": 0.32958984375
+        }
+      ]
+    },
+    {
+      "start": 14.34,
+      "end": 15.06,
+      "text": " Det är bra.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 14.34,
+          "end": 14.8,
+          "score": 0.485595703125
+        },
+        {
+          "word": " är",
+          "start": 14.8,
+          "end": 14.92,
+          "score": 0.509765625
+        },
+        {
+          "word": " bra.",
+          "start": 14.92,
+          "end": 15.06,
+          "score": 0.69287109375
+        }
+      ]
+    },
+    {
+      "start": 15.64,
+      "end": 17.62,
+      "text": " Då blir alla fokuserade på dig.",
+      "words": [
+        {
+          "word": " Då",
+          "start": 15.64,
+          "end": 16.1,
+          "score": 0.46484375
+        },
+        {
+          "word": " blir",
+          "start": 16.1,
+          "end": 16.54,
+          "score": 0.7099609375
+        },
+        {
+          "word": " alla",
+          "start": 16.54,
+          "end": 16.78,
+          "score": 0.59521484375
+        },
+        {
+          "word": " fokuserade",
+          "start": 16.78,
+          "end": 17.28,
+          "score": 0.94140625
+        },
+        {
+          "word": " på",
+          "start": 17.28,
+          "end": 17.42,
+          "score": 0.61083984375
+        },
+        {
+          "word": " dig.",
+          "start": 17.42,
+          "end": 17.62,
+          "score": 0.767578125
+        }
+      ]
+    },
+    {
+      "start": 17.68,
+      "end": 18.2,
+      "text": " Ja, jag tror det.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 17.68,
+          "end": 17.84,
+          "score": 0.341064453125
+        },
+        {
+          "word": " jag",
+          "start": 17.86,
+          "end": 17.9,
+          "score": 0.638671875
+        },
+        {
+          "word": " tror",
+          "start": 17.9,
+          "end": 18.04,
+          "score": 0.55029296875
+        },
+        {
+          "word": " det.",
+          "start": 18.04,
+          "end": 18.2,
+          "score": 0.75537109375
+        }
+      ]
+    },
+    {
+      "start": 18.799999999999997,
+      "end": 21.12,
+      "text": " Det är där du scrollar så kommer vi se.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 18.799999999999997,
+          "end": 19.259999999999998,
+          "score": 0.032562255859375
+        },
+        {
+          "word": " är",
+          "start": 19.259999999999998,
+          "end": 19.72,
+          "score": 0.513671875
+        },
+        {
+          "word": " där",
+          "start": 19.72,
+          "end": 19.86,
+          "score": 0.533203125
+        },
+        {
+          "word": " du",
+          "start": 19.86,
+          "end": 20.12,
+          "score": 0.63134765625
+        },
+        {
+          "word": " scrollar",
+          "start": 20.12,
+          "end": 20.54,
+          "score": 0.933837890625
+        },
+        {
+          "word": " så",
+          "start": 20.54,
+          "end": 20.62,
+          "score": 0.4150390625
+        },
+        {
+          "word": " kommer",
+          "start": 20.62,
+          "end": 20.82,
+          "score": 0.66064453125
+        },
+        {
+          "word": " vi",
+          "start": 20.82,
+          "end": 20.96,
+          "score": 0.74853515625
+        },
+        {
+          "word": " se.",
+          "start": 20.96,
+          "end": 21.12,
+          "score": 0.62353515625
+        }
+      ]
+    },
+    {
+      "start": 21.14,
+      "end": 22.02,
+      "text": " Okej, jag fattar.",
+      "words": [
+        {
+          "word": " Okej,",
+          "start": 21.14,
+          "end": 21.46,
+          "score": 0.6934814453125
+        },
+        {
+          "word": " jag",
+          "start": 21.46,
+          "end": 21.66,
+          "score": 0.39794921875
+        },
+        {
+          "word": " fattar.",
+          "start": 21.66,
+          "end": 22.02,
+          "score": 0.90869140625
+        }
+      ]
+    },
+    {
+      "start": 24.68,
+      "end": 27.88,
+      "text": " Kort sagt, för readmin vet jag inte om jag kan...",
+      "words": [
+        {
+          "word": " Kort",
+          "start": 24.68,
+          "end": 25.14,
+          "score": 0.89501953125
+        },
+        {
+          "word": " sagt,",
+          "start": 25.14,
+          "end": 25.26,
+          "score": 0.62548828125
+        },
+        {
+          "word": " för",
+          "start": 25.54,
+          "end": 26.22,
+          "score": 0.58251953125
+        },
+        {
+          "word": " readmin",
+          "start": 26.22,
+          "end": 26.74,
+          "score": 0.4700927734375
+        },
+        {
+          "word": " vet",
+          "start": 26.74,
+          "end": 27.06,
+          "score": 0.4990234375
+        },
+        {
+          "word": " jag",
+          "start": 27.06,
+          "end": 27.2,
+          "score": 0.6494140625
+        },
+        {
+          "word": " inte",
+          "start": 27.2,
+          "end": 27.34,
+          "score": 0.60498046875
+        },
+        {
+          "word": " om",
+          "start": 27.34,
+          "end": 27.42,
+          "score": 0.64453125
+        },
+        {
+          "word": " jag",
+          "start": 27.42,
+          "end": 27.5,
+          "score": 0.64892578125
+        },
+        {
+          "word": " kan...",
+          "start": 27.5,
+          "end": 27.88,
+          "score": 0.6134033203125
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,501 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 6.3,
+      "text": " Vet alla andra hur de ska dels använda den och hur du ska kunna samarbeta med andra?",
+      "words": [
+        {
+          "word": " Vet",
+          "start": 0.0,
+          "end": 0.08,
+          "score": 0.6337890625
+        },
+        {
+          "word": " alla",
+          "start": 0.08,
+          "end": 0.18,
+          "score": 0.67529296875
+        },
+        {
+          "word": " andra",
+          "start": 0.18,
+          "end": 0.46,
+          "score": 0.673828125
+        },
+        {
+          "word": " hur",
+          "start": 0.46,
+          "end": 0.58,
+          "score": 0.72265625
+        },
+        {
+          "word": " de",
+          "start": 0.58,
+          "end": 0.7,
+          "score": 0.68505859375
+        },
+        {
+          "word": " ska",
+          "start": 0.7,
+          "end": 1.02,
+          "score": 0.626220703125
+        },
+        {
+          "word": " dels",
+          "start": 1.02,
+          "end": 2.52,
+          "score": 0.397705078125
+        },
+        {
+          "word": " använda",
+          "start": 2.52,
+          "end": 3.06,
+          "score": 0.61529541015625
+        },
+        {
+          "word": " den",
+          "start": 3.06,
+          "end": 3.12,
+          "score": 0.79345703125
+        },
+        {
+          "word": " och",
+          "start": 3.12,
+          "end": 3.34,
+          "score": 0.79248046875
+        },
+        {
+          "word": " hur",
+          "start": 3.34,
+          "end": 3.68,
+          "score": 0.7568359375
+        },
+        {
+          "word": " du",
+          "start": 3.68,
+          "end": 3.96,
+          "score": 0.59814453125
+        },
+        {
+          "word": " ska",
+          "start": 3.96,
+          "end": 4.32,
+          "score": 0.431396484375
+        },
+        {
+          "word": " kunna",
+          "start": 4.32,
+          "end": 4.56,
+          "score": 0.8662109375
+        },
+        {
+          "word": " samarbeta",
+          "start": 4.56,
+          "end": 6.04,
+          "score": 0.865234375
+        },
+        {
+          "word": " med",
+          "start": 6.04,
+          "end": 6.14,
+          "score": 0.72705078125
+        },
+        {
+          "word": " andra?",
+          "start": 6.14,
+          "end": 6.3,
+          "score": 0.67041015625
+        }
+      ]
+    },
+    {
+      "start": 6.98,
+      "end": 18.32,
+      "text": " Du skulle kunna kolla på min och Johans embedding plusering, det som vi gjorde själva och sen körde in i pipelinen.",
+      "words": [
+        {
+          "word": " Du",
+          "start": 6.98,
+          "end": 7.42,
+          "score": 0.28076171875
+        },
+        {
+          "word": " skulle",
+          "start": 7.42,
+          "end": 7.66,
+          "score": 0.5537109375
+        },
+        {
+          "word": " kunna",
+          "start": 7.66,
+          "end": 7.84,
+          "score": 0.5732421875
+        },
+        {
+          "word": " kolla",
+          "start": 7.84,
+          "end": 8.56,
+          "score": 0.76123046875
+        },
+        {
+          "word": " på",
+          "start": 8.56,
+          "end": 8.92,
+          "score": 0.59619140625
+        },
+        {
+          "word": " min",
+          "start": 8.92,
+          "end": 10.88,
+          "score": 0.44287109375
+        },
+        {
+          "word": " och",
+          "start": 10.88,
+          "end": 11.04,
+          "score": 0.75634765625
+        },
+        {
+          "word": " Johans",
+          "start": 11.04,
+          "end": 11.64,
+          "score": 0.92431640625
+        },
+        {
+          "word": " embedding",
+          "start": 11.64,
+          "end": 13.34,
+          "score": 0.55438232421875
+        },
+        {
+          "word": " plusering,",
+          "start": 13.34,
+          "end": 13.86,
+          "score": 0.27117919921875
+        },
+        {
+          "word": " det",
+          "start": 14.18,
+          "end": 14.86,
+          "score": 0.47314453125
+        },
+        {
+          "word": " som",
+          "start": 14.86,
+          "end": 15.1,
+          "score": 0.626953125
+        },
+        {
+          "word": " vi",
+          "start": 15.1,
+          "end": 15.26,
+          "score": 0.73095703125
+        },
+        {
+          "word": " gjorde",
+          "start": 15.26,
+          "end": 15.42,
+          "score": 0.47998046875
+        },
+        {
+          "word": " själva",
+          "start": 15.42,
+          "end": 15.88,
+          "score": 0.898681640625
+        },
+        {
+          "word": " och",
+          "start": 15.88,
+          "end": 16.14,
+          "score": 0.681640625
+        },
+        {
+          "word": " sen",
+          "start": 16.14,
+          "end": 16.32,
+          "score": 0.224609375
+        },
+        {
+          "word": " körde",
+          "start": 16.32,
+          "end": 17.7,
+          "score": 0.838134765625
+        },
+        {
+          "word": " in",
+          "start": 17.7,
+          "end": 17.78,
+          "score": 0.64404296875
+        },
+        {
+          "word": " i",
+          "start": 17.78,
+          "end": 17.88,
+          "score": 0.7890625
+        },
+        {
+          "word": " pipelinen.",
+          "start": 17.88,
+          "end": 18.32,
+          "score": 0.8610026041666666
+        }
+      ]
+    },
+    {
+      "start": 18.54,
+      "end": 22.44,
+      "text": " Jag tror jag har skrivit i alla fall vad den förväntar och vad den kommer att skriva ut.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 18.54,
+          "end": 18.98,
+          "score": 0.513671875
+        },
+        {
+          "word": " tror",
+          "start": 18.98,
+          "end": 19.62,
+          "score": 0.54150390625
+        },
+        {
+          "word": " jag",
+          "start": 19.62,
+          "end": 19.74,
+          "score": 0.494384765625
+        },
+        {
+          "word": " har",
+          "start": 19.74,
+          "end": 19.82,
+          "score": 0.64599609375
+        },
+        {
+          "word": " skrivit",
+          "start": 19.82,
+          "end": 20.16,
+          "score": 0.8894856770833334
+        },
+        {
+          "word": " i",
+          "start": 20.16,
+          "end": 20.24,
+          "score": 0.654296875
+        },
+        {
+          "word": " alla",
+          "start": 20.24,
+          "end": 20.32,
+          "score": 0.6474609375
+        },
+        {
+          "word": " fall",
+          "start": 20.32,
+          "end": 20.54,
+          "score": 0.6240234375
+        },
+        {
+          "word": " vad",
+          "start": 20.54,
+          "end": 20.72,
+          "score": 0.77880859375
+        },
+        {
+          "word": " den",
+          "start": 20.72,
+          "end": 20.84,
+          "score": 0.67724609375
+        },
+        {
+          "word": " förväntar",
+          "start": 20.84,
+          "end": 21.34,
+          "score": 0.9715576171875
+        },
+        {
+          "word": " och",
+          "start": 21.34,
+          "end": 21.42,
+          "score": 0.6591796875
+        },
+        {
+          "word": " vad",
+          "start": 21.42,
+          "end": 21.54,
+          "score": 0.71875
+        },
+        {
+          "word": " den",
+          "start": 21.54,
+          "end": 21.7,
+          "score": 0.8408203125
+        },
+        {
+          "word": " kommer",
+          "start": 21.7,
+          "end": 21.9,
+          "score": 0.66259765625
+        },
+        {
+          "word": " att",
+          "start": 21.9,
+          "end": 22.04,
+          "score": 0.454833984375
+        },
+        {
+          "word": " skriva",
+          "start": 22.04,
+          "end": 22.22,
+          "score": 0.9293619791666666
+        },
+        {
+          "word": " ut.",
+          "start": 22.22,
+          "end": 22.44,
+          "score": 0.626953125
+        }
+      ]
+    },
+    {
+      "start": 22.82,
+      "end": 24.44,
+      "text": " Alltså där finns det lite bättre docs.",
+      "words": [
+        {
+          "word": " Alltså",
+          "start": 22.82,
+          "end": 23.26,
+          "score": 0.563720703125
+        },
+        {
+          "word": " där",
+          "start": 23.26,
+          "end": 23.34,
+          "score": 0.468017578125
+        },
+        {
+          "word": " finns",
+          "start": 23.34,
+          "end": 23.56,
+          "score": 0.88037109375
+        },
+        {
+          "word": " det",
+          "start": 23.56,
+          "end": 23.72,
+          "score": 0.76025390625
+        },
+        {
+          "word": " lite",
+          "start": 23.72,
+          "end": 23.86,
+          "score": 0.83154296875
+        },
+        {
+          "word": " bättre",
+          "start": 23.86,
+          "end": 24.14,
+          "score": 0.55322265625
+        },
+        {
+          "word": " docs.",
+          "start": 24.14,
+          "end": 24.44,
+          "score": 0.321044921875
+        }
+      ]
+    },
+    {
+      "start": 25.78,
+      "end": 29.92,
+      "text": " Men jag kan kolla i alla fall på det sen och kanske hjälpa till.",
+      "words": [
+        {
+          "word": " Men",
+          "start": 25.78,
+          "end": 26.22,
+          "score": 0.8056640625
+        },
+        {
+          "word": " jag",
+          "start": 26.22,
+          "end": 26.52,
+          "score": 0.64697265625
+        },
+        {
+          "word": " kan",
+          "start": 26.52,
+          "end": 26.6,
+          "score": 0.841796875
+        },
+        {
+          "word": " kolla",
+          "start": 26.6,
+          "end": 26.96,
+          "score": 0.7705078125
+        },
+        {
+          "word": " i",
+          "start": 26.96,
+          "end": 27.04,
+          "score": 0.79638671875
+        },
+        {
+          "word": " alla",
+          "start": 27.04,
+          "end": 27.14,
+          "score": 0.66162109375
+        },
+        {
+          "word": " fall",
+          "start": 27.14,
+          "end": 27.38,
+          "score": 0.623046875
+        },
+        {
+          "word": " på",
+          "start": 27.38,
+          "end": 27.5,
+          "score": 0.6181640625
+        },
+        {
+          "word": " det",
+          "start": 27.5,
+          "end": 27.6,
+          "score": 0.71484375
+        },
+        {
+          "word": " sen",
+          "start": 27.6,
+          "end": 28.1,
+          "score": 0.343994140625
+        },
+        {
+          "word": " och",
+          "start": 28.1,
+          "end": 28.52,
+          "score": 0.47314453125
+        },
+        {
+          "word": " kanske",
+          "start": 28.52,
+          "end": 29.46,
+          "score": 0.607421875
+        },
+        {
+          "word": " hjälpa",
+          "start": 29.46,
+          "end": 29.82,
+          "score": 0.8466796875
+        },
+        {
+          "word": " till.",
+          "start": 29.82,
+          "end": 29.92,
+          "score": 0.765625
+        }
+      ]
+    }
+  ]
+}

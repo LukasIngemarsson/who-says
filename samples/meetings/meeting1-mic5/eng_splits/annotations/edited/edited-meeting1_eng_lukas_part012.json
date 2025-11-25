@@ -1,0 +1,31 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 1.2,
+      "speakerId": "SPEAKER_02",
+      "transcription": " actual audio"
+    },
+    {
+      "startTime": 1.2,
+      "endTime": 15,
+      "speakerId": "SPEAKER_03",
+      "transcription": "no no i don't need the audio, i only need the JSON file... so i actually need the json file into the phoneme model from him, from the VAD"
+    },
+    {
+      "startTime": 15,
+      "endTime": 25.5,
+      "speakerId": "SPEAKER_01",
+      "transcription": "oh you mean yeah yeah yeah, of course. we are sending in that.. that's why we have the... in the call we have to do the VAD part first as well and then we take that output and send it in to the next part"
+    },
+    {
+      "startTime": 27,
+      "endTime": 30,
+      "speakerId": "SPEAKER_02",
+      "transcription": "i was also thinking about like loading"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T14:56:54.590Z"
+  }
+}

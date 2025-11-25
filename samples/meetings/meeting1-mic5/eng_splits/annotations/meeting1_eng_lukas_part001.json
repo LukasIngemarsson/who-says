@@ -1,0 +1,618 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 1.733,
+      "text": " and do the rest basically.",
+      "words": [
+        {
+          "word": "and",
+          "start": 0.031,
+          "end": 0.492,
+          "score": 0.419,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "do",
+          "start": 0.512,
+          "end": 0.652,
+          "score": 0.962,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 0.692,
+          "end": 0.752,
+          "score": 0.985,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "rest",
+          "start": 0.812,
+          "end": 1.092,
+          "score": 0.966,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "basically.",
+          "start": 1.233,
+          "end": 1.733,
+          "score": 0.522,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 2.414,
+      "end": 9.264,
+      "text": "But yeah, our pipeline wanted to go from audio file to valve to...",
+      "words": [
+        {
+          "word": "But",
+          "start": 2.414,
+          "end": 3.015,
+          "score": 0.576,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "yeah,",
+          "start": 3.095,
+          "end": 3.596,
+          "score": 0.632,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "our",
+          "start": 3.776,
+          "end": 3.916,
+          "score": 0.546,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "pipeline",
+          "start": 4.097,
+          "end": 4.457,
+          "score": 0.551,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "wanted",
+          "start": 4.517,
+          "end": 4.958,
+          "score": 0.862,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 5.058,
+          "end": 5.298,
+          "score": 0.99,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "go",
+          "start": 5.438,
+          "end": 5.579,
+          "score": 0.971,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "from",
+          "start": 5.619,
+          "end": 5.879,
+          "score": 0.945,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "audio",
+          "start": 6.34,
+          "end": 6.46,
+          "score": 0.188,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "file",
+          "start": 6.5,
+          "end": 6.72,
+          "score": 0.376,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 6.74,
+          "end": 6.94,
+          "score": 0.802,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "valve",
+          "start": 7.802,
+          "end": 8.242,
+          "score": 0.756,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to...",
+          "start": 8.302,
+          "end": 9.264,
+          "score": 0.747,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 9.284,
+      "end": 20.419,
+      "text": "It's still going to be difficult because we're running everything essentially on the same computer, so even though we run the models in parallel,",
+      "words": [
+        {
+          "word": "It's",
+          "start": 9.284,
+          "end": 9.384,
+          "score": 0.484,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "still",
+          "start": 9.404,
+          "end": 9.564,
+          "score": 0.762,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "going",
+          "start": 9.584,
+          "end": 9.684,
+          "score": 0.263,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "to",
+          "start": 9.704,
+          "end": 9.784,
+          "score": 0.528,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "be",
+          "start": 9.804,
+          "end": 9.865,
+          "score": 0.889,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "difficult",
+          "start": 9.905,
+          "end": 10.185,
+          "score": 0.877,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "because",
+          "start": 10.225,
+          "end": 10.445,
+          "score": 0.813,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we're",
+          "start": 10.666,
+          "end": 10.866,
+          "score": 0.845,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "running",
+          "start": 10.926,
+          "end": 11.126,
+          "score": 0.916,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "everything",
+          "start": 11.206,
+          "end": 11.567,
+          "score": 0.827,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "essentially",
+          "start": 11.887,
+          "end": 12.288,
+          "score": 0.365,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "on",
+          "start": 12.428,
+          "end": 12.568,
+          "score": 0.74,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 12.728,
+          "end": 12.869,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "same",
+          "start": 12.949,
+          "end": 13.209,
+          "score": 0.82,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "computer,",
+          "start": 13.59,
+          "end": 14.431,
+          "score": 0.624,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "so",
+          "start": 14.511,
+          "end": 14.551,
+          "score": 0.497,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "even",
+          "start": 14.691,
+          "end": 14.851,
+          "score": 0.916,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "though",
+          "start": 14.871,
+          "end": 15.072,
+          "score": 0.749,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we",
+          "start": 15.092,
+          "end": 15.132,
+          "score": 0.438,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "run",
+          "start": 15.252,
+          "end": 15.733,
+          "score": 0.856,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 15.913,
+          "end": 16.273,
+          "score": 0.903,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "models",
+          "start": 16.434,
+          "end": 16.794,
+          "score": 0.841,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "in",
+          "start": 17.215,
+          "end": 17.255,
+          "score": 0.216,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "parallel,",
+          "start": 17.315,
+          "end": 20.419,
+          "score": 0.68,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "and",
+      "start": 0.031,
+      "end": 0.492,
+      "score": 0.419,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "do",
+      "start": 0.512,
+      "end": 0.652,
+      "score": 0.962,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 0.692,
+      "end": 0.752,
+      "score": 0.985,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "rest",
+      "start": 0.812,
+      "end": 1.092,
+      "score": 0.966,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "basically.",
+      "start": 1.233,
+      "end": 1.733,
+      "score": 0.522,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "But",
+      "start": 2.414,
+      "end": 3.015,
+      "score": 0.576,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "yeah,",
+      "start": 3.095,
+      "end": 3.596,
+      "score": 0.632,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "our",
+      "start": 3.776,
+      "end": 3.916,
+      "score": 0.546,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "pipeline",
+      "start": 4.097,
+      "end": 4.457,
+      "score": 0.551,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "wanted",
+      "start": 4.517,
+      "end": 4.958,
+      "score": 0.862,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 5.058,
+      "end": 5.298,
+      "score": 0.99,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "go",
+      "start": 5.438,
+      "end": 5.579,
+      "score": 0.971,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "from",
+      "start": 5.619,
+      "end": 5.879,
+      "score": 0.945,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "audio",
+      "start": 6.34,
+      "end": 6.46,
+      "score": 0.188,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "file",
+      "start": 6.5,
+      "end": 6.72,
+      "score": 0.376,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 6.74,
+      "end": 6.94,
+      "score": 0.802,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "valve",
+      "start": 7.802,
+      "end": 8.242,
+      "score": 0.756,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to...",
+      "start": 8.302,
+      "end": 9.264,
+      "score": 0.747,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "It's",
+      "start": 9.284,
+      "end": 9.384,
+      "score": 0.484,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "still",
+      "start": 9.404,
+      "end": 9.564,
+      "score": 0.762,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "going",
+      "start": 9.584,
+      "end": 9.684,
+      "score": 0.263,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "to",
+      "start": 9.704,
+      "end": 9.784,
+      "score": 0.528,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "be",
+      "start": 9.804,
+      "end": 9.865,
+      "score": 0.889,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "difficult",
+      "start": 9.905,
+      "end": 10.185,
+      "score": 0.877,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "because",
+      "start": 10.225,
+      "end": 10.445,
+      "score": 0.813,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we're",
+      "start": 10.666,
+      "end": 10.866,
+      "score": 0.845,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "running",
+      "start": 10.926,
+      "end": 11.126,
+      "score": 0.916,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "everything",
+      "start": 11.206,
+      "end": 11.567,
+      "score": 0.827,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "essentially",
+      "start": 11.887,
+      "end": 12.288,
+      "score": 0.365,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "on",
+      "start": 12.428,
+      "end": 12.568,
+      "score": 0.74,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 12.728,
+      "end": 12.869,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "same",
+      "start": 12.949,
+      "end": 13.209,
+      "score": 0.82,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "computer,",
+      "start": 13.59,
+      "end": 14.431,
+      "score": 0.624,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "so",
+      "start": 14.511,
+      "end": 14.551,
+      "score": 0.497,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "even",
+      "start": 14.691,
+      "end": 14.851,
+      "score": 0.916,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "though",
+      "start": 14.871,
+      "end": 15.072,
+      "score": 0.749,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we",
+      "start": 15.092,
+      "end": 15.132,
+      "score": 0.438,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "run",
+      "start": 15.252,
+      "end": 15.733,
+      "score": 0.856,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 15.913,
+      "end": 16.273,
+      "score": 0.903,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "models",
+      "start": 16.434,
+      "end": 16.794,
+      "score": 0.841,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "in",
+      "start": 17.215,
+      "end": 17.255,
+      "score": 0.216,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "parallel,",
+      "start": 17.315,
+      "end": 20.419,
+      "score": 0.68,
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

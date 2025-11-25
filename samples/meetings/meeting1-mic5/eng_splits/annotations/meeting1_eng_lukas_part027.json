@@ -1,0 +1,380 @@
+{
+  "segments": [
+    {
+      "start": 15.944,
+      "end": 20.197,
+      "text": " Why do I face the time thing as well on the web app?",
+      "words": [
+        {
+          "word": "Why",
+          "start": 15.944,
+          "end": 16.145,
+          "score": 0.395,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "do",
+          "start": 16.265,
+          "end": 16.305,
+          "score": 0.474,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "I",
+          "start": 16.365,
+          "end": 16.425,
+          "score": 0.931,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "face",
+          "start": 16.466,
+          "end": 16.766,
+          "score": 0.739,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 16.807,
+          "end": 17.067,
+          "score": 0.91,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "time",
+          "start": 17.208,
+          "end": 17.489,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "thing",
+          "start": 17.529,
+          "end": 17.89,
+          "score": 0.857,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "as",
+          "start": 18.01,
+          "end": 18.05,
+          "score": 0.002,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "well",
+          "start": 18.07,
+          "end": 18.311,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "on",
+          "start": 18.371,
+          "end": 18.452,
+          "score": 0.915,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 18.472,
+          "end": 18.612,
+          "score": 0.745,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "web",
+          "start": 18.692,
+          "end": 19.094,
+          "score": 0.824,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "app?",
+          "start": 20.036,
+          "end": 20.197,
+          "score": 0.342,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 20.217,
+      "end": 21.802,
+      "text": "It's actually usable good.",
+      "words": [
+        {
+          "word": "It's",
+          "start": 20.217,
+          "end": 20.418,
+          "score": 0.414,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "actually",
+          "start": 20.718,
+          "end": 21.039,
+          "score": 0.709,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "usable",
+          "start": 21.14,
+          "end": 21.501,
+          "score": 0.859,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "good.",
+          "start": 21.581,
+          "end": 21.802,
+          "score": 0.943,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 22.243,
+      "end": 25.212,
+      "text": "You only need like, if you're writing second",
+      "words": [
+        {
+          "word": "You",
+          "start": 22.243,
+          "end": 22.383,
+          "score": 0.637,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "only",
+          "start": 22.404,
+          "end": 22.624,
+          "score": 0.427,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "need",
+          "start": 22.644,
+          "end": 22.825,
+          "score": 0.512,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like,",
+          "start": 22.865,
+          "end": 23.086,
+          "score": 0.902,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "if",
+          "start": 23.587,
+          "end": 23.627,
+          "score": 0.069,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you're",
+          "start": 23.647,
+          "end": 23.828,
+          "score": 0.776,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "writing",
+          "start": 23.888,
+          "end": 24.269,
+          "score": 0.978,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "second",
+          "start": 24.309,
+          "end": 25.212,
+          "score": 0.901,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Why",
+      "start": 15.944,
+      "end": 16.145,
+      "score": 0.395,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "do",
+      "start": 16.265,
+      "end": 16.305,
+      "score": 0.474,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "I",
+      "start": 16.365,
+      "end": 16.425,
+      "score": 0.931,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "face",
+      "start": 16.466,
+      "end": 16.766,
+      "score": 0.739,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 16.807,
+      "end": 17.067,
+      "score": 0.91,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "time",
+      "start": 17.208,
+      "end": 17.489,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "thing",
+      "start": 17.529,
+      "end": 17.89,
+      "score": 0.857,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "as",
+      "start": 18.01,
+      "end": 18.05,
+      "score": 0.002,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "well",
+      "start": 18.07,
+      "end": 18.311,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "on",
+      "start": 18.371,
+      "end": 18.452,
+      "score": 0.915,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 18.472,
+      "end": 18.612,
+      "score": 0.745,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "web",
+      "start": 18.692,
+      "end": 19.094,
+      "score": 0.824,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "app?",
+      "start": 20.036,
+      "end": 20.197,
+      "score": 0.342,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "It's",
+      "start": 20.217,
+      "end": 20.418,
+      "score": 0.414,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "actually",
+      "start": 20.718,
+      "end": 21.039,
+      "score": 0.709,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "usable",
+      "start": 21.14,
+      "end": 21.501,
+      "score": 0.859,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "good.",
+      "start": 21.581,
+      "end": 21.802,
+      "score": 0.943,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "You",
+      "start": 22.243,
+      "end": 22.383,
+      "score": 0.637,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "only",
+      "start": 22.404,
+      "end": 22.624,
+      "score": 0.427,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "need",
+      "start": 22.644,
+      "end": 22.825,
+      "score": 0.512,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like,",
+      "start": 22.865,
+      "end": 23.086,
+      "score": 0.902,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "if",
+      "start": 23.587,
+      "end": 23.627,
+      "score": 0.069,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "you're",
+      "start": 23.647,
+      "end": 23.828,
+      "score": 0.776,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "writing",
+      "start": 23.888,
+      "end": 24.269,
+      "score": 0.978,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "second",
+      "start": 24.309,
+      "end": 25.212,
+      "score": 0.901,
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

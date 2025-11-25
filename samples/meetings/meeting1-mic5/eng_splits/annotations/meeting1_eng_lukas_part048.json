@@ -1,0 +1,392 @@
+{
+  "segments": [
+    {
+      "start": 11.573,
+      "end": 29.987,
+      "text": " Not even entirely sure we're supposed to input to our components but embedding embeddings embedding because I guess we're going to be embedding like each segment individually",
+      "words": [
+        {
+          "word": "Not",
+          "start": 11.573,
+          "end": 11.733,
+          "score": 0.713,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "even",
+          "start": 11.793,
+          "end": 11.914,
+          "score": 0.964,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "entirely",
+          "start": 11.954,
+          "end": 12.354,
+          "score": 0.754,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "sure",
+          "start": 12.415,
+          "end": 12.675,
+          "score": 0.452,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we're",
+          "start": 12.695,
+          "end": 12.795,
+          "score": 0.004,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "supposed",
+          "start": 12.815,
+          "end": 13.156,
+          "score": 0.826,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 13.216,
+          "end": 13.316,
+          "score": 0.616,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "input",
+          "start": 13.376,
+          "end": 13.777,
+          "score": 0.726,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 13.817,
+          "end": 13.937,
+          "score": 0.814,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "our",
+          "start": 14.198,
+          "end": 14.258,
+          "score": 0.327,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "components",
+          "start": 15.34,
+          "end": 15.981,
+          "score": 0.53,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "but",
+          "start": 16.001,
+          "end": 16.101,
+          "score": 0.511,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "embedding",
+          "start": 18.025,
+          "end": 18.646,
+          "score": 0.546,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "embeddings",
+          "start": 21.712,
+          "end": 22.193,
+          "score": 0.765,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "embedding",
+          "start": 22.333,
+          "end": 22.674,
+          "score": 0.734,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "because",
+          "start": 26.04,
+          "end": 26.2,
+          "score": 0.204,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 26.22,
+          "end": 26.24,
+          "score": 0.28,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "guess",
+          "start": 26.26,
+          "end": 26.38,
+          "score": 0.456,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we're",
+          "start": 26.4,
+          "end": 26.501,
+          "score": 0.058,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "going",
+          "start": 26.521,
+          "end": 26.621,
+          "score": 0.162,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 26.641,
+          "end": 26.681,
+          "score": 0.0,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "be",
+          "start": 26.701,
+          "end": 26.781,
+          "score": 0.782,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "embedding",
+          "start": 26.841,
+          "end": 27.142,
+          "score": 0.575,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 27.162,
+          "end": 27.302,
+          "score": 0.89,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "each",
+          "start": 27.362,
+          "end": 27.543,
+          "score": 0.979,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "segment",
+          "start": 27.943,
+          "end": 28.985,
+          "score": 0.416,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "individually",
+          "start": 29.306,
+          "end": 29.987,
+          "score": 0.89,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Not",
+      "start": 11.573,
+      "end": 11.733,
+      "score": 0.713,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "even",
+      "start": 11.793,
+      "end": 11.914,
+      "score": 0.964,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "entirely",
+      "start": 11.954,
+      "end": 12.354,
+      "score": 0.754,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "sure",
+      "start": 12.415,
+      "end": 12.675,
+      "score": 0.452,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we're",
+      "start": 12.695,
+      "end": 12.795,
+      "score": 0.004,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "supposed",
+      "start": 12.815,
+      "end": 13.156,
+      "score": 0.826,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 13.216,
+      "end": 13.316,
+      "score": 0.616,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "input",
+      "start": 13.376,
+      "end": 13.777,
+      "score": 0.726,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 13.817,
+      "end": 13.937,
+      "score": 0.814,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "our",
+      "start": 14.198,
+      "end": 14.258,
+      "score": 0.327,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "components",
+      "start": 15.34,
+      "end": 15.981,
+      "score": 0.53,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "but",
+      "start": 16.001,
+      "end": 16.101,
+      "score": 0.511,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "embedding",
+      "start": 18.025,
+      "end": 18.646,
+      "score": 0.546,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "embeddings",
+      "start": 21.712,
+      "end": 22.193,
+      "score": 0.765,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "embedding",
+      "start": 22.333,
+      "end": 22.674,
+      "score": 0.734,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "because",
+      "start": 26.04,
+      "end": 26.2,
+      "score": 0.204,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 26.22,
+      "end": 26.24,
+      "score": 0.28,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "guess",
+      "start": 26.26,
+      "end": 26.38,
+      "score": 0.456,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we're",
+      "start": 26.4,
+      "end": 26.501,
+      "score": 0.058,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "going",
+      "start": 26.521,
+      "end": 26.621,
+      "score": 0.162,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 26.641,
+      "end": 26.681,
+      "score": 0.0,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "be",
+      "start": 26.701,
+      "end": 26.781,
+      "score": 0.782,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "embedding",
+      "start": 26.841,
+      "end": 27.142,
+      "score": 0.575,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like",
+      "start": 27.162,
+      "end": 27.302,
+      "score": 0.89,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "each",
+      "start": 27.362,
+      "end": 27.543,
+      "score": 0.979,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "segment",
+      "start": 27.943,
+      "end": 28.985,
+      "score": 0.416,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "individually",
+      "start": 29.306,
+      "end": 29.987,
+      "score": 0.89,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

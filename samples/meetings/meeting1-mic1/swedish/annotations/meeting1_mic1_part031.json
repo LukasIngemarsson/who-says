@@ -1,0 +1,637 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 2.18,
+      "text": " Annars löser vi tid bara på samma sak.",
+      "words": [
+        {
+          "word": " Annars",
+          "start": 0.0,
+          "end": 0.66,
+          "score": 0.949462890625
+        },
+        {
+          "word": " löser",
+          "start": 0.66,
+          "end": 0.92,
+          "score": 0.82958984375
+        },
+        {
+          "word": " vi",
+          "start": 0.92,
+          "end": 0.98,
+          "score": 0.7490234375
+        },
+        {
+          "word": " tid",
+          "start": 0.98,
+          "end": 1.28,
+          "score": 0.49169921875
+        },
+        {
+          "word": " bara",
+          "start": 1.28,
+          "end": 1.5,
+          "score": 0.354736328125
+        },
+        {
+          "word": " på",
+          "start": 1.5,
+          "end": 1.68,
+          "score": 0.59130859375
+        },
+        {
+          "word": " samma",
+          "start": 1.68,
+          "end": 1.92,
+          "score": 0.66552734375
+        },
+        {
+          "word": " sak.",
+          "start": 1.92,
+          "end": 2.18,
+          "score": 0.4576416015625
+        }
+      ]
+    },
+    {
+      "start": 2.34,
+      "end": 5.22,
+      "text": " Jag kanske får ett problem, jag löser det efter säg två timmar.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 2.34,
+          "end": 2.54,
+          "score": 0.60107421875
+        },
+        {
+          "word": " kanske",
+          "start": 2.54,
+          "end": 2.7,
+          "score": 0.63525390625
+        },
+        {
+          "word": " får",
+          "start": 2.7,
+          "end": 3.16,
+          "score": 0.70263671875
+        },
+        {
+          "word": " ett",
+          "start": 3.16,
+          "end": 3.18,
+          "score": 0.58056640625
+        },
+        {
+          "word": " problem,",
+          "start": 3.18,
+          "end": 3.48,
+          "score": 0.837890625
+        },
+        {
+          "word": " jag",
+          "start": 3.68,
+          "end": 3.78,
+          "score": 0.53369140625
+        },
+        {
+          "word": " löser",
+          "start": 3.78,
+          "end": 4.14,
+          "score": 0.8675130208333334
+        },
+        {
+          "word": " det",
+          "start": 4.14,
+          "end": 4.14,
+          "score": 0.751953125
+        },
+        {
+          "word": " efter",
+          "start": 4.14,
+          "end": 4.3,
+          "score": 0.70361328125
+        },
+        {
+          "word": " säg",
+          "start": 4.3,
+          "end": 4.62,
+          "score": 0.6866455078125
+        },
+        {
+          "word": " två",
+          "start": 4.62,
+          "end": 4.82,
+          "score": 0.5078125
+        },
+        {
+          "word": " timmar.",
+          "start": 4.82,
+          "end": 5.22,
+          "score": 0.956298828125
+        }
+      ]
+    },
+    {
+      "start": 5.62,
+      "end": 7.46,
+      "text": " Du får samma problem fast själv hemma.",
+      "words": [
+        {
+          "word": " Du",
+          "start": 5.62,
+          "end": 5.7,
+          "score": 0.65380859375
+        },
+        {
+          "word": " får",
+          "start": 5.7,
+          "end": 5.88,
+          "score": 0.705322265625
+        },
+        {
+          "word": " samma",
+          "start": 5.88,
+          "end": 5.98,
+          "score": 0.65576171875
+        },
+        {
+          "word": " problem",
+          "start": 5.98,
+          "end": 6.32,
+          "score": 0.83837890625
+        },
+        {
+          "word": " fast",
+          "start": 6.32,
+          "end": 6.72,
+          "score": 0.49951171875
+        },
+        {
+          "word": " själv",
+          "start": 6.72,
+          "end": 7.1,
+          "score": 0.6905924479166666
+        },
+        {
+          "word": " hemma.",
+          "start": 7.1,
+          "end": 7.46,
+          "score": 0.7174072265625
+        }
+      ]
+    },
+    {
+      "start": 7.64,
+      "end": 10.44,
+      "text": " Och löser det också, eller kanske till och med på ett annat sätt.",
+      "words": [
+        {
+          "word": " Och",
+          "start": 7.64,
+          "end": 7.98,
+          "score": 0.568359375
+        },
+        {
+          "word": " löser",
+          "start": 7.98,
+          "end": 8.36,
+          "score": 0.8421223958333334
+        },
+        {
+          "word": " det",
+          "start": 8.36,
+          "end": 8.4,
+          "score": 0.7607421875
+        },
+        {
+          "word": " också,",
+          "start": 8.4,
+          "end": 8.52,
+          "score": 0.6669921875
+        },
+        {
+          "word": " eller",
+          "start": 8.64,
+          "end": 9.36,
+          "score": 0.3876953125
+        },
+        {
+          "word": " kanske",
+          "start": 9.36,
+          "end": 9.64,
+          "score": 0.54150390625
+        },
+        {
+          "word": " till",
+          "start": 9.64,
+          "end": 9.82,
+          "score": 0.6591796875
+        },
+        {
+          "word": " och",
+          "start": 9.82,
+          "end": 9.88,
+          "score": 0.81640625
+        },
+        {
+          "word": " med",
+          "start": 9.88,
+          "end": 9.9,
+          "score": 0.75927734375
+        },
+        {
+          "word": " på",
+          "start": 9.9,
+          "end": 10.02,
+          "score": 0.59814453125
+        },
+        {
+          "word": " ett",
+          "start": 10.02,
+          "end": 10.08,
+          "score": 0.61767578125
+        },
+        {
+          "word": " annat",
+          "start": 10.08,
+          "end": 10.24,
+          "score": 0.5703125
+        },
+        {
+          "word": " sätt.",
+          "start": 10.24,
+          "end": 10.44,
+          "score": 0.51416015625
+        }
+      ]
+    },
+    {
+      "start": 10.58,
+      "end": 12.58,
+      "text": " Då blir det ännu värre. Ska vi ta mitt sätt eller ditt sätt?",
+      "words": [
+        {
+          "word": " Då",
+          "start": 10.58,
+          "end": 10.76,
+          "score": 0.59912109375
+        },
+        {
+          "word": " blir",
+          "start": 10.76,
+          "end": 10.9,
+          "score": 0.74462890625
+        },
+        {
+          "word": " det",
+          "start": 10.9,
+          "end": 11.0,
+          "score": 0.77099609375
+        },
+        {
+          "word": " ännu",
+          "start": 11.0,
+          "end": 11.18,
+          "score": 0.83984375
+        },
+        {
+          "word": " värre.",
+          "start": 11.18,
+          "end": 11.4,
+          "score": 0.823974609375
+        },
+        {
+          "word": " Ska",
+          "start": 11.46,
+          "end": 11.58,
+          "score": 0.841064453125
+        },
+        {
+          "word": " vi",
+          "start": 11.58,
+          "end": 11.62,
+          "score": 0.7392578125
+        },
+        {
+          "word": " ta",
+          "start": 11.62,
+          "end": 11.78,
+          "score": 0.6494140625
+        },
+        {
+          "word": " mitt",
+          "start": 11.78,
+          "end": 11.94,
+          "score": 0.492919921875
+        },
+        {
+          "word": " sätt",
+          "start": 11.94,
+          "end": 12.06,
+          "score": 0.472900390625
+        },
+        {
+          "word": " eller",
+          "start": 12.06,
+          "end": 12.24,
+          "score": 0.564453125
+        },
+        {
+          "word": " ditt",
+          "start": 12.24,
+          "end": 12.46,
+          "score": 0.95556640625
+        },
+        {
+          "word": " sätt?",
+          "start": 12.46,
+          "end": 12.58,
+          "score": 0.51611328125
+        }
+      ]
+    },
+    {
+      "start": 13.02,
+      "end": 13.86,
+      "text": " Det är kallt bara.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 13.02,
+          "end": 13.36,
+          "score": 0.658203125
+        },
+        {
+          "word": " är",
+          "start": 13.36,
+          "end": 13.46,
+          "score": 0.50244140625
+        },
+        {
+          "word": " kallt",
+          "start": 13.46,
+          "end": 13.72,
+          "score": 0.8917643229166666
+        },
+        {
+          "word": " bara.",
+          "start": 13.72,
+          "end": 13.86,
+          "score": 0.271728515625
+        }
+      ]
+    },
+    {
+      "start": 14.3,
+      "end": 16.64,
+      "text": " Det är bäst att vara bästa man i universum.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 14.3,
+          "end": 14.64,
+          "score": 0.44970703125
+        },
+        {
+          "word": " är",
+          "start": 14.64,
+          "end": 14.76,
+          "score": 0.5361328125
+        },
+        {
+          "word": " bäst",
+          "start": 14.76,
+          "end": 14.92,
+          "score": 0.5926106770833334
+        },
+        {
+          "word": " att",
+          "start": 14.92,
+          "end": 15.02,
+          "score": 0.419677734375
+        },
+        {
+          "word": " vara",
+          "start": 15.02,
+          "end": 15.12,
+          "score": 0.404296875
+        },
+        {
+          "word": " bästa",
+          "start": 15.12,
+          "end": 15.78,
+          "score": 0.60296630859375
+        },
+        {
+          "word": " man",
+          "start": 15.78,
+          "end": 16.0,
+          "score": 0.3419189453125
+        },
+        {
+          "word": " i",
+          "start": 16.0,
+          "end": 16.04,
+          "score": 0.578125
+        },
+        {
+          "word": " universum.",
+          "start": 16.04,
+          "end": 16.64,
+          "score": 0.5936279296875
+        }
+      ]
+    },
+    {
+      "start": 21.82,
+      "end": 27.9,
+      "text": " Det är i alla fall ish det, bortsett från all diskussion om hur vi skulle lägga upp det.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 21.82,
+          "end": 22.16,
+          "score": 0.08770751953125
+        },
+        {
+          "word": " är",
+          "start": 22.16,
+          "end": 22.5,
+          "score": 0.509765625
+        },
+        {
+          "word": " i",
+          "start": 22.5,
+          "end": 22.5,
+          "score": 0.53662109375
+        },
+        {
+          "word": " alla",
+          "start": 22.5,
+          "end": 22.56,
+          "score": 0.58154296875
+        },
+        {
+          "word": " fall",
+          "start": 22.56,
+          "end": 22.72,
+          "score": 0.65234375
+        },
+        {
+          "word": " ish",
+          "start": 22.72,
+          "end": 23.72,
+          "score": 0.77099609375
+        },
+        {
+          "word": " det,",
+          "start": 23.72,
+          "end": 24.02,
+          "score": 0.53857421875
+        },
+        {
+          "word": " bortsett",
+          "start": 24.18,
+          "end": 24.56,
+          "score": 0.9073893229166666
+        },
+        {
+          "word": " från",
+          "start": 24.56,
+          "end": 24.72,
+          "score": 0.583984375
+        },
+        {
+          "word": " all",
+          "start": 24.72,
+          "end": 24.86,
+          "score": 0.58056640625
+        },
+        {
+          "word": " diskussion",
+          "start": 24.86,
+          "end": 27.0,
+          "score": 0.97216796875
+        },
+        {
+          "word": " om",
+          "start": 27.0,
+          "end": 27.08,
+          "score": 0.6220703125
+        },
+        {
+          "word": " hur",
+          "start": 27.08,
+          "end": 27.14,
+          "score": 0.7412109375
+        },
+        {
+          "word": " vi",
+          "start": 27.14,
+          "end": 27.28,
+          "score": 0.73974609375
+        },
+        {
+          "word": " skulle",
+          "start": 27.28,
+          "end": 27.4,
+          "score": 0.53271484375
+        },
+        {
+          "word": " lägga",
+          "start": 27.4,
+          "end": 27.62,
+          "score": 0.857421875
+        },
+        {
+          "word": " upp",
+          "start": 27.62,
+          "end": 27.76,
+          "score": 0.66015625
+        },
+        {
+          "word": " det.",
+          "start": 27.76,
+          "end": 27.9,
+          "score": 0.759765625
+        }
+      ]
+    },
+    {
+      "start": 28.08,
+      "end": 29.84,
+      "text": " För vi insåg ju när vi började lägga in alla inuti.",
+      "words": [
+        {
+          "word": " För",
+          "start": 28.08,
+          "end": 28.3,
+          "score": 0.48388671875
+        },
+        {
+          "word": " vi",
+          "start": 28.3,
+          "end": 28.4,
+          "score": 0.68115234375
+        },
+        {
+          "word": " insåg",
+          "start": 28.4,
+          "end": 28.82,
+          "score": 0.908203125
+        },
+        {
+          "word": " ju",
+          "start": 28.82,
+          "end": 28.82,
+          "score": 0.417724609375
+        },
+        {
+          "word": " när",
+          "start": 28.82,
+          "end": 28.92,
+          "score": 0.4599609375
+        },
+        {
+          "word": " vi",
+          "start": 28.92,
+          "end": 29.04,
+          "score": 0.748046875
+        },
+        {
+          "word": " började",
+          "start": 29.04,
+          "end": 29.26,
+          "score": 0.9093424479166666
+        },
+        {
+          "word": " lägga",
+          "start": 29.26,
+          "end": 29.34,
+          "score": 0.845703125
+        },
+        {
+          "word": " in",
+          "start": 29.34,
+          "end": 29.44,
+          "score": 0.71923828125
+        },
+        {
+          "word": " alla",
+          "start": 29.44,
+          "end": 29.52,
+          "score": 0.671875
+        },
+        {
+          "word": " inuti.",
+          "start": 29.52,
+          "end": 29.84,
+          "score": 0.5627034505208334
+        }
+      ]
+    }
+  ]
+}

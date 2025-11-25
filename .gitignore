@@ -1,0 +1,17 @@
+.vscode/
+**/.vscode/
+.idea/
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+.pytest_cache
+*.ipynb_checkpoints
+
+
+.DS_Store
+.cache/
+.env
+venv

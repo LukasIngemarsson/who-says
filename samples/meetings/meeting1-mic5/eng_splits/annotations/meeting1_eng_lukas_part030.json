@@ -1,0 +1,154 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.489,
+      "text": " we could just choose one of the models to try.",
+      "words": [
+        {
+          "word": "we",
+          "start": 0.031,
+          "end": 0.192,
+          "score": 0.329,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "could",
+          "start": 0.213,
+          "end": 0.334,
+          "score": 0.244,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just",
+          "start": 0.354,
+          "end": 0.475,
+          "score": 0.816,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "choose",
+          "start": 0.535,
+          "end": 0.798,
+          "score": 0.876,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "one",
+          "start": 2.956,
+          "end": 3.057,
+          "score": 0.665,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "of",
+          "start": 3.097,
+          "end": 3.158,
+          "score": 0.892,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 3.198,
+          "end": 3.259,
+          "score": 0.991,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "models",
+          "start": 3.319,
+          "end": 3.642,
+          "score": 0.817,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 3.723,
+          "end": 3.945,
+          "score": 0.902,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "try.",
+          "start": 4.106,
+          "end": 4.489,
+          "score": 0.787,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "we",
+      "start": 0.031,
+      "end": 0.192,
+      "score": 0.329,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "could",
+      "start": 0.213,
+      "end": 0.334,
+      "score": 0.244,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "just",
+      "start": 0.354,
+      "end": 0.475,
+      "score": 0.816,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "choose",
+      "start": 0.535,
+      "end": 0.798,
+      "score": 0.876,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "one",
+      "start": 2.956,
+      "end": 3.057,
+      "score": 0.665,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "of",
+      "start": 3.097,
+      "end": 3.158,
+      "score": 0.892,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 3.198,
+      "end": 3.259,
+      "score": 0.991,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "models",
+      "start": 3.319,
+      "end": 3.642,
+      "score": 0.817,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 3.723,
+      "end": 3.945,
+      "score": 0.902,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "try.",
+      "start": 4.106,
+      "end": 4.489,
+      "score": 0.787,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

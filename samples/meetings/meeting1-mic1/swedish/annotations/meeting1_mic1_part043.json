@@ -1,0 +1,587 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 4.14,
+      "text": " Det är inte superkomplicerat, men vi kan ju kolla på Piprex om vi får mycket sånt.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 0.0,
+          "end": 0.14,
+          "score": 0.69970703125
+        },
+        {
+          "word": " är",
+          "start": 0.14,
+          "end": 0.4,
+          "score": 0.5078125
+        },
+        {
+          "word": " inte",
+          "start": 0.4,
+          "end": 0.44,
+          "score": 0.58154296875
+        },
+        {
+          "word": " superkomplicerat,",
+          "start": 0.44,
+          "end": 2.0,
+          "score": 0.8716796875
+        },
+        {
+          "word": " men",
+          "start": 2.0,
+          "end": 2.06,
+          "score": 0.78759765625
+        },
+        {
+          "word": " vi",
+          "start": 2.06,
+          "end": 2.16,
+          "score": 0.75146484375
+        },
+        {
+          "word": " kan",
+          "start": 2.16,
+          "end": 2.26,
+          "score": 0.81787109375
+        },
+        {
+          "word": " ju",
+          "start": 2.26,
+          "end": 2.34,
+          "score": 0.63330078125
+        },
+        {
+          "word": " kolla",
+          "start": 2.34,
+          "end": 2.42,
+          "score": 0.79833984375
+        },
+        {
+          "word": " på",
+          "start": 2.42,
+          "end": 2.56,
+          "score": 0.60400390625
+        },
+        {
+          "word": " Piprex",
+          "start": 2.56,
+          "end": 2.9,
+          "score": 0.5177001953125
+        },
+        {
+          "word": " om",
+          "start": 2.9,
+          "end": 3.02,
+          "score": 0.61181640625
+        },
+        {
+          "word": " vi",
+          "start": 3.02,
+          "end": 3.1,
+          "score": 0.7177734375
+        },
+        {
+          "word": " får",
+          "start": 3.1,
+          "end": 3.34,
+          "score": 0.7047119140625
+        },
+        {
+          "word": " mycket",
+          "start": 3.34,
+          "end": 3.82,
+          "score": 0.450927734375
+        },
+        {
+          "word": " sånt.",
+          "start": 3.82,
+          "end": 4.14,
+          "score": 0.808837890625
+        }
+      ]
+    },
+    {
+      "start": 6.16,
+      "end": 7.86,
+      "text": " Har vi möte om tre minuter, eller?",
+      "words": [
+        {
+          "word": " Har",
+          "start": 6.16,
+          "end": 6.52,
+          "score": 0.71875
+        },
+        {
+          "word": " vi",
+          "start": 6.52,
+          "end": 6.66,
+          "score": 0.75341796875
+        },
+        {
+          "word": " möte",
+          "start": 6.66,
+          "end": 6.98,
+          "score": 0.873779296875
+        },
+        {
+          "word": " om",
+          "start": 6.98,
+          "end": 7.06,
+          "score": 0.63916015625
+        },
+        {
+          "word": " tre",
+          "start": 7.06,
+          "end": 7.18,
+          "score": 0.56689453125
+        },
+        {
+          "word": " minuter,",
+          "start": 7.18,
+          "end": 7.72,
+          "score": 0.885498046875
+        },
+        {
+          "word": " eller?",
+          "start": 7.72,
+          "end": 7.86,
+          "score": 0.57958984375
+        }
+      ]
+    },
+    {
+      "start": 9.080000000000002,
+      "end": 9.8,
+      "text": " Med vem?",
+      "words": [
+        {
+          "word": " Med",
+          "start": 9.080000000000002,
+          "end": 9.440000000000001,
+          "score": 0.6103515625
+        },
+        {
+          "word": " vem?",
+          "start": 9.440000000000001,
+          "end": 9.8,
+          "score": 0.56591796875
+        }
+      ]
+    },
+    {
+      "start": 10.16,
+      "end": 11.54,
+      "text": " Har inte vi fyra?",
+      "words": [
+        {
+          "word": " Har",
+          "start": 10.16,
+          "end": 10.52,
+          "score": 0.07177734375
+        },
+        {
+          "word": " inte",
+          "start": 10.52,
+          "end": 10.94,
+          "score": 0.556640625
+        },
+        {
+          "word": " vi",
+          "start": 10.94,
+          "end": 11.08,
+          "score": 0.7060546875
+        },
+        {
+          "word": " fyra?",
+          "start": 11.08,
+          "end": 11.54,
+          "score": 0.57470703125
+        }
+      ]
+    },
+    {
+      "start": 11.88,
+      "end": 12.98,
+      "text": " Har han uppdaterat till fyra?",
+      "words": [
+        {
+          "word": " Har",
+          "start": 11.88,
+          "end": 12.24,
+          "score": 0.65087890625
+        },
+        {
+          "word": " han",
+          "start": 12.24,
+          "end": 12.34,
+          "score": 0.495849609375
+        },
+        {
+          "word": " uppdaterat",
+          "start": 12.34,
+          "end": 12.7,
+          "score": 0.94189453125
+        },
+        {
+          "word": " till",
+          "start": 12.7,
+          "end": 12.76,
+          "score": 0.6484375
+        },
+        {
+          "word": " fyra?",
+          "start": 12.76,
+          "end": 12.98,
+          "score": 0.85693359375
+        }
+      ]
+    },
+    {
+      "start": 13.9,
+      "end": 15.94,
+      "text": " Uppdaterat till fyra? Vadå, var det inte fyra från början?",
+      "words": [
+        {
+          "word": " Uppdaterat",
+          "start": 13.9,
+          "end": 14.26,
+          "score": 0.95830078125
+        },
+        {
+          "word": " till",
+          "start": 14.26,
+          "end": 14.34,
+          "score": 0.77099609375
+        },
+        {
+          "word": " fyra?",
+          "start": 14.34,
+          "end": 14.56,
+          "score": 0.849853515625
+        },
+        {
+          "word": " Vadå,",
+          "start": 14.68,
+          "end": 15.04,
+          "score": 0.762451171875
+        },
+        {
+          "word": " var",
+          "start": 15.04,
+          "end": 15.08,
+          "score": 0.85546875
+        },
+        {
+          "word": " det",
+          "start": 15.08,
+          "end": 15.26,
+          "score": 0.7412109375
+        },
+        {
+          "word": " inte",
+          "start": 15.26,
+          "end": 15.34,
+          "score": 0.59326171875
+        },
+        {
+          "word": " fyra",
+          "start": 15.34,
+          "end": 15.52,
+          "score": 0.85791015625
+        },
+        {
+          "word": " från",
+          "start": 15.52,
+          "end": 15.66,
+          "score": 0.58203125
+        },
+        {
+          "word": " början?",
+          "start": 15.66,
+          "end": 15.94,
+          "score": 0.898193359375
+        }
+      ]
+    },
+    {
+      "start": 15.98,
+      "end": 16.38,
+      "text": " Det var fyra.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 15.98,
+          "end": 16.0,
+          "score": 0.4619140625
+        },
+        {
+          "word": " var",
+          "start": 16.0,
+          "end": 16.0,
+          "score": 0.66796875
+        },
+        {
+          "word": " fyra.",
+          "start": 16.0,
+          "end": 16.38,
+          "score": 0.845703125
+        }
+      ]
+    },
+    {
+      "start": 16.5,
+      "end": 17.58,
+      "text": " Har det alltid varit fyra?",
+      "words": [
+        {
+          "word": " Har",
+          "start": 16.5,
+          "end": 16.86,
+          "score": 0.75244140625
+        },
+        {
+          "word": " det",
+          "start": 16.86,
+          "end": 17.04,
+          "score": 0.75048828125
+        },
+        {
+          "word": " alltid",
+          "start": 17.04,
+          "end": 17.16,
+          "score": 0.607421875
+        },
+        {
+          "word": " varit",
+          "start": 17.16,
+          "end": 17.26,
+          "score": 0.79248046875
+        },
+        {
+          "word": " fyra?",
+          "start": 17.26,
+          "end": 17.58,
+          "score": 0.8486328125
+        }
+      ]
+    },
+    {
+      "start": 17.72,
+      "end": 18.12,
+      "text": " Jag tror det.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 17.72,
+          "end": 17.88,
+          "score": 0.47119140625
+        },
+        {
+          "word": " tror",
+          "start": 17.88,
+          "end": 18.04,
+          "score": 0.52490234375
+        },
+        {
+          "word": " det.",
+          "start": 18.04,
+          "end": 18.12,
+          "score": 0.72021484375
+        }
+      ]
+    },
+    {
+      "start": 18.12,
+      "end": 19.2,
+      "text": " Det kanske är jag som är...",
+      "words": [
+        {
+          "word": " Det",
+          "start": 18.12,
+          "end": 18.14,
+          "score": 0.6005859375
+        },
+        {
+          "word": " kanske",
+          "start": 18.14,
+          "end": 18.36,
+          "score": 0.42578125
+        },
+        {
+          "word": " är",
+          "start": 18.36,
+          "end": 18.58,
+          "score": 0.286376953125
+        },
+        {
+          "word": " jag",
+          "start": 18.58,
+          "end": 18.66,
+          "score": 0.6259765625
+        },
+        {
+          "word": " som",
+          "start": 18.66,
+          "end": 18.82,
+          "score": 0.64892578125
+        },
+        {
+          "word": " är...",
+          "start": 18.82,
+          "end": 19.2,
+          "score": 0.4261474609375
+        }
+      ]
+    },
+    {
+      "start": 19.2,
+      "end": 22.68,
+      "text": " Jag har i alla fall lagt in det.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 19.2,
+          "end": 19.36,
+          "score": 0.1064453125
+        },
+        {
+          "word": " har",
+          "start": 19.36,
+          "end": 20.92,
+          "score": 0.54638671875
+        },
+        {
+          "word": " i",
+          "start": 20.92,
+          "end": 21.98,
+          "score": 0.78857421875
+        },
+        {
+          "word": " alla",
+          "start": 21.98,
+          "end": 21.98,
+          "score": 0.599609375
+        },
+        {
+          "word": " fall",
+          "start": 21.98,
+          "end": 22.12,
+          "score": 0.63671875
+        },
+        {
+          "word": " lagt",
+          "start": 22.12,
+          "end": 22.36,
+          "score": 0.832763671875
+        },
+        {
+          "word": " in",
+          "start": 22.36,
+          "end": 22.5,
+          "score": 0.75634765625
+        },
+        {
+          "word": " det.",
+          "start": 22.5,
+          "end": 22.68,
+          "score": 0.75634765625
+        }
+      ]
+    },
+    {
+      "start": 23.02,
+      "end": 25.0,
+      "text": " Okej, men då är det jag som är...",
+      "words": [
+        {
+          "word": " Okej,",
+          "start": 23.02,
+          "end": 23.38,
+          "score": 0.56402587890625
+        },
+        {
+          "word": " men",
+          "start": 23.44,
+          "end": 24.12,
+          "score": 0.609375
+        },
+        {
+          "word": " då",
+          "start": 24.12,
+          "end": 24.22,
+          "score": 0.6064453125
+        },
+        {
+          "word": " är",
+          "start": 24.22,
+          "end": 24.34,
+          "score": 0.50341796875
+        },
+        {
+          "word": " det",
+          "start": 24.34,
+          "end": 24.34,
+          "score": 0.7509765625
+        },
+        {
+          "word": " jag",
+          "start": 24.34,
+          "end": 24.48,
+          "score": 0.5615234375
+        },
+        {
+          "word": " som",
+          "start": 24.48,
+          "end": 24.7,
+          "score": 0.6591796875
+        },
+        {
+          "word": " är...",
+          "start": 24.7,
+          "end": 25.0,
+          "score": 0.4969482421875
+        }
+      ]
+    },
+    {
+      "start": 26.02,
+      "end": 27.74,
+      "text": " Nu har vi värsta marginalen.",
+      "words": [
+        {
+          "word": " Nu",
+          "start": 26.02,
+          "end": 26.38,
+          "score": 0.37548828125
+        },
+        {
+          "word": " har",
+          "start": 26.38,
+          "end": 26.74,
+          "score": 0.52783203125
+        },
+        {
+          "word": " vi",
+          "start": 26.74,
+          "end": 26.8,
+          "score": 0.74462890625
+        },
+        {
+          "word": " värsta",
+          "start": 26.8,
+          "end": 27.22,
+          "score": 0.78662109375
+        },
+        {
+          "word": " marginalen.",
+          "start": 27.22,
+          "end": 27.74,
+          "score": 0.58880615234375
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,521 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 2.88,
+      "text": " Vad har den för format? Den är kanske en torch tensor med...",
+      "words": [
+        {
+          "word": " Vad",
+          "start": 0.0,
+          "end": 0.42,
+          "score": 0.58984375
+        },
+        {
+          "word": " har",
+          "start": 0.42,
+          "end": 0.56,
+          "score": 0.65869140625
+        },
+        {
+          "word": " den",
+          "start": 0.56,
+          "end": 0.66,
+          "score": 0.849609375
+        },
+        {
+          "word": " för",
+          "start": 0.66,
+          "end": 0.86,
+          "score": 0.73394775390625
+        },
+        {
+          "word": " format?",
+          "start": 0.86,
+          "end": 1.06,
+          "score": 0.67333984375
+        },
+        {
+          "word": " Den",
+          "start": 1.24,
+          "end": 1.3,
+          "score": 0.73193359375
+        },
+        {
+          "word": " är",
+          "start": 1.3,
+          "end": 1.36,
+          "score": 0.391845703125
+        },
+        {
+          "word": " kanske",
+          "start": 1.36,
+          "end": 1.46,
+          "score": 0.5498046875
+        },
+        {
+          "word": " en",
+          "start": 1.46,
+          "end": 1.72,
+          "score": 0.5966796875
+        },
+        {
+          "word": " torch",
+          "start": 1.72,
+          "end": 2.02,
+          "score": 0.556396484375
+        },
+        {
+          "word": " tensor",
+          "start": 2.02,
+          "end": 2.46,
+          "score": 0.9150390625
+        },
+        {
+          "word": " med...",
+          "start": 2.46,
+          "end": 2.88,
+          "score": 0.407470703125
+        }
+      ]
+    },
+    {
+      "start": 4.480000000000002,
+      "end": 10.62,
+      "text": " Eller inte en torch tensor, men någon sorts lista som innehåller, eller en dictionary som innehåller grejer.",
+      "words": [
+        {
+          "word": " Eller",
+          "start": 4.480000000000002,
+          "end": 4.900000000000001,
+          "score": 0.333740234375
+        },
+        {
+          "word": " inte",
+          "start": 4.900000000000001,
+          "end": 5.32,
+          "score": 0.2388916015625
+        },
+        {
+          "word": " en",
+          "start": 5.32,
+          "end": 5.76,
+          "score": 0.62939453125
+        },
+        {
+          "word": " torch",
+          "start": 5.76,
+          "end": 5.92,
+          "score": 0.77734375
+        },
+        {
+          "word": " tensor,",
+          "start": 5.92,
+          "end": 6.26,
+          "score": 0.940185546875
+        },
+        {
+          "word": " men",
+          "start": 6.32,
+          "end": 6.38,
+          "score": 0.78662109375
+        },
+        {
+          "word": " någon",
+          "start": 6.38,
+          "end": 7.48,
+          "score": 0.38623046875
+        },
+        {
+          "word": " sorts",
+          "start": 7.48,
+          "end": 8.22,
+          "score": 0.560546875
+        },
+        {
+          "word": " lista",
+          "start": 8.22,
+          "end": 8.54,
+          "score": 0.71533203125
+        },
+        {
+          "word": " som",
+          "start": 8.54,
+          "end": 8.76,
+          "score": 0.5185546875
+        },
+        {
+          "word": " innehåller,",
+          "start": 8.76,
+          "end": 9.3,
+          "score": 0.9715576171875
+        },
+        {
+          "word": " eller",
+          "start": 9.3,
+          "end": 9.46,
+          "score": 0.5078125
+        },
+        {
+          "word": " en",
+          "start": 9.46,
+          "end": 9.54,
+          "score": 0.57080078125
+        },
+        {
+          "word": " dictionary",
+          "start": 9.54,
+          "end": 9.98,
+          "score": 0.8356119791666666
+        },
+        {
+          "word": " som",
+          "start": 9.98,
+          "end": 10.16,
+          "score": 0.63134765625
+        },
+        {
+          "word": " innehåller",
+          "start": 10.16,
+          "end": 10.42,
+          "score": 0.9832763671875
+        },
+        {
+          "word": " grejer.",
+          "start": 10.42,
+          "end": 10.62,
+          "score": 0.931884765625
+        }
+      ]
+    },
+    {
+      "start": 11.640000000000002,
+      "end": 17.04,
+      "text": " Men det lär ju vara olika också. Olika komponenter kommer att få behöva olika input tror jag.",
+      "words": [
+        {
+          "word": " Men",
+          "start": 11.640000000000002,
+          "end": 12.06,
+          "score": 0.5751953125
+        },
+        {
+          "word": " det",
+          "start": 12.06,
+          "end": 12.16,
+          "score": 0.74267578125
+        },
+        {
+          "word": " lär",
+          "start": 12.16,
+          "end": 12.3,
+          "score": 0.794921875
+        },
+        {
+          "word": " ju",
+          "start": 12.3,
+          "end": 12.36,
+          "score": 0.70703125
+        },
+        {
+          "word": " vara",
+          "start": 12.36,
+          "end": 12.4,
+          "score": 0.61376953125
+        },
+        {
+          "word": " olika",
+          "start": 12.4,
+          "end": 12.66,
+          "score": 0.46484375
+        },
+        {
+          "word": " också.",
+          "start": 12.66,
+          "end": 12.9,
+          "score": 0.60009765625
+        },
+        {
+          "word": " Olika",
+          "start": 13.2,
+          "end": 13.62,
+          "score": 0.798828125
+        },
+        {
+          "word": " komponenter",
+          "start": 13.62,
+          "end": 14.12,
+          "score": 0.9100341796875
+        },
+        {
+          "word": " kommer",
+          "start": 14.12,
+          "end": 15.0,
+          "score": 0.499267578125
+        },
+        {
+          "word": " att",
+          "start": 15.0,
+          "end": 15.36,
+          "score": 0.399658203125
+        },
+        {
+          "word": " få",
+          "start": 15.36,
+          "end": 15.4,
+          "score": 0.293212890625
+        },
+        {
+          "word": " behöva",
+          "start": 15.4,
+          "end": 15.68,
+          "score": 0.61676025390625
+        },
+        {
+          "word": " olika",
+          "start": 15.68,
+          "end": 15.82,
+          "score": 0.481201171875
+        },
+        {
+          "word": " input",
+          "start": 15.82,
+          "end": 16.64,
+          "score": 0.95166015625
+        },
+        {
+          "word": " tror",
+          "start": 16.64,
+          "end": 16.88,
+          "score": 0.2020263671875
+        },
+        {
+          "word": " jag.",
+          "start": 16.88,
+          "end": 17.04,
+          "score": 0.640625
+        }
+      ]
+    },
+    {
+      "start": 18.240000000000002,
+      "end": 23.48,
+      "text": " Men om alla har någon slags, i den funktionen, typ en bäddfunktion.",
+      "words": [
+        {
+          "word": " Men",
+          "start": 18.240000000000002,
+          "end": 18.66,
+          "score": 0.72314453125
+        },
+        {
+          "word": " om",
+          "start": 18.66,
+          "end": 18.84,
+          "score": 0.640625
+        },
+        {
+          "word": " alla",
+          "start": 18.84,
+          "end": 18.98,
+          "score": 0.6650390625
+        },
+        {
+          "word": " har",
+          "start": 18.98,
+          "end": 19.2,
+          "score": 0.6611328125
+        },
+        {
+          "word": " någon",
+          "start": 19.2,
+          "end": 19.46,
+          "score": 0.5205078125
+        },
+        {
+          "word": " slags,",
+          "start": 19.46,
+          "end": 20.08,
+          "score": 0.859375
+        },
+        {
+          "word": " i",
+          "start": 20.08,
+          "end": 20.96,
+          "score": 0.74365234375
+        },
+        {
+          "word": " den",
+          "start": 20.96,
+          "end": 21.2,
+          "score": 0.8740234375
+        },
+        {
+          "word": " funktionen,",
+          "start": 21.2,
+          "end": 22.64,
+          "score": 0.907470703125
+        },
+        {
+          "word": " typ",
+          "start": 22.64,
+          "end": 22.76,
+          "score": 0.381103515625
+        },
+        {
+          "word": " en",
+          "start": 22.76,
+          "end": 22.88,
+          "score": 0.486328125
+        },
+        {
+          "word": " bäddfunktion.",
+          "start": 22.88,
+          "end": 23.48,
+          "score": 0.703271484375
+        }
+      ]
+    },
+    {
+      "start": 23.68,
+      "end": 25.44,
+      "text": " Om man har bara lite som du sa, en kommentar.",
+      "words": [
+        {
+          "word": " Om",
+          "start": 23.68,
+          "end": 23.8,
+          "score": 0.57470703125
+        },
+        {
+          "word": " man",
+          "start": 23.8,
+          "end": 23.88,
+          "score": 0.74365234375
+        },
+        {
+          "word": " har",
+          "start": 23.88,
+          "end": 24.04,
+          "score": 0.309814453125
+        },
+        {
+          "word": " bara",
+          "start": 24.04,
+          "end": 24.18,
+          "score": 0.358154296875
+        },
+        {
+          "word": " lite",
+          "start": 24.18,
+          "end": 24.38,
+          "score": 0.48193359375
+        },
+        {
+          "word": " som",
+          "start": 24.38,
+          "end": 24.66,
+          "score": 0.6005859375
+        },
+        {
+          "word": " du",
+          "start": 24.66,
+          "end": 24.76,
+          "score": 0.546875
+        },
+        {
+          "word": " sa,",
+          "start": 24.76,
+          "end": 24.88,
+          "score": 0.7744140625
+        },
+        {
+          "word": " en",
+          "start": 24.92,
+          "end": 25.02,
+          "score": 0.65576171875
+        },
+        {
+          "word": " kommentar.",
+          "start": 25.02,
+          "end": 25.44,
+          "score": 0.96728515625
+        }
+      ]
+    },
+    {
+      "start": 25.54,
+      "end": 27.14,
+      "text": " Vem förväntar sig den här inputen?",
+      "words": [
+        {
+          "word": " Vem",
+          "start": 25.54,
+          "end": 25.96,
+          "score": 0.6231689453125
+        },
+        {
+          "word": " förväntar",
+          "start": 25.96,
+          "end": 26.26,
+          "score": 0.964599609375
+        },
+        {
+          "word": " sig",
+          "start": 26.26,
+          "end": 26.38,
+          "score": 0.75
+        },
+        {
+          "word": " den",
+          "start": 26.38,
+          "end": 26.58,
+          "score": 0.837890625
+        },
+        {
+          "word": " här",
+          "start": 26.58,
+          "end": 26.7,
+          "score": 0.57861328125
+        },
+        {
+          "word": " inputen?",
+          "start": 26.7,
+          "end": 27.14,
+          "score": 0.9755859375
+        }
+      ]
+    },
+    {
+      "start": 27.720000000000002,
+      "end": 28.88,
+      "text": " Kanske ett exempel också.",
+      "words": [
+        {
+          "word": " Kanske",
+          "start": 27.720000000000002,
+          "end": 28.14,
+          "score": 0.9646809895833334
+        },
+        {
+          "word": " ett",
+          "start": 28.14,
+          "end": 28.24,
+          "score": 0.54296875
+        },
+        {
+          "word": " exempel",
+          "start": 28.24,
+          "end": 28.48,
+          "score": 0.71044921875
+        },
+        {
+          "word": " också.",
+          "start": 28.48,
+          "end": 28.88,
+          "score": 0.7041015625
+        }
+      ]
+    }
+  ]
+}

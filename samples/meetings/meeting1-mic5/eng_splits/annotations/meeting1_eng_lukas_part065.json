@@ -1,0 +1,196 @@
+{
+  "segments": [
+    {
+      "start": 4.216,
+      "end": 10.497,
+      "text": " Det kommer inte vara n\u00e5n minst att ge ig\u00e5ng fr\u00e5n Astagio och Monofar.",
+      "words": [
+        {
+          "word": "Det",
+          "start": 4.216,
+          "end": 6.571,
+          "score": 0.491,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "kommer",
+          "start": 6.592,
+          "end": 6.873,
+          "score": 0.602,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "inte",
+          "start": 6.934,
+          "end": 7.155,
+          "score": 0.434,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "vara",
+          "start": 7.175,
+          "end": 7.256,
+          "score": 0.022,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "n\u00e5n",
+          "start": 7.276,
+          "end": 7.336,
+          "score": 0.156,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "minst",
+          "start": 7.397,
+          "end": 7.719,
+          "score": 0.697,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "att",
+          "start": 7.759,
+          "end": 7.9,
+          "score": 0.569,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "ge",
+          "start": 8.041,
+          "end": 8.162,
+          "score": 0.669,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "ig\u00e5ng",
+          "start": 8.182,
+          "end": 8.464,
+          "score": 0.186,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "fr\u00e5n",
+          "start": 8.484,
+          "end": 8.564,
+          "score": 0.137,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "Astagio",
+          "start": 8.585,
+          "end": 9.068,
+          "score": 0.46,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "och",
+          "start": 9.088,
+          "end": 9.148,
+          "score": 0.188,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "Monofar.",
+          "start": 9.189,
+          "end": 10.497,
+          "score": 0.642,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Det",
+      "start": 4.216,
+      "end": 6.571,
+      "score": 0.491,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "kommer",
+      "start": 6.592,
+      "end": 6.873,
+      "score": 0.602,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "inte",
+      "start": 6.934,
+      "end": 7.155,
+      "score": 0.434,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "vara",
+      "start": 7.175,
+      "end": 7.256,
+      "score": 0.022,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "n\u00e5n",
+      "start": 7.276,
+      "end": 7.336,
+      "score": 0.156,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "minst",
+      "start": 7.397,
+      "end": 7.719,
+      "score": 0.697,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "att",
+      "start": 7.759,
+      "end": 7.9,
+      "score": 0.569,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "ge",
+      "start": 8.041,
+      "end": 8.162,
+      "score": 0.669,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "ig\u00e5ng",
+      "start": 8.182,
+      "end": 8.464,
+      "score": 0.186,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "fr\u00e5n",
+      "start": 8.484,
+      "end": 8.564,
+      "score": 0.137,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Astagio",
+      "start": 8.585,
+      "end": 9.068,
+      "score": 0.46,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "och",
+      "start": 9.088,
+      "end": 9.148,
+      "score": 0.188,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Monofar.",
+      "start": 9.189,
+      "end": 10.497,
+      "score": 0.642,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

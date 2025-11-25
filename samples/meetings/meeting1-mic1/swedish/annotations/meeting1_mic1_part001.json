@@ -1,0 +1,167 @@
+{
+  "segments": [
+    {
+      "start": 1.5399999999999987,
+      "end": 3.26,
+      "text": " Där sitter vi.",
+      "words": [
+        {
+          "word": " Där",
+          "start": 1.5399999999999987,
+          "end": 2.3399999999999994,
+          "score": 0.56707763671875
+        },
+        {
+          "word": " sitter",
+          "start": 2.3399999999999994,
+          "end": 3.14,
+          "score": 0.6826171875
+        },
+        {
+          "word": " vi.",
+          "start": 3.14,
+          "end": 3.26,
+          "score": 0.59619140625
+        }
+      ]
+    },
+    {
+      "start": 4.02,
+      "end": 4.82,
+      "text": " Men...",
+      "words": [
+        {
+          "word": " Men...",
+          "start": 4.02,
+          "end": 4.82,
+          "score": 0.3841552734375
+        }
+      ]
+    },
+    {
+      "start": 5.9399999999999995,
+      "end": 6.74,
+      "text": " Sjukdomen.",
+      "words": [
+        {
+          "word": " Sjukdomen.",
+          "start": 5.9399999999999995,
+          "end": 6.74,
+          "score": 0.63134765625
+        }
+      ]
+    },
+    {
+      "start": 8.16,
+      "end": 8.96,
+      "text": " Nu!",
+      "words": [
+        {
+          "word": " Nu!",
+          "start": 8.16,
+          "end": 8.96,
+          "score": 0.2685546875
+        }
+      ]
+    },
+    {
+      "start": 15.94,
+      "end": 17.2,
+      "text": " Kolla om vi...",
+      "words": [
+        {
+          "word": " Kolla",
+          "start": 15.94,
+          "end": 16.74,
+          "score": 0.55615234375
+        },
+        {
+          "word": " om",
+          "start": 16.74,
+          "end": 16.74,
+          "score": 0.5849609375
+        },
+        {
+          "word": " vi...",
+          "start": 16.74,
+          "end": 17.2,
+          "score": 0.632568359375
+        }
+      ]
+    },
+    {
+      "start": 19.14,
+      "end": 20.76,
+      "text": " Vänta, har ni testat att snacka nu?",
+      "words": [
+        {
+          "word": " Vänta,",
+          "start": 19.14,
+          "end": 19.94,
+          "score": 0.7475992838541666
+        },
+        {
+          "word": " har",
+          "start": 19.94,
+          "end": 20.04,
+          "score": 0.416748046875
+        },
+        {
+          "word": " ni",
+          "start": 20.04,
+          "end": 20.06,
+          "score": 0.642578125
+        },
+        {
+          "word": " testat",
+          "start": 20.06,
+          "end": 20.4,
+          "score": 0.909912109375
+        },
+        {
+          "word": " att",
+          "start": 20.4,
+          "end": 20.46,
+          "score": 0.52880859375
+        },
+        {
+          "word": " snacka",
+          "start": 20.46,
+          "end": 20.68,
+          "score": 0.842041015625
+        },
+        {
+          "word": " nu?",
+          "start": 20.68,
+          "end": 20.76,
+          "score": 0.71484375
+        }
+      ]
+    },
+    {
+      "start": 22.88,
+      "end": 24.1,
+      "text": " Lägg om alltså.",
+      "words": [
+        {
+          "word": " Lägg",
+          "start": 22.88,
+          "end": 23.68,
+          "score": 0.6808268229166666
+        },
+        {
+          "word": " om",
+          "start": 23.68,
+          "end": 23.88,
+          "score": 0.309814453125
+        },
+        {
+          "word": " alltså.",
+          "start": 23.88,
+          "end": 24.1,
+          "score": 0.427490234375
+        }
+      ]
+    }
+  ]
+}

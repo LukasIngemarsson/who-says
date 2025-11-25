@@ -1,0 +1,811 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 0.48,
+      "text": " Berodde på.",
+      "words": [
+        {
+          "word": " Berodde",
+          "start": 0.0,
+          "end": 0.26,
+          "score": 0.7499186197916666
+        },
+        {
+          "word": " på.",
+          "start": 0.26,
+          "end": 0.48,
+          "score": 0.614013671875
+        }
+      ]
+    },
+    {
+      "start": 0.54,
+      "end": 4.46,
+      "text": " Men var du inne i Roots folder eller var du inne i din specifika?",
+      "words": [
+        {
+          "word": " Men",
+          "start": 0.54,
+          "end": 0.86,
+          "score": 0.436279296875
+        },
+        {
+          "word": " var",
+          "start": 0.86,
+          "end": 1.04,
+          "score": 0.603515625
+        },
+        {
+          "word": " du",
+          "start": 1.04,
+          "end": 1.18,
+          "score": 0.61376953125
+        },
+        {
+          "word": " inne",
+          "start": 1.18,
+          "end": 1.38,
+          "score": 0.83447265625
+        },
+        {
+          "word": " i",
+          "start": 1.38,
+          "end": 1.64,
+          "score": 0.81103515625
+        },
+        {
+          "word": " Roots",
+          "start": 1.64,
+          "end": 2.26,
+          "score": 0.28045654296875
+        },
+        {
+          "word": " folder",
+          "start": 2.26,
+          "end": 2.7,
+          "score": 0.849609375
+        },
+        {
+          "word": " eller",
+          "start": 2.7,
+          "end": 2.96,
+          "score": 0.443603515625
+        },
+        {
+          "word": " var",
+          "start": 2.96,
+          "end": 3.08,
+          "score": 0.798828125
+        },
+        {
+          "word": " du",
+          "start": 3.08,
+          "end": 3.22,
+          "score": 0.59716796875
+        },
+        {
+          "word": " inne",
+          "start": 3.22,
+          "end": 3.42,
+          "score": 0.84716796875
+        },
+        {
+          "word": " i",
+          "start": 3.42,
+          "end": 3.56,
+          "score": 0.78515625
+        },
+        {
+          "word": " din",
+          "start": 3.56,
+          "end": 3.82,
+          "score": 0.8388671875
+        },
+        {
+          "word": " specifika?",
+          "start": 3.82,
+          "end": 4.46,
+          "score": 0.8577473958333334
+        }
+      ]
+    },
+    {
+      "start": 4.5,
+      "end": 6.34,
+      "text": " Nej, jag tror jag var inne i, jag var inne i Roots...",
+      "words": [
+        {
+          "word": " Nej,",
+          "start": 4.5,
+          "end": 4.58,
+          "score": 0.299560546875
+        },
+        {
+          "word": " jag",
+          "start": 4.64,
+          "end": 4.72,
+          "score": 0.64892578125
+        },
+        {
+          "word": " tror",
+          "start": 4.72,
+          "end": 4.84,
+          "score": 0.469482421875
+        },
+        {
+          "word": " jag",
+          "start": 4.84,
+          "end": 5.14,
+          "score": 0.415283203125
+        },
+        {
+          "word": " var",
+          "start": 5.14,
+          "end": 5.22,
+          "score": 0.4443359375
+        },
+        {
+          "word": " inne",
+          "start": 5.22,
+          "end": 5.4,
+          "score": 0.82861328125
+        },
+        {
+          "word": " i,",
+          "start": 5.4,
+          "end": 5.58,
+          "score": 0.74560546875
+        },
+        {
+          "word": " jag",
+          "start": 5.58,
+          "end": 5.7,
+          "score": 0.619140625
+        },
+        {
+          "word": " var",
+          "start": 5.7,
+          "end": 5.78,
+          "score": 0.84521484375
+        },
+        {
+          "word": " inne",
+          "start": 5.78,
+          "end": 5.94,
+          "score": 0.7939453125
+        },
+        {
+          "word": " i",
+          "start": 5.94,
+          "end": 6.12,
+          "score": 0.779296875
+        },
+        {
+          "word": " Roots...",
+          "start": 6.12,
+          "end": 6.34,
+          "score": 0.51220703125
+        }
+      ]
+    },
+    {
+      "start": 6.34,
+      "end": 6.76,
+      "text": " Pipeline.",
+      "words": [
+        {
+          "word": " Pipeline.",
+          "start": 6.34,
+          "end": 6.76,
+          "score": 0.6859130859375
+        }
+      ]
+    },
+    {
+      "start": 6.9,
+      "end": 7.92,
+      "text": " Ja, jag är ganska säker på det.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 6.9,
+          "end": 7.04,
+          "score": 0.69482421875
+        },
+        {
+          "word": " jag",
+          "start": 7.2,
+          "end": 7.26,
+          "score": 0.5068359375
+        },
+        {
+          "word": " är",
+          "start": 7.26,
+          "end": 7.32,
+          "score": 0.505859375
+        },
+        {
+          "word": " ganska",
+          "start": 7.32,
+          "end": 7.44,
+          "score": 0.61279296875
+        },
+        {
+          "word": " säker",
+          "start": 7.44,
+          "end": 7.74,
+          "score": 0.82958984375
+        },
+        {
+          "word": " på",
+          "start": 7.74,
+          "end": 7.86,
+          "score": 0.61328125
+        },
+        {
+          "word": " det.",
+          "start": 7.86,
+          "end": 7.92,
+          "score": 0.75146484375
+        }
+      ]
+    },
+    {
+      "start": 8.36,
+      "end": 10.34,
+      "text": " Den är populär, alltså många använder ju den där.",
+      "words": [
+        {
+          "word": " Den",
+          "start": 8.36,
+          "end": 8.68,
+          "score": 0.7646484375
+        },
+        {
+          "word": " är",
+          "start": 8.68,
+          "end": 8.76,
+          "score": 0.499267578125
+        },
+        {
+          "word": " populär,",
+          "start": 8.76,
+          "end": 9.2,
+          "score": 0.90185546875
+        },
+        {
+          "word": " alltså",
+          "start": 9.2,
+          "end": 9.36,
+          "score": 0.467529296875
+        },
+        {
+          "word": " många",
+          "start": 9.36,
+          "end": 9.52,
+          "score": 0.46044921875
+        },
+        {
+          "word": " använder",
+          "start": 9.52,
+          "end": 9.88,
+          "score": 0.919921875
+        },
+        {
+          "word": " ju",
+          "start": 9.88,
+          "end": 10.0,
+          "score": 0.6201171875
+        },
+        {
+          "word": " den",
+          "start": 10.0,
+          "end": 10.14,
+          "score": 0.80517578125
+        },
+        {
+          "word": " där.",
+          "start": 10.14,
+          "end": 10.34,
+          "score": 0.69085693359375
+        }
+      ]
+    },
+    {
+      "start": 10.34,
+      "end": 10.86,
+      "text": " Ja, ja, ja.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 10.34,
+          "end": 10.62,
+          "score": 0.51171875
+        },
+        {
+          "word": " ja,",
+          "start": 10.7,
+          "end": 10.72,
+          "score": 0.4833984375
+        },
+        {
+          "word": " ja.",
+          "start": 10.82,
+          "end": 10.86,
+          "score": 0.388427734375
+        }
+      ]
+    },
+    {
+      "start": 11.44,
+      "end": 13.12,
+      "text": " Ja, jag vet inte om jag...",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 11.44,
+          "end": 11.76,
+          "score": 0.44580078125
+        },
+        {
+          "word": " jag",
+          "start": 11.82,
+          "end": 11.92,
+          "score": 0.486328125
+        },
+        {
+          "word": " vet",
+          "start": 11.92,
+          "end": 12.14,
+          "score": 0.5107421875
+        },
+        {
+          "word": " inte",
+          "start": 12.14,
+          "end": 12.3,
+          "score": 0.59423828125
+        },
+        {
+          "word": " om",
+          "start": 12.3,
+          "end": 12.66,
+          "score": 0.62890625
+        },
+        {
+          "word": " jag...",
+          "start": 12.66,
+          "end": 13.12,
+          "score": 0.555419921875
+        }
+      ]
+    },
+    {
+      "start": 13.12,
+      "end": 15.7,
+      "text": " Den kollar på importsen, alltså alla imports i filerna.",
+      "words": [
+        {
+          "word": " Den",
+          "start": 13.12,
+          "end": 13.22,
+          "score": 0.6298828125
+        },
+        {
+          "word": " kollar",
+          "start": 13.22,
+          "end": 13.36,
+          "score": 0.89111328125
+        },
+        {
+          "word": " på",
+          "start": 13.36,
+          "end": 13.48,
+          "score": 0.6103515625
+        },
+        {
+          "word": " importsen,",
+          "start": 13.48,
+          "end": 13.98,
+          "score": 0.6300048828125
+        },
+        {
+          "word": " alltså",
+          "start": 14.08,
+          "end": 14.22,
+          "score": 0.53173828125
+        },
+        {
+          "word": " alla",
+          "start": 14.22,
+          "end": 14.4,
+          "score": 0.6630859375
+        },
+        {
+          "word": " imports",
+          "start": 14.4,
+          "end": 14.68,
+          "score": 0.9609375
+        },
+        {
+          "word": " i",
+          "start": 14.68,
+          "end": 15.14,
+          "score": 0.78125
+        },
+        {
+          "word": " filerna.",
+          "start": 15.14,
+          "end": 15.7,
+          "score": 0.778564453125
+        }
+      ]
+    },
+    {
+      "start": 15.82,
+      "end": 18.12,
+      "text": " Och därifrån förstår den vilket paket det är.",
+      "words": [
+        {
+          "word": " Och",
+          "start": 15.82,
+          "end": 16.02,
+          "score": 0.2415771484375
+        },
+        {
+          "word": " därifrån",
+          "start": 16.02,
+          "end": 16.68,
+          "score": 0.7443033854166666
+        },
+        {
+          "word": " förstår",
+          "start": 16.68,
+          "end": 17.06,
+          "score": 0.8486328125
+        },
+        {
+          "word": " den",
+          "start": 17.06,
+          "end": 17.16,
+          "score": 0.81591796875
+        },
+        {
+          "word": " vilket",
+          "start": 17.16,
+          "end": 17.6,
+          "score": 0.782958984375
+        },
+        {
+          "word": " paket",
+          "start": 17.6,
+          "end": 17.92,
+          "score": 0.768310546875
+        },
+        {
+          "word": " det",
+          "start": 17.92,
+          "end": 18.04,
+          "score": 0.73876953125
+        },
+        {
+          "word": " är.",
+          "start": 18.04,
+          "end": 18.12,
+          "score": 0.5048828125
+        }
+      ]
+    },
+    {
+      "start": 18.22,
+      "end": 18.26,
+      "text": " Ja.",
+      "words": [
+        {
+          "word": " Ja.",
+          "start": 18.22,
+          "end": 18.26,
+          "score": 0.64697265625
+        }
+      ]
+    },
+    {
+      "start": 19.0,
+      "end": 20.8,
+      "text": " Det kanske är nya paket som den inte kan.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 19.0,
+          "end": 19.32,
+          "score": 0.59814453125
+        },
+        {
+          "word": " kanske",
+          "start": 19.32,
+          "end": 19.44,
+          "score": 0.3271484375
+        },
+        {
+          "word": " är",
+          "start": 19.44,
+          "end": 19.62,
+          "score": 0.456298828125
+        },
+        {
+          "word": " nya",
+          "start": 19.62,
+          "end": 19.74,
+          "score": 0.51611328125
+        },
+        {
+          "word": " paket",
+          "start": 19.74,
+          "end": 20.2,
+          "score": 0.759033203125
+        },
+        {
+          "word": " som",
+          "start": 20.2,
+          "end": 20.3,
+          "score": 0.6572265625
+        },
+        {
+          "word": " den",
+          "start": 20.3,
+          "end": 20.42,
+          "score": 0.8427734375
+        },
+        {
+          "word": " inte",
+          "start": 20.42,
+          "end": 20.58,
+          "score": 0.60546875
+        },
+        {
+          "word": " kan.",
+          "start": 20.58,
+          "end": 20.8,
+          "score": 0.82373046875
+        }
+      ]
+    },
+    {
+      "start": 21.8,
+      "end": 23.38,
+      "text": " Ja, alltså jag vet, den kanske gjorde något fel.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 21.8,
+          "end": 22.12,
+          "score": 0.63330078125
+        },
+        {
+          "word": " alltså",
+          "start": 22.26,
+          "end": 22.44,
+          "score": 0.589111328125
+        },
+        {
+          "word": " jag",
+          "start": 22.44,
+          "end": 22.48,
+          "score": 0.5439453125
+        },
+        {
+          "word": " vet,",
+          "start": 22.48,
+          "end": 22.64,
+          "score": 0.50927734375
+        },
+        {
+          "word": " den",
+          "start": 22.66,
+          "end": 22.74,
+          "score": 0.7314453125
+        },
+        {
+          "word": " kanske",
+          "start": 22.74,
+          "end": 22.94,
+          "score": 0.57666015625
+        },
+        {
+          "word": " gjorde",
+          "start": 22.94,
+          "end": 23.1,
+          "score": 0.6433919270833334
+        },
+        {
+          "word": " något",
+          "start": 23.1,
+          "end": 23.18,
+          "score": 0.4873046875
+        },
+        {
+          "word": " fel.",
+          "start": 23.18,
+          "end": 23.38,
+          "score": 0.6640625
+        }
+      ]
+    },
+    {
+      "start": 23.52,
+      "end": 28.02,
+      "text": " Men i alla fall för nu så är det bara typ om man skriver en import som den saknar.",
+      "words": [
+        {
+          "word": " Men",
+          "start": 23.52,
+          "end": 23.62,
+          "score": 0.81884765625
+        },
+        {
+          "word": " i",
+          "start": 23.62,
+          "end": 23.74,
+          "score": 0.8095703125
+        },
+        {
+          "word": " alla",
+          "start": 23.74,
+          "end": 23.8,
+          "score": 0.6005859375
+        },
+        {
+          "word": " fall",
+          "start": 23.8,
+          "end": 24.02,
+          "score": 0.61669921875
+        },
+        {
+          "word": " för",
+          "start": 24.02,
+          "end": 24.26,
+          "score": 0.270263671875
+        },
+        {
+          "word": " nu",
+          "start": 24.26,
+          "end": 24.44,
+          "score": 0.3759765625
+        },
+        {
+          "word": " så",
+          "start": 24.44,
+          "end": 24.64,
+          "score": 0.474609375
+        },
+        {
+          "word": " är",
+          "start": 24.64,
+          "end": 24.76,
+          "score": 0.51513671875
+        },
+        {
+          "word": " det",
+          "start": 24.76,
+          "end": 24.78,
+          "score": 0.75732421875
+        },
+        {
+          "word": " bara",
+          "start": 24.78,
+          "end": 24.96,
+          "score": 0.482666015625
+        },
+        {
+          "word": " typ",
+          "start": 24.96,
+          "end": 25.08,
+          "score": 0.40869140625
+        },
+        {
+          "word": " om",
+          "start": 25.08,
+          "end": 25.5,
+          "score": 0.56640625
+        },
+        {
+          "word": " man",
+          "start": 25.5,
+          "end": 25.72,
+          "score": 0.73486328125
+        },
+        {
+          "word": " skriver",
+          "start": 25.72,
+          "end": 26.72,
+          "score": 0.916748046875
+        },
+        {
+          "word": " en",
+          "start": 26.72,
+          "end": 26.78,
+          "score": 0.7099609375
+        },
+        {
+          "word": " import",
+          "start": 26.78,
+          "end": 27.0,
+          "score": 0.8271484375
+        },
+        {
+          "word": " som",
+          "start": 27.0,
+          "end": 27.18,
+          "score": 0.62060546875
+        },
+        {
+          "word": " den",
+          "start": 27.18,
+          "end": 27.3,
+          "score": 0.74267578125
+        },
+        {
+          "word": " saknar.",
+          "start": 27.3,
+          "end": 28.02,
+          "score": 0.830322265625
+        }
+      ]
+    },
+    {
+      "start": 28.02,
+      "end": 28.72,
+      "text": " Då är det bara att skriva till den.",
+      "words": [
+        {
+          "word": " Då",
+          "start": 28.02,
+          "end": 28.1,
+          "score": 0.469970703125
+        },
+        {
+          "word": " är",
+          "start": 28.1,
+          "end": 28.16,
+          "score": 0.52685546875
+        },
+        {
+          "word": " det",
+          "start": 28.16,
+          "end": 28.16,
+          "score": 0.75048828125
+        },
+        {
+          "word": " bara",
+          "start": 28.16,
+          "end": 28.16,
+          "score": 0.544921875
+        },
+        {
+          "word": " att",
+          "start": 28.16,
+          "end": 28.28,
+          "score": 0.5703125
+        },
+        {
+          "word": " skriva",
+          "start": 28.28,
+          "end": 28.42,
+          "score": 0.9208984375
+        },
+        {
+          "word": " till",
+          "start": 28.42,
+          "end": 28.56,
+          "score": 0.7646484375
+        },
+        {
+          "word": " den.",
+          "start": 28.56,
+          "end": 28.72,
+          "score": 0.69091796875
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,389 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.7,
+      "text": " Nej, vi snackar bara genom mig.",
+      "words": [
+        {
+          "word": " Nej,",
+          "start": 0.0,
+          "end": 0.5,
+          "score": 0.55712890625
+        },
+        {
+          "word": " vi",
+          "start": 0.52,
+          "end": 0.6,
+          "score": 0.74560546875
+        },
+        {
+          "word": " snackar",
+          "start": 0.6,
+          "end": 1.26,
+          "score": 0.88623046875
+        },
+        {
+          "word": " bara",
+          "start": 1.26,
+          "end": 1.4,
+          "score": 0.53076171875
+        },
+        {
+          "word": " genom",
+          "start": 1.4,
+          "end": 1.54,
+          "score": 0.76220703125
+        },
+        {
+          "word": " mig.",
+          "start": 1.54,
+          "end": 1.7,
+          "score": 0.5068359375
+        }
+      ]
+    },
+    {
+      "start": 1.84,
+      "end": 3.22,
+      "text": " Nej, vi snackar bara genom mig.",
+      "words": [
+        {
+          "word": " Nej,",
+          "start": 1.84,
+          "end": 1.98,
+          "score": 0.38232421875
+        },
+        {
+          "word": " vi",
+          "start": 2.02,
+          "end": 2.1,
+          "score": 0.7529296875
+        },
+        {
+          "word": " snackar",
+          "start": 2.1,
+          "end": 2.76,
+          "score": 0.9326171875
+        },
+        {
+          "word": " bara",
+          "start": 2.76,
+          "end": 2.88,
+          "score": 0.5595703125
+        },
+        {
+          "word": " genom",
+          "start": 2.88,
+          "end": 3.04,
+          "score": 0.76513671875
+        },
+        {
+          "word": " mig.",
+          "start": 3.04,
+          "end": 3.22,
+          "score": 0.6044921875
+        }
+      ]
+    },
+    {
+      "start": 4.3999999999999995,
+      "end": 5.76,
+      "text": " Det där kan jag, ja precis.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 4.3999999999999995,
+          "end": 4.72,
+          "score": 0.29052734375
+        },
+        {
+          "word": " där",
+          "start": 4.72,
+          "end": 5.04,
+          "score": 0.6929931640625
+        },
+        {
+          "word": " kan",
+          "start": 5.04,
+          "end": 5.08,
+          "score": 0.814453125
+        },
+        {
+          "word": " jag,",
+          "start": 5.08,
+          "end": 5.24,
+          "score": 0.642578125
+        },
+        {
+          "word": " ja",
+          "start": 5.34,
+          "end": 5.46,
+          "score": 0.58935546875
+        },
+        {
+          "word": " precis.",
+          "start": 5.46,
+          "end": 5.76,
+          "score": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 9.34,
+      "end": 10.14,
+      "text": " Vänta, mutear du mig?",
+      "words": [
+        {
+          "word": " Vänta,",
+          "start": 9.34,
+          "end": 9.66,
+          "score": 0.8527018229166666
+        },
+        {
+          "word": " mutear",
+          "start": 9.66,
+          "end": 9.98,
+          "score": 0.611083984375
+        },
+        {
+          "word": " du",
+          "start": 9.98,
+          "end": 10.02,
+          "score": 0.61962890625
+        },
+        {
+          "word": " mig?",
+          "start": 10.02,
+          "end": 10.14,
+          "score": 0.640625
+        }
+      ]
+    },
+    {
+      "start": 11.84,
+      "end": 12.56,
+      "text": " Vänta, mutea mig.",
+      "words": [
+        {
+          "word": " Vänta,",
+          "start": 11.84,
+          "end": 12.16,
+          "score": 0.7914225260416666
+        },
+        {
+          "word": " mutea",
+          "start": 12.16,
+          "end": 12.48,
+          "score": 0.76123046875
+        },
+        {
+          "word": " mig.",
+          "start": 12.48,
+          "end": 12.56,
+          "score": 0.428466796875
+        }
+      ]
+    },
+    {
+      "start": 12.66,
+      "end": 13.06,
+      "text": " Vänta, mutea mig.",
+      "words": [
+        {
+          "word": " Vänta,",
+          "start": 12.66,
+          "end": 12.72,
+          "score": 0.6751200358072916
+        },
+        {
+          "word": " mutea",
+          "start": 12.72,
+          "end": 12.92,
+          "score": 0.843505859375
+        },
+        {
+          "word": " mig.",
+          "start": 12.92,
+          "end": 13.06,
+          "score": 0.433837890625
+        }
+      ]
+    },
+    {
+      "start": 15.84,
+      "end": 16.48,
+      "text": " Till höger.",
+      "words": [
+        {
+          "word": " Till",
+          "start": 15.84,
+          "end": 16.16,
+          "score": 0.0718994140625
+        },
+        {
+          "word": " höger.",
+          "start": 16.16,
+          "end": 16.48,
+          "score": 0.882080078125
+        }
+      ]
+    },
+    {
+      "start": 17.68,
+      "end": 18.12,
+      "text": " Apan där.",
+      "words": [
+        {
+          "word": " Apan",
+          "start": 17.68,
+          "end": 18.0,
+          "score": 0.7132568359375
+        },
+        {
+          "word": " där.",
+          "start": 18.0,
+          "end": 18.12,
+          "score": 0.51171875
+        }
+      ]
+    },
+    {
+      "start": 21.08,
+      "end": 21.4,
+      "text": " Såja.",
+      "words": [
+        {
+          "word": " Såja.",
+          "start": 21.08,
+          "end": 21.4,
+          "score": 0.33660888671875
+        }
+      ]
+    },
+    {
+      "start": 23.2,
+      "end": 24.0,
+      "text": " Hur går det för er?",
+      "words": [
+        {
+          "word": " Hur",
+          "start": 23.2,
+          "end": 23.52,
+          "score": 0.6337890625
+        },
+        {
+          "word": " går",
+          "start": 23.52,
+          "end": 23.7,
+          "score": 0.7293701171875
+        },
+        {
+          "word": " det",
+          "start": 23.7,
+          "end": 23.72,
+          "score": 0.7568359375
+        },
+        {
+          "word": " för",
+          "start": 23.72,
+          "end": 23.84,
+          "score": 0.5791015625
+        },
+        {
+          "word": " er?",
+          "start": 23.84,
+          "end": 24.0,
+          "score": 0.69921875
+        }
+      ]
+    },
+    {
+      "start": 24.4,
+      "end": 25.5,
+      "text": " Ja, vi gillar det.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 24.4,
+          "end": 24.72,
+          "score": 0.1939697265625
+        },
+        {
+          "word": " vi",
+          "start": 24.72,
+          "end": 24.92,
+          "score": 0.39111328125
+        },
+        {
+          "word": " gillar",
+          "start": 24.92,
+          "end": 25.5,
+          "score": 0.481689453125
+        },
+        {
+          "word": " det.",
+          "start": 25.5,
+          "end": 25.5,
+          "score": 0.70556640625
+        }
+      ]
+    },
+    {
+      "start": 25.7,
+      "end": 26.02,
+      "text": " Ja.",
+      "words": [
+        {
+          "word": " Ja.",
+          "start": 25.7,
+          "end": 26.02,
+          "score": 0.451416015625
+        }
+      ]
+    },
+    {
+      "start": 29.08,
+      "end": 29.96,
+      "text": " Hur går det för er då?",
+      "words": [
+        {
+          "word": " Hur",
+          "start": 29.08,
+          "end": 29.4,
+          "score": 0.51318359375
+        },
+        {
+          "word": " går",
+          "start": 29.4,
+          "end": 29.6,
+          "score": 0.55859375
+        },
+        {
+          "word": " det",
+          "start": 29.6,
+          "end": 29.68,
+          "score": 0.76220703125
+        },
+        {
+          "word": " för",
+          "start": 29.68,
+          "end": 29.76,
+          "score": 0.59521484375
+        },
+        {
+          "word": " er",
+          "start": 29.76,
+          "end": 29.9,
+          "score": 0.6728515625
+        },
+        {
+          "word": " då?",
+          "start": 29.9,
+          "end": 29.96,
+          "score": 0.4189453125
+        }
+      ]
+    }
+  ]
+}

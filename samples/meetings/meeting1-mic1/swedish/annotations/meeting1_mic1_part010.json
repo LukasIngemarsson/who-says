@@ -1,0 +1,249 @@
+{
+  "segments": [
+    {
+      "start": 2.6599999999999997,
+      "end": 3.94,
+      "text": " Jag håller på att trycka på länken eller?",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 2.6599999999999997,
+          "end": 3.02,
+          "score": 0.103759765625
+        },
+        {
+          "word": " håller",
+          "start": 3.02,
+          "end": 3.16,
+          "score": 0.5926513671875
+        },
+        {
+          "word": " på",
+          "start": 3.16,
+          "end": 3.24,
+          "score": 0.609130859375
+        },
+        {
+          "word": " att",
+          "start": 3.24,
+          "end": 3.3,
+          "score": 0.5419921875
+        },
+        {
+          "word": " trycka",
+          "start": 3.3,
+          "end": 3.48,
+          "score": 0.830810546875
+        },
+        {
+          "word": " på",
+          "start": 3.48,
+          "end": 3.6,
+          "score": 0.6103515625
+        },
+        {
+          "word": " länken",
+          "start": 3.6,
+          "end": 3.78,
+          "score": 0.8767903645833334
+        },
+        {
+          "word": " eller?",
+          "start": 3.78,
+          "end": 3.94,
+          "score": 0.32177734375
+        }
+      ]
+    },
+    {
+      "start": 7.719999999999998,
+      "end": 9.76,
+      "text": " Jag kopierar den och sen går du in i",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 7.719999999999998,
+          "end": 8.079999999999998,
+          "score": 0.1715087890625
+        },
+        {
+          "word": " kopierar",
+          "start": 8.079999999999998,
+          "end": 8.44,
+          "score": 0.777099609375
+        },
+        {
+          "word": " den",
+          "start": 8.44,
+          "end": 8.54,
+          "score": 0.8349609375
+        },
+        {
+          "word": " och",
+          "start": 8.54,
+          "end": 8.94,
+          "score": 0.6630859375
+        },
+        {
+          "word": " sen",
+          "start": 8.94,
+          "end": 9.28,
+          "score": 0.7119140625
+        },
+        {
+          "word": " går",
+          "start": 9.28,
+          "end": 9.46,
+          "score": 0.55029296875
+        },
+        {
+          "word": " du",
+          "start": 9.46,
+          "end": 9.54,
+          "score": 0.56103515625
+        },
+        {
+          "word": " in",
+          "start": 9.54,
+          "end": 9.58,
+          "score": 0.7353515625
+        },
+        {
+          "word": " i",
+          "start": 9.58,
+          "end": 9.76,
+          "score": 0.75390625
+        }
+      ]
+    },
+    {
+      "start": 11.04,
+      "end": 13.66,
+      "text": " Om du har den sidebaren här så klickar du",
+      "words": [
+        {
+          "word": " Om",
+          "start": 11.04,
+          "end": 11.399999999999999,
+          "score": 0.005771636962890625
+        },
+        {
+          "word": " du",
+          "start": 11.399999999999999,
+          "end": 11.76,
+          "score": 0.63037109375
+        },
+        {
+          "word": " har",
+          "start": 11.76,
+          "end": 11.86,
+          "score": 0.662109375
+        },
+        {
+          "word": " den",
+          "start": 11.86,
+          "end": 12.0,
+          "score": 0.6494140625
+        },
+        {
+          "word": " sidebaren",
+          "start": 12.0,
+          "end": 12.54,
+          "score": 0.6192220052083334
+        },
+        {
+          "word": " här",
+          "start": 12.54,
+          "end": 12.68,
+          "score": 0.72882080078125
+        },
+        {
+          "word": " så",
+          "start": 12.68,
+          "end": 12.8,
+          "score": 0.1026611328125
+        },
+        {
+          "word": " klickar",
+          "start": 12.8,
+          "end": 13.6,
+          "score": 0.8810221354166666
+        },
+        {
+          "word": " du",
+          "start": 13.6,
+          "end": 13.66,
+          "score": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 16.740000000000002,
+      "end": 18.72,
+      "text": " Den kommer fronta den dit då tror jag",
+      "words": [
+        {
+          "word": " Den",
+          "start": 16.740000000000002,
+          "end": 17.1,
+          "score": 0.10858154296875
+        },
+        {
+          "word": " kommer",
+          "start": 17.1,
+          "end": 17.46,
+          "score": 0.6953125
+        },
+        {
+          "word": " fronta",
+          "start": 17.46,
+          "end": 17.94,
+          "score": 0.839111328125
+        },
+        {
+          "word": " den",
+          "start": 17.94,
+          "end": 17.94,
+          "score": 0.446044921875
+        },
+        {
+          "word": " dit",
+          "start": 17.94,
+          "end": 18.18,
+          "score": 0.7783203125
+        },
+        {
+          "word": " då",
+          "start": 18.18,
+          "end": 18.44,
+          "score": 0.365478515625
+        },
+        {
+          "word": " tror",
+          "start": 18.44,
+          "end": 18.6,
+          "score": 0.546875
+        },
+        {
+          "word": " jag",
+          "start": 18.6,
+          "end": 18.72,
+          "score": 0.646484375
+        }
+      ]
+    },
+    {
+      "start": 21.98,
+      "end": 22.34,
+      "text": " Alright",
+      "words": [
+        {
+          "word": " Alright",
+          "start": 21.98,
+          "end": 22.34,
+          "score": 0.59765625
+        }
+      ]
+    }
+  ]
+}

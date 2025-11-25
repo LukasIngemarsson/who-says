@@ -1,0 +1,61 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 3.495,
+      "speakerId": "SPEAKER_02",
+      "transcription": " different things for, for instance, the model name is going to be different."
+    },
+    {
+      "startTime": 5.277,
+      "endTime": 5.598,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Yeah."
+    },
+    {
+      "startTime": 7.62,
+      "endTime": 9.102,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Wait, what do you mean?"
+    },
+    {
+      "startTime": 10.884,
+      "endTime": 15.65,
+      "speakerId": "SPEAKER_01",
+      "transcription": "This is just the whole input for the initialization of the class."
+    },
+    {
+      "startTime": 16.19,
+      "endTime": 17.011,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Yeah, exactly."
+    },
+    {
+      "startTime": 17.892,
+      "endTime": 20.015,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Because at least we've done it now."
+    },
+    {
+      "startTime": 20.035,
+      "endTime": 21.997,
+      "speakerId": "SPEAKER_02",
+      "transcription": "It's not necessarily the same for different libraries."
+    },
+    {
+      "startTime": 22.478,
+      "endTime": 27.724,
+      "speakerId": "SPEAKER_02",
+      "transcription": "So it would be different for like speech brain versus pyannote, at least the way we've done it."
+    },
+    {
+      "startTime": 27.764,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_01",
+      "transcription": "So we'd probably have to change something."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T15:41:10.374Z"
+  }
+}

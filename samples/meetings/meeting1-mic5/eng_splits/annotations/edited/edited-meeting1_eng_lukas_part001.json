@@ -1,0 +1,37 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 1.733,
+      "speakerId": "SPEAKER_00",
+      "transcription": " and do the rest basically."
+    },
+    {
+      "startTime": 2.4,
+      "endTime": 3.2,
+      "speakerId": "SPEAKER_00",
+      "transcription": "Uh yeah"
+    },
+    {
+      "startTime": 3.2,
+      "endTime": 9.264,
+      "speakerId": "SPEAKER_00",
+      "transcription": "But in our pipeline we wanted to go from audio file to VAD to..."
+    },
+    {
+      "startTime": 9.284,
+      "endTime": 20.419,
+      "speakerId": "SPEAKER_01",
+      "transcription": "It's still going to be difficult because we're running everything essentially on the same computer, so even though we run the models in parallel, then the... the computing power will still be around the same"
+    },
+    {
+      "startTime": 23.5,
+      "endTime": 25.419,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Yeah yeah of course, my questions is about the input because it seems like... the other like... Lukas"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T14:12:52.611Z"
+  }
+}

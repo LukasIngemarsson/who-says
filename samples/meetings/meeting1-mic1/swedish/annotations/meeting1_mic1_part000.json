@@ -1,0 +1,352 @@
+{
+  "segments": [
+    {
+      "start": 4.760000000000002,
+      "end": 9.26,
+      "text": " Jag tänkte om vi börjar med svenska och sen går vi över typ kanske,",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 4.760000000000002,
+          "end": 5.16,
+          "score": 0.7021484375
+        },
+        {
+          "word": " tänkte",
+          "start": 5.16,
+          "end": 5.44,
+          "score": 0.731201171875
+        },
+        {
+          "word": " om",
+          "start": 5.44,
+          "end": 5.52,
+          "score": 0.43994140625
+        },
+        {
+          "word": " vi",
+          "start": 5.52,
+          "end": 5.58,
+          "score": 0.7353515625
+        },
+        {
+          "word": " börjar",
+          "start": 5.58,
+          "end": 5.9,
+          "score": 0.52020263671875
+        },
+        {
+          "word": " med",
+          "start": 5.9,
+          "end": 5.98,
+          "score": 0.75048828125
+        },
+        {
+          "word": " svenska",
+          "start": 5.98,
+          "end": 6.56,
+          "score": 0.67108154296875
+        },
+        {
+          "word": " och",
+          "start": 6.56,
+          "end": 6.86,
+          "score": 0.62646484375
+        },
+        {
+          "word": " sen",
+          "start": 6.86,
+          "end": 7.02,
+          "score": 0.6220703125
+        },
+        {
+          "word": " går",
+          "start": 7.02,
+          "end": 7.76,
+          "score": 0.7369384765625
+        },
+        {
+          "word": " vi",
+          "start": 7.76,
+          "end": 7.78,
+          "score": 0.7431640625
+        },
+        {
+          "word": " över",
+          "start": 7.78,
+          "end": 8.06,
+          "score": 0.6670735677083334
+        },
+        {
+          "word": " typ",
+          "start": 8.06,
+          "end": 8.26,
+          "score": 0.728515625
+        },
+        {
+          "word": " kanske,",
+          "start": 8.26,
+          "end": 9.26,
+          "score": 0.6435546875
+        }
+      ]
+    },
+    {
+      "start": 10.46,
+      "end": 16.02,
+      "text": " ja nu är klockan halv, jag tänkte halv 45 eller kvart i tre,",
+      "words": [
+        {
+          "word": " ja",
+          "start": 10.46,
+          "end": 10.86,
+          "score": 0.326171875
+        },
+        {
+          "word": " nu",
+          "start": 10.86,
+          "end": 11.0,
+          "score": 0.62744140625
+        },
+        {
+          "word": " är",
+          "start": 11.0,
+          "end": 11.08,
+          "score": 0.50244140625
+        },
+        {
+          "word": " klockan",
+          "start": 11.08,
+          "end": 11.36,
+          "score": 0.9464518229166666
+        },
+        {
+          "word": " halv,",
+          "start": 11.36,
+          "end": 11.58,
+          "score": 0.854248046875
+        },
+        {
+          "word": " jag",
+          "start": 11.6,
+          "end": 11.7,
+          "score": 0.509765625
+        },
+        {
+          "word": " tänkte",
+          "start": 11.7,
+          "end": 11.82,
+          "score": 0.716064453125
+        },
+        {
+          "word": " halv",
+          "start": 11.82,
+          "end": 12.2,
+          "score": 0.6051025390625
+        },
+        {
+          "word": " 45",
+          "start": 12.2,
+          "end": 13.9,
+          "score": 0.6181640625
+        },
+        {
+          "word": " eller",
+          "start": 13.9,
+          "end": 14.58,
+          "score": 0.44482421875
+        },
+        {
+          "word": " kvart",
+          "start": 14.58,
+          "end": 15.6,
+          "score": 0.91796875
+        },
+        {
+          "word": " i",
+          "start": 15.6,
+          "end": 15.7,
+          "score": 0.796875
+        },
+        {
+          "word": " tre,",
+          "start": 15.7,
+          "end": 16.02,
+          "score": 0.646484375
+        }
+      ]
+    },
+    {
+      "start": 16.12,
+      "end": 19.02,
+      "text": " så går vi över till engelska istället, så har vi både svenska och engelska.",
+      "words": [
+        {
+          "word": " så",
+          "start": 16.12,
+          "end": 16.32,
+          "score": 0.64013671875
+        },
+        {
+          "word": " går",
+          "start": 16.32,
+          "end": 16.48,
+          "score": 0.5908203125
+        },
+        {
+          "word": " vi",
+          "start": 16.48,
+          "end": 16.54,
+          "score": 0.73291015625
+        },
+        {
+          "word": " över",
+          "start": 16.54,
+          "end": 16.74,
+          "score": 0.445556640625
+        },
+        {
+          "word": " till",
+          "start": 16.74,
+          "end": 16.84,
+          "score": 0.7939453125
+        },
+        {
+          "word": " engelska",
+          "start": 16.84,
+          "end": 17.2,
+          "score": 0.9088541666666666
+        },
+        {
+          "word": " istället,",
+          "start": 17.2,
+          "end": 17.48,
+          "score": 0.748779296875
+        },
+        {
+          "word": " så",
+          "start": 17.48,
+          "end": 17.64,
+          "score": 0.5712890625
+        },
+        {
+          "word": " har",
+          "start": 17.64,
+          "end": 17.74,
+          "score": 0.426513671875
+        },
+        {
+          "word": " vi",
+          "start": 17.74,
+          "end": 17.84,
+          "score": 0.73193359375
+        },
+        {
+          "word": " både",
+          "start": 17.84,
+          "end": 18.04,
+          "score": 0.517578125
+        },
+        {
+          "word": " svenska",
+          "start": 18.04,
+          "end": 18.52,
+          "score": 0.6800537109375
+        },
+        {
+          "word": " och",
+          "start": 18.52,
+          "end": 18.66,
+          "score": 0.82080078125
+        },
+        {
+          "word": " engelska.",
+          "start": 18.66,
+          "end": 19.02,
+          "score": 0.90234375
+        }
+      ]
+    },
+    {
+      "start": 19.2,
+      "end": 19.86,
+      "text": " Det låter bra.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 19.2,
+          "end": 19.38,
+          "score": 0.5400390625
+        },
+        {
+          "word": " låter",
+          "start": 19.38,
+          "end": 19.74,
+          "score": 0.791748046875
+        },
+        {
+          "word": " bra.",
+          "start": 19.74,
+          "end": 19.86,
+          "score": 0.66845703125
+        }
+      ]
+    },
+    {
+      "start": 22.720000000000002,
+      "end": 24.82,
+      "text": " Ska vi höja volymen någonstans?",
+      "words": [
+        {
+          "word": " Ska",
+          "start": 22.720000000000002,
+          "end": 23.12,
+          "score": 0.688232421875
+        },
+        {
+          "word": " vi",
+          "start": 23.12,
+          "end": 23.22,
+          "score": 0.7333984375
+        },
+        {
+          "word": " höja",
+          "start": 23.22,
+          "end": 23.38,
+          "score": 0.6370849609375
+        },
+        {
+          "word": " volymen",
+          "start": 23.38,
+          "end": 23.86,
+          "score": 0.9451497395833334
+        },
+        {
+          "word": " någonstans?",
+          "start": 23.86,
+          "end": 24.82,
+          "score": 0.756195068359375
+        }
+      ]
+    },
+    {
+      "start": 27.020000000000003,
+      "end": 27.82,
+      "text": " Ja, exakt.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 27.020000000000003,
+          "end": 27.42,
+          "score": 0.52587890625
+        },
+        {
+          "word": " exakt.",
+          "start": 27.42,
+          "end": 27.82,
+          "score": 0.793701171875
+        }
+      ]
+    }
+  ]
+}

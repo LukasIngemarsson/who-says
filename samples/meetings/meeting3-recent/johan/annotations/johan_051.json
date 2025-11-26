@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "exported_at": "2025-11-26T13:11:24.750Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 22.947,
+      "end": 29.987,
+      "text": " I might also keep working on my branch, like I merge in the pipeline MVP into my branch and then continue working there and then.",
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

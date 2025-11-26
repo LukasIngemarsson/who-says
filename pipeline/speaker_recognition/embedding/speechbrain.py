@@ -17,23 +17,20 @@ class SpeechBrainEmbedding:
     embed_segments(audio: torch.Tensor, frequency: int, change_points: list[float]) -> torch.Tensor
         Embed each segment between speaker change points and return stacked embeddings.
     """
-
     def __init__(self, 
-                 model: str = "speechbrain/spkrec-ecapa-voxceleb",
-                 device: str = "cuda") -> None:
-        """
-        Initialize SpeechBrainEmbedding with a pretrained model.
-
-        Parameters
-        ----------
-        model : str, optional
-            HuggingFace model identifier for SpeechBrain speaker embedding.
-        """
-
-        self.model = EncoderClassifier.from_hparams(source=model)
+                model: str = "speechbrain/spkrec-ecapa-voxceleb",
+                device: str = "cuda") -> None:
         self.device = device
-        if model is not None:
-            self.model.to(self.device)        
+        self.model = EncoderClassifier.from_hparams(
+            source=model,
+            run_opts={"device": self.device}
+        )   
+        
+        if self.model is not None:
+            # Use .to() which recursively moves all submodules
+            self.model = self.model.to(self.device)
+            # Also set eval mode to ensure all layers behave correctly
+            self.model.eval()   
 
 
     def embed(self, audio: torch.Tensor, frequency: int) -> torch.Tensor:
@@ -87,49 +84,41 @@ class SpeechBrainEmbedding:
         return self.embed(audio, frequency)
 
     def embed_segments(self, audio: torch.Tensor, frequency: int, change_points: list[float]) -> torch.Tensor:
-        """
-        Embed each segment between speaker change points from an audio tensor.
 
-        Parameters
-        ----------
-        audio : torch.Tensor
-            Loaded audio tensor (1D: n_samples).
-        frequency : int
-            Sample rate of the audio.
-        change_points : list of float
-            Timestamps (in seconds) where speaker changes occur.
-
-        Returns
-        -------
-        torch.Tensor
-            Tensor of shape (num_segments, embedding_dim)
-        """
         # Ensure audio is 1D
         if audio.dim() > 1:
             audio = audio.squeeze()
-
+        
         # Calculate audio duration
         audio_duration = audio.shape[0] / frequency
         points = [0.0] + change_points + [audio_duration]
-
         embeddings = []
+        
+        # Minimum segment duration in seconds (adjust as needed)
+        min_duration = 0.5  # 500ms minimum
+        min_samples = int(min_duration * frequency)
+        
         for i in range(len(points) - 1):
             start = int(points[i] * frequency)
             end = int(points[i+1] * frequency)
-
+            
+            # Skip segments that are too short
+            if end - start < min_samples:
+                continue
+            
             # Extract segment
             segment = audio[start:end]
-
+            
             # Embed the segment
             emb = self.embed(segment, frequency)
-
+            
             # Squeeze all batch dimensions to get (embedding_dim,)
             while emb.dim() > 1:
                 emb = emb.squeeze(0)
-
+            
             embeddings.append(emb)
-
-        return torch.stack(embeddings)
+        
+        return torch.stack(embeddings) if embeddings else torch.empty(0, self.embedding_dim)
 
 
 if __name__ == "__main__":

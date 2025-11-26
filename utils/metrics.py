@@ -3,6 +3,8 @@ import numpy as np
 from pathlib import Path
 from sklearn.metrics import precision_score, recall_score, f1_score
 from loguru import logger
+from pyannote.core import Annotation, Segment
+from pyannote.metrics.diarization import DiarizationErrorRate
 
 
 def load_annotation_file(annotation_path):
@@ -59,7 +61,39 @@ def compute_f1(reference_frames, prediction_frames):
     return f1_percentage
 
 
-def evaluate_vad(reference_segments, prediction_segments, total_duration):
+def segments_to_annotation(segments, uri="audio"):
+    """
+    Convert segment list to pyannote.core.Annotation object.
+
+    Parameters
+    ----------
+    segments : list of dict
+        List of segments with 'start', 'end', and 'speaker' keys.
+    uri : str, optional
+        Uniform Resource Identifier for the annotation.
+
+    Returns
+    -------
+    pyannote.core.Annotation
+        Annotation object with segments mapped to speaker labels.
+    """
+    annotation = Annotation(uri=uri)
+
+    for segment in segments:
+        # Create a Segment object with start and end times
+        seg = Segment(segment['start'], segment['end'])
+
+        # Add the segment to the annotation with the speaker label
+        annotation[seg] = segment['speaker']
+
+    return annotation
+
+
+def evaluate_segmentation(reference_segments, prediction_segments, total_duration):
+    """
+    Evaluate segmentation quality by comparing prediction against reference.
+    Works for VAD, SCD, or any segment based evaluation.
+    """
     frame_size = 0.01
 
     ref_frames = segments_to_frames(reference_segments, total_duration, frame_size)
@@ -86,23 +120,210 @@ def evaluate_vad(reference_segments, prediction_segments, total_duration):
     }
 
     return results
+ 
+
+# ASR
+def word_error_rate(reference: str, hypothesis: str) -> float:
+    """
+    Compute Word Error Rate (WER) between reference and hypothesis strings.
+    WER = (S + D + I) / N
+    S = substitutions, D = deletions, I = insertions, N = number of words in reference
+    """
+    ref_words = reference.strip().split()
+    hyp_words = hypothesis.strip().split()
+    N = len(ref_words)
+
+    d = np.zeros((len(ref_words)+1, len(hyp_words)+1), dtype=np.uint32)
+    for i in range(len(ref_words)+1):
+        d[i][0] = i
+    for j in range(len(hyp_words)+1):
+        d[0][j] = j
+
+    for i in range(1, len(ref_words)+1):
+        for j in range(1, len(hyp_words)+1):
+            if ref_words[i-1] == hyp_words[j-1]:
+                cost = 0
+            else:
+                cost = 1
+            d[i][j] = min(
+                d[i-1][j] + 1,      # deletion
+                d[i][j-1] + 1,      # insertion
+                d[i-1][j-1] + cost  # substitution
+            )
+    wer = 100 * d[len(ref_words)][len(hyp_words)] / N if N > 0 else 0.0
+    return wer
+
+def extract_change_points(segments):
+    """
+    Extract change point timestamps from segment boundaries.
+
+    Parameters
+    ----------
+    segments : list of dict
+        Segments with 'start' and 'end' times.
+
+    Returns
+    -------
+    list of float
+        Change point timestamps (end of each segment except the last).
+    """
+    if len(segments) <= 1:
+        return []
+
+    change_points = []
+    for i in range(len(segments) - 1):
+        change_points.append(segments[i]['end'])
+
+    return change_points
+
+
+def evaluate_change_point_detection(reference_segments, predicted_segments, tolerance=0.5):
+    """
+    Evaluate speaker change point detection with tolerance window.
+
+    Params:
+    reference_segments : list of dict
+        Ground truth segments (to extract change points from).
+    predicted_segments : list of dict
+        Predicted segments (to extract change points from).
+    tolerance :
+        Time tolerance in seconds
+        A predicted change point matches a reference if within +-tolerance.
+
+    Returns
+    -------
+    dict
+        Precision, Recall, F1 scores for change point detection.
+    """
+    ref_change_points = extract_change_points(reference_segments)
+    pred_change_points = extract_change_points(predicted_segments)
+
+    if len(ref_change_points) == 0 and len(pred_change_points) == 0:
+        return {'precision': 100.0, 'recall': 100.0, 'f1': 100.0}
+
+    if len(ref_change_points) == 0:
+        return {'precision': 0.0, 'recall': 100.0, 'f1': 0.0}
+
+    if len(pred_change_points) == 0:
+        return {'precision': 100.0, 'recall': 0.0, 'f1': 0.0}
+
+    matched_predictions = set()
+    matched_references = set()
+
+    for i, pred_cp in enumerate(pred_change_points):
+        for j, ref_cp in enumerate(ref_change_points):
+            if abs(pred_cp - ref_cp) <= tolerance:
+                matched_predictions.add(i)
+                matched_references.add(j)
+                break 
+
+    true_positives = len(matched_predictions)
+
+    precision = (true_positives / len(pred_change_points) * 100.0) if len(pred_change_points) > 0 else 0.0
+    recall = (true_positives / len(ref_change_points) * 100.0) if len(ref_change_points) > 0 else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+
+    return {
+        'precision': precision,
+        'recall': recall,
+        'f1': f1
+    }
+
+
+def evaluate_asr(reference_transcriptions, hypothesis_transcriptions):
+    reference = " ".join(reference_transcriptions)
+    hypothesis = " ".join(hypothesis_transcriptions)
+    wer = word_error_rate(reference, hypothesis)
+
+    metrics = {"wer": wer}
+
+    return metrics
+
+
+def evaluate_diarization(reference_segments, hypothesis_segments):
+    """
+    Compute Diarization Error Rate (DER) between reference and hypothesis.
+
+    Params:
+        reference_segments : list of dict
+            Gold-standard segments with start, end, and speaker keys.
+        hypothesis_segments : list of dict
+            Predicted segments with start, end, and speaker keys.
+
+    Returns:
+        Dictionary containing:
+        - der: Overall diarization error rate (percentage)
+        - miss: Miss rate (percentage)
+        - false_alarm: False alarm rate (percentage)
+        - confusion: Speaker confusion rate (percentage)
+    """
+    from pyannote.core import Timeline
+
+    reference = segments_to_annotation(reference_segments)
+    hypothesis = segments_to_annotation(hypothesis_segments)
+
+    uem = Timeline(uri="audio")
+    for seg in reference_segments:
+        uem.add(Segment(seg['start'], seg['end']))
+    uem = uem.support()  # Merge overlapping segments
+
+    metric = DiarizationErrorRate()
+    # Compute overall DER with UEM (returns a single value between 0 and 1)
+    der_value = metric(reference, hypothesis, uem=uem)
+    components = metric.compute_components(reference, hypothesis, uem=uem)
+
+    total = components['total']
+    confusion = components.get('confusion', 0.0)
+    miss = components.get('missed detection', 0.0)
+    false_alarm = components.get('false alarm', 0.0)
+
+    der_percentage = der_value * 100.0
+    miss_rate = (miss / total * 100.0) if total > 0 else 0.0
+    fa_rate = (false_alarm / total * 100.0) if total > 0 else 0.0
+    confusion_rate = (confusion / total * 100.0) if total > 0 else 0.0
+
+    return {
+        'der': der_percentage,
+        'miss': miss_rate,
+        'false_alarm': fa_rate,
+        'confusion': confusion_rate
+    }
 
 
 def evaluate_pipeline(pipeline_output, annotation_data):
     # TODO: Add other component metrics
-    logger.info("Computing VAD metrics...")
+    logger.info("Computing metrics...")
 
     total_duration = pipeline_output['duration']
     reference_segments = annotation_data['segments']
-    prediction_segments = pipeline_output['speaker_segments']
 
-    vad_metrics = evaluate_vad(reference_segments, prediction_segments, total_duration)
+    vad_metrics = evaluate_segmentation(
+        reference_segments,
+        pipeline_output['vad_segments'],
+        total_duration
+    )
 
-    results = {
-        'vad': vad_metrics
+    scd_metrics = evaluate_change_point_detection(
+        reference_segments,
+        pipeline_output['speaker_segments'],
+        tolerance=0.5
+    )
+
+    reference_transcriptions = [seg["text"] for seg in reference_segments]
+    output_transcriptions = [seg["text"] for seg in pipeline_output['transcription']]
+    asr_metrics = evaluate_asr(reference_transcriptions, output_transcriptions)
+
+    diarization_metrics = evaluate_diarization(
+        reference_segments,
+        pipeline_output['speaker_segments']
+    )
+
+    return {
+        'vad': vad_metrics,
+        'scd': scd_metrics,
+        'asr': asr_metrics,
+        'diarization': diarization_metrics,
     }
-
-    return results
 
 
 def format_metrics_report(metrics):
@@ -110,13 +331,29 @@ def format_metrics_report(metrics):
 
     lines.append("")
     lines.append("=" * 60)
-    lines.append("VAD METRICS")
+    lines.append("EVALUATION METRICS")
     lines.append("=" * 60)
+    lines.append(f"{'Component':<25} {'Precision':>10} {'Recall':>10} {'F1':>10} {'WER':>10}")
+    lines.append("-" * 60)
 
     vad = metrics['vad']
-    lines.append(f"Precision: {vad['precision']:.2f}%")
-    lines.append(f"Recall:    {vad['recall']:.2f}%")
-    lines.append(f"F1 Score:  {vad['f1']:.2f}%")
+    lines.append(f"{'Voice Activity (VAD)':<25} {vad['precision']:>9.2f}% {vad['recall']:>9.2f}% {vad['f1']:>9.2f}% {0:>9.2f}%")
+
+    scd = metrics['scd']
+    lines.append(f"{'Speaker Change (SCD)':<25} {scd['precision']:>9.2f}% {scd['recall']:>9.2f}% {scd['f1']:>9.2f}% {0:>9.2f}%")
+
+    asr = metrics['asr']
+    lines.append(f"{'ASR':<25} {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {asr['wer']:>9.2f}%")
+
+    lines.append("")
+    lines.append("Diarization Error Rate (DER)")
+    lines.append("-" * 60)
+
+    der = metrics['diarization']
+    lines.append(f"  Overall DER:            {der['der']:>9.2f}%")
+    lines.append(f"  Miss Rate:              {der['miss']:>9.2f}%")
+    lines.append(f"  False Alarm:            {der['false_alarm']:>9.2f}%")
+    lines.append(f"  Speaker Confusion:      {der['confusion']:>9.2f}%")
 
     lines.append("=" * 60)
 

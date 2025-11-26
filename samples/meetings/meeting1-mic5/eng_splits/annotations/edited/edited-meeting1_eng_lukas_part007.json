@@ -1,0 +1,43 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.217,
+      "endTime": 9.647,
+      "speakerId": "SPEAKER_01",
+      "transcription": " Yeah, you still want to have it in the log mel spectrum, which is the one that we're processing too, which is the WAV form that we're seeing here."
+    },
+    {
+      "startTime": 9.667,
+      "endTime": 13.01,
+      "speakerId": "SPEAKER_00",
+      "transcription": "So I should, like, from VAD produce a new audio file?"
+    },
+    {
+      "startTime": 13.03,
+      "endTime": 14.832,
+      "speakerId": "SPEAKER_01",
+      "transcription": "No, no, you don't want to produce a new audio file."
+    },
+    {
+      "startTime": 14.852,
+      "endTime": 22.239,
+      "speakerId": "SPEAKER_01",
+      "transcription": "If you want to keep the same format, because it's unnecessary work to save it to the desktop and load it again, so it's still the same format."
+    },
+    {
+      "startTime": 22.519,
+      "endTime": 27.304,
+      "speakerId": "SPEAKER_00",
+      "transcription": "Yes, so it's the same file, why should I include only the predictions?"
+    },
+    {
+      "startTime": 27.464,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Yeah, the segments that are predicting that these parts"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T14:41:00.572Z"
+  }
+}

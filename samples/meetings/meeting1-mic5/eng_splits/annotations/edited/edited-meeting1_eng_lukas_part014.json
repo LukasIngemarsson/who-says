@@ -1,0 +1,43 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 4,
+      "speakerId": "SPEAKER_01",
+      "transcription": "the large one is a couple of gigabyte for example, which is more difficult"
+    },
+    {
+      "startTime": 4.5,
+      "endTime": 5.5,
+      "speakerId": "SPEAKER_01",
+      "transcription": "If we're using that one."
+    },
+    {
+      "startTime": 7.46,
+      "endTime": 14.829,
+      "speakerId": "SPEAKER_02",
+      "transcription": "But our assumption should be that like the input parameters are going to be like the actual, for example, the actual audio itself, like the data structure, not the file."
+    },
+    {
+      "startTime": 14.849,
+      "endTime": 15.069,
+      "speakerId": "SPEAKER_01",
+      "transcription": "Yeah."
+    },
+    {
+      "startTime": 16.571,
+      "endTime": 17.5,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Cool."
+    },
+    {
+      "startTime": 21.797,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Just a question about like the format of the imports because in, like, main you did from pipeline's speaker segmentation import SO and"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T15:31:20.144Z"
+  }
+}

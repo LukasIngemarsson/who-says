@@ -1,0 +1,624 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 4.94,
+      "text": " Jag skulle kunna typ någon gång sitta med er så kan ni hjälpa mig lite om jag har stött på problem.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 0.0,
+          "end": 0.0,
+          "score": 0.70751953125
+        },
+        {
+          "word": " skulle",
+          "start": 0.0,
+          "end": 0.22,
+          "score": 0.55810546875
+        },
+        {
+          "word": " kunna",
+          "start": 0.22,
+          "end": 0.5,
+          "score": 0.83447265625
+        },
+        {
+          "word": " typ",
+          "start": 0.5,
+          "end": 0.74,
+          "score": 0.588623046875
+        },
+        {
+          "word": " någon",
+          "start": 0.74,
+          "end": 0.92,
+          "score": 0.54296875
+        },
+        {
+          "word": " gång",
+          "start": 0.92,
+          "end": 1.18,
+          "score": 0.469970703125
+        },
+        {
+          "word": " sitta",
+          "start": 1.18,
+          "end": 1.46,
+          "score": 0.75927734375
+        },
+        {
+          "word": " med",
+          "start": 1.46,
+          "end": 1.62,
+          "score": 0.626953125
+        },
+        {
+          "word": " er",
+          "start": 1.62,
+          "end": 1.76,
+          "score": 0.52783203125
+        },
+        {
+          "word": " så",
+          "start": 1.76,
+          "end": 2.0,
+          "score": 0.447265625
+        },
+        {
+          "word": " kan",
+          "start": 2.0,
+          "end": 2.26,
+          "score": 0.79345703125
+        },
+        {
+          "word": " ni",
+          "start": 2.26,
+          "end": 2.42,
+          "score": 0.59033203125
+        },
+        {
+          "word": " hjälpa",
+          "start": 2.42,
+          "end": 2.96,
+          "score": 0.827392578125
+        },
+        {
+          "word": " mig",
+          "start": 2.96,
+          "end": 3.08,
+          "score": 0.65234375
+        },
+        {
+          "word": " lite",
+          "start": 3.08,
+          "end": 3.32,
+          "score": 0.66357421875
+        },
+        {
+          "word": " om",
+          "start": 3.32,
+          "end": 3.8,
+          "score": 0.461181640625
+        },
+        {
+          "word": " jag",
+          "start": 3.8,
+          "end": 4.0,
+          "score": 0.492919921875
+        },
+        {
+          "word": " har",
+          "start": 4.0,
+          "end": 4.14,
+          "score": 0.46630859375
+        },
+        {
+          "word": " stött",
+          "start": 4.14,
+          "end": 4.46,
+          "score": 0.4755859375
+        },
+        {
+          "word": " på",
+          "start": 4.46,
+          "end": 4.7,
+          "score": 0.424072265625
+        },
+        {
+          "word": " problem.",
+          "start": 4.7,
+          "end": 4.94,
+          "score": 0.6591796875
+        }
+      ]
+    },
+    {
+      "start": 5.28,
+      "end": 5.72,
+      "text": " Ja, absolut.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 5.28,
+          "end": 5.72,
+          "score": 0.160888671875
+        },
+        {
+          "word": " absolut.",
+          "start": 5.72,
+          "end": 5.72,
+          "score": 0.72265625
+        }
+      ]
+    },
+    {
+      "start": 5.72,
+      "end": 6.18,
+      "text": " Om ni vill.",
+      "words": [
+        {
+          "word": " Om",
+          "start": 5.72,
+          "end": 5.82,
+          "score": 0.7041015625
+        },
+        {
+          "word": " ni",
+          "start": 5.82,
+          "end": 5.96,
+          "score": 0.55712890625
+        },
+        {
+          "word": " vill.",
+          "start": 5.96,
+          "end": 6.18,
+          "score": 0.79736328125
+        }
+      ]
+    },
+    {
+      "start": 6.62,
+      "end": 7.54,
+      "text": " Jag vill inte.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 6.62,
+          "end": 7.06,
+          "score": 0.1290283203125
+        },
+        {
+          "word": " vill",
+          "start": 7.06,
+          "end": 7.2,
+          "score": 0.759765625
+        },
+        {
+          "word": " inte.",
+          "start": 7.2,
+          "end": 7.54,
+          "score": 0.5966796875
+        }
+      ]
+    },
+    {
+      "start": 7.84,
+      "end": 8.96,
+      "text": " Säg inte så, men.",
+      "words": [
+        {
+          "word": " Säg",
+          "start": 7.84,
+          "end": 8.28,
+          "score": 0.797607421875
+        },
+        {
+          "word": " inte",
+          "start": 8.28,
+          "end": 8.44,
+          "score": 0.59033203125
+        },
+        {
+          "word": " så,",
+          "start": 8.44,
+          "end": 8.62,
+          "score": 0.6279296875
+        },
+        {
+          "word": " men.",
+          "start": 8.72,
+          "end": 8.96,
+          "score": 0.80078125
+        }
+      ]
+    },
+    {
+      "start": 9.74,
+      "end": 11.08,
+      "text": " Nej, men alltså, ja.",
+      "words": [
+        {
+          "word": " Nej,",
+          "start": 9.74,
+          "end": 10.18,
+          "score": 0.22314453125
+        },
+        {
+          "word": " men",
+          "start": 10.24,
+          "end": 10.44,
+          "score": 0.74609375
+        },
+        {
+          "word": " alltså,",
+          "start": 10.44,
+          "end": 10.78,
+          "score": 0.51513671875
+        },
+        {
+          "word": " ja.",
+          "start": 10.8,
+          "end": 11.08,
+          "score": 0.6005859375
+        }
+      ]
+    },
+    {
+      "start": 11.26,
+      "end": 13.28,
+      "text": " Det kommer inte vara problem hela tiden.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 11.26,
+          "end": 11.64,
+          "score": 0.84521484375
+        },
+        {
+          "word": " kommer",
+          "start": 11.64,
+          "end": 11.9,
+          "score": 0.68603515625
+        },
+        {
+          "word": " inte",
+          "start": 11.9,
+          "end": 12.1,
+          "score": 0.5927734375
+        },
+        {
+          "word": " vara",
+          "start": 12.1,
+          "end": 12.32,
+          "score": 0.497802734375
+        },
+        {
+          "word": " problem",
+          "start": 12.32,
+          "end": 12.62,
+          "score": 0.82666015625
+        },
+        {
+          "word": " hela",
+          "start": 12.62,
+          "end": 13.08,
+          "score": 0.63134765625
+        },
+        {
+          "word": " tiden.",
+          "start": 13.08,
+          "end": 13.28,
+          "score": 0.73681640625
+        }
+      ]
+    },
+    {
+      "start": 13.8,
+      "end": 14.34,
+      "text": " Hoppas jag.",
+      "words": [
+        {
+          "word": " Hoppas",
+          "start": 13.8,
+          "end": 14.24,
+          "score": 0.7607421875
+        },
+        {
+          "word": " jag.",
+          "start": 14.24,
+          "end": 14.34,
+          "score": 0.6474609375
+        }
+      ]
+    },
+    {
+      "start": 15.2,
+      "end": 16.92,
+      "text": " Alltså, setupen vi har nu så är det nästan.",
+      "words": [
+        {
+          "word": " Alltså,",
+          "start": 15.2,
+          "end": 15.639999999999999,
+          "score": 0.7314453125
+        },
+        {
+          "word": " setupen",
+          "start": 15.639999999999999,
+          "end": 16.08,
+          "score": 0.6656494140625
+        },
+        {
+          "word": " vi",
+          "start": 16.08,
+          "end": 16.14,
+          "score": 0.708984375
+        },
+        {
+          "word": " har",
+          "start": 16.14,
+          "end": 16.2,
+          "score": 0.68017578125
+        },
+        {
+          "word": " nu",
+          "start": 16.2,
+          "end": 16.36,
+          "score": 0.75
+        },
+        {
+          "word": " så",
+          "start": 16.36,
+          "end": 16.48,
+          "score": 0.52587890625
+        },
+        {
+          "word": " är",
+          "start": 16.48,
+          "end": 16.58,
+          "score": 0.4580078125
+        },
+        {
+          "word": " det",
+          "start": 16.58,
+          "end": 16.64,
+          "score": 0.72509765625
+        },
+        {
+          "word": " nästan.",
+          "start": 16.64,
+          "end": 16.92,
+          "score": 0.863525390625
+        }
+      ]
+    },
+    {
+      "start": 17.12,
+      "end": 19.9,
+      "text": " Du behöver bara ladda ner dockor, desktop och sen köra skriptal.",
+      "words": [
+        {
+          "word": " Du",
+          "start": 17.12,
+          "end": 17.56,
+          "score": 0.67626953125
+        },
+        {
+          "word": " behöver",
+          "start": 17.56,
+          "end": 17.72,
+          "score": 0.6943359375
+        },
+        {
+          "word": " bara",
+          "start": 17.72,
+          "end": 17.84,
+          "score": 0.52734375
+        },
+        {
+          "word": " ladda",
+          "start": 17.84,
+          "end": 18.1,
+          "score": 0.91162109375
+        },
+        {
+          "word": " ner",
+          "start": 18.1,
+          "end": 18.2,
+          "score": 0.74072265625
+        },
+        {
+          "word": " dockor,",
+          "start": 18.2,
+          "end": 18.64,
+          "score": 0.72021484375
+        },
+        {
+          "word": " desktop",
+          "start": 18.78,
+          "end": 19.26,
+          "score": 0.60302734375
+        },
+        {
+          "word": " och",
+          "start": 19.26,
+          "end": 19.54,
+          "score": 0.72021484375
+        },
+        {
+          "word": " sen",
+          "start": 19.54,
+          "end": 19.66,
+          "score": 0.384033203125
+        },
+        {
+          "word": " köra",
+          "start": 19.66,
+          "end": 19.88,
+          "score": 0.659423828125
+        },
+        {
+          "word": " skriptal.",
+          "start": 19.88,
+          "end": 19.9,
+          "score": 0.5701904296875
+        }
+      ]
+    },
+    {
+      "start": 20.46,
+      "end": 21.4,
+      "text": " Allting är nedladdat.",
+      "words": [
+        {
+          "word": " Allting",
+          "start": 20.46,
+          "end": 20.9,
+          "score": 0.3538818359375
+        },
+        {
+          "word": " är",
+          "start": 20.9,
+          "end": 21.0,
+          "score": 0.50732421875
+        },
+        {
+          "word": " nedladdat.",
+          "start": 21.0,
+          "end": 21.4,
+          "score": 0.80029296875
+        }
+      ]
+    },
+    {
+      "start": 21.82,
+      "end": 24.36,
+      "text": " Då är det inte någonting att lära sig egentligen.",
+      "words": [
+        {
+          "word": " Då",
+          "start": 21.82,
+          "end": 22.26,
+          "score": 0.45068359375
+        },
+        {
+          "word": " är",
+          "start": 22.26,
+          "end": 22.44,
+          "score": 0.499267578125
+        },
+        {
+          "word": " det",
+          "start": 22.44,
+          "end": 22.48,
+          "score": 0.7451171875
+        },
+        {
+          "word": " inte",
+          "start": 22.48,
+          "end": 22.68,
+          "score": 0.53173828125
+        },
+        {
+          "word": " någonting",
+          "start": 22.68,
+          "end": 23.56,
+          "score": 0.48828125
+        },
+        {
+          "word": " att",
+          "start": 23.56,
+          "end": 23.74,
+          "score": 0.59228515625
+        },
+        {
+          "word": " lära",
+          "start": 23.74,
+          "end": 23.92,
+          "score": 0.8115234375
+        },
+        {
+          "word": " sig",
+          "start": 23.92,
+          "end": 24.0,
+          "score": 0.73876953125
+        },
+        {
+          "word": " egentligen.",
+          "start": 24.0,
+          "end": 24.36,
+          "score": 0.729248046875
+        }
+      ]
+    },
+    {
+      "start": 24.5,
+      "end": 25.82,
+      "text": " Men, ja.",
+      "words": [
+        {
+          "word": " Men,",
+          "start": 24.5,
+          "end": 24.74,
+          "score": 0.435791015625
+        },
+        {
+          "word": " ja.",
+          "start": 24.78,
+          "end": 25.82,
+          "score": 0.442138671875
+        }
+      ]
+    },
+    {
+      "start": 26.02,
+      "end": 29.8,
+      "text": " Jag tror det finns något i requirement.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 26.02,
+          "end": 26.46,
+          "score": 0.4013671875
+        },
+        {
+          "word": " tror",
+          "start": 26.46,
+          "end": 27.08,
+          "score": 0.580078125
+        },
+        {
+          "word": " det",
+          "start": 27.08,
+          "end": 27.78,
+          "score": 0.666015625
+        },
+        {
+          "word": " finns",
+          "start": 27.78,
+          "end": 28.0,
+          "score": 0.85791015625
+        },
+        {
+          "word": " något",
+          "start": 28.0,
+          "end": 28.3,
+          "score": 0.513671875
+        },
+        {
+          "word": " i",
+          "start": 28.3,
+          "end": 28.62,
+          "score": 0.79248046875
+        },
+        {
+          "word": " requirement.",
+          "start": 28.62,
+          "end": 29.8,
+          "score": 0.371826171875
+        }
+      ]
+    }
+  ]
+}

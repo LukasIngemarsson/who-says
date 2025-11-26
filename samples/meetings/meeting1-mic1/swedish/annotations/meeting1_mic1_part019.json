@@ -1,0 +1,378 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 0.46,
+      "text": " Ja, ja, vi kör.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 0.0,
+          "end": 0.14,
+          "score": 0.337890625
+        },
+        {
+          "word": " ja,",
+          "start": 0.16,
+          "end": 0.26,
+          "score": 0.39404296875
+        },
+        {
+          "word": " vi",
+          "start": 0.34,
+          "end": 0.42,
+          "score": 0.375732421875
+        },
+        {
+          "word": " kör.",
+          "start": 0.42,
+          "end": 0.46,
+          "score": 0.70001220703125
+        }
+      ]
+    },
+    {
+      "start": 0.66,
+      "end": 2.92,
+      "text": " Det är inte så superkonkret kanske.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 0.66,
+          "end": 1.08,
+          "score": 0.042755126953125
+        },
+        {
+          "word": " är",
+          "start": 1.08,
+          "end": 1.3,
+          "score": 0.470458984375
+        },
+        {
+          "word": " inte",
+          "start": 1.3,
+          "end": 1.8,
+          "score": 0.404052734375
+        },
+        {
+          "word": " så",
+          "start": 1.8,
+          "end": 2.04,
+          "score": 0.5390625
+        },
+        {
+          "word": " superkonkret",
+          "start": 2.04,
+          "end": 2.7,
+          "score": 0.76141357421875
+        },
+        {
+          "word": " kanske.",
+          "start": 2.7,
+          "end": 2.92,
+          "score": 0.5341796875
+        }
+      ]
+    },
+    {
+      "start": 3.52,
+      "end": 3.94,
+      "text": " Absolut.",
+      "words": [
+        {
+          "word": " Absolut.",
+          "start": 3.52,
+          "end": 3.94,
+          "score": 0.816650390625
+        }
+      ]
+    },
+    {
+      "start": 5.1,
+      "end": 9.0,
+      "text": " Jag vet inte om jag ska peka runt om folk följer med om jag gör det.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 5.1,
+          "end": 5.52,
+          "score": 0.72216796875
+        },
+        {
+          "word": " vet",
+          "start": 5.52,
+          "end": 5.68,
+          "score": 0.52685546875
+        },
+        {
+          "word": " inte",
+          "start": 5.68,
+          "end": 5.76,
+          "score": 0.59033203125
+        },
+        {
+          "word": " om",
+          "start": 5.76,
+          "end": 5.92,
+          "score": 0.65380859375
+        },
+        {
+          "word": " jag",
+          "start": 5.92,
+          "end": 6.06,
+          "score": 0.6611328125
+        },
+        {
+          "word": " ska",
+          "start": 6.06,
+          "end": 6.52,
+          "score": 0.62939453125
+        },
+        {
+          "word": " peka",
+          "start": 6.52,
+          "end": 6.86,
+          "score": 0.7060546875
+        },
+        {
+          "word": " runt",
+          "start": 6.86,
+          "end": 7.0,
+          "score": 0.58544921875
+        },
+        {
+          "word": " om",
+          "start": 7.0,
+          "end": 7.26,
+          "score": 0.54931640625
+        },
+        {
+          "word": " folk",
+          "start": 7.26,
+          "end": 8.1,
+          "score": 0.72509765625
+        },
+        {
+          "word": " följer",
+          "start": 8.1,
+          "end": 8.46,
+          "score": 0.94091796875
+        },
+        {
+          "word": " med",
+          "start": 8.46,
+          "end": 8.6,
+          "score": 0.74609375
+        },
+        {
+          "word": " om",
+          "start": 8.6,
+          "end": 8.68,
+          "score": 0.5205078125
+        },
+        {
+          "word": " jag",
+          "start": 8.68,
+          "end": 8.72,
+          "score": 0.65185546875
+        },
+        {
+          "word": " gör",
+          "start": 8.72,
+          "end": 8.88,
+          "score": 0.479248046875
+        },
+        {
+          "word": " det.",
+          "start": 8.88,
+          "end": 9.0,
+          "score": 0.744140625
+        }
+      ]
+    },
+    {
+      "start": 9.16,
+      "end": 12.82,
+      "text": " Ja, man borde kunna klicka på pin.",
+      "words": [
+        {
+          "word": " Ja,",
+          "start": 9.16,
+          "end": 9.24,
+          "score": 0.1722412109375
+        },
+        {
+          "word": " man",
+          "start": 9.26,
+          "end": 9.52,
+          "score": 0.53466796875
+        },
+        {
+          "word": " borde",
+          "start": 9.52,
+          "end": 10.52,
+          "score": 0.75146484375
+        },
+        {
+          "word": " kunna",
+          "start": 10.52,
+          "end": 10.66,
+          "score": 0.8369140625
+        },
+        {
+          "word": " klicka",
+          "start": 10.66,
+          "end": 11.02,
+          "score": 0.88818359375
+        },
+        {
+          "word": " på",
+          "start": 11.02,
+          "end": 11.22,
+          "score": 0.6318359375
+        },
+        {
+          "word": " pin.",
+          "start": 11.22,
+          "end": 12.82,
+          "score": 0.62158203125
+        }
+      ]
+    },
+    {
+      "start": 16.84,
+      "end": 18.32,
+      "text": " Där ja, klicka på den här.",
+      "words": [
+        {
+          "word": " Där",
+          "start": 16.84,
+          "end": 17.26,
+          "score": 0.68316650390625
+        },
+        {
+          "word": " ja,",
+          "start": 17.26,
+          "end": 17.28,
+          "score": 0.55126953125
+        },
+        {
+          "word": " klicka",
+          "start": 17.36,
+          "end": 17.84,
+          "score": 0.8544921875
+        },
+        {
+          "word": " på",
+          "start": 17.84,
+          "end": 18.0,
+          "score": 0.630859375
+        },
+        {
+          "word": " den",
+          "start": 18.0,
+          "end": 18.08,
+          "score": 0.86865234375
+        },
+        {
+          "word": " här.",
+          "start": 18.08,
+          "end": 18.32,
+          "score": 0.720733642578125
+        }
+      ]
+    },
+    {
+      "start": 18.34,
+      "end": 23.58,
+      "text": " I'm sure to follow participants.",
+      "words": [
+        {
+          "word": " I'm",
+          "start": 18.34,
+          "end": 18.76,
+          "score": 0.150299072265625
+        },
+        {
+          "word": " sure",
+          "start": 18.76,
+          "end": 18.92,
+          "score": 0.77490234375
+        },
+        {
+          "word": " to",
+          "start": 18.92,
+          "end": 20.26,
+          "score": 0.11279296875
+        },
+        {
+          "word": " follow",
+          "start": 20.26,
+          "end": 20.58,
+          "score": 0.80810546875
+        },
+        {
+          "word": " participants.",
+          "start": 20.58,
+          "end": 23.58,
+          "score": 0.404296875
+        }
+      ]
+    },
+    {
+      "start": 24.4,
+      "end": 26.36,
+      "text": " Nu följer jag Gore, men jag vet inte.",
+      "words": [
+        {
+          "word": " Nu",
+          "start": 24.4,
+          "end": 24.78,
+          "score": 0.6591796875
+        },
+        {
+          "word": " följer",
+          "start": 24.78,
+          "end": 25.1,
+          "score": 0.8733723958333334
+        },
+        {
+          "word": " jag",
+          "start": 25.1,
+          "end": 25.18,
+          "score": 0.65185546875
+        },
+        {
+          "word": " Gore,",
+          "start": 25.18,
+          "end": 25.48,
+          "score": 0.317626953125
+        },
+        {
+          "word": " men",
+          "start": 25.66,
+          "end": 25.86,
+          "score": 0.69091796875
+        },
+        {
+          "word": " jag",
+          "start": 25.86,
+          "end": 26.04,
+          "score": 0.6435546875
+        },
+        {
+          "word": " vet",
+          "start": 26.04,
+          "end": 26.24,
+          "score": 0.54541015625
+        },
+        {
+          "word": " inte.",
+          "start": 26.24,
+          "end": 26.36,
+          "score": 0.59033203125
+        }
+      ]
+    }
+  ]
+}

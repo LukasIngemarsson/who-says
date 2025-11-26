@@ -1,0 +1,708 @@
+{
+  "segments": [
+    {
+      "start": 8.435,
+      "end": 23.217,
+      "text": " 30 milliseconds somebody who is talking in those and the ones that I know is of course the valve is kind of remote those so because those are unnecessary to to review.",
+      "words": [
+        {
+          "word": "30",
+          "start": 8.435,
+          "end": 8.655,
+          "score": 0.682,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "milliseconds",
+          "start": 8.675,
+          "end": 9.717,
+          "score": 0.693,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "somebody",
+          "start": 9.817,
+          "end": 10.178,
+          "score": 0.972,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "who",
+          "start": 10.678,
+          "end": 10.799,
+          "score": 0.688,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "is",
+          "start": 10.819,
+          "end": 10.879,
+          "score": 0.663,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "talking",
+          "start": 10.899,
+          "end": 11.199,
+          "score": 0.785,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "in",
+          "start": 11.379,
+          "end": 11.459,
+          "score": 0.736,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "those",
+          "start": 11.48,
+          "end": 11.68,
+          "score": 0.711,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "and",
+          "start": 12.521,
+          "end": 12.621,
+          "score": 0.71,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 12.661,
+          "end": 12.761,
+          "score": 0.313,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "ones",
+          "start": 12.862,
+          "end": 13.062,
+          "score": 0.752,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "that",
+          "start": 14.965,
+          "end": 15.105,
+          "score": 0.872,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "I",
+          "start": 15.165,
+          "end": 15.205,
+          "score": 0.795,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "know",
+          "start": 15.225,
+          "end": 15.365,
+          "score": 0.521,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "is",
+          "start": 15.385,
+          "end": 15.445,
+          "score": 0.54,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "of",
+          "start": 15.506,
+          "end": 15.566,
+          "score": 0.941,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "course",
+          "start": 15.606,
+          "end": 15.826,
+          "score": 0.855,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "the",
+          "start": 15.866,
+          "end": 16.086,
+          "score": 0.846,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "valve",
+          "start": 16.227,
+          "end": 16.587,
+          "score": 0.605,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "is",
+          "start": 16.767,
+          "end": 16.848,
+          "score": 0.732,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "kind",
+          "start": 16.928,
+          "end": 17.088,
+          "score": 0.318,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "of",
+          "start": 17.108,
+          "end": 17.148,
+          "score": 0.388,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "remote",
+          "start": 17.168,
+          "end": 17.468,
+          "score": 0.82,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "those",
+          "start": 17.549,
+          "end": 17.649,
+          "score": 0.337,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "so",
+          "start": 17.809,
+          "end": 18.009,
+          "score": 0.939,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "because",
+          "start": 18.089,
+          "end": 18.29,
+          "score": 0.773,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "those",
+          "start": 18.33,
+          "end": 18.53,
+          "score": 0.736,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "are",
+          "start": 18.61,
+          "end": 18.73,
+          "score": 0.712,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "unnecessary",
+          "start": 18.79,
+          "end": 19.351,
+          "score": 0.892,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "to",
+          "start": 19.391,
+          "end": 19.552,
+          "score": 0.804,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "to",
+          "start": 19.592,
+          "end": 19.632,
+          "score": 0.494,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "review.",
+          "start": 20.994,
+          "end": 23.217,
+          "score": 0.293,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 23.237,
+      "end": 29.987,
+      "text": "Okay, because I'm thinking for I'm not sure how that's usually done but let's say we have",
+      "words": [
+        {
+          "word": "Okay,",
+          "start": 23.237,
+          "end": 25.861,
+          "score": 0.545,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "because",
+          "start": 25.881,
+          "end": 26.041,
+          "score": 0.994,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I'm",
+          "start": 26.081,
+          "end": 26.181,
+          "score": 0.722,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "thinking",
+          "start": 26.201,
+          "end": 26.462,
+          "score": 0.801,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "for",
+          "start": 26.522,
+          "end": 26.722,
+          "score": 0.75,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I'm",
+          "start": 26.762,
+          "end": 26.822,
+          "score": 0.243,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "not",
+          "start": 27.423,
+          "end": 27.543,
+          "score": 0.402,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "sure",
+          "start": 27.583,
+          "end": 27.664,
+          "score": 0.282,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "how",
+          "start": 27.684,
+          "end": 27.984,
+          "score": 0.41,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that's",
+          "start": 28.004,
+          "end": 28.204,
+          "score": 0.414,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "usually",
+          "start": 28.284,
+          "end": 28.545,
+          "score": 0.7,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "done",
+          "start": 28.585,
+          "end": 28.765,
+          "score": 0.772,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "but",
+          "start": 28.805,
+          "end": 28.945,
+          "score": 0.97,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "let's",
+          "start": 29.186,
+          "end": 29.326,
+          "score": 0.899,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "say",
+          "start": 29.366,
+          "end": 29.486,
+          "score": 0.588,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 29.526,
+          "end": 29.747,
+          "score": 0.96,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "have",
+          "start": 29.767,
+          "end": 29.987,
+          "score": 0.383,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "30",
+      "start": 8.435,
+      "end": 8.655,
+      "score": 0.682,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "milliseconds",
+      "start": 8.675,
+      "end": 9.717,
+      "score": 0.693,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "somebody",
+      "start": 9.817,
+      "end": 10.178,
+      "score": 0.972,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "who",
+      "start": 10.678,
+      "end": 10.799,
+      "score": 0.688,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "is",
+      "start": 10.819,
+      "end": 10.879,
+      "score": 0.663,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "talking",
+      "start": 10.899,
+      "end": 11.199,
+      "score": 0.785,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "in",
+      "start": 11.379,
+      "end": 11.459,
+      "score": 0.736,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "those",
+      "start": 11.48,
+      "end": 11.68,
+      "score": 0.711,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "and",
+      "start": 12.521,
+      "end": 12.621,
+      "score": 0.71,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 12.661,
+      "end": 12.761,
+      "score": 0.313,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "ones",
+      "start": 12.862,
+      "end": 13.062,
+      "score": 0.752,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "that",
+      "start": 14.965,
+      "end": 15.105,
+      "score": 0.872,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "I",
+      "start": 15.165,
+      "end": 15.205,
+      "score": 0.795,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "know",
+      "start": 15.225,
+      "end": 15.365,
+      "score": 0.521,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "is",
+      "start": 15.385,
+      "end": 15.445,
+      "score": 0.54,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "of",
+      "start": 15.506,
+      "end": 15.566,
+      "score": 0.941,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "course",
+      "start": 15.606,
+      "end": 15.826,
+      "score": 0.855,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "the",
+      "start": 15.866,
+      "end": 16.086,
+      "score": 0.846,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "valve",
+      "start": 16.227,
+      "end": 16.587,
+      "score": 0.605,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "is",
+      "start": 16.767,
+      "end": 16.848,
+      "score": 0.732,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "kind",
+      "start": 16.928,
+      "end": 17.088,
+      "score": 0.318,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "of",
+      "start": 17.108,
+      "end": 17.148,
+      "score": 0.388,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "remote",
+      "start": 17.168,
+      "end": 17.468,
+      "score": 0.82,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "those",
+      "start": 17.549,
+      "end": 17.649,
+      "score": 0.337,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "so",
+      "start": 17.809,
+      "end": 18.009,
+      "score": 0.939,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "because",
+      "start": 18.089,
+      "end": 18.29,
+      "score": 0.773,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "those",
+      "start": 18.33,
+      "end": 18.53,
+      "score": 0.736,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "are",
+      "start": 18.61,
+      "end": 18.73,
+      "score": 0.712,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "unnecessary",
+      "start": 18.79,
+      "end": 19.351,
+      "score": 0.892,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "to",
+      "start": 19.391,
+      "end": 19.552,
+      "score": 0.804,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "to",
+      "start": 19.592,
+      "end": 19.632,
+      "score": 0.494,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "review.",
+      "start": 20.994,
+      "end": 23.217,
+      "score": 0.293,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "Okay,",
+      "start": 23.237,
+      "end": 25.861,
+      "score": 0.545,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "because",
+      "start": 25.881,
+      "end": 26.041,
+      "score": 0.994,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I'm",
+      "start": 26.081,
+      "end": 26.181,
+      "score": 0.722,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "thinking",
+      "start": 26.201,
+      "end": 26.462,
+      "score": 0.801,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "for",
+      "start": 26.522,
+      "end": 26.722,
+      "score": 0.75,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I'm",
+      "start": 26.762,
+      "end": 26.822,
+      "score": 0.243,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "not",
+      "start": 27.423,
+      "end": 27.543,
+      "score": 0.402,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "sure",
+      "start": 27.583,
+      "end": 27.664,
+      "score": 0.282,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "how",
+      "start": 27.684,
+      "end": 27.984,
+      "score": 0.41,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "that's",
+      "start": 28.004,
+      "end": 28.204,
+      "score": 0.414,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "usually",
+      "start": 28.284,
+      "end": 28.545,
+      "score": 0.7,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "done",
+      "start": 28.585,
+      "end": 28.765,
+      "score": 0.772,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "but",
+      "start": 28.805,
+      "end": 28.945,
+      "score": 0.97,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "let's",
+      "start": 29.186,
+      "end": 29.326,
+      "score": 0.899,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "say",
+      "start": 29.366,
+      "end": 29.486,
+      "score": 0.588,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we",
+      "start": 29.526,
+      "end": 29.747,
+      "score": 0.96,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "have",
+      "start": 29.767,
+      "end": 29.987,
+      "score": 0.383,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

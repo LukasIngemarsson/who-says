@@ -1,0 +1,441 @@
+{
+  "segments": [
+    {
+      "start": 0.6600000000000001,
+      "end": 4.64,
+      "text": " Om ni har jobbat med Python Packages, antagligen, så känner ni till det.",
+      "words": [
+        {
+          "word": " Om",
+          "start": 0.6600000000000001,
+          "end": 1.08,
+          "score": 0.48583984375
+        },
+        {
+          "word": " ni",
+          "start": 1.08,
+          "end": 1.5,
+          "score": 0.64501953125
+        },
+        {
+          "word": " har",
+          "start": 1.5,
+          "end": 1.88,
+          "score": 0.6455078125
+        },
+        {
+          "word": " jobbat",
+          "start": 1.88,
+          "end": 2.08,
+          "score": 0.812744140625
+        },
+        {
+          "word": " med",
+          "start": 2.08,
+          "end": 2.16,
+          "score": 0.73681640625
+        },
+        {
+          "word": " Python",
+          "start": 2.16,
+          "end": 2.38,
+          "score": 0.361572265625
+        },
+        {
+          "word": " Packages,",
+          "start": 2.38,
+          "end": 3.0,
+          "score": 0.772216796875
+        },
+        {
+          "word": " antagligen,",
+          "start": 3.1,
+          "end": 3.6,
+          "score": 0.6792805989583334
+        },
+        {
+          "word": " så",
+          "start": 3.66,
+          "end": 3.92,
+          "score": 0.5986328125
+        },
+        {
+          "word": " känner",
+          "start": 3.92,
+          "end": 4.28,
+          "score": 0.820556640625
+        },
+        {
+          "word": " ni",
+          "start": 4.28,
+          "end": 4.38,
+          "score": 0.63818359375
+        },
+        {
+          "word": " till",
+          "start": 4.38,
+          "end": 4.48,
+          "score": 0.74169921875
+        },
+        {
+          "word": " det.",
+          "start": 4.48,
+          "end": 4.64,
+          "score": 0.73095703125
+        }
+      ]
+    },
+    {
+      "start": 5.7,
+      "end": 9.18,
+      "text": " Bara för att ni inte skulle behöva skriva embedding.embedding.",
+      "words": [
+        {
+          "word": " Bara",
+          "start": 5.7,
+          "end": 6.12,
+          "score": 0.867919921875
+        },
+        {
+          "word": " för",
+          "start": 6.12,
+          "end": 6.2,
+          "score": 0.57861328125
+        },
+        {
+          "word": " att",
+          "start": 6.2,
+          "end": 6.3,
+          "score": 0.6005859375
+        },
+        {
+          "word": " ni",
+          "start": 6.3,
+          "end": 6.34,
+          "score": 0.391845703125
+        },
+        {
+          "word": " inte",
+          "start": 6.34,
+          "end": 6.44,
+          "score": 0.60888671875
+        },
+        {
+          "word": " skulle",
+          "start": 6.44,
+          "end": 6.58,
+          "score": 0.497314453125
+        },
+        {
+          "word": " behöva",
+          "start": 6.58,
+          "end": 6.8,
+          "score": 0.85498046875
+        },
+        {
+          "word": " skriva",
+          "start": 6.8,
+          "end": 7.28,
+          "score": 0.9265950520833334
+        },
+        {
+          "word": " embedding",
+          "start": 7.28,
+          "end": 8.46,
+          "score": 0.7867838541666666
+        },
+        {
+          "word": ".embedding.",
+          "start": 8.46,
+          "end": 9.18,
+          "score": 0.9254150390625
+        }
+      ]
+    },
+    {
+      "start": 9.66,
+      "end": 11.52,
+      "text": " Så att man slipper den där mellangrejen.",
+      "words": [
+        {
+          "word": " Så",
+          "start": 9.66,
+          "end": 10.08,
+          "score": 0.38720703125
+        },
+        {
+          "word": " att",
+          "start": 10.08,
+          "end": 10.08,
+          "score": 0.48486328125
+        },
+        {
+          "word": " man",
+          "start": 10.08,
+          "end": 10.62,
+          "score": 0.71923828125
+        },
+        {
+          "word": " slipper",
+          "start": 10.62,
+          "end": 10.96,
+          "score": 0.694580078125
+        },
+        {
+          "word": " den",
+          "start": 10.96,
+          "end": 11.1,
+          "score": 0.50732421875
+        },
+        {
+          "word": " där",
+          "start": 11.1,
+          "end": 11.24,
+          "score": 0.39892578125
+        },
+        {
+          "word": " mellangrejen.",
+          "start": 11.24,
+          "end": 11.52,
+          "score": 0.8998046875
+        }
+      ]
+    },
+    {
+      "start": 13.16,
+      "end": 19.22,
+      "text": " Så om det är några importkonstigheter med våra paket, så är det bara att dubbelkolla att ni har in ett PI-filer där alla kodgrejer finns.",
+      "words": [
+        {
+          "word": " Så",
+          "start": 13.16,
+          "end": 13.58,
+          "score": 0.492431640625
+        },
+        {
+          "word": " om",
+          "start": 13.58,
+          "end": 13.68,
+          "score": 0.63330078125
+        },
+        {
+          "word": " det",
+          "start": 13.68,
+          "end": 13.8,
+          "score": 0.73095703125
+        },
+        {
+          "word": " är",
+          "start": 13.8,
+          "end": 13.8,
+          "score": 0.5048828125
+        },
+        {
+          "word": " några",
+          "start": 13.8,
+          "end": 13.88,
+          "score": 0.304931640625
+        },
+        {
+          "word": " importkonstigheter",
+          "start": 13.88,
+          "end": 15.14,
+          "score": 0.9513671875
+        },
+        {
+          "word": " med",
+          "start": 15.14,
+          "end": 15.28,
+          "score": 0.75048828125
+        },
+        {
+          "word": " våra",
+          "start": 15.28,
+          "end": 15.6,
+          "score": 0.6722412109375
+        },
+        {
+          "word": " paket,",
+          "start": 15.6,
+          "end": 16.04,
+          "score": 0.7958984375
+        },
+        {
+          "word": " så",
+          "start": 16.04,
+          "end": 16.12,
+          "score": 0.63671875
+        },
+        {
+          "word": " är",
+          "start": 16.12,
+          "end": 16.24,
+          "score": 0.467041015625
+        },
+        {
+          "word": " det",
+          "start": 16.24,
+          "end": 16.26,
+          "score": 0.74365234375
+        },
+        {
+          "word": " bara",
+          "start": 16.26,
+          "end": 16.42,
+          "score": 0.5439453125
+        },
+        {
+          "word": " att",
+          "start": 16.42,
+          "end": 16.54,
+          "score": 0.58740234375
+        },
+        {
+          "word": " dubbelkolla",
+          "start": 16.54,
+          "end": 16.98,
+          "score": 0.8714599609375
+        },
+        {
+          "word": " att",
+          "start": 16.98,
+          "end": 17.14,
+          "score": 0.56005859375
+        },
+        {
+          "word": " ni",
+          "start": 17.14,
+          "end": 17.2,
+          "score": 0.62060546875
+        },
+        {
+          "word": " har",
+          "start": 17.2,
+          "end": 17.3,
+          "score": 0.65283203125
+        },
+        {
+          "word": " in",
+          "start": 17.3,
+          "end": 17.46,
+          "score": 0.56298828125
+        },
+        {
+          "word": " ett",
+          "start": 17.46,
+          "end": 17.62,
+          "score": 0.39111328125
+        },
+        {
+          "word": " PI",
+          "start": 17.62,
+          "end": 18.0,
+          "score": 0.269775390625
+        },
+        {
+          "word": "-filer",
+          "start": 18.0,
+          "end": 18.34,
+          "score": 0.650390625
+        },
+        {
+          "word": " där",
+          "start": 18.34,
+          "end": 18.46,
+          "score": 0.68072509765625
+        },
+        {
+          "word": " alla",
+          "start": 18.46,
+          "end": 18.54,
+          "score": 0.6787109375
+        },
+        {
+          "word": " kodgrejer",
+          "start": 18.54,
+          "end": 19.04,
+          "score": 0.8848876953125
+        },
+        {
+          "word": " finns.",
+          "start": 19.04,
+          "end": 19.22,
+          "score": 0.8486328125
+        }
+      ]
+    },
+    {
+      "start": 25.98,
+      "end": 29.64,
+      "text": " För min del så jobbade jag med boysen och de här.",
+      "words": [
+        {
+          "word": " För",
+          "start": 25.98,
+          "end": 26.4,
+          "score": 0.640838623046875
+        },
+        {
+          "word": " min",
+          "start": 26.4,
+          "end": 26.48,
+          "score": 0.73388671875
+        },
+        {
+          "word": " del",
+          "start": 26.48,
+          "end": 26.78,
+          "score": 0.76806640625
+        },
+        {
+          "word": " så",
+          "start": 26.78,
+          "end": 27.08,
+          "score": 0.50830078125
+        },
+        {
+          "word": " jobbade",
+          "start": 27.08,
+          "end": 27.48,
+          "score": 0.93994140625
+        },
+        {
+          "word": " jag",
+          "start": 27.48,
+          "end": 27.58,
+          "score": 0.6435546875
+        },
+        {
+          "word": " med",
+          "start": 27.58,
+          "end": 27.76,
+          "score": 0.74267578125
+        },
+        {
+          "word": " boysen",
+          "start": 27.76,
+          "end": 28.32,
+          "score": 0.672607421875
+        },
+        {
+          "word": " och",
+          "start": 28.32,
+          "end": 28.88,
+          "score": 0.25927734375
+        },
+        {
+          "word": " de",
+          "start": 28.88,
+          "end": 29.3,
+          "score": 0.60302734375
+        },
+        {
+          "word": " här.",
+          "start": 29.3,
+          "end": 29.64,
+          "score": 0.57177734375
+        }
+      ]
+    }
+  ]
+}

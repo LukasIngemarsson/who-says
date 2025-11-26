@@ -54,6 +54,7 @@ class FasterWhisperASR:
         """
         # Convert tensor to numpy if needed
         if isinstance(audio, torch.Tensor):
+            audio = audio.to("cpu")
             audio_input = audio.numpy()
         else:
             audio_input = audio

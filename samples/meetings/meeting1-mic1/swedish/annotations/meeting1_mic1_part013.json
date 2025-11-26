@@ -1,0 +1,359 @@
+{
+  "segments": [
+    {
+      "start": 2.9600000000000004,
+      "end": 6.08,
+      "text": " Vill du gå igenom bara lite översiktligt?",
+      "words": [
+        {
+          "word": " Vill",
+          "start": 2.9600000000000004,
+          "end": 3.64,
+          "score": 0.6904296875
+        },
+        {
+          "word": " du",
+          "start": 3.64,
+          "end": 3.84,
+          "score": 0.430908203125
+        },
+        {
+          "word": " gå",
+          "start": 3.84,
+          "end": 3.92,
+          "score": 0.60400390625
+        },
+        {
+          "word": " igenom",
+          "start": 3.92,
+          "end": 4.36,
+          "score": 0.828125
+        },
+        {
+          "word": " bara",
+          "start": 4.36,
+          "end": 4.48,
+          "score": 0.256103515625
+        },
+        {
+          "word": " lite",
+          "start": 4.48,
+          "end": 5.34,
+          "score": 0.640625
+        },
+        {
+          "word": " översiktligt?",
+          "start": 5.34,
+          "end": 6.08,
+          "score": 0.833251953125
+        }
+      ]
+    },
+    {
+      "start": 7.16,
+      "end": 10.16,
+      "text": " Ja sure, alltså tanken var ju",
+      "words": [
+        {
+          "word": " Ja",
+          "start": 7.16,
+          "end": 7.84,
+          "score": 0.693359375
+        },
+        {
+          "word": " sure,",
+          "start": 7.84,
+          "end": 8.52,
+          "score": 0.333984375
+        },
+        {
+          "word": " alltså",
+          "start": 8.78,
+          "end": 9.16,
+          "score": 0.280029296875
+        },
+        {
+          "word": " tanken",
+          "start": 9.16,
+          "end": 9.9,
+          "score": 0.827392578125
+        },
+        {
+          "word": " var",
+          "start": 9.9,
+          "end": 9.96,
+          "score": 0.82958984375
+        },
+        {
+          "word": " ju",
+          "start": 9.96,
+          "end": 10.16,
+          "score": 0.708984375
+        }
+      ]
+    },
+    {
+      "start": 10.16,
+      "end": 14.94,
+      "text": " det jag la till här i alla fall var att skapa den här Who Ses-klassen.",
+      "words": [
+        {
+          "word": " det",
+          "start": 10.16,
+          "end": 10.98,
+          "score": 0.11004638671875
+        },
+        {
+          "word": " jag",
+          "start": 10.98,
+          "end": 11.22,
+          "score": 0.6337890625
+        },
+        {
+          "word": " la",
+          "start": 11.22,
+          "end": 11.42,
+          "score": 0.61669921875
+        },
+        {
+          "word": " till",
+          "start": 11.42,
+          "end": 11.6,
+          "score": 0.74169921875
+        },
+        {
+          "word": " här",
+          "start": 11.6,
+          "end": 12.06,
+          "score": 0.45703125
+        },
+        {
+          "word": " i",
+          "start": 12.06,
+          "end": 12.16,
+          "score": 0.73095703125
+        },
+        {
+          "word": " alla",
+          "start": 12.16,
+          "end": 12.26,
+          "score": 0.5439453125
+        },
+        {
+          "word": " fall",
+          "start": 12.26,
+          "end": 12.38,
+          "score": 0.6279296875
+        },
+        {
+          "word": " var",
+          "start": 12.38,
+          "end": 12.56,
+          "score": 0.76806640625
+        },
+        {
+          "word": " att",
+          "start": 12.56,
+          "end": 12.76,
+          "score": 0.337646484375
+        },
+        {
+          "word": " skapa",
+          "start": 12.76,
+          "end": 13.5,
+          "score": 0.759033203125
+        },
+        {
+          "word": " den",
+          "start": 13.5,
+          "end": 13.7,
+          "score": 0.84423828125
+        },
+        {
+          "word": " här",
+          "start": 13.7,
+          "end": 13.88,
+          "score": 0.5927734375
+        },
+        {
+          "word": " Who",
+          "start": 13.88,
+          "end": 14.08,
+          "score": 0.6123046875
+        },
+        {
+          "word": " Ses",
+          "start": 14.08,
+          "end": 14.48,
+          "score": 0.28411865234375
+        },
+        {
+          "word": "-klassen.",
+          "start": 14.48,
+          "end": 14.94,
+          "score": 0.8059895833333334
+        }
+      ]
+    },
+    {
+      "start": 15.740000000000002,
+      "end": 19.12,
+      "text": " Och sen skapade jag",
+      "words": [
+        {
+          "word": " Och",
+          "start": 15.740000000000002,
+          "end": 16.42,
+          "score": 0.39111328125
+        },
+        {
+          "word": " sen",
+          "start": 16.42,
+          "end": 16.74,
+          "score": 0.6181640625
+        },
+        {
+          "word": " skapade",
+          "start": 16.74,
+          "end": 18.92,
+          "score": 0.8564453125
+        },
+        {
+          "word": " jag",
+          "start": 18.92,
+          "end": 19.12,
+          "score": 0.64599609375
+        }
+      ]
+    },
+    {
+      "start": 20.22,
+      "end": 21.56,
+      "text": " den här config.py",
+      "words": [
+        {
+          "word": " den",
+          "start": 19.96,
+          "end": 20.3,
+          "score": 0.6181640625
+        },
+        {
+          "word": " här",
+          "start": 20.3,
+          "end": 20.54,
+          "score": 0.61181640625
+        },
+        {
+          "word": " config",
+          "start": 20.54,
+          "end": 20.92,
+          "score": 0.34228515625
+        },
+        {
+          "word": ".py",
+          "start": 20.92,
+          "end": 21.56,
+          "score": 0.931396484375
+        }
+      ]
+    },
+    {
+      "start": 21.56,
+      "end": 23.94,
+      "text": " och den innehåller bara",
+      "words": [
+        {
+          "word": " och",
+          "start": 21.56,
+          "end": 22.4,
+          "score": 0.406494140625
+        },
+        {
+          "word": " den",
+          "start": 22.4,
+          "end": 23.26,
+          "score": 0.8359375
+        },
+        {
+          "word": " innehåller",
+          "start": 23.26,
+          "end": 23.72,
+          "score": 0.9830322265625
+        },
+        {
+          "word": " bara",
+          "start": 23.72,
+          "end": 23.94,
+          "score": 0.515625
+        }
+      ]
+    },
+    {
+      "start": 24.82,
+      "end": 28.2,
+      "text": " en import från data classes för att kunna göra liksom",
+      "words": [
+        {
+          "word": " en",
+          "start": 24.52,
+          "end": 24.86,
+          "score": 0.58935546875
+        },
+        {
+          "word": " import",
+          "start": 24.86,
+          "end": 26.08,
+          "score": 0.91650390625
+        },
+        {
+          "word": " från",
+          "start": 26.08,
+          "end": 26.38,
+          "score": 0.58740234375
+        },
+        {
+          "word": " data",
+          "start": 26.38,
+          "end": 26.62,
+          "score": 0.923828125
+        },
+        {
+          "word": " classes",
+          "start": 26.62,
+          "end": 26.96,
+          "score": 0.5859375
+        },
+        {
+          "word": " för",
+          "start": 26.96,
+          "end": 27.32,
+          "score": 0.27197265625
+        },
+        {
+          "word": " att",
+          "start": 27.32,
+          "end": 27.42,
+          "score": 0.58349609375
+        },
+        {
+          "word": " kunna",
+          "start": 27.42,
+          "end": 27.5,
+          "score": 0.89404296875
+        },
+        {
+          "word": " göra",
+          "start": 27.5,
+          "end": 27.84,
+          "score": 0.5048828125
+        },
+        {
+          "word": " liksom",
+          "start": 27.84,
+          "end": 28.2,
+          "score": 0.4833984375
+        }
+      ]
+    }
+  ]
+}

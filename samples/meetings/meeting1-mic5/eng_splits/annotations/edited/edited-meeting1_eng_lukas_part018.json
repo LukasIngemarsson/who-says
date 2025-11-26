@@ -1,0 +1,37 @@
+{
+  "annotations": [
+    {
+      "startTime": 0.031,
+      "endTime": 12.626,
+      "speakerId": "SPEAKER_02",
+      "transcription": " configs should be the, because yeah, I wonder how that works for, because you've done one configuration for each component, right?"
+    },
+    {
+      "startTime": 12.666,
+      "endTime": 14.789,
+      "speakerId": "SPEAKER_02",
+      "transcription": "So for example, like SCD config, right?"
+    },
+    {
+      "startTime": 14.849,
+      "endTime": 20.375,
+      "speakerId": "SPEAKER_02",
+      "transcription": "It just expects, because we've done different classes for different libraries because they expect different things."
+    },
+    {
+      "startTime": 20.896,
+      "endTime": 24.701,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Are we supposed to do different configs for each individual library?"
+    },
+    {
+      "startTime": 24.721,
+      "endTime": 29.987,
+      "speakerId": "SPEAKER_02",
+      "transcription": "Like for example, embedding pyannote, or embedding speech brain, and then we have to define"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-20T15:39:06.774Z"
+  }
+}

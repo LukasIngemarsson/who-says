@@ -3,14 +3,15 @@ import argparse
 from pathlib import Path
 import time
 
+import torch
+
 from dotenv import load_dotenv
 
 from pipeline.ASR import ASR
-from pipeline.speaker_segmentation import SO, SCD
+from pipeline.speaker_segmentation import SO, SCD, SileroVAD
 from pipeline.speaker_recognition import SklearnClustering
 from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
-from pipeline.speaker_segmentation import SileroVAD
 from pipeline.phoene import SpeechBrainPhoneme
 from utils import load_audio_from_file
 from utils import load_annotation_file, evaluate_pipeline, format_metrics_report, format_timing_report
@@ -19,8 +20,10 @@ from config import PipelineConfig as Config
 load_dotenv(".env")
 
 class WhoSays(object):
-    def __init__(self):
-        self.config = Config()
+    def __init__(self, config=Config()):
+        self.config = config
+        
+        logger.info(f"Using device: {self.config.device}")
         
         #self.sod = SO(self.config.so)
         self.scd = SCD(**self.config.scd.pyannote.to_dict())
@@ -54,62 +57,71 @@ class WhoSays(object):
                 - segments: Detailed segment information with speaker assignments
                 - timing: (optional) Timing information for each pipeline step
         """
-        timing = {} if include_timing else None
+        with torch.no_grad():
+            timing = {} if include_timing else None
 
-        logger.info(f"Loading audio from {audio_file}")
-        if include_timing:
-            start_time = time.time()
-        waveform, sr = load_audio_from_file(
-            file_path=audio_file,
-            sr=self.config.sr
-        )
-        if include_timing:
-            timing['audio_loading'] = time.time() - start_time
+            logger.info(f"Loading audio from {audio_file}")
+            if include_timing:
+                start_time = time.time()
+            waveform, sr = load_audio_from_file(
+                file_path=audio_file,
+                sr=self.config.sr
+            )
+            if include_timing:
+                timing['audio_loading'] = time.time() - start_time
 
-        # Ensure mono audio for pipeline processing
-        if waveform.dim() > 1:
-            if waveform.shape[0] > 1 and waveform.shape[0] < waveform.shape[1]:
-                # Shape is (n_channels, n_samples) - average channels
-                waveform = waveform.mean(dim=0)
-            elif waveform.shape[1] > 1 and waveform.shape[1] < waveform.shape[0]:
-                # Shape is (n_samples, n_channels) - average channels
-                waveform = waveform.mean(dim=1)
-            else:
-                # Ambiguous shape, assume first dim is channels
-                waveform = waveform.squeeze()
-                if waveform.dim() > 1:
+            # Ensure mono audio for pipeline processing
+            if waveform.dim() > 1:
+                if waveform.shape[0] > 1 and waveform.shape[0] < waveform.shape[1]:
+                    # Shape is (n_channels, n_samples) - average channels
                     waveform = waveform.mean(dim=0)
+                elif waveform.shape[1] > 1 and waveform.shape[1] < waveform.shape[0]:
+                    # Shape is (n_samples, n_channels) - average channels
+                    waveform = waveform.mean(dim=1)
+                else:
+                    # Ambiguous shape, assume first dim is channels
+                    waveform = waveform.squeeze()
+                    if waveform.dim() > 1:
+                        waveform = waveform.mean(dim=0)
 
-        logger.info(f"Audio shape: {waveform.shape}, sample rate: {sr}Hz")
+            logger.info(f"Audio shape: {waveform.shape}, sample rate: {sr}Hz")
+            waveform = waveform.to(self.config.device)
+            logger.info(f"Audio Waveform is on device: {waveform.device}")
 
-        # Step 1: Voice Activity Detection
-        logger.info("Running Voice Activity Detection (VAD)...")
+            # Step 1: Voice Activity Detection
+            logger.info("Running Voice Activity Detection (VAD)...")
+            if include_timing:
+                start_time = time.time()
+            speech_segments = self.vad(waveform)
+            if include_timing:
+                timing['vad'] = time.time() - start_time
+            logger.info(f"Found {len(speech_segments)} speech segments")
+
+            # Step 2: Automatic Speech Recognition
+            logger.info("Transcribing speech segments...")
+            if include_timing:
+                start_time = time.time()
+            transcriptions = self.asr.transcribe_segments(
+                waveform,
+                speech_segments,
+                return_timestamps=True
+            )
+
+        # Step 3: Phoneme Conversion
+        logger.info("Converting transcriptions to phonemes...")
         if include_timing:
             start_time = time.time()
-        speech_segments = self.vad(waveform)
+        transcriptions = self.phoneme(transcriptions)
         if include_timing:
-            timing['vad'] = time.time() - start_time
-        logger.info(f"Found {len(speech_segments)} speech segments")
+            timing['phoneme'] = time.time() - start_time
+        logger.info(f"Added phonemes to {len(transcriptions)} segments")
 
-        # Step 2: Automatic Speech Recognition
-        logger.info("Transcribing speech segments...")
-        if include_timing:
-            start_time = time.time()
-        transcriptions = self.asr.transcribe_segments(
-            waveform,
-            speech_segments,
-            return_timestamps=True
-        )
-        if include_timing:
-            timing['asr'] = time.time() - start_time
-        logger.info(f"Transcribed {len(transcriptions)} segments")
-
-        # Step 3: Speaker Overlap Detection
+        # Step 4: Speaker Overlap Detection
         logger.info("Detecting speaker overlaps...")
         #overlap_segments = self.sod.sod_pipeline(waveform)
         #logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
 
-        # Step 4: Speaker Change Detection
+        # Step 5: Speaker Change Detection
         logger.info("Detecting speaker change points...")
         if include_timing:
             start_time = time.time()
@@ -118,7 +130,7 @@ class WhoSays(object):
             timing['scd'] = time.time() - start_time
         logger.info(f"Found {len(change_points)} speaker change points")
 
-        # Step 5: Speaker Embedding
+        # Step 6: Speaker Embedding
         logger.info("Extracting speaker embeddings...")
         if include_timing:
             start_time = time.time()
@@ -127,7 +139,7 @@ class WhoSays(object):
             timing['embedding'] = time.time() - start_time
         logger.info(f"Extracted embeddings for {segment_embeddings.shape[0]} segments")
 
-        # Step 6: Speaker Clustering
+        # Step 7: Speaker Clustering
         logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
         if include_timing:
             start_time = time.time()
@@ -136,7 +148,7 @@ class WhoSays(object):
             timing['clustering'] = time.time() - start_time
         logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
 
-        # Step 7: Merge results into structured output
+        # Step 8: Merge results into structured output
         logger.info("Merging results...")
         if include_timing:
             start_time = time.time()
@@ -145,7 +157,8 @@ class WhoSays(object):
             clusters=segment_clusters,
             transcriptions=transcriptions,
             overlap_segments= [],# overlap_segments,
-            waveform_duration=waveform.shape[-1] / sr
+            waveform_duration=waveform.shape[-1] / sr,
+            vad_segments=speech_segments
         )
         if include_timing:
             timing['formatting'] = time.time() - start_time
@@ -166,7 +179,8 @@ class WhoSays(object):
         clusters: list[int],
         transcriptions: list[dict],
         overlap_segments: list[tuple[float, float]],
-        waveform_duration: float
+        waveform_duration: float,
+        vad_segments: list[dict]
     ) -> dict:
         """
         Format pipeline outputs into a structured result.
@@ -240,6 +254,7 @@ class WhoSays(object):
             'num_overlaps': len(overlap_segments),
             'transcription': transcriptions,
             'speaker_segments': speaker_segments,
+            'vad_segments': vad_segments,
             'overlap_regions': overlap_regions,
             'segments': segments_with_text
         }
@@ -294,9 +309,11 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("DIARIZATION RESULTS")
     print("="*60)
+    print(f"VAD Model: silero")
     print(f"Duration: {result['duration']:.2f}s")
+    print(f"VAD segments: {len(result['vad_segments'])}")
     print(f"Detected speakers: {result['num_speakers']}")
-    print(f"Total segments: {len(result['segments'])}")
+    print(f"Speaker segments: {len(result['segments'])}")
     print(f"Overlap regions: {result['num_overlaps']}")
 
     if result['overlap_regions']:

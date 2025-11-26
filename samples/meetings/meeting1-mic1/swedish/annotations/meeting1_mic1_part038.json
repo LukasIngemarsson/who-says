@@ -1,0 +1,472 @@
+{
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 7.84,
+      "text": " Om du uppdaterar dokterfilen, allting ovanför det som du...",
+      "words": [
+        {
+          "word": " Om",
+          "start": 0.0,
+          "end": 0.3,
+          "score": 0.63330078125
+        },
+        {
+          "word": " du",
+          "start": 0.3,
+          "end": 0.38,
+          "score": 0.6181640625
+        },
+        {
+          "word": " uppdaterar",
+          "start": 0.38,
+          "end": 4.34,
+          "score": 0.87939453125
+        },
+        {
+          "word": " dokterfilen,",
+          "start": 4.34,
+          "end": 4.72,
+          "score": 0.6356689453125
+        },
+        {
+          "word": " allting",
+          "start": 4.94,
+          "end": 6.3,
+          "score": 0.850830078125
+        },
+        {
+          "word": " ovanför",
+          "start": 6.3,
+          "end": 6.94,
+          "score": 0.9132486979166666
+        },
+        {
+          "word": " det",
+          "start": 6.94,
+          "end": 7.08,
+          "score": 0.7353515625
+        },
+        {
+          "word": " som",
+          "start": 7.08,
+          "end": 7.28,
+          "score": 0.63134765625
+        },
+        {
+          "word": " du...",
+          "start": 7.28,
+          "end": 7.84,
+          "score": 0.4674072265625
+        }
+      ]
+    },
+    {
+      "start": 10.32,
+      "end": 14.24,
+      "text": " Vi säger att du har 50 rader. Om du editar på rad 10 till exempel,",
+      "words": [
+        {
+          "word": " Vi",
+          "start": 10.32,
+          "end": 10.72,
+          "score": 0.52880859375
+        },
+        {
+          "word": " säger",
+          "start": 10.72,
+          "end": 10.88,
+          "score": 0.60888671875
+        },
+        {
+          "word": " att",
+          "start": 10.88,
+          "end": 11.0,
+          "score": 0.59326171875
+        },
+        {
+          "word": " du",
+          "start": 11.0,
+          "end": 11.08,
+          "score": 0.62841796875
+        },
+        {
+          "word": " har",
+          "start": 11.08,
+          "end": 11.32,
+          "score": 0.66943359375
+        },
+        {
+          "word": " 50",
+          "start": 11.32,
+          "end": 11.8,
+          "score": 0.7158203125
+        },
+        {
+          "word": " rader.",
+          "start": 11.8,
+          "end": 12.18,
+          "score": 0.94384765625
+        },
+        {
+          "word": " Om",
+          "start": 12.3,
+          "end": 12.7,
+          "score": 0.580078125
+        },
+        {
+          "word": " du",
+          "start": 12.7,
+          "end": 12.84,
+          "score": 0.6435546875
+        },
+        {
+          "word": " editar",
+          "start": 12.84,
+          "end": 13.22,
+          "score": 0.56396484375
+        },
+        {
+          "word": " på",
+          "start": 13.22,
+          "end": 13.42,
+          "score": 0.6201171875
+        },
+        {
+          "word": " rad",
+          "start": 13.42,
+          "end": 13.54,
+          "score": 0.78857421875
+        },
+        {
+          "word": " 10",
+          "start": 13.54,
+          "end": 13.8,
+          "score": 0.548828125
+        },
+        {
+          "word": " till",
+          "start": 13.8,
+          "end": 13.92,
+          "score": 0.458984375
+        },
+        {
+          "word": " exempel,",
+          "start": 13.92,
+          "end": 14.24,
+          "score": 0.64306640625
+        }
+      ]
+    },
+    {
+      "start": 14.32,
+      "end": 16.52,
+      "text": " då kommer den inte bygga om någonting som är ovanför rad 10.",
+      "words": [
+        {
+          "word": " då",
+          "start": 14.32,
+          "end": 14.42,
+          "score": 0.57080078125
+        },
+        {
+          "word": " kommer",
+          "start": 14.42,
+          "end": 14.58,
+          "score": 0.677734375
+        },
+        {
+          "word": " den",
+          "start": 14.58,
+          "end": 14.66,
+          "score": 0.48681640625
+        },
+        {
+          "word": " inte",
+          "start": 14.66,
+          "end": 14.8,
+          "score": 0.61474609375
+        },
+        {
+          "word": " bygga",
+          "start": 14.8,
+          "end": 14.98,
+          "score": 0.77685546875
+        },
+        {
+          "word": " om",
+          "start": 14.98,
+          "end": 15.1,
+          "score": 0.6328125
+        },
+        {
+          "word": " någonting",
+          "start": 15.1,
+          "end": 15.3,
+          "score": 0.4130859375
+        },
+        {
+          "word": " som",
+          "start": 15.3,
+          "end": 15.56,
+          "score": 0.64697265625
+        },
+        {
+          "word": " är",
+          "start": 15.56,
+          "end": 15.66,
+          "score": 0.50830078125
+        },
+        {
+          "word": " ovanför",
+          "start": 15.66,
+          "end": 16.14,
+          "score": 0.8846028645833334
+        },
+        {
+          "word": " rad",
+          "start": 16.14,
+          "end": 16.3,
+          "score": 0.81494140625
+        },
+        {
+          "word": " 10.",
+          "start": 16.3,
+          "end": 16.52,
+          "score": 0.7392578125
+        }
+      ]
+    },
+    {
+      "start": 16.74,
+      "end": 19.02,
+      "text": " Så 1-10 kommer den inte bygga om. Det är redan cashat.",
+      "words": [
+        {
+          "word": " Så",
+          "start": 16.74,
+          "end": 16.98,
+          "score": 0.55322265625
+        },
+        {
+          "word": " 1",
+          "start": 16.98,
+          "end": 17.16,
+          "score": 0.382568359375
+        },
+        {
+          "word": "-10",
+          "start": 17.16,
+          "end": 17.6,
+          "score": 0.6177978515625
+        },
+        {
+          "word": " kommer",
+          "start": 17.6,
+          "end": 17.8,
+          "score": 0.6572265625
+        },
+        {
+          "word": " den",
+          "start": 17.8,
+          "end": 17.9,
+          "score": 0.75732421875
+        },
+        {
+          "word": " inte",
+          "start": 17.9,
+          "end": 18.02,
+          "score": 0.59814453125
+        },
+        {
+          "word": " bygga",
+          "start": 18.02,
+          "end": 18.16,
+          "score": 0.82373046875
+        },
+        {
+          "word": " om.",
+          "start": 18.16,
+          "end": 18.3,
+          "score": 0.6357421875
+        },
+        {
+          "word": " Det",
+          "start": 18.34,
+          "end": 18.42,
+          "score": 0.8037109375
+        },
+        {
+          "word": " är",
+          "start": 18.42,
+          "end": 18.48,
+          "score": 0.50048828125
+        },
+        {
+          "word": " redan",
+          "start": 18.48,
+          "end": 18.72,
+          "score": 0.82861328125
+        },
+        {
+          "word": " cashat.",
+          "start": 18.72,
+          "end": 19.02,
+          "score": 0.6678466796875
+        }
+      ]
+    },
+    {
+      "start": 19.819999999999997,
+      "end": 23.08,
+      "text": " Och sen kommer den bygga om det som är från 10 till 50 istället.",
+      "words": [
+        {
+          "word": " Och",
+          "start": 19.819999999999997,
+          "end": 20.22,
+          "score": 0.472412109375
+        },
+        {
+          "word": " sen",
+          "start": 20.22,
+          "end": 20.62,
+          "score": 0.56494140625
+        },
+        {
+          "word": " kommer",
+          "start": 20.62,
+          "end": 20.86,
+          "score": 0.68798828125
+        },
+        {
+          "word": " den",
+          "start": 20.86,
+          "end": 20.9,
+          "score": 0.84130859375
+        },
+        {
+          "word": " bygga",
+          "start": 20.9,
+          "end": 21.1,
+          "score": 0.831787109375
+        },
+        {
+          "word": " om",
+          "start": 21.1,
+          "end": 21.24,
+          "score": 0.63525390625
+        },
+        {
+          "word": " det",
+          "start": 21.24,
+          "end": 21.34,
+          "score": 0.73876953125
+        },
+        {
+          "word": " som",
+          "start": 21.34,
+          "end": 21.48,
+          "score": 0.6513671875
+        },
+        {
+          "word": " är",
+          "start": 21.48,
+          "end": 21.64,
+          "score": 0.51123046875
+        },
+        {
+          "word": " från",
+          "start": 21.64,
+          "end": 21.86,
+          "score": 0.62353515625
+        },
+        {
+          "word": " 10",
+          "start": 21.86,
+          "end": 22.16,
+          "score": 0.73681640625
+        },
+        {
+          "word": " till",
+          "start": 22.16,
+          "end": 22.24,
+          "score": 0.477783203125
+        },
+        {
+          "word": " 50",
+          "start": 22.24,
+          "end": 22.5,
+          "score": 0.755859375
+        },
+        {
+          "word": " istället.",
+          "start": 22.5,
+          "end": 23.08,
+          "score": 0.66015625
+        }
+      ]
+    },
+    {
+      "start": 25.68,
+      "end": 28.24,
+      "text": " Det känns som att ni bråkar med mig ändå.",
+      "words": [
+        {
+          "word": " Det",
+          "start": 25.68,
+          "end": 26.08,
+          "score": 0.59423828125
+        },
+        {
+          "word": " känns",
+          "start": 26.08,
+          "end": 26.44,
+          "score": 0.8310546875
+        },
+        {
+          "word": " som",
+          "start": 26.44,
+          "end": 26.56,
+          "score": 0.662109375
+        },
+        {
+          "word": " att",
+          "start": 26.56,
+          "end": 26.56,
+          "score": 0.360107421875
+        },
+        {
+          "word": " ni",
+          "start": 26.56,
+          "end": 26.72,
+          "score": 0.4921875
+        },
+        {
+          "word": " bråkar",
+          "start": 26.72,
+          "end": 27.24,
+          "score": 0.9339192708333334
+        },
+        {
+          "word": " med",
+          "start": 27.24,
+          "end": 27.46,
+          "score": 0.75537109375
+        },
+        {
+          "word": " mig",
+          "start": 27.46,
+          "end": 27.7,
+          "score": 0.658203125
+        },
+        {
+          "word": " ändå.",
+          "start": 27.7,
+          "end": 28.24,
+          "score": 0.722900390625
+        }
+      ]
+    }
+  ]
+}

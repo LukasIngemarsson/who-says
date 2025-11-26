@@ -1,0 +1,444 @@
+{
+  "segments": [
+    {
+      "start": 3.018,
+      "end": 20.747,
+      "text": " So it's gonna be like segment embeddings or something like that.",
+      "words": [
+        {
+          "word": "So",
+          "start": 3.018,
+          "end": 3.178,
+          "score": 0.358,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it's",
+          "start": 3.198,
+          "end": 3.278,
+          "score": 0.204,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "gonna",
+          "start": 3.298,
+          "end": 3.399,
+          "score": 0.142,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "be",
+          "start": 3.459,
+          "end": 3.499,
+          "score": 0.36,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like",
+          "start": 3.539,
+          "end": 3.739,
+          "score": 0.352,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "segment",
+          "start": 3.759,
+          "end": 4.22,
+          "score": 0.782,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "embeddings",
+          "start": 5.282,
+          "end": 5.722,
+          "score": 0.416,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "or",
+          "start": 5.943,
+          "end": 6.003,
+          "score": 0.78,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "something",
+          "start": 6.043,
+          "end": 6.303,
+          "score": 0.733,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like",
+          "start": 6.323,
+          "end": 6.404,
+          "score": 0.287,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "that.",
+          "start": 6.424,
+          "end": 20.747,
+          "score": 0.521,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 20.767,
+      "end": 21.809,
+      "text": "Maybe it should be called embed.",
+      "words": [
+        {
+          "word": "Maybe",
+          "start": 20.767,
+          "end": 20.887,
+          "score": 0.063,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "it",
+          "start": 20.907,
+          "end": 20.948,
+          "score": 0.782,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "should",
+          "start": 20.968,
+          "end": 21.088,
+          "score": 0.975,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "be",
+          "start": 21.128,
+          "end": 21.168,
+          "score": 0.995,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "called",
+          "start": 21.188,
+          "end": 21.388,
+          "score": 0.887,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "embed.",
+          "start": 21.448,
+          "end": 21.809,
+          "score": 0.826,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 23.532,
+      "end": 24.634,
+      "text": "But it already has a function.",
+      "words": [
+        {
+          "word": "But",
+          "start": 23.532,
+          "end": 23.672,
+          "score": 0.903,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "it",
+          "start": 23.712,
+          "end": 23.752,
+          "score": 0.723,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "already",
+          "start": 23.792,
+          "end": 23.993,
+          "score": 0.918,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "has",
+          "start": 24.013,
+          "end": 24.113,
+          "score": 0.745,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "a",
+          "start": 24.173,
+          "end": 24.233,
+          "score": 0.7,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "function.",
+          "start": 24.253,
+          "end": 24.634,
+          "score": 0.63,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "start": 25.255,
+      "end": 26.697,
+      "text": "Maybe it should be called embedder.",
+      "words": [
+        {
+          "word": "Maybe",
+          "start": 25.255,
+          "end": 25.555,
+          "score": 0.413,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "it",
+          "start": 25.595,
+          "end": 25.635,
+          "score": 0.572,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "should",
+          "start": 25.675,
+          "end": 25.816,
+          "score": 0.974,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "be",
+          "start": 25.836,
+          "end": 25.876,
+          "score": 0.978,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "called",
+          "start": 25.896,
+          "end": 26.056,
+          "score": 0.911,
+          "speaker": "SPEAKER_02"
+        },
+        {
+          "word": "embedder.",
+          "start": 26.116,
+          "end": 26.697,
+          "score": 0.714,
+          "speaker": "SPEAKER_02"
+        }
+      ],
+      "speaker": "SPEAKER_02"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "So",
+      "start": 3.018,
+      "end": 3.178,
+      "score": 0.358,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it's",
+      "start": 3.198,
+      "end": 3.278,
+      "score": 0.204,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "gonna",
+      "start": 3.298,
+      "end": 3.399,
+      "score": 0.142,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "be",
+      "start": 3.459,
+      "end": 3.499,
+      "score": 0.36,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like",
+      "start": 3.539,
+      "end": 3.739,
+      "score": 0.352,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "segment",
+      "start": 3.759,
+      "end": 4.22,
+      "score": 0.782,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "embeddings",
+      "start": 5.282,
+      "end": 5.722,
+      "score": 0.416,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "or",
+      "start": 5.943,
+      "end": 6.003,
+      "score": 0.78,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "something",
+      "start": 6.043,
+      "end": 6.303,
+      "score": 0.733,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like",
+      "start": 6.323,
+      "end": 6.404,
+      "score": 0.287,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "that.",
+      "start": 6.424,
+      "end": 20.747,
+      "score": 0.521,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Maybe",
+      "start": 20.767,
+      "end": 20.887,
+      "score": 0.063,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "it",
+      "start": 20.907,
+      "end": 20.948,
+      "score": 0.782,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "should",
+      "start": 20.968,
+      "end": 21.088,
+      "score": 0.975,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "be",
+      "start": 21.128,
+      "end": 21.168,
+      "score": 0.995,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "called",
+      "start": 21.188,
+      "end": 21.388,
+      "score": 0.887,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "embed.",
+      "start": 21.448,
+      "end": 21.809,
+      "score": 0.826,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "But",
+      "start": 23.532,
+      "end": 23.672,
+      "score": 0.903,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "it",
+      "start": 23.712,
+      "end": 23.752,
+      "score": 0.723,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "already",
+      "start": 23.792,
+      "end": 23.993,
+      "score": 0.918,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "has",
+      "start": 24.013,
+      "end": 24.113,
+      "score": 0.745,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "a",
+      "start": 24.173,
+      "end": 24.233,
+      "score": 0.7,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "function.",
+      "start": 24.253,
+      "end": 24.634,
+      "score": 0.63,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "Maybe",
+      "start": 25.255,
+      "end": 25.555,
+      "score": 0.413,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "it",
+      "start": 25.595,
+      "end": 25.635,
+      "score": 0.572,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "should",
+      "start": 25.675,
+      "end": 25.816,
+      "score": 0.974,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "be",
+      "start": 25.836,
+      "end": 25.876,
+      "score": 0.978,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "called",
+      "start": 25.896,
+      "end": 26.056,
+      "score": 0.911,
+      "speaker": "SPEAKER_02"
+    },
+    {
+      "word": "embedder.",
+      "start": 26.116,
+      "end": 26.697,
+      "score": 0.714,
+      "speaker": "SPEAKER_02"
+    }
+  ]
+}

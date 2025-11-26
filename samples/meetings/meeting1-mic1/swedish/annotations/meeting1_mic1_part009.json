@@ -1,0 +1,138 @@
+{
+  "segments": [
+    {
+      "start": 12.16,
+      "end": 14.18,
+      "text": " Jag får ladda ner, jag har inte använt...",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 12.16,
+          "end": 12.48,
+          "score": 0.1798095703125
+        },
+        {
+          "word": " får",
+          "start": 12.48,
+          "end": 12.5,
+          "score": 0.4052734375
+        },
+        {
+          "word": " ladda",
+          "start": 12.5,
+          "end": 12.74,
+          "score": 0.9013671875
+        },
+        {
+          "word": " ner,",
+          "start": 12.74,
+          "end": 12.96,
+          "score": 0.6787109375
+        },
+        {
+          "word": " jag",
+          "start": 13.06,
+          "end": 13.2,
+          "score": 0.638671875
+        },
+        {
+          "word": " har",
+          "start": 13.2,
+          "end": 13.3,
+          "score": 0.6708984375
+        },
+        {
+          "word": " inte",
+          "start": 13.3,
+          "end": 13.4,
+          "score": 0.58984375
+        },
+        {
+          "word": " använt...",
+          "start": 13.4,
+          "end": 14.18,
+          "score": 0.7117919921875
+        }
+      ]
+    },
+    {
+      "start": 14.58,
+      "end": 17.54,
+      "text": " Jag kan skapa en liveshire, så kan jag skicka den i Discord.",
+      "words": [
+        {
+          "word": " Jag",
+          "start": 14.58,
+          "end": 14.9,
+          "score": 0.67626953125
+        },
+        {
+          "word": " kan",
+          "start": 14.9,
+          "end": 15.12,
+          "score": 0.8203125
+        },
+        {
+          "word": " skapa",
+          "start": 15.12,
+          "end": 15.74,
+          "score": 0.919921875
+        },
+        {
+          "word": " en",
+          "start": 15.74,
+          "end": 15.9,
+          "score": 0.640625
+        },
+        {
+          "word": " liveshire,",
+          "start": 15.9,
+          "end": 16.5,
+          "score": 0.4856770833333333
+        },
+        {
+          "word": " så",
+          "start": 16.6,
+          "end": 16.74,
+          "score": 0.544921875
+        },
+        {
+          "word": " kan",
+          "start": 16.74,
+          "end": 16.8,
+          "score": 0.61083984375
+        },
+        {
+          "word": " jag",
+          "start": 16.8,
+          "end": 16.9,
+          "score": 0.63623046875
+        },
+        {
+          "word": " skicka",
+          "start": 16.9,
+          "end": 17.1,
+          "score": 0.89453125
+        },
+        {
+          "word": " den",
+          "start": 17.1,
+          "end": 17.16,
+          "score": 0.8115234375
+        },
+        {
+          "word": " i",
+          "start": 17.16,
+          "end": 17.28,
+          "score": 0.78515625
+        },
+        {
+          "word": " Discord.",
+          "start": 17.28,
+          "end": 17.54,
+          "score": 0.53857421875
+        }
+      ]
+    }
+  ]
+}

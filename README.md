@@ -36,6 +36,13 @@ docker build -t my-diarization-api .
 docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
 ```
 
+ - "audio_file", type=Path, help="Path to the audio file to process"
+ - "--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)"
+ - "--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)"
+ - "--output", "-o", type=Path, help="Output JSON file path (optional)"
+ - "--pretty", action="store_true", help="Pretty print the output"
+ - "--timing", action="store_true", help="Include timing metrics for each model run"
+ 
 <!-- Running w/o the script: -->
 <!-- Build image -->
 <!---->
@@ -66,6 +73,21 @@ docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
 3. Import in `main.py`: `from pipeline.[component] import YourClass`
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
+
+### Compare pipeline models
+Run from inside docker (after running `./run.sh start`)
+
+#### VAD models (currently Silero vs Pyannote)
+Evaluates speech detection accuracy using precision, recall, and F1 score against ground truth annotations.
+```bash
+python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
+```
+
+#### Speaker embedding models (currently SpeechBrain ECAPA vs Wav2Vec2)
+Evaluates how well embeddings distinguish between speakers using clustering silhouette score.
+```bash
+python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
+```
 
 ## Update `requirements.txt`
 

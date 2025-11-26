@@ -1,0 +1,43 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.376,
+      "speaker": "Kalle",
+      "text": " Were all the parts done for that."
+    },
+    {
+      "start": 5.318,
+      "end": 8.562,
+      "speaker": "Kalle",
+      "text": "that we talked about before."
+    },
+    {
+      "start": 9.643,
+      "end": 12.001,
+      "speaker": "Kalle",
+      "text": "Like VAD and so on."
+    },
+    {
+      "start": 12.01,
+      "end": 16.711,
+      "speaker": "Kalle",
+      "text": "Or is there some part that still needs it."
+    },
+    {
+      "start": 20.236,
+      "end": 20.577,
+      "speaker": "Kalle",
+      "text": "Oh yeah."
+    },
+    {
+      "start": 26.944,
+      "end": 27.405,
+      "speaker": "Kalle",
+      "text": "Yeah."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-26T11:31:10.794Z"
+  }
+}

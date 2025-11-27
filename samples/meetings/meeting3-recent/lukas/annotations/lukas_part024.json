@@ -1,0 +1,106 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 3.676,
+      "text": " We only see your browser.",
+      "words": [
+        {
+          "word": "We",
+          "start": 0.031,
+          "end": 0.111,
+          "score": 0.55,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "only",
+          "start": 0.271,
+          "end": 0.472,
+          "score": 0.957,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "see",
+          "start": 0.532,
+          "end": 0.692,
+          "score": 0.776,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "your",
+          "start": 0.852,
+          "end": 1.373,
+          "score": 0.333,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "browser.",
+          "start": 3.276,
+          "end": 3.676,
+          "score": 0.83,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 28.994,
+      "end": 29.194,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 28.994,
+          "end": 29.194,
+          "score": 0.331,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "We",
+      "start": 0.031,
+      "end": 0.111,
+      "score": 0.55,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "only",
+      "start": 0.271,
+      "end": 0.472,
+      "score": 0.957,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "see",
+      "start": 0.532,
+      "end": 0.692,
+      "score": 0.776,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "your",
+      "start": 0.852,
+      "end": 1.373,
+      "score": 0.333,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "browser.",
+      "start": 3.276,
+      "end": 3.676,
+      "score": 0.83,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Yeah.",
+      "start": 28.994,
+      "end": 29.194,
+      "score": 0.331,
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

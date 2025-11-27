@@ -1,0 +1,366 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 7.345,
+      "text": " in memory, if we're doing it on our own device anyways, like what's the point of setting up a separate environment?",
+      "words": [
+        {
+          "word": "in",
+          "start": 0.031,
+          "end": 0.251,
+          "score": 0.83,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "memory,",
+          "start": 0.291,
+          "end": 0.612,
+          "score": 0.855,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "if",
+          "start": 1.213,
+          "end": 1.293,
+          "score": 0.948,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we're",
+          "start": 1.514,
+          "end": 2.095,
+          "score": 0.797,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "doing",
+          "start": 2.115,
+          "end": 2.295,
+          "score": 0.6,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it",
+          "start": 2.335,
+          "end": 2.375,
+          "score": 0.994,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "on",
+          "start": 2.435,
+          "end": 2.476,
+          "score": 0.936,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "our",
+          "start": 2.536,
+          "end": 2.596,
+          "score": 0.666,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "own",
+          "start": 2.696,
+          "end": 2.836,
+          "score": 0.886,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "device",
+          "start": 3.017,
+          "end": 3.317,
+          "score": 0.91,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "anyways,",
+          "start": 3.397,
+          "end": 3.738,
+          "score": 0.902,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like",
+          "start": 4.7,
+          "end": 4.82,
+          "score": 0.994,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "what's",
+          "start": 4.86,
+          "end": 5.06,
+          "score": 0.932,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 5.1,
+          "end": 5.662,
+          "score": 0.559,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "point",
+          "start": 5.722,
+          "end": 5.922,
+          "score": 0.886,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "of",
+          "start": 5.962,
+          "end": 6.002,
+          "score": 0.914,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "setting",
+          "start": 6.062,
+          "end": 6.263,
+          "score": 0.999,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "up",
+          "start": 6.303,
+          "end": 6.363,
+          "score": 0.991,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "a",
+          "start": 6.563,
+          "end": 6.583,
+          "score": 0.993,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "separate",
+          "start": 6.643,
+          "end": 6.904,
+          "score": 0.967,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "environment?",
+          "start": 6.944,
+          "end": 7.345,
+          "score": 0.953,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 15.861,
+      "end": 16.101,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 15.861,
+          "end": 16.101,
+          "score": 0.703,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 29.707,
+      "end": 29.987,
+      "text": "Because we",
+      "words": [
+        {
+          "word": "Because",
+          "start": 29.707,
+          "end": 29.867,
+          "score": 0.45,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "we",
+          "start": 29.907,
+          "end": 29.987,
+          "score": 0.936,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "in",
+      "start": 0.031,
+      "end": 0.251,
+      "score": 0.83,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "memory,",
+      "start": 0.291,
+      "end": 0.612,
+      "score": 0.855,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "if",
+      "start": 1.213,
+      "end": 1.293,
+      "score": 0.948,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we're",
+      "start": 1.514,
+      "end": 2.095,
+      "score": 0.797,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "doing",
+      "start": 2.115,
+      "end": 2.295,
+      "score": 0.6,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it",
+      "start": 2.335,
+      "end": 2.375,
+      "score": 0.994,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "on",
+      "start": 2.435,
+      "end": 2.476,
+      "score": 0.936,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "our",
+      "start": 2.536,
+      "end": 2.596,
+      "score": 0.666,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "own",
+      "start": 2.696,
+      "end": 2.836,
+      "score": 0.886,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "device",
+      "start": 3.017,
+      "end": 3.317,
+      "score": 0.91,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "anyways,",
+      "start": 3.397,
+      "end": 3.738,
+      "score": 0.902,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like",
+      "start": 4.7,
+      "end": 4.82,
+      "score": 0.994,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "what's",
+      "start": 4.86,
+      "end": 5.06,
+      "score": 0.932,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 5.1,
+      "end": 5.662,
+      "score": 0.559,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "point",
+      "start": 5.722,
+      "end": 5.922,
+      "score": 0.886,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "of",
+      "start": 5.962,
+      "end": 6.002,
+      "score": 0.914,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "setting",
+      "start": 6.062,
+      "end": 6.263,
+      "score": 0.999,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "up",
+      "start": 6.303,
+      "end": 6.363,
+      "score": 0.991,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "a",
+      "start": 6.563,
+      "end": 6.583,
+      "score": 0.993,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "separate",
+      "start": 6.643,
+      "end": 6.904,
+      "score": 0.967,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "environment?",
+      "start": 6.944,
+      "end": 7.345,
+      "score": 0.953,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Yeah.",
+      "start": 15.861,
+      "end": 16.101,
+      "score": 0.703,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Because",
+      "start": 29.707,
+      "end": 29.867,
+      "score": 0.45,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "we",
+      "start": 29.907,
+      "end": 29.987,
+      "score": 0.936,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

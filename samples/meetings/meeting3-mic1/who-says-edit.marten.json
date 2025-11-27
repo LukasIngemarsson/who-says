@@ -1,0 +1,1366 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T20:54:25.676Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 30
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 2.545,
+      "end": 3.107,
+      "text": " Sounds good.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 2.545,
+          "end": 2.869,
+          "word": "Sounds"
+        },
+        {
+          "start": 2.891,
+          "end": 3.107,
+          "word": "good."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 108.166,
+      "end": 110.771,
+      "text": " Wait, say that again. I didn't really hear what the...",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 108.166,
+          "end": 108.667,
+          "word": "Wait,"
+        },
+        {
+          "start": 108.687,
+          "end": 109.068,
+          "word": "say"
+        },
+        {
+          "start": 109.088,
+          "end": 109.168,
+          "word": "that"
+        },
+        {
+          "start": 109.188,
+          "end": 109.408,
+          "word": "again."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 120.79,
+      "end": 121.112,
+      "text": "Right.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 120.791,
+          "end": 121.112,
+          "word": "Right."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 139.199,
+      "end": 141,
+      "text": " Oh, okay.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 140.802,
+          "end": 141.344,
+          "word": "Oh,"
+        },
+        {
+          "start": 141.364,
+          "end": 149.592,
+          "word": "okay."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 148.61,
+      "end": 148.832,
+      "text": "Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 149.612,
+          "end": 149.833,
+          "word": "Yeah."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 233.675,
+      "end": 234.088,
+      "text": " Hmm.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 230.678,
+          "end": 231.089,
+          "word": "Hmm."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 320,
+      "end": 345.019,
+      "text": " We can also. Should probably just be able to update otherwise to take a small segment of what we have been saying to confirm who's talking and then assign that segment to a specific speaker. And that will then clarify the cluster name instead of speaker 01 or 02.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 314.918,
+          "end": 315.178,
+          "word": "We"
+        },
+        {
+          "start": 318.383,
+          "end": 319.484,
+          "word": "should"
+        },
+        {
+          "start": 319.524,
+          "end": 319.824,
+          "word": "probably"
+        },
+        {
+          "start": 319.844,
+          "end": 320.005,
+          "word": "just"
+        },
+        {
+          "start": 320.305,
+          "end": 320.405,
+          "word": "be"
+        },
+        {
+          "start": 320.465,
+          "end": 320.605,
+          "word": "able"
+        },
+        {
+          "start": 320.645,
+          "end": 320.726,
+          "word": "to"
+        },
+        {
+          "start": 321.006,
+          "end": 321.286,
+          "word": "update"
+        },
+        {
+          "start": 321.346,
+          "end": 321.507,
+          "word": "other"
+        },
+        {
+          "start": 321.527,
+          "end": 321.687,
+          "word": "ways"
+        },
+        {
+          "start": 321.787,
+          "end": 322.027,
+          "word": "to"
+        },
+        {
+          "start": 322.067,
+          "end": 323.589,
+          "word": "take"
+        },
+        {
+          "start": 323.629,
+          "end": 323.669,
+          "word": "a"
+        },
+        {
+          "start": 323.73,
+          "end": 323.95,
+          "word": "small"
+        },
+        {
+          "start": 324.03,
+          "end": 324.45,
+          "word": "segment"
+        },
+        {
+          "start": 324.551,
+          "end": 324.631,
+          "word": "of"
+        },
+        {
+          "start": 324.771,
+          "end": 324.931,
+          "word": "what"
+        },
+        {
+          "start": 324.991,
+          "end": 325.151,
+          "word": "we"
+        },
+        {
+          "start": 325.191,
+          "end": 325.292,
+          "word": "have"
+        },
+        {
+          "start": 325.312,
+          "end": 325.452,
+          "word": "been"
+        },
+        {
+          "start": 325.492,
+          "end": 325.752,
+          "word": "saying"
+        },
+        {
+          "start": 325.792,
+          "end": 326.153,
+          "word": "to"
+        },
+        {
+          "start": 326.193,
+          "end": 326.593,
+          "word": "confirm"
+        },
+        {
+          "start": 326.753,
+          "end": 326.974,
+          "word": "who's"
+        },
+        {
+          "start": 327.254,
+          "end": 327.655,
+          "word": "talking"
+        },
+        {
+          "start": 328.396,
+          "end": 328.476,
+          "word": "and"
+        },
+        {
+          "start": 328.496,
+          "end": 328.736,
+          "word": "then"
+        },
+        {
+          "start": 328.896,
+          "end": 329.297,
+          "word": "assign"
+        },
+        {
+          "start": 329.357,
+          "end": 329.677,
+          "word": "that"
+        },
+        {
+          "start": 330.498,
+          "end": 330.959,
+          "word": "segment"
+        },
+        {
+          "start": 331.019,
+          "end": 331.099,
+          "word": "to"
+        },
+        {
+          "start": 331.139,
+          "end": 331.159,
+          "word": "a"
+        },
+        {
+          "start": 331.199,
+          "end": 331.58,
+          "word": "specific"
+        },
+        {
+          "start": 331.64,
+          "end": 332.02,
+          "word": "speaker."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 345.2,
+      "end": 351.11,
+      "text": "So if we label one specific, then all the ones in the same cluster should have the same name.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 343.396,
+          "end": 343.577,
+          "word": "So"
+        },
+        {
+          "start": 343.677,
+          "end": 343.757,
+          "word": "if"
+        },
+        {
+          "start": 344.539,
+          "end": 344.8,
+          "word": "we"
+        },
+        {
+          "start": 344.82,
+          "end": 345.401,
+          "word": "label"
+        },
+        {
+          "start": 345.441,
+          "end": 345.962,
+          "word": "one"
+        },
+        {
+          "start": 346.143,
+          "end": 346.624,
+          "word": "specific,"
+        },
+        {
+          "start": 346.644,
+          "end": 346.784,
+          "word": "then"
+        },
+        {
+          "start": 346.845,
+          "end": 346.965,
+          "word": "all"
+        },
+        {
+          "start": 346.985,
+          "end": 347.045,
+          "word": "the"
+        },
+        {
+          "start": 347.306,
+          "end": 347.446,
+          "word": "ones"
+        },
+        {
+          "start": 347.506,
+          "end": 347.566,
+          "word": "in"
+        },
+        {
+          "start": 347.606,
+          "end": 347.667,
+          "word": "the"
+        },
+        {
+          "start": 347.687,
+          "end": 347.847,
+          "word": "same"
+        },
+        {
+          "start": 347.887,
+          "end": 348.188,
+          "word": "cluster"
+        },
+        {
+          "start": 348.228,
+          "end": 348.368,
+          "word": "should"
+        },
+        {
+          "start": 348.408,
+          "end": 348.489,
+          "word": "have"
+        },
+        {
+          "start": 348.529,
+          "end": 348.609,
+          "word": "the"
+        },
+        {
+          "start": 348.649,
+          "end": 348.789,
+          "word": "same"
+        },
+        {
+          "start": 348.849,
+          "end": 349.11,
+          "word": "name."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 377.187,
+      "end": 377.697,
+      "text": " Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 371.888,
+          "end": 381.698,
+          "word": "Yeah."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "start": 386.718,
+      "end": 387.3,
+      "text": "Yeah.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 381.718,
+          "end": 395.533,
+          "word": "Yeah."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "start": 400.952,
+      "end": 402.293,
+      "text": "That's true. That's true. Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 395.553,
+          "end": 395.773,
+          "word": "That's"
+        },
+        {
+          "start": 395.794,
+          "end": 395.994,
+          "word": "true."
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "start": 403.293,
+      "end": 404.293,
+      "text": "Yeah.",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 12,
+      "start": 406.293,
+      "end": 407.293,
+      "text": "Yeah.",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 13,
+      "start": 447.033,
+      "end": 448.535,
+      "text": " It's good to have.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 447.033,
+          "end": 447.473,
+          "word": "It's"
+        },
+        {
+          "start": 447.894,
+          "end": 448.074,
+          "word": "good"
+        },
+        {
+          "start": 448.134,
+          "end": 448.214,
+          "word": "to"
+        },
+        {
+          "start": 448.274,
+          "end": 448.535,
+          "word": "have."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "start": 448.935,
+      "end": 452.58299999999997,
+      "text": "It would be good, but it's quite difficult to...",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 448.935,
+          "end": 449.376,
+          "word": "It"
+        },
+        {
+          "start": 450.877,
+          "end": 451.017,
+          "word": "would"
+        },
+        {
+          "start": 451.057,
+          "end": 451.137,
+          "word": "be"
+        },
+        {
+          "start": 451.158,
+          "end": 451.358,
+          "word": "good,"
+        },
+        {
+          "start": 451.398,
+          "end": 451.518,
+          "word": "but"
+        },
+        {
+          "start": 451.558,
+          "end": 451.738,
+          "word": "it's"
+        },
+        {
+          "start": 451.798,
+          "end": 451.958,
+          "word": "quite"
+        },
+        {
+          "start": 452.038,
+          "end": 452.399,
+          "word": "difficult"
+        },
+        {
+          "start": 452.459,
+          "end": 452.699,
+          "word": "to"
+        },
+        {
+          "start": 456.183,
+          "end": 456.583,
+          "word": "create."
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "start": 454.58299999999997,
+      "end": 456.58299999999997,
+      "text": "to create.",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 16,
+      "start": 462.69,
+      "end": 470.779,
+      "text": "Especially if we have it in the paper, I think they would want us to have in order to just see how well it performs.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 462.69,
+          "end": 463.031,
+          "word": "Especially"
+        },
+        {
+          "start": 463.071,
+          "end": 463.131,
+          "word": "if"
+        },
+        {
+          "start": 463.171,
+          "end": 463.271,
+          "word": "we"
+        },
+        {
+          "start": 463.611,
+          "end": 463.891,
+          "word": "have"
+        },
+        {
+          "start": 463.932,
+          "end": 464.012,
+          "word": "it"
+        },
+        {
+          "start": 464.172,
+          "end": 464.232,
+          "word": "in"
+        },
+        {
+          "start": 464.272,
+          "end": 464.332,
+          "word": "the"
+        },
+        {
+          "start": 464.392,
+          "end": 464.712,
+          "word": "paper,"
+        },
+        {
+          "start": 464.732,
+          "end": 464.752,
+          "word": "I"
+        },
+        {
+          "start": 464.973,
+          "end": 465.153,
+          "word": "think"
+        },
+        {
+          "start": 465.193,
+          "end": 465.353,
+          "word": "they"
+        },
+        {
+          "start": 465.373,
+          "end": 465.553,
+          "word": "would"
+        },
+        {
+          "start": 465.593,
+          "end": 467.916,
+          "word": "want"
+        },
+        {
+          "start": 467.996,
+          "end": 468.076,
+          "word": "us"
+        },
+        {
+          "start": 468.116,
+          "end": 468.196,
+          "word": "to"
+        },
+        {
+          "start": 468.256,
+          "end": 468.436,
+          "word": "have"
+        },
+        {
+          "start": 468.476,
+          "end": 468.657,
+          "word": "in"
+        },
+        {
+          "start": 468.737,
+          "end": 468.957,
+          "word": "order"
+        },
+        {
+          "start": 469.017,
+          "end": 469.137,
+          "word": "to"
+        },
+        {
+          "start": 469.197,
+          "end": 469.377,
+          "word": "just"
+        },
+        {
+          "start": 469.438,
+          "end": 469.638,
+          "word": "see"
+        },
+        {
+          "start": 469.658,
+          "end": 469.838,
+          "word": "how"
+        },
+        {
+          "start": 469.898,
+          "end": 470.058,
+          "word": "well"
+        },
+        {
+          "start": 470.118,
+          "end": 470.218,
+          "word": "it"
+        },
+        {
+          "start": 470.258,
+          "end": 470.779,
+          "word": "performs."
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "start": 1031.748,
+      "end": 1051.161,
+      "text": " yeah it's it's difficult to to get a you can't really just because you have accuracy of the the pipeline it doesn't really give a generalization of like how how well it actually performs",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1024.748,
+          "end": 1025.068,
+          "word": "yeah"
+        },
+        {
+          "start": 1025.088,
+          "end": 1025.229,
+          "word": "it's"
+        },
+        {
+          "start": 1026.53,
+          "end": 1026.67,
+          "word": "it's"
+        },
+        {
+          "start": 1026.73,
+          "end": 1027.091,
+          "word": "difficult"
+        },
+        {
+          "start": 1027.111,
+          "end": 1027.371,
+          "word": "to"
+        },
+        {
+          "start": 1030.976,
+          "end": 1031.196,
+          "word": "to"
+        },
+        {
+          "start": 1031.316,
+          "end": 1031.496,
+          "word": "get"
+        },
+        {
+          "start": 1032.438,
+          "end": 1032.458,
+          "word": "a"
+        },
+        {
+          "start": 1032.478,
+          "end": 1032.578,
+          "word": "you"
+        },
+        {
+          "start": 1032.618,
+          "end": 1032.778,
+          "word": "can't"
+        },
+        {
+          "start": 1032.858,
+          "end": 1033.138,
+          "word": "really"
+        },
+        {
+          "start": 1033.219,
+          "end": 1033.359,
+          "word": "just"
+        },
+        {
+          "start": 1033.379,
+          "end": 1033.579,
+          "word": "because"
+        },
+        {
+          "start": 1033.599,
+          "end": 1033.679,
+          "word": "you"
+        },
+        {
+          "start": 1033.719,
+          "end": 1033.799,
+          "word": "have"
+        },
+        {
+          "start": 1033.839,
+          "end": 1034.28,
+          "word": "accuracy"
+        },
+        {
+          "start": 1034.34,
+          "end": 1034.42,
+          "word": "of"
+        },
+        {
+          "start": 1034.5,
+          "end": 1034.841,
+          "word": "the"
+        },
+        {
+          "start": 1034.941,
+          "end": 1035.101,
+          "word": "the"
+        },
+        {
+          "start": 1035.221,
+          "end": 1035.702,
+          "word": "pipeline"
+        },
+        {
+          "start": 1035.742,
+          "end": 1035.782,
+          "word": "it"
+        },
+        {
+          "start": 1035.902,
+          "end": 1036.242,
+          "word": "doesn't"
+        },
+        {
+          "start": 1036.282,
+          "end": 1036.623,
+          "word": "really"
+        },
+        {
+          "start": 1036.703,
+          "end": 1037.164,
+          "word": "give"
+        },
+        {
+          "start": 1037.224,
+          "end": 1037.264,
+          "word": "a"
+        },
+        {
+          "start": 1037.324,
+          "end": 1038.045,
+          "word": "generalization"
+        },
+        {
+          "start": 1038.145,
+          "end": 1038.225,
+          "word": "of"
+        },
+        {
+          "start": 1038.305,
+          "end": 1038.525,
+          "word": "like"
+        },
+        {
+          "start": 1038.545,
+          "end": 1038.806,
+          "word": "how"
+        },
+        {
+          "start": 1039.086,
+          "end": 1039.166,
+          "word": "how"
+        },
+        {
+          "start": 1039.206,
+          "end": 1039.386,
+          "word": "well"
+        },
+        {
+          "start": 1039.466,
+          "end": 1039.607,
+          "word": "it"
+        },
+        {
+          "start": 1040.508,
+          "end": 1040.808,
+          "word": "actually"
+        },
+        {
+          "start": 1040.848,
+          "end": 1041.309,
+          "word": "performs"
+        },
+        {
+          "start": 1045.314,
+          "end": 1045.614,
+          "word": "so"
+        },
+        {
+          "start": 1046.135,
+          "end": 1046.515,
+          "word": "those"
+        },
+        {
+          "start": 1046.595,
+          "end": 1046.735,
+          "word": "are"
+        },
+        {
+          "start": 1046.776,
+          "end": 1047.396,
+          "word": "more"
+        },
+        {
+          "start": 1047.416,
+          "end": 1047.536,
+          "word": "only"
+        },
+        {
+          "start": 1047.577,
+          "end": 1047.697,
+          "word": "for"
+        },
+        {
+          "start": 1047.737,
+          "end": 1048.137,
+          "word": "comparing"
+        },
+        {
+          "start": 1048.177,
+          "end": 1048.618,
+          "word": "models"
+        },
+        {
+          "start": 1050.2,
+          "end": 1051.161,
+          "word": "but"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "start": 1052.161,
+      "end": 1055.161,
+      "text": "so those are more only for comparing models but",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 19,
+      "start": 1059.08,
+      "end": 1079.511,
+      "text": " For me, I would really like to deep dive more on the, on the multiple mic or the triangulation to see if we can compare that to the current setup.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1057.081,
+          "end": 1058.403,
+          "word": "For"
+        },
+        {
+          "start": 1058.443,
+          "end": 1058.603,
+          "word": "me,"
+        },
+        {
+          "start": 1058.643,
+          "end": 1058.663,
+          "word": "I"
+        },
+        {
+          "start": 1058.903,
+          "end": 1059.064,
+          "word": "would"
+        },
+        {
+          "start": 1059.104,
+          "end": 1059.284,
+          "word": "really"
+        },
+        {
+          "start": 1059.344,
+          "end": 1059.484,
+          "word": "like"
+        },
+        {
+          "start": 1059.544,
+          "end": 1059.684,
+          "word": "to"
+        },
+        {
+          "start": 1059.705,
+          "end": 1059.785,
+          "word": "deep"
+        },
+        {
+          "start": 1060.926,
+          "end": 1061.387,
+          "word": "dive"
+        },
+        {
+          "start": 1061.447,
+          "end": 1062.388,
+          "word": "more"
+        },
+        {
+          "start": 1063.97,
+          "end": 1064.07,
+          "word": "on"
+        },
+        {
+          "start": 1064.09,
+          "end": 1064.611,
+          "word": "the"
+        },
+        {
+          "start": 1066.474,
+          "end": 1067.255,
+          "word": "multiple"
+        },
+        {
+          "start": 1067.315,
+          "end": 1068.496,
+          "word": "mic"
+        },
+        {
+          "start": 1070.96,
+          "end": 1071.04,
+          "word": "or"
+        },
+        {
+          "start": 1071.08,
+          "end": 1071.4,
+          "word": "the"
+        },
+        {
+          "start": 1072.081,
+          "end": 1072.742,
+          "word": "triangulation"
+        },
+        {
+          "start": 1074.424,
+          "end": 1074.564,
+          "word": "to"
+        },
+        {
+          "start": 1074.604,
+          "end": 1074.785,
+          "word": "see"
+        },
+        {
+          "start": 1074.805,
+          "end": 1074.845,
+          "word": "if"
+        },
+        {
+          "start": 1075.145,
+          "end": 1075.245,
+          "word": "we"
+        },
+        {
+          "start": 1075.265,
+          "end": 1075.426,
+          "word": "can"
+        },
+        {
+          "start": 1075.486,
+          "end": 1075.866,
+          "word": "compare"
+        },
+        {
+          "start": 1075.886,
+          "end": 1077.348,
+          "word": "that"
+        },
+        {
+          "start": 1078.45,
+          "end": 1078.59,
+          "word": "to"
+        },
+        {
+          "start": 1078.63,
+          "end": 1078.69,
+          "word": "the"
+        },
+        {
+          "start": 1078.73,
+          "end": 1079.09,
+          "word": "current"
+        },
+        {
+          "start": 1079.231,
+          "end": 1079.511,
+          "word": "setup."
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "start": 1091.219,
+      "end": 1094.71,
+      "text": " Yeah, of course, of course, yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1091.219,
+          "end": 1091.439,
+          "word": "Yeah,"
+        },
+        {
+          "start": 1091.459,
+          "end": 1091.499,
+          "word": "of"
+        },
+        {
+          "start": 1091.539,
+          "end": 1091.78,
+          "word": "course,"
+        },
+        {
+          "start": 1091.8,
+          "end": 1091.84,
+          "word": "of"
+        },
+        {
+          "start": 1091.92,
+          "end": 1092.24,
+          "word": "course,"
+        },
+        {
+          "start": 1094.862,
+          "end": 1102.71,
+          "word": "yeah."
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "start": 1103.73,
+      "end": 1104.544,
+      "text": "Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1102.73,
+          "end": 1118.544,
+          "word": "Yeah."
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "start": 1118.564,
+      "end": 1119.505,
+      "text": "Yeah, yeah.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 1118.564,
+          "end": 1118.804,
+          "word": "Yeah,"
+        },
+        {
+          "start": 1119.225,
+          "end": 1119.505,
+          "word": "yeah."
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "start": 1145.982,
+      "end": 1148.549,
+      "text": " yeah now everybody will start being quiet instead",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1140.983,
+          "end": 1145.254,
+          "word": "yeah"
+        },
+        {
+          "start": 1146.277,
+          "end": 1146.397,
+          "word": "now"
+        },
+        {
+          "start": 1146.758,
+          "end": 1147.119,
+          "word": "everybody"
+        },
+        {
+          "start": 1147.159,
+          "end": 1147.299,
+          "word": "will"
+        },
+        {
+          "start": 1147.319,
+          "end": 1147.52,
+          "word": "start"
+        },
+        {
+          "start": 1147.54,
+          "end": 1147.66,
+          "word": "being"
+        },
+        {
+          "start": 1147.74,
+          "end": 1148.101,
+          "word": "quiet"
+        },
+        {
+          "start": 1148.121,
+          "end": 1151.55,
+          "word": "instead"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "start": 1193.224,
+      "end": 1194.505,
+      "text": " Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1190.225,
+          "end": 1190.505,
+          "word": "Yeah."
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "start": 1191.657,
+      "end": 1201.685,
+      "text": "I don't think you need to do it too complicated either. Its like, we don't really need a database or something like that.\nYou can probably just store it in a temporary file or something like that. Because. Otherwise, it's probably just going to get too... Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1197.658,
+          "end": 1197.718,
+          "word": "You"
+        },
+        {
+          "start": 1197.738,
+          "end": 1197.878,
+          "word": "can"
+        },
+        {
+          "start": 1198.059,
+          "end": 1198.299,
+          "word": "probably"
+        },
+        {
+          "start": 1198.339,
+          "end": 1198.479,
+          "word": "just"
+        },
+        {
+          "start": 1198.5,
+          "end": 1198.68,
+          "word": "store"
+        },
+        {
+          "start": 1198.72,
+          "end": 1198.8,
+          "word": "it"
+        },
+        {
+          "start": 1200.002,
+          "end": 1200.062,
+          "word": "in"
+        },
+        {
+          "start": 1200.122,
+          "end": 1200.182,
+          "word": "a"
+        },
+        {
+          "start": 1200.263,
+          "end": 1200.723,
+          "word": "temporary"
+        },
+        {
+          "start": 1200.804,
+          "end": 1201.024,
+          "word": "file"
+        },
+        {
+          "start": 1201.044,
+          "end": 1201.104,
+          "word": "or"
+        },
+        {
+          "start": 1201.144,
+          "end": 1201.365,
+          "word": "something"
+        },
+        {
+          "start": 1201.385,
+          "end": 1201.465,
+          "word": "like"
+        },
+        {
+          "start": 1201.485,
+          "end": 1201.685,
+          "word": "that."
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "start": 1226.721,
+      "end": 1227.664,
+      "text": " Yeah.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1227.721,
+          "end": 1253.543,
+          "word": "I"
+        },
+        {
+          "start": 1253.563,
+          "end": 1253.683,
+          "word": "don't"
+        },
+        {
+          "start": 1253.703,
+          "end": 1253.884,
+          "word": "think"
+        },
+        {
+          "start": 1253.944,
+          "end": 1254.665,
+          "word": "so."
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "start": 1252.684,
+      "end": 1254.825,
+      "text": "I don't think so, no.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 1254.685,
+          "end": 1254.825,
+          "word": "No."
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "start": 1514.803,
+      "end": 1517.208,
+      "text": " Yeah, yeah.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 1513.803,
+          "end": 1514.072,
+          "word": "Yeah,"
+        },
+        {
+          "start": 1514.609,
+          "end": 1515.208,
+          "word": "yeah."
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "start": 1651.03,
+      "end": 1651.627,
+      "text": " Yep.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 1651.03,
+          "end": 1651.627,
+          "word": "Yep."
+        }
+      ]
+    }
+  ]
+}

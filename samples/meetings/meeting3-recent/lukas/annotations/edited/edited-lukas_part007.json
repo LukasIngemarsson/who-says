@@ -1,0 +1,25 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.417,
+      "speaker": "LUKAS",
+      "text": " easy to just replace them with integer IDs later."
+    },
+    {
+      "start": 5.319,
+      "end": 10.746,
+      "speaker": "LUKAS",
+      "text": "Like if I'm editing, it's more intuitive for me to just write Johan, Gor, etc."
+    },
+    {
+      "start": 11.648,
+      "end": 18.057,
+      "speaker": "LUKAS",
+      "text": "Instead of writing like keeping track of who's who in each chunk and then overriding so that it's correct, you know."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:26:57.790Z"
+  }
+}

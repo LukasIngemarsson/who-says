@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "exported_at": "2025-11-28T12:35:49.128Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 22.238,
+      "end": 29.987,
+      "text": " on which, like,",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 22.238,
+          "end": 22.439,
+          "word": "on"
+        },
+        {
+          "start": 22.48,
+          "end": 22.741,
+          "word": "which,"
+        },
+        {
+          "start": 29.263,
+          "end": 29.987,
+          "word": "like,"
+        }
+      ]
+    }
+  ]
+}

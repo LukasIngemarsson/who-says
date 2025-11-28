@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "exported_at": "2025-11-28T12:38:09.958Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 29.765,
+      "end": 29.967,
+      "text": " Thank you.",
+      "speaker": null,
+      "words": []
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "segments": [
+    {
+      "start": 8.851,
+      "end": 12.376,
+      "speaker": "Kalle",
+      "text": " And that should be easy to do with something like Audacity."
+    },
+    {
+      "start": 14.499,
+      "end": 25.431,
+      "speaker": "Kalle",
+      "text": "It's just stack, importing all of them and then just exporting them, as one file, I think."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-26T12:00:55.008Z"
+  }
+}

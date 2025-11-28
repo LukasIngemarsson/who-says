@@ -26,8 +26,33 @@ Instructions for setting up the project locally.
    ```bash
    npm run dev
    ```
-5. Opening the app:
-   Follow the terminal instructions By clicking the on the given link.
+5. Install some packages for the backend if not already installed (use a virtual environment):
+   ```bash
+      pip install python-multipart python-dotenv fastapi uvicorn whisperx torch
+      ```
+
+6. Create a `.env` file in the `backend` directory with the following content:
+   ```plaintext
+   HF_TOKEN=your_huggingface_token_here
+   ```
+   Make sure HF_TOKEN is set in your .env and that this token has read access and you’ve accepted the terms for:
+      * [pyannote/segmentation-3.0](https://huggingface.co/pyannote/segmentation-3.0)
+      * [pyannote/speaker-diarization-3.1](https://huggingface.co/pyannote/speaker-diarization-3.1)
+
+7. Start the backend server:
+   ```bash
+   cd backend
+   ```
+   ```bash
+   uvicorn whisperx_server:app --reload --port 8000
+   ```
+   Wait until you see the message:
+   ```plaintext
+   INFO:     Application startup complete.
+   ```
+
+8. Opening the app:
+   Follow the terminal instructions. Can open the webapp by clicking on the given link.
 
 ## Functionality
 The available functionalities of the app.
@@ -42,3 +67,6 @@ The available functionalities of the app.
 
 #### Exporting Data
   * The exported data is in .json format and have the same structure as the original file.
+
+#### Create anotation 
+  * Can create a new anotation from an audio file without any data file. The backend uses WhisperX to generate the data file.

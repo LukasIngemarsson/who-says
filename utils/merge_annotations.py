@@ -9,7 +9,7 @@ def collect_files_by_part(input_dir):
     files_by_part = defaultdict(list)
     for file_path in glob.glob(os.path.join(input_dir, "*.json")):
         base = os.path.basename(file_path)
-        match = re.search(r'(\d+)', base)
+        match = re.search(r'(?<!\d)(\d{3})(?!\d)', base)
         if match:
             part = match.group(1)
             files_by_part[part].append(file_path)
@@ -21,10 +21,17 @@ def merge_json_files(file_paths):
     for file_path in file_paths:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
+
+            if isinstance(data, list): # handle invalid json format files
+                continue
+
             segments = data.get("segments", [])
+            for seg in segments:
+                seg.pop("words", None)
+
             all_segments.extend(segments)
 
-    all_segments.sort(key=lambda seg: seg["start"])
+    all_segments.sort(key=lambda seg: (seg["start"], seg["end"]))
     return {
         "segments": all_segments,
     }

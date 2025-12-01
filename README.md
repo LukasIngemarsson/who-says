@@ -24,6 +24,21 @@ Now that your in the docker filer, you can use the following parameters when wor
  - "--output", "-o", type=Path, help="Output JSON file path (optional)"
  - "--pretty", action="store_true", help="Pretty print the output"
  - "--timing", action="store_true", help="Include timing metrics for each model run"
+
+### Compare pipeline models
+Run from inside docker (after running `./run.sh start`)
+
+#### VAD models (currently Silero vs Pyannote)
+Evaluates speech detection accuracy using precision, recall, and F1 score against ground truth annotations.
+```bash
+python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
+```
+
+#### Speaker embedding models (currently SpeechBrain ECAPA vs Wav2Vec2)
+Evaluates how well embeddings distinguish between speakers using clustering silhouette score.
+```bash
+python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
+```
  
 <!-- Running w/o the script: -->
 <!-- Build image -->
@@ -56,20 +71,6 @@ Now that your in the docker filer, you can use the following parameters when wor
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
 
-### Compare pipeline models
-Run from inside docker (after running `./run.sh start`)
-
-#### VAD models (currently Silero vs Pyannote)
-Evaluates speech detection accuracy using precision, recall, and F1 score against ground truth annotations.
-```bash
-python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
-```
-
-#### Speaker embedding models (currently SpeechBrain ECAPA vs Wav2Vec2)
-Evaluates how well embeddings distinguish between speakers using clustering silhouette score.
-```bash
-python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
-```
 
 ## Update `requirements.txt`
 

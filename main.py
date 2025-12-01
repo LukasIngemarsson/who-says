@@ -170,6 +170,9 @@ class WhoSays(object):
             result['total_time'] = total_time
             logger.info(f"Total pipeline time: {total_time:.2f}s")
 
+        result['embeddings'] = segment_embeddings.cpu().numpy()
+        result['cluster_labels'] = segment_clusters.cpu().numpy()
+
         logger.info("Pipeline complete!")
         return result
 

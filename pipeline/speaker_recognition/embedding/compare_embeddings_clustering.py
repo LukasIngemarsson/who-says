@@ -17,27 +17,13 @@ import torch
 import numpy as np
 from loguru import logger
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 from dotenv import load_dotenv
 
-from utils import load_audio_from_file
+from utils import load_audio_from_file, evaluate_clustering
 from utils.constants import SR
 from pipeline.speaker_segmentation import SCD
 
 load_dotenv(".env")
-
-
-def compute_cluster_metrics(embeddings: np.ndarray, labels: np.ndarray) -> dict:
-    unique_labels = np.unique(labels)
-    n_clusters = len(unique_labels)
-
-    if n_clusters < 2 or len(embeddings) < 2:
-        return {"silhouette": 0.0}
-
-    # Silhouette score (-1 to 1, higher = better separation)
-    sil_score = silhouette_score(embeddings, labels)
-
-    return {"silhouette": sil_score}
 
 
 def compare_embeddings(audio_file: Path, num_speakers: int = 2):
@@ -106,7 +92,7 @@ def compare_embeddings(audio_file: Path, num_speakers: int = 2):
             kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
             labels = kmeans.fit_predict(embeddings_np)
 
-            metrics = compute_cluster_metrics(embeddings_np, labels)
+            metrics = evaluate_clustering(embeddings_np, labels)
             metrics["inference_time"] = inference_time
             metrics["embedding_dim"] = embeddings_np.shape[1]
             metrics["num_segments"] = embeddings_np.shape[0]
@@ -118,18 +104,18 @@ def compare_embeddings(audio_file: Path, num_speakers: int = 2):
             import traceback
             traceback.print_exc()
 
-    print("\n" + "=" * 90)
+    print("\n" + "=" * 80)
     print("SPEAKER EMBEDDING COMPARISON")
-    print("=" * 90)
+    print("=" * 80)
     print(f"Audio: {audio_file.name}")
     print(f"Duration: {total_duration:.2f}s")
     print(f"Change points: {len(change_points)}")
     print(f"Target clusters: {num_speakers}")
-    print("-" * 90)
+    print("-" * 80)
 
     header = f"{'Model':<20} {'Dim':>6} {'Silhouette':>12} {'Time':>8}"
     print(header)
-    print("-" * 90)
+    print("-" * 80)
 
     for r in results:
         print(
@@ -139,7 +125,7 @@ def compare_embeddings(audio_file: Path, num_speakers: int = 2):
             f"{r['inference_time']:>7.2f}s"
         )
 
-    print("=" * 90)
+    print("=" * 80)
 
 
 if __name__ == "__main__":

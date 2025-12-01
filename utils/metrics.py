@@ -2,6 +2,7 @@ import json
 import numpy as np
 from pathlib import Path
 from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import silhouette_score
 from loguru import logger
 from pyannote.core import Annotation, Segment
 from pyannote.metrics.diarization import DiarizationErrorRate
@@ -353,6 +354,31 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
     }
 
 
+def evaluate_clustering(embeddings: np.ndarray, labels: np.ndarray) -> dict:
+    """
+    Compute clustering quality using silhouette score (unsupervised).
+
+    Parameters:
+        embeddings : np.ndarray
+            Speaker embeddings array of shape (n_segments, embedding_dim)
+        labels : np.ndarray
+            Cluster labels for each segment
+
+    Returns:
+        dict containing:
+        - silhouette: Silhouette coefficient (-1 to 1, higher is better)
+    """
+    unique_labels = np.unique(labels)
+    n_clusters = len(unique_labels)
+    n_samples = len(embeddings)
+
+    if n_clusters < 2 or n_samples < 2:
+        logger.warning(f"Cannot compute clustering metrics: {n_clusters} clusters, {n_samples} samples")
+        return {'silhouette': 0.0}
+
+    return {'silhouette': silhouette_score(embeddings, labels)}
+
+
 def evaluate_pipeline(pipeline_output, annotation_data):
     # TODO: Add other component metrics
     logger.info("Computing metrics...")
@@ -385,12 +411,20 @@ def evaluate_pipeline(pipeline_output, annotation_data):
         pipeline_output['speaker_segments']
     )
 
+    clustering_metrics = {'silhouette': 0.0}
+    if 'embeddings' in pipeline_output and 'cluster_labels' in pipeline_output:
+        clustering_metrics = evaluate_clustering(
+            pipeline_output['embeddings'],
+            pipeline_output['cluster_labels']
+        )
+
     return {
         'vad': vad_metrics,
         'scd': scd_metrics,
         'asr': asr_metrics,
         'phoneme': phoneme_metrics,
         'diarization': diarization_metrics,
+        'clustering': clustering_metrics,
     }
 
 def format_metrics_report(metrics):
@@ -424,6 +458,13 @@ def format_metrics_report(metrics):
     lines.append(f"  Miss Rate:              {der['miss']:>9.2f}%")
     lines.append(f"  False Alarm:            {der['false_alarm']:>9.2f}%")
     lines.append(f"  Speaker Confusion:      {der['confusion']:>9.2f}%")
+
+    if 'clustering' in metrics:
+        lines.append("")
+        lines.append("Clustering Quality")
+        lines.append("-" * 60)
+        clustering = metrics['clustering']
+        lines.append(f"  Silhouette Score:       {clustering['silhouette']:>9.4f}  (higher is better, -1 to 1)")
 
     lines.append("=" * 60)
 

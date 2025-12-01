@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:23:17.096Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 9
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 2.68,
+      "text": "Jag har typ aldrig lyckats att share terminalen här.",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.44,
+          "word": " Jag"
+        },
+        {
+          "start": 0.44,
+          "end": 0.5,
+          "word": " har"
+        },
+        {
+          "start": 0.5,
+          "end": 0.88,
+          "word": " tillbaka"
+        },
+        {
+          "start": 0.88,
+          "end": 1.1,
+          "word": " lite"
+        },
+        {
+          "start": 1.1,
+          "end": 1.4,
+          "word": " av"
+        },
+        {
+          "start": 1.4,
+          "end": 1.84,
+          "word": " Shera"
+        },
+        {
+          "start": 1.84,
+          "end": 2.48,
+          "word": " Terminalen"
+        },
+        {
+          "start": 2.48,
+          "end": 2.68,
+          "word": " här."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 3.28,
+      "end": 6.94,
+      "text": "Ehh, Jag kör aldrig, jag kör bara vanlig Mac termi.. alltså Mac terminalen.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 3.28,
+          "end": 3.8,
+          "word": " Jag"
+        },
+        {
+          "start": 3.8,
+          "end": 4.02,
+          "word": " kör"
+        },
+        {
+          "start": 4.02,
+          "end": 4.24,
+          "word": " aldrig,"
+        },
+        {
+          "start": 4.3,
+          "end": 4.34,
+          "word": " jag"
+        },
+        {
+          "start": 4.34,
+          "end": 4.5,
+          "word": " kör"
+        },
+        {
+          "start": 4.5,
+          "end": 4.64,
+          "word": " bara"
+        },
+        {
+          "start": 4.64,
+          "end": 5.02,
+          "word": " vanlig"
+        },
+        {
+          "start": 5.02,
+          "end": 5.54,
+          "word": " Mac"
+        },
+        {
+          "start": 5.54,
+          "end": 5.94,
+          "word": "-terminal."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 7.139,
+      "end": 13.998,
+      "text": "Nej nej, alltså overall att share terminalen så att den, nej vänta, det var.. det var Jupyter Notebook jag tänkte på, det var inget.",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 6.84,
+          "end": 7.36,
+          "word": " Nej,"
+        },
+        {
+          "start": 7.42,
+          "end": 7.86,
+          "word": " alltså"
+        },
+        {
+          "start": 7.86,
+          "end": 8.16,
+          "word": " overall"
+        },
+        {
+          "start": 8.16,
+          "end": 8.48,
+          "word": " av"
+        },
+        {
+          "start": 8.48,
+          "end": 8.84,
+          "word": " Shera"
+        },
+        {
+          "start": 8.84,
+          "end": 9.36,
+          "word": " Terminalen."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 14.499,
+      "end": 16.64,
+      "text": "Det var Jupiter Notebook terminalen som visades inte.",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 14,
+          "end": 14.52,
+          "word": " Det"
+        },
+        {
+          "start": 14.52,
+          "end": 14.68,
+          "word": " var"
+        },
+        {
+          "start": 14.68,
+          "end": 14.88,
+          "word": " Jupiter"
+        },
+        {
+          "start": 14.88,
+          "end": 15.3,
+          "word": "-Nordbook"
+        },
+        {
+          "start": 15.3,
+          "end": 15.86,
+          "word": "-terminalen"
+        },
+        {
+          "start": 15.86,
+          "end": 15.94,
+          "word": " som"
+        },
+        {
+          "start": 15.94,
+          "end": 16.32,
+          "word": " visades"
+        },
+        {
+          "start": 16.32,
+          "end": 16.64,
+          "word": " inte."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 17.32,
+      "end": 17.72,
+      "text": "Aha okej.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 17.32,
+          "end": 17.54,
+          "word": " Ja,"
+        },
+        {
+          "start": 17.54,
+          "end": 17.72,
+          "word": " okej."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 18.699,
+      "end": 19.318,
+      "text": "Skitsamma.",
+      "speaker": "Kalle",
+      "words": []
+    },
+    {
+      "id": 6,
+      "start": 19.518,
+      "end": 20.318,
+      "text": "Aight.",
+      "speaker": "Lukas",
+      "words": []
+    },
+    {
+      "id": 7,
+      "start": 21.878,
+      "end": 22.5,
+      "text": "Jag följer med här.",
+      "speaker": "Kalle",
+      "words": [
+        {
+          "start": 21.179999999999993,
+          "end": 21.699999999999996,
+          "word": " Jag"
+        },
+        {
+          "start": 21.699999999999996,
+          "end": 22.22,
+          "word": " följer"
+        },
+        {
+          "start": 22.22,
+          "end": 22.32,
+          "word": " med"
+        },
+        {
+          "start": 22.32,
+          "end": 22.5,
+          "word": " här."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 28.139,
+      "end": 29.48,
+      "text": "Ja, du kan klicka längst.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 25.74,
+          "end": 26.26,
+          "word": " Ja,"
+        },
+        {
+          "start": 28.32,
+          "end": 28.36,
+          "word": " du"
+        },
+        {
+          "start": 28.36,
+          "end": 28.48,
+          "word": " kan"
+        },
+        {
+          "start": 28.48,
+          "end": 28.78,
+          "word": " klicka"
+        },
+        {
+          "start": 28.78,
+          "end": 29.48,
+          "word": " längst."
+        }
+      ]
+    }
+  ]
+}

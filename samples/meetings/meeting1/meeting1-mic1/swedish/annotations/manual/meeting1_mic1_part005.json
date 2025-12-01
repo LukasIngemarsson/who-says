@@ -1,0 +1,283 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:09:57.813Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 9
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.6,
+      "end": 2.06,
+      "text": "Nästan. Nästan.",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 5.18,
+          "end": 5.66,
+          "word": " Jag"
+        },
+        {
+          "start": 5.66,
+          "end": 6.08,
+          "word": " tänkte"
+        },
+        {
+          "start": 6.08,
+          "end": 6.54,
+          "word": " kolla"
+        },
+        {
+          "start": 6.54,
+          "end": 8.8,
+          "word": " hur"
+        },
+        {
+          "start": 8.8,
+          "end": 9.08,
+          "word": " det"
+        },
+        {
+          "start": 9.08,
+          "end": 9.34,
+          "word": " går"
+        },
+        {
+          "start": 9.34,
+          "end": 9.5,
+          "word": " på"
+        },
+        {
+          "start": 9.5,
+          "end": 9.62,
+          "word": " de"
+        },
+        {
+          "start": 9.62,
+          "end": 9.76,
+          "word": " olika"
+        },
+        {
+          "start": 9.76,
+          "end": 10.06,
+          "word": " delarna."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 5.179,
+      "end": 6.46,
+      "text": "Ehh, jag tänkte kolla",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 2,
+      "start": 7.858,
+      "end": 12.258,
+      "text": "Hur det går på de olika delarna, jag la in för...",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 3,
+      "start": 13.199,
+      "end": 21.179,
+      "text": "Speaker Overlap Detection i alla fall och Speaker Changepoint Detection.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 10.2,
+          "end": 10.24,
+          "word": " Jag"
+        },
+        {
+          "start": 10.24,
+          "end": 10.34,
+          "word": " la"
+        },
+        {
+          "start": 10.34,
+          "end": 10.44,
+          "word": " in"
+        },
+        {
+          "start": 10.44,
+          "end": 10.78,
+          "word": " för"
+        },
+        {
+          "start": 10.78,
+          "end": 14.18,
+          "word": " Speaker"
+        },
+        {
+          "start": 14.18,
+          "end": 15.08,
+          "word": " Overlap"
+        },
+        {
+          "start": 15.08,
+          "end": 15.48,
+          "word": " Detection"
+        },
+        {
+          "start": 15.48,
+          "end": 15.72,
+          "word": " och"
+        },
+        {
+          "start": 15.72,
+          "end": 18.92,
+          "word": " Speaker"
+        },
+        {
+          "start": 18.92,
+          "end": 20.12,
+          "word": " Changepoint"
+        },
+        {
+          "start": 20.12,
+          "end": 21.18,
+          "word": " Detection."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 22.559,
+      "end": 22.759,
+      "text": "ehm",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 5,
+      "start": 22.559,
+      "end": 24,
+      "text": "Det var i Segmentation, eller hur?",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 22.56,
+          "end": 23.04,
+          "word": " Det"
+        },
+        {
+          "start": 23.04,
+          "end": 23.18,
+          "word": " var"
+        },
+        {
+          "start": 23.18,
+          "end": 23.26,
+          "word": " i"
+        },
+        {
+          "start": 23.26,
+          "end": 23.7,
+          "word": " Segmentation,"
+        },
+        {
+          "start": 23.78,
+          "end": 23.92,
+          "word": " eller"
+        },
+        {
+          "start": 23.92,
+          "end": 24,
+          "word": " hur?"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 24.16,
+      "end": 25.14,
+      "text": "Ja, exakt.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 24.16,
+          "end": 24.64,
+          "word": " Ja,"
+        },
+        {
+          "start": 24.78,
+          "end": 25.14,
+          "word": " exakt."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 25.82,
+      "end": 26.3,
+      "text": "Nice.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 25.82,
+          "end": 26.3,
+          "word": " Nice."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 26.96,
+      "end": 29.58,
+      "text": "Ehm, jag vet inte om ni såg min push där.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 27.96,
+          "end": 28.44,
+          "word": " Jag"
+        },
+        {
+          "start": 28.44,
+          "end": 28.6,
+          "word": " vet"
+        },
+        {
+          "start": 28.6,
+          "end": 28.66,
+          "word": " inte"
+        },
+        {
+          "start": 28.66,
+          "end": 28.7,
+          "word": " om"
+        },
+        {
+          "start": 28.7,
+          "end": 28.82,
+          "word": " ni"
+        },
+        {
+          "start": 28.82,
+          "end": 29.04,
+          "word": " såg"
+        },
+        {
+          "start": 29.04,
+          "end": 29.2,
+          "word": " min"
+        },
+        {
+          "start": 29.2,
+          "end": 29.38,
+          "word": " push"
+        },
+        {
+          "start": 29.38,
+          "end": 29.58,
+          "word": " där."
+        }
+      ]
+    }
+  ]
+}

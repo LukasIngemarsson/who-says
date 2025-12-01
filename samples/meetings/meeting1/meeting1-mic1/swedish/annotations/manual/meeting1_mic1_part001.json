@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:02:34.800Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 6
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 1.739,
+      "end": 3.26,
+      "text": "Där sitter vi.",
+      "speaker": "Kalle",
+      "words": [
+        {
+          "start": 1.5399999999999987,
+          "end": 2.3399999999999994,
+          "word": " Där"
+        },
+        {
+          "start": 2.3399999999999994,
+          "end": 3.14,
+          "word": " sitter"
+        },
+        {
+          "start": 3.14,
+          "end": 3.26,
+          "word": " vi."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 4.02,
+      "end": 4.82,
+      "text": "Men...",
+      "speaker": "Kalle",
+      "words": [
+        {
+          "start": 4.02,
+          "end": 4.82,
+          "word": " Men..."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 12.99,
+      "end": 14.69,
+      "text": "Nu, kanske, nej?",
+      "speaker": "Kalle",
+      "words": []
+    },
+    {
+      "id": 3,
+      "start": 16,
+      "end": 17.2,
+      "text": "Kolla om vi...",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 15.94,
+          "end": 16.74,
+          "word": " Kolla"
+        },
+        {
+          "start": 16.74,
+          "end": 16.74,
+          "word": " om"
+        },
+        {
+          "start": 16.74,
+          "end": 17.2,
+          "word": " vi..."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 19.14,
+      "end": 20.76,
+      "text": "Vänta, om ni testat att snacka nu?",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 19.14,
+          "end": 19.94,
+          "word": " Vänta,"
+        },
+        {
+          "start": 19.94,
+          "end": 20.04,
+          "word": " har"
+        },
+        {
+          "start": 20.04,
+          "end": 20.06,
+          "word": " ni"
+        },
+        {
+          "start": 20.06,
+          "end": 20.4,
+          "word": " testat"
+        },
+        {
+          "start": 20.4,
+          "end": 20.46,
+          "word": " att"
+        },
+        {
+          "start": 20.46,
+          "end": 20.68,
+          "word": " snacka"
+        },
+        {
+          "start": 20.68,
+          "end": 20.76,
+          "word": " nu?"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 23.179,
+      "end": 24.1,
+      "text": "Nej dom alltså",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 22.88,
+          "end": 23.68,
+          "word": " Lägg"
+        },
+        {
+          "start": 23.68,
+          "end": 23.88,
+          "word": " om"
+        },
+        {
+          "start": 23.88,
+          "end": 24.1,
+          "word": " alltså."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:47:26.595Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 5
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 9.76,
+      "text": "Output egentligen, men i Speaker Recognition så har vi halvbörjat med Clustring, Embedding Recognition och Source separation.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.4,
+          "word": " Output"
+        },
+        {
+          "start": 0.4,
+          "end": 0.78,
+          "word": " egentligen,"
+        },
+        {
+          "start": 0.88,
+          "end": 1.72,
+          "word": " men"
+        },
+        {
+          "start": 1.72,
+          "end": 1.88,
+          "word": " i"
+        },
+        {
+          "start": 1.88,
+          "end": 2.12,
+          "word": " Speaker"
+        },
+        {
+          "start": 2.12,
+          "end": 2.46,
+          "word": " Recognition"
+        },
+        {
+          "start": 2.46,
+          "end": 2.68,
+          "word": " så"
+        },
+        {
+          "start": 2.68,
+          "end": 2.8,
+          "word": " har"
+        },
+        {
+          "start": 2.8,
+          "end": 2.9,
+          "word": " vi"
+        },
+        {
+          "start": 2.9,
+          "end": 4.08,
+          "word": " halvbörjat"
+        },
+        {
+          "start": 4.08,
+          "end": 4.22,
+          "word": " med"
+        },
+        {
+          "start": 4.22,
+          "end": 5.32,
+          "word": " Clustring,"
+        },
+        {
+          "start": 5.54,
+          "end": 7.84,
+          "word": " Embedding"
+        },
+        {
+          "start": 7.84,
+          "end": 8.4,
+          "word": " Recognition"
+        },
+        {
+          "start": 8.4,
+          "end": 8.88,
+          "word": " och"
+        },
+        {
+          "start": 8.88,
+          "end": 9.46,
+          "word": " Source"
+        },
+        {
+          "start": 9.46,
+          "end": 9.76,
+          "word": " separation."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 10.399,
+      "end": 12.759,
+      "text": "alltså inte gjort någon..",
+      "speaker": "Lukas",
+      "words": []
+    },
+    {
+      "id": 2,
+      "start": 13.48,
+      "end": 14.84,
+      "text": "Ganska hårdkodat.",
+      "speaker": "Kalle",
+      "words": [
+        {
+          "start": 13.48,
+          "end": 14.16,
+          "word": " Ganska"
+        },
+        {
+          "start": 14.16,
+          "end": 14.84,
+          "word": " hårdkodat."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 15,
+      "end": 19.18,
+      "text": "Ja, alltså inte någonting speciellt avancerat liksom.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 15,
+          "end": 15.34,
+          "word": " Ja,"
+        },
+        {
+          "start": 15.5,
+          "end": 15.64,
+          "word": " alltså"
+        },
+        {
+          "start": 15.64,
+          "end": 15.86,
+          "word": " inte"
+        },
+        {
+          "start": 15.86,
+          "end": 16.3,
+          "word": " någonting"
+        },
+        {
+          "start": 16.3,
+          "end": 17.58,
+          "word": " speciellt"
+        },
+        {
+          "start": 17.58,
+          "end": 19.18,
+          "word": " avancerat."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 22.02,
+      "end": 29.82,
+      "text": "Exempelvis har vi gjort Pyannote Embedding och sedan som sagt ett väldigt orobust test på hur det fungerar.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 22.02,
+          "end": 22.7,
+          "word": " Exempelvis"
+        },
+        {
+          "start": 22.7,
+          "end": 23.22,
+          "word": " har"
+        },
+        {
+          "start": 23.22,
+          "end": 23.36,
+          "word": " vi"
+        },
+        {
+          "start": 23.36,
+          "end": 23.74,
+          "word": " gjort"
+        },
+        {
+          "start": 23.74,
+          "end": 24.38,
+          "word": " Pinote"
+        },
+        {
+          "start": 24.38,
+          "end": 24.78,
+          "word": " Embedding"
+        },
+        {
+          "start": 24.78,
+          "end": 24.94,
+          "word": " och"
+        },
+        {
+          "start": 24.94,
+          "end": 25.04,
+          "word": " sedan"
+        },
+        {
+          "start": 25.04,
+          "end": 25.16,
+          "word": " som"
+        },
+        {
+          "start": 25.16,
+          "end": 25.36,
+          "word": " sagt"
+        },
+        {
+          "start": 25.36,
+          "end": 26.4,
+          "word": " ett"
+        },
+        {
+          "start": 26.4,
+          "end": 27.82,
+          "word": " väldigt"
+        },
+        {
+          "start": 27.82,
+          "end": 28.56,
+          "word": " orobust"
+        },
+        {
+          "start": 28.56,
+          "end": 28.74,
+          "word": " test"
+        },
+        {
+          "start": 28.74,
+          "end": 29.02,
+          "word": " på"
+        },
+        {
+          "start": 29.02,
+          "end": 29.32,
+          "word": " hur"
+        },
+        {
+          "start": 29.32,
+          "end": 29.38,
+          "word": " det"
+        },
+        {
+          "start": 29.38,
+          "end": 29.82,
+          "word": " fungerar."
+        }
+      ]
+    }
+  ]
+}

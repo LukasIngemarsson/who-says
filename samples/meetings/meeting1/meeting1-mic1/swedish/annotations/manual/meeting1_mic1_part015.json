@@ -1,0 +1,521 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:29:22.777Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 9
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.5,
+      "end": 4.04,
+      "text": "Så det här är till exempel och så kan man fortsätta lägga till så jag la till exemplet här med",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.56,
+          "word": " Så"
+        },
+        {
+          "start": 0.56,
+          "end": 0.68,
+          "word": " det"
+        },
+        {
+          "start": 0.68,
+          "end": 0.82,
+          "word": " här"
+        },
+        {
+          "start": 0.82,
+          "end": 0.82,
+          "word": " är"
+        },
+        {
+          "start": 0.82,
+          "end": 0.92,
+          "word": " till"
+        },
+        {
+          "start": 0.92,
+          "end": 1.14,
+          "word": " exempel"
+        },
+        {
+          "start": 1.14,
+          "end": 1.3,
+          "word": " att"
+        },
+        {
+          "start": 1.3,
+          "end": 1.58,
+          "word": " söka,"
+        },
+        {
+          "start": 1.58,
+          "end": 1.74,
+          "word": " kan"
+        },
+        {
+          "start": 1.74,
+          "end": 1.9,
+          "word": " man"
+        },
+        {
+          "start": 1.9,
+          "end": 2.22,
+          "word": " fortsätta"
+        },
+        {
+          "start": 2.22,
+          "end": 2.42,
+          "word": " lägga"
+        },
+        {
+          "start": 2.42,
+          "end": 2.52,
+          "word": " till"
+        },
+        {
+          "start": 2.52,
+          "end": 2.72,
+          "word": " så"
+        },
+        {
+          "start": 2.72,
+          "end": 2.84,
+          "word": " jag"
+        },
+        {
+          "start": 2.84,
+          "end": 3.18,
+          "word": " lade"
+        },
+        {
+          "start": 3.18,
+          "end": 3.26,
+          "word": " till"
+        },
+        {
+          "start": 3.26,
+          "end": 3.74,
+          "word": " exemplet"
+        },
+        {
+          "start": 3.74,
+          "end": 3.86,
+          "word": " här"
+        },
+        {
+          "start": 3.86,
+          "end": 4.04,
+          "word": " med"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 5.24,
+      "end": 9.5,
+      "text": "ASR config om man ska ha det också, men så kan man bara fortsätta lägga till alla delar där liksom.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 5.240000000000002,
+          "end": 5.620000000000001,
+          "word": " ASAR,"
+        },
+        {
+          "start": 5.620000000000001,
+          "end": 6,
+          "word": " konfig,"
+        },
+        {
+          "start": 6.12,
+          "end": 6.34,
+          "word": " om"
+        },
+        {
+          "start": 6.34,
+          "end": 6.46,
+          "word": " man"
+        },
+        {
+          "start": 6.46,
+          "end": 6.62,
+          "word": " ska"
+        },
+        {
+          "start": 6.62,
+          "end": 6.72,
+          "word": " ha"
+        },
+        {
+          "start": 6.72,
+          "end": 6.84,
+          "word": " det"
+        },
+        {
+          "start": 6.84,
+          "end": 7.02,
+          "word": " också,"
+        },
+        {
+          "start": 7.26,
+          "end": 7.46,
+          "word": " men"
+        },
+        {
+          "start": 7.46,
+          "end": 7.62,
+          "word": " så"
+        },
+        {
+          "start": 7.62,
+          "end": 7.68,
+          "word": " kan"
+        },
+        {
+          "start": 7.68,
+          "end": 7.8,
+          "word": " man"
+        },
+        {
+          "start": 7.8,
+          "end": 7.86,
+          "word": " bara"
+        },
+        {
+          "start": 7.86,
+          "end": 8.2,
+          "word": " fortsätta"
+        },
+        {
+          "start": 8.2,
+          "end": 8.42,
+          "word": " lägga"
+        },
+        {
+          "start": 8.42,
+          "end": 8.52,
+          "word": " till"
+        },
+        {
+          "start": 8.52,
+          "end": 8.78,
+          "word": " alla"
+        },
+        {
+          "start": 8.78,
+          "end": 9.22,
+          "word": " delar"
+        },
+        {
+          "start": 9.22,
+          "end": 9.36,
+          "word": " där"
+        },
+        {
+          "start": 9.36,
+          "end": 9.5,
+          "word": " liksom"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 9.7,
+      "end": 10.6,
+      "text": "så lägger vi in det som",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 9.5,
+          "end": 9.92,
+          "word": " så"
+        },
+        {
+          "start": 9.92,
+          "end": 10.18,
+          "word": " lägger"
+        },
+        {
+          "start": 10.18,
+          "end": 10.24,
+          "word": " vi"
+        },
+        {
+          "start": 10.24,
+          "end": 10.36,
+          "word": " in"
+        },
+        {
+          "start": 10.36,
+          "end": 10.44,
+          "word": " det"
+        },
+        {
+          "start": 10.44,
+          "end": 10.6,
+          "word": " som"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 12.36,
+      "end": 13.12,
+      "text": "våran konfig",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 12.360000000000001,
+          "end": 12.74,
+          "word": " vår"
+        },
+        {
+          "start": 12.74,
+          "end": 13.12,
+          "word": " konfig"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 14.418,
+      "end": 15.42,
+      "text": "och så använder vi det i våran",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 13.12,
+          "end": 13.58,
+          "word": " och"
+        },
+        {
+          "start": 13.58,
+          "end": 14.36,
+          "word": " så"
+        },
+        {
+          "start": 14.36,
+          "end": 14.66,
+          "word": " använder"
+        },
+        {
+          "start": 14.66,
+          "end": 14.76,
+          "word": " vi"
+        },
+        {
+          "start": 14.76,
+          "end": 14.92,
+          "word": " det"
+        },
+        {
+          "start": 14.92,
+          "end": 15.08,
+          "word": " i"
+        },
+        {
+          "start": 15.08,
+          "end": 15.42,
+          "word": " vår"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 16.080000000000002,
+      "end": 23.339,
+      "text": "main dot pi här för Who Says och sen skickar in för alla olika komponenter de delarna som vi behöver så att vi har allting på samma plats och det är lätt att ",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 16.080000000000002,
+          "end": 16.46,
+          "word": " main"
+        },
+        {
+          "start": 16.46,
+          "end": 16.62,
+          "word": " dot"
+        },
+        {
+          "start": 16.62,
+          "end": 16.8,
+          "word": " pi"
+        },
+        {
+          "start": 16.8,
+          "end": 17.24,
+          "word": " för"
+        },
+        {
+          "start": 17.24,
+          "end": 17.5,
+          "word": " HUSS"
+        },
+        {
+          "start": 17.5,
+          "end": 17.86,
+          "word": " och"
+        },
+        {
+          "start": 17.86,
+          "end": 18.08,
+          "word": " sen"
+        },
+        {
+          "start": 18.08,
+          "end": 18.42,
+          "word": " skickar"
+        },
+        {
+          "start": 18.42,
+          "end": 18.5,
+          "word": " vi"
+        },
+        {
+          "start": 18.5,
+          "end": 18.62,
+          "word": " in"
+        },
+        {
+          "start": 18.62,
+          "end": 18.72,
+          "word": " för"
+        },
+        {
+          "start": 18.72,
+          "end": 18.86,
+          "word": " alla"
+        },
+        {
+          "start": 18.86,
+          "end": 19.12,
+          "word": " olika"
+        },
+        {
+          "start": 19.12,
+          "end": 19.7,
+          "word": " komponenter"
+        },
+        {
+          "start": 19.7,
+          "end": 19.92,
+          "word": " de"
+        },
+        {
+          "start": 19.92,
+          "end": 20.28,
+          "word": " delarna"
+        },
+        {
+          "start": 20.28,
+          "end": 20.46,
+          "word": " som"
+        },
+        {
+          "start": 20.46,
+          "end": 20.58,
+          "word": " vi"
+        },
+        {
+          "start": 20.58,
+          "end": 20.9,
+          "word": " behöver"
+        },
+        {
+          "start": 20.9,
+          "end": 21.1,
+          "word": " så"
+        },
+        {
+          "start": 21.1,
+          "end": 21.2,
+          "word": " att"
+        },
+        {
+          "start": 21.2,
+          "end": 21.26,
+          "word": " vi"
+        },
+        {
+          "start": 21.26,
+          "end": 21.34,
+          "word": " har"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 23.68,
+      "end": 24.06,
+      "text": "konfigurera.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 23.68,
+          "end": 24.06,
+          "word": " konfigurera."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 26.540000000000003,
+      "end": 27.52,
+      "text": "Och sen i",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 26.540000000000003,
+          "end": 26.92,
+          "word": " Och"
+        },
+        {
+          "start": 26.92,
+          "end": 27.18,
+          "word": " sen"
+        },
+        {
+          "start": 27.18,
+          "end": 27.52,
+          "word": " i"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 28.26,
+      "end": 29.5,
+      "text": "call funktionerna här så",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 28.26,
+          "end": 28.64,
+          "word": " kal"
+        },
+        {
+          "start": 28.64,
+          "end": 29.02,
+          "word": "-funktionerna"
+        },
+        {
+          "start": 29.02,
+          "end": 29.18,
+          "word": " här"
+        },
+        {
+          "start": 29.18,
+          "end": 29.5,
+          "word": " så"
+        }
+      ]
+    }
+  ]
+}

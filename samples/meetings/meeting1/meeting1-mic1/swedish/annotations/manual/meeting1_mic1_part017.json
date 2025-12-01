@@ -1,0 +1,477 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:32:56.522Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 8
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 1.94,
+      "text": "Det här är inget satt i sten liksom, utan det är ju...",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.2,
+          "word": " Det"
+        },
+        {
+          "start": 0.2,
+          "end": 0.36,
+          "word": " här"
+        },
+        {
+          "start": 0.36,
+          "end": 0.38,
+          "word": " är"
+        },
+        {
+          "start": 0.38,
+          "end": 0.58,
+          "word": " inget"
+        },
+        {
+          "start": 0.58,
+          "end": 0.74,
+          "word": " satt"
+        },
+        {
+          "start": 0.74,
+          "end": 0.82,
+          "word": " i"
+        },
+        {
+          "start": 0.82,
+          "end": 1,
+          "word": " sten"
+        },
+        {
+          "start": 1,
+          "end": 1.28,
+          "word": " liksom,"
+        },
+        {
+          "start": 1.3,
+          "end": 1.5,
+          "word": " utan"
+        },
+        {
+          "start": 1.5,
+          "end": 1.6,
+          "word": " det"
+        },
+        {
+          "start": 1.6,
+          "end": 1.74,
+          "word": " är"
+        },
+        {
+          "start": 1.74,
+          "end": 1.94,
+          "word": " ju..."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 2.4200000000000013,
+      "end": 3.72,
+      "text": "Nej, men det är ju bra.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 2.4200000000000013,
+          "end": 2.82,
+          "word": " Nej,"
+        },
+        {
+          "start": 2.9,
+          "end": 3,
+          "word": " men"
+        },
+        {
+          "start": 3,
+          "end": 3.16,
+          "word": " det"
+        },
+        {
+          "start": 3.16,
+          "end": 3.24,
+          "word": " är"
+        },
+        {
+          "start": 3.24,
+          "end": 3.24,
+          "word": " ju"
+        },
+        {
+          "start": 3.24,
+          "end": 3.72,
+          "word": " bra."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 7.860000000000001,
+      "end": 8.26,
+      "text": "Jättebra.",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 7.860000000000001,
+          "end": 8.26,
+          "word": " Jättebra."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 9.64,
+      "end": 14.6,
+      "text": "Jag tänker om vi bara börjar med att försöka lägga.. lägga in allting här.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 9.64,
+          "end": 10.04,
+          "word": " Jag"
+        },
+        {
+          "start": 10.04,
+          "end": 10.36,
+          "word": " tänker"
+        },
+        {
+          "start": 10.36,
+          "end": 10.46,
+          "word": " att"
+        },
+        {
+          "start": 10.46,
+          "end": 10.54,
+          "word": " vi"
+        },
+        {
+          "start": 10.54,
+          "end": 10.64,
+          "word": " bara"
+        },
+        {
+          "start": 10.64,
+          "end": 11.06,
+          "word": " börjar"
+        },
+        {
+          "start": 11.06,
+          "end": 11.2,
+          "word": " med"
+        },
+        {
+          "start": 11.2,
+          "end": 11.46,
+          "word": " att"
+        },
+        {
+          "start": 11.46,
+          "end": 12.5,
+          "word": " försöka"
+        },
+        {
+          "start": 12.5,
+          "end": 13.14,
+          "word": " lägga"
+        },
+        {
+          "start": 13.14,
+          "end": 14.16,
+          "word": " in"
+        },
+        {
+          "start": 14.16,
+          "end": 14.46,
+          "word": " allting"
+        },
+        {
+          "start": 14.46,
+          "end": 14.6,
+          "word": " här."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 15.499,
+      "end": 17.52,
+      "text": "En liten dum fråga, lite snabbt bara.",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 15.2,
+          "end": 15.52,
+          "word": " En"
+        },
+        {
+          "start": 15.52,
+          "end": 15.8,
+          "word": " liten"
+        },
+        {
+          "start": 15.8,
+          "end": 16,
+          "word": " dum"
+        },
+        {
+          "start": 16,
+          "end": 16.5,
+          "word": " fråga,"
+        },
+        {
+          "start": 16.5,
+          "end": 17,
+          "word": " lite"
+        },
+        {
+          "start": 17,
+          "end": 17.36,
+          "word": " snabbt"
+        },
+        {
+          "start": 17.36,
+          "end": 17.52,
+          "word": " bara."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 17.7,
+      "end": 20.46,
+      "text": "Du har två stjärnor bredvid self, vad betyder det?",
+      "speaker": "Gor",
+      "words": [
+        {
+          "start": 17.7,
+          "end": 18.04,
+          "word": " Du"
+        },
+        {
+          "start": 18.04,
+          "end": 18.18,
+          "word": " har"
+        },
+        {
+          "start": 18.18,
+          "end": 18.48,
+          "word": " två"
+        },
+        {
+          "start": 18.48,
+          "end": 19.06,
+          "word": " stjärnor"
+        },
+        {
+          "start": 19.06,
+          "end": 19.4,
+          "word": " bredvid"
+        },
+        {
+          "start": 19.4,
+          "end": 19.64,
+          "word": " self,"
+        },
+        {
+          "start": 19.84,
+          "end": 20,
+          "word": " vad"
+        },
+        {
+          "start": 20,
+          "end": 20.36,
+          "word": " betyder"
+        },
+        {
+          "start": 20.36,
+          "end": 20.46,
+          "word": " det?"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 21.540000000000003,
+      "end": 26.38,
+      "text": "Det innebär, eftersom att du gör till en dictionary så kan du använda typ args och kwargs i Python.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 21.540000000000003,
+          "end": 21.94,
+          "word": " Det"
+        },
+        {
+          "start": 21.94,
+          "end": 22.34,
+          "word": " innebär,"
+        },
+        {
+          "start": 22.34,
+          "end": 22.66,
+          "word": " eftersom"
+        },
+        {
+          "start": 22.66,
+          "end": 22.68,
+          "word": " att"
+        },
+        {
+          "start": 22.68,
+          "end": 22.78,
+          "word": " du"
+        },
+        {
+          "start": 22.78,
+          "end": 22.88,
+          "word": " gör"
+        },
+        {
+          "start": 22.88,
+          "end": 22.96,
+          "word": " till"
+        },
+        {
+          "start": 22.96,
+          "end": 23.1,
+          "word": " en"
+        },
+        {
+          "start": 23.1,
+          "end": 23.48,
+          "word": " dictionary,"
+        },
+        {
+          "start": 23.56,
+          "end": 23.62,
+          "word": " så"
+        },
+        {
+          "start": 23.62,
+          "end": 23.7,
+          "word": " kan"
+        },
+        {
+          "start": 23.7,
+          "end": 23.84,
+          "word": " du"
+        },
+        {
+          "start": 23.84,
+          "end": 24.42,
+          "word": " använda"
+        },
+        {
+          "start": 24.42,
+          "end": 24.58,
+          "word": " typ"
+        },
+        {
+          "start": 24.58,
+          "end": 24.96,
+          "word": " R"
+        },
+        {
+          "start": 24.96,
+          "end": 25.04,
+          "word": ":s"
+        },
+        {
+          "start": 25.04,
+          "end": 25.16,
+          "word": " och"
+        },
+        {
+          "start": 25.16,
+          "end": 25.28,
+          "word": " Q"
+        },
+        {
+          "start": 25.28,
+          "end": 25.6,
+          "word": ":s"
+        },
+        {
+          "start": 25.6,
+          "end": 25.82,
+          "word": " i"
+        },
+        {
+          "start": 25.82,
+          "end": 26.38,
+          "word": " Python,"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 26.52,
+      "end": 29.22,
+      "text": "Som gör så att du kan ta in typ antal parametrar.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 26.52,
+          "end": 26.66,
+          "word": " som"
+        },
+        {
+          "start": 26.66,
+          "end": 26.86,
+          "word": " gör"
+        },
+        {
+          "start": 26.86,
+          "end": 26.98,
+          "word": " så"
+        },
+        {
+          "start": 26.98,
+          "end": 27.14,
+          "word": " att"
+        },
+        {
+          "start": 27.14,
+          "end": 27.36,
+          "word": " du"
+        },
+        {
+          "start": 27.36,
+          "end": 27.5,
+          "word": " kan"
+        },
+        {
+          "start": 27.5,
+          "end": 27.62,
+          "word": " ta"
+        },
+        {
+          "start": 27.62,
+          "end": 27.78,
+          "word": " in"
+        },
+        {
+          "start": 27.78,
+          "end": 28.76,
+          "word": " antal"
+        },
+        {
+          "start": 28.76,
+          "end": 29.22,
+          "word": " parametrar."
+        }
+      ]
+    }
+  ]
+}

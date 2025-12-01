@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:08:49.951Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 3
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 6.376,
+      "end": 16.489,
+      "text": " Yep, he added some compare embedding clustering and then he added a Vav2Vector something.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 18.712,
+      "end": 26.122,
+      "text": "So yeah, I think he wrote some explanation for what this is so we can maybe read his.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 27.624,
+      "end": 29.987,
+      "text": "But like there is a benchmark for",
+      "speaker": "GOR"
+    }
+  ]
+}

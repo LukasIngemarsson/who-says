@@ -1,0 +1,25 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 9.062,
+      "speaker": "LUKAS",
+      "text": " start the recording, maybe people are speaking over each other and stuff, like in a single audio source, then it's going to be hard to attribute to one person."
+    },
+    {
+      "start": 9.803,
+      "end": 19.635,
+      "speaker": "LUKAS",
+      "text": "Having, for example, a button that's basically, you get 15 seconds and you get a set prompt that each person reads, if that makes sense."
+    },
+    {
+      "start": 19.675,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "You put in a bunch of words that they have to articulate and stuff, and then you just save whatever they got for that segment, because then you know it's only that person has been talking and then it's"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:29:45.107Z"
+  }
+}

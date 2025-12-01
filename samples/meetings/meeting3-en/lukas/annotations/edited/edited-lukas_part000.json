@@ -1,0 +1,31 @@
+{
+  "segments": [
+    {
+      "start": 4.132,
+      "end": 9.279,
+      "speaker": "LUKAS",
+      "text": " So I'll just continue with the points I was going over."
+    },
+    {
+      "start": 10.601,
+      "end": 15.527,
+      "speaker": "LUKAS",
+      "text": "So the second one was for annotations and the JSON files."
+    },
+    {
+      "start": 16.529,
+      "end": 25.181,
+      "speaker": "LUKAS",
+      "text": "And I mean, when whisper generates, like for each segment, it has not only just the segments' transcription, but also for each word."
+    },
+    {
+      "start": 26.162,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "But when we edit stuff in the debug app, we don't change these."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:19:37.479Z"
+  }
+}

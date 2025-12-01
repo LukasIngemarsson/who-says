@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "exported_at": "2025-11-28T12:29:03.888Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 12.856,
+      "end": 13.957,
+      "text": " you",
+      "speaker": "OSCAR",
+      "words": [
+        {
+          "start": 12.856,
+          "end": 13.957,
+          "word": "you"
+        }
+      ]
+    }
+  ]
+}

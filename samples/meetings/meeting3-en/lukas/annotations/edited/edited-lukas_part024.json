@@ -1,0 +1,19 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 3.676,
+      "speaker": "LUKAS",
+      "text": " We only see your browser."
+    },
+    {
+      "start": 28.994,
+      "end": 29.194,
+      "speaker": "LUKAS",
+      "text": "Yeah."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:38:02.266Z"
+  }
+}

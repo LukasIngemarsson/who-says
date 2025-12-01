@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:25:04.430Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 6
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 0.95,
+      "text": "Höger här.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 2.9600000000000004,
+          "end": 3.64,
+          "word": " Vill"
+        },
+        {
+          "start": 3.64,
+          "end": 3.84,
+          "word": " du"
+        },
+        {
+          "start": 3.84,
+          "end": 3.92,
+          "word": " gå"
+        },
+        {
+          "start": 3.92,
+          "end": 4.36,
+          "word": " igenom"
+        },
+        {
+          "start": 4.36,
+          "end": 4.48,
+          "word": " bara"
+        },
+        {
+          "start": 4.48,
+          "end": 5.34,
+          "word": " lite"
+        },
+        {
+          "start": 5.34,
+          "end": 6.08,
+          "word": " översiktligt?"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 0.95,
+      "end": 1.25,
+      "text": "Där ja.",
+      "speaker": "Gor",
+      "words": []
+    },
+    {
+      "id": 2,
+      "start": 3.459,
+      "end": 6.08,
+      "text": "Vill du gå igenom bara lite översiktligt?",
+      "speaker": "Lukas",
+      "words": []
+    },
+    {
+      "id": 3,
+      "start": 7.16,
+      "end": 15.2,
+      "text": "Ja sure, alltså tanken var ju... det jag la till här i alla fall var att skapa den här Who Says klassen.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 7.16,
+          "end": 7.84,
+          "word": " Ja"
+        },
+        {
+          "start": 7.84,
+          "end": 8.52,
+          "word": " sure,"
+        },
+        {
+          "start": 8.78,
+          "end": 9.16,
+          "word": " alltså"
+        },
+        {
+          "start": 9.16,
+          "end": 9.9,
+          "word": " tanken"
+        },
+        {
+          "start": 9.9,
+          "end": 9.96,
+          "word": " var"
+        },
+        {
+          "start": 9.96,
+          "end": 10.16,
+          "word": " ju"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 16.139,
+      "end": 21.62,
+      "text": "Ehh.. Och sen  i... skapade jag den här config dot py",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 15.740000000000002,
+          "end": 16.42,
+          "word": " Och"
+        },
+        {
+          "start": 16.42,
+          "end": 16.74,
+          "word": " sen"
+        },
+        {
+          "start": 16.74,
+          "end": 18.92,
+          "word": " skapade"
+        },
+        {
+          "start": 18.92,
+          "end": 19.12,
+          "word": " jag"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 22.259,
+      "end": 28.339,
+      "text": "Ehh.. och den innehåller bara, ehm.. en import från dataclasses för att kunna göra liksom",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 21.56,
+          "end": 22.4,
+          "word": " och"
+        },
+        {
+          "start": 22.4,
+          "end": 23.26,
+          "word": " den"
+        },
+        {
+          "start": 23.26,
+          "end": 23.72,
+          "word": " innehåller"
+        },
+        {
+          "start": 23.72,
+          "end": 23.94,
+          "word": " bara"
+        }
+      ]
+    }
+  ]
+}

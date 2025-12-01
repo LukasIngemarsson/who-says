@@ -3,6 +3,15 @@ Speaker change point detection using pyannote.audio models.
 """
 import os
 import torch
+from pyannote.audio.core.task import Specifications, Problem , Resolution # NEW
+
+# Allow pyannote checkpoints to load under PyTorch 2.6+ safe loader
+torch.serialization.add_safe_globals([
+    torch.torch_version.TorchVersion,
+    Specifications,
+    Problem,
+    Resolution,
+])
 import numpy as np
 from typing import Optional, List
 from pyannote.audio import Model

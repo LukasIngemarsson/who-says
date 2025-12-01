@@ -1,0 +1,202 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:00:13.882Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 8
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 5.127,
+      "end": 19.1,
+      "text": "Ja, jag tänkte om vi börjar med svenska och sen går vi över typ kanske, ja nu är klockan halv, jag tänkte säga halv, emm fyrtiofem eller kvart i tre så går vi över till engelska istället så har har vi både svenska och engelska?.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 5.127,
+          "end": 5.347,
+          "word": "Jag"
+        },
+        {
+          "start": 5.367,
+          "end": 5.507,
+          "word": "tänkte"
+        },
+        {
+          "start": 5.528,
+          "end": 5.608,
+          "word": "om"
+        },
+        {
+          "start": 5.628,
+          "end": 5.728,
+          "word": "vi"
+        },
+        {
+          "start": 5.768,
+          "end": 5.988,
+          "word": "börjar"
+        },
+        {
+          "start": 6.028,
+          "end": 6.128,
+          "word": "med"
+        },
+        {
+          "start": 6.309,
+          "end": 6.849,
+          "word": "svenska"
+        },
+        {
+          "start": 6.929,
+          "end": 7.029,
+          "word": "och"
+        },
+        {
+          "start": 7.049,
+          "end": 7.69,
+          "word": "sen"
+        },
+        {
+          "start": 7.71,
+          "end": 7.81,
+          "word": "går"
+        },
+        {
+          "start": 7.851,
+          "end": 7.951,
+          "word": "vi"
+        },
+        {
+          "start": 7.971,
+          "end": 8.151,
+          "word": "över"
+        },
+        {
+          "start": 8.171,
+          "end": 8.932,
+          "word": "typ"
+        },
+        {
+          "start": 8.952,
+          "end": 12.036,
+          "word": "klockan"
+        },
+        {
+          "start": 12.056,
+          "end": 14.139,
+          "word": "halv."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 19.25,
+      "end": 19.889,
+      "text": "Det låter bra.",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 22.85,
+          "end": 22.91,
+          "word": "Det"
+        },
+        {
+          "start": 22.93,
+          "end": 23.03,
+          "word": "låter"
+        },
+        {
+          "start": 23.05,
+          "end": 23.13,
+          "word": "bra."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 20,
+      "end": 21.25,
+      "text": "Låter bra.",
+      "speaker": "Gor",
+      "words": []
+    },
+    {
+      "id": 3,
+      "start": 22.488,
+      "end": 24.56,
+      "text": "Ska vi höja volymen om det går?",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 23.15,
+          "end": 23.29,
+          "word": "Ska"
+        },
+        {
+          "start": 23.331,
+          "end": 23.471,
+          "word": "vi"
+        },
+        {
+          "start": 23.491,
+          "end": 23.691,
+          "word": "göra"
+        },
+        {
+          "start": 23.711,
+          "end": 26.655,
+          "word": "volymer"
+        },
+        {
+          "start": 26.675,
+          "end": 26.735,
+          "word": "och"
+        },
+        {
+          "start": 26.755,
+          "end": 26.875,
+          "word": "råda"
+        },
+        {
+          "start": 26.895,
+          "end": 32.803,
+          "word": "någonstans?"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 25.559,
+      "end": 26.559,
+      "text": "Kanske på git eller?",
+      "speaker": "Gor",
+      "words": []
+    },
+    {
+      "id": 5,
+      "start": 26.559,
+      "end": 27.159,
+      "text": "Nu så.",
+      "speaker": "Kalle",
+      "words": []
+    },
+    {
+      "id": 6,
+      "start": 26.985,
+      "end": 27.73,
+      "text": "Ja exakt.",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 7,
+      "start": 27.93,
+      "end": 28.229,
+      "text": "Precis",
+      "speaker": "Mårten",
+      "words": []
+    }
+  ]
+}

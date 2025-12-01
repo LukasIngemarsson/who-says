@@ -1,0 +1,57 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.638,
+      "end": 4.236,
+      "text": " merge it back in when I'm done, or feel like I'm done with the demo app.",
+      "speaker": "JOHAN"
+    },
+    {
+      "start": 6.275,
+      "end": 10.121,
+      "speaker": "LUKAS",
+      "text": " Yeah, you can merge it into like when you merge back, you can merge back into the new one."
+    },
+    {
+      "id": 1,
+      "start": 10.834,
+      "end": 11.235,
+      "text": "yeah",
+      "speaker": "JOHAN"
+    },
+    {
+      "start": 11.724,
+      "end": 11.904,
+      "speaker": "LUKAS",
+      "text": "Yeah."
+    },
+    {
+      "id": 0,
+      "start": 19,
+      "end": 22,
+      "text": " Then are we done for this meeting?",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 24.8,
+      "end": 29.8,
+      "text": "Where the hell did I put it. Here. Yeah",
+      "speaker": "GOR"
+    },
+    {
+      "start": 27.269,
+      "end": 27.81,
+      "speaker": "LUKAS",
+      "text": "Probably."
+    },
+    {
+      "id": 0,
+      "start": 29.765,
+      "end": 29.967,
+      "text": " Thank you.",
+      "speaker": "OSCAR"
+    }
+  ]
+}

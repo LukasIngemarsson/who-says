@@ -1,0 +1,52 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 5.598,
+      "text": "Eval at whisperX to web app. Yeah, everything here seems to be done anyway.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 5.698,
+      "end": 8.621,
+      "text": "So, okay.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 5.785,
+      "end": 10.18,
+      "speaker": "LUKAS",
+      "text": " No, keep the notes at the bottom."
+    },
+    {
+      "id": 2,
+      "start": 9.142,
+      "end": 10.504,
+      "text": "All right.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 10.524,
+      "end": 11.705,
+      "text": "So we can do like this.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 4,
+      "start": 15.57,
+      "end": 18.053,
+      "text": "And then we can separate here.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 5,
+      "start": 23.219,
+      "end": 29.987,
+      "text": "Then we have, I can start with myself because I know what I'm going to do anyways.",
+      "speaker": "GOR"
+    }
+  ]
+}

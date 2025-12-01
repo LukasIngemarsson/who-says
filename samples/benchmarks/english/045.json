@@ -1,0 +1,32 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 2.095,
+      "text": " But otherwise we have this one.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 2.335,
+      "end": 4.96,
+      "text": "It's called like Microsoft clip champ.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 5.821,
+      "end": 14.5,
+      "text": "I think this one is really easy It has really easy UI for editing and so on. So I would recommend this one as well.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 20.2,
+      "end": 25.3,
+      "text": "hmmm, do I write down anything else like I don't know, heh.",
+      "speaker": "GOR"
+    }
+  ]
+}

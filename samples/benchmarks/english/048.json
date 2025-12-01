@@ -1,0 +1,35 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 1.673,
+      "speaker": "LUKAS",
+      "text": " it as a fun thing."
+    },
+    {
+      "start": 2.114,
+      "end": 18.794,
+      "speaker": "LUKAS",
+      "text": "But it was pretty practical, and I can export the code too, so I'm not sure if it's hard to connect the whisper thing you did to the web app that you can just download the code, and then we can host that one locally too."
+    },
+    {
+      "start": 19.014,
+      "end": 26.463,
+      "speaker": "LUKAS",
+      "text": "But I guess there's only three weeks left or something until we're supposed to be done, so maybe it's not worth it."
+    },
+    {
+      "id": 0,
+      "start": 23.555,
+      "end": 24.133,
+      "text": " Mmm.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 26.703,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "But yeah, the loveable app does exclude them."
+    }
+  ]
+}

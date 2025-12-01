@@ -1,0 +1,37 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 7.62,
+      "text": " thinking about this because I haven't implemented anything in the editor web app either to like edit these words.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 8.521,
+      "end": 11.204,
+      "text": "We can only edit the whole text here.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 10.3,
+      "end": 19.963,
+      "speaker": "KALLE",
+      "text": " Mm. So Lukas, how does your lovable app handle it?"
+    },
+    {
+      "id": 2,
+      "start": 12.146,
+      "end": 15.3,
+      "text": "So yeah, because it's really hard to edit this.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 21.277,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": " it doesn't need it doesn't handle either just removes them when it outputs the new JSON file because we don't we don't use them for anything so I mean I was just"
+    }
+  ]
+}

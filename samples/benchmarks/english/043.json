@@ -1,0 +1,66 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 5.017,
+      "speaker": "LUKAS",
+      "text": " That's because we want to run it through the pipeline and get how the pipeline performs."
+    },
+    {
+      "start": 6.379,
+      "end": 9.723,
+      "speaker": "LUKAS",
+      "text": "We're just recording it separately, so it's easier for us to annotate it."
+    },
+    {
+      "start": 9.512,
+      "end": 14.662,
+      "speaker": "KALLE",
+      "text": " So yeah, okay, so then and after that we make them into one file."
+    },
+    {
+      "start": 10.163,
+      "end": 11.244,
+      "speaker": "LUKAS",
+      "text": "And then we merge."
+    },
+    {
+      "start": 18.273,
+      "end": 18.553,
+      "speaker": "LUKAS",
+      "text": "Yes."
+    },
+    {
+      "start": 18.711,
+      "end": 19.012,
+      "speaker": "KALLE",
+      "text": "Yeah."
+    },
+    {
+      "start": 20.255,
+      "end": 25.421,
+      "speaker": "LUKAS",
+      "text": "But merging the annotations actually is going to be diff, or maybe not, I don't know."
+    },
+    {
+      "id": 0,
+      "start": 22.238,
+      "end": 29.987,
+      "text": " on which, like,",
+      "speaker": "OSCAR"
+    },
+    {
+      "start": 26.222,
+      "end": 27.844,
+      "speaker": "LUKAS",
+      "text": "We'll have to look into that."
+    },
+    {
+      "id": 0,
+      "start": 26.407,
+      "end": 26.817,
+      "text": " Hmm.",
+      "speaker": "GOR"
+    }
+  ]
+}

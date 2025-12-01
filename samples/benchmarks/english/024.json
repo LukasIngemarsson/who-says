@@ -1,0 +1,72 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 3.676,
+      "speaker": "LUKAS",
+      "text": " We only see your browser."
+    },
+    {
+      "id": 0,
+      "start": 1.921,
+      "end": 5.144,
+      "text": " Yeah, I need to start the thing so that it pops up here.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 6.405,
+      "end": 10.109,
+      "text": "So this is only the front end, I didn't start the backend yet.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 11.069,
+      "end": 14.032,
+      "text": "But give it a sec, yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 14.433,
+      "end": 17.015,
+      "text": "So now there's a new button here, create annotation.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 4,
+      "start": 17.696,
+      "end": 23.541,
+      "text": "And you remember when you like upload an audio file here, for example, this one, then nothing happens.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 5,
+      "start": 23.561,
+      "end": 25.783,
+      "text": "You can only listen to this audio file, right?",
+      "speaker": "GOR"
+    },
+    {
+      "id": 6,
+      "start": 26.624,
+      "end": 28.426,
+      "text": "And there's no annotations or anything.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 7,
+      "start": 28.826,
+      "end": 30,
+      "text": "So you need to upload them.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 28.994,
+      "end": 29.194,
+      "speaker": "LUKAS",
+      "text": "Yeah."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 11.118,
+      "speaker": "LUKAS",
+      "text": " I would say that, Johan, if you want to look at the demo app maybe looking at just the process of saving someone's embedding so that we can identify them stuff."
+    },
+    {
+      "id": 0,
+      "start": 8.558,
+      "end": 9,
+      "text": " yeah",
+      "speaker": "JOHAN"
+    },
+    {
+      "start": 11.138,
+      "end": 12.1,
+      "speaker": "LUKAS",
+      "text": "I think that's probably..."
+    },
+    {
+      "id": 1,
+      "start": 11.3,
+      "end": 16.4,
+      "text": " yeah definitely um could you add that Gor just say save saving embeddings",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 25,
+      "start": 21.656999999999925,
+      "end": 30,
+      "text": "I don't think you need to do it too complicated either. Its like, we don't really need a database or something like that.\nYou can probably just store it in a temporary file or something like that. Because. Otherwise, it's probably just going to get too... Yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 24,
+      "start": 23.223999999999933,
+      "end": 24.50500000000011,
+      "text": " Yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 2,
+      "start": 29.5,
+      "end": 30,
+      "text": "yeah",
+      "speaker": "JOHAN"
+    }
+  ]
+}

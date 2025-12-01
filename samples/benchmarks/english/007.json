@@ -1,0 +1,55 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.417,
+      "speaker": "LUKAS",
+      "text": " easy to just replace them with integer IDs later."
+    },
+    {
+      "start": 5.319,
+      "end": 10.746,
+      "speaker": "LUKAS",
+      "text": "Like if I'm editing, it's more intuitive for me to just write Johan, Gor, etc."
+    },
+    {
+      "id": 0,
+      "start": 5.633,
+      "end": 6,
+      "text": " Yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 9.561,
+      "end": 10.2,
+      "speaker": "KALLE",
+      "text": " Yeah."
+    },
+    {
+      "start": 11.648,
+      "end": 18.057,
+      "speaker": "LUKAS",
+      "text": "Instead of writing like keeping track of who's who in each chunk and then overriding so that it's correct, you know."
+    },
+    {
+      "start": 17.7,
+      "end": 29.616,
+      "speaker": "KALLE",
+      "text": "Yeah, I agree. I think I wasted a lot of time just going back and having to check who is speaker 3, etc."
+    },
+    {
+      "id": 1,
+      "start": 19.148,
+      "end": 19.93,
+      "text": "Sounds reasonable",
+      "speaker": "GOR"
+    },
+    {
+      "id": 5,
+      "start": 23.67500000000001,
+      "end": 24.087999999999994,
+      "text": " Hmm.",
+      "speaker": "MARTEN"
+    }
+  ]
+}

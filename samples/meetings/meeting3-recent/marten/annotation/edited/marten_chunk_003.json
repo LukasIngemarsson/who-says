@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "chunk_id": 3,
+    "start_time": 90,
+    "end_time": 120,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 1,
+      "start": 18.165999999999997,
+      "end": 20.771,
+      "text": " Wait, say that again. I didn't really hear what the...",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 18.165999999999997,
+          "end": 18.667,
+          "word": "Wait,"
+        },
+        {
+          "start": 18.686999999999998,
+          "end": 19.067999999999998,
+          "word": "say"
+        },
+        {
+          "start": 19.087999999999994,
+          "end": 19.168000000000006,
+          "word": "that"
+        },
+        {
+          "start": 19.188000000000002,
+          "end": 19.408,
+          "word": "again."
+        }
+      ]
+    }
+  ]
+}

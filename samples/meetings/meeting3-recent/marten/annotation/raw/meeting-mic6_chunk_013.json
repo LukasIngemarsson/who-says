@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "chunk_id": 13,
+    "start_time": 390,
+    "end_time": 420,
+    "segments_count": 6
+  },
+  "segments": [
+    {
+      "start": 0,
+      "end": 5.5330000000000155,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 0,
+          "end": 5.5330000000000155,
+          "score": 0.68,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 5.552999999999997,
+      "end": 5.994000000000028,
+      "text": "That's true.",
+      "words": [
+        {
+          "word": "That's",
+          "start": 5.552999999999997,
+          "end": 5.773000000000025,
+          "score": 0.605,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "true.",
+          "start": 5.793999999999983,
+          "end": 5.994000000000028,
+          "score": 0.377,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 6.01400000000001,
+      "end": 6.4739999999999895,
+      "text": "That's true.",
+      "words": [
+        {
+          "word": "That's",
+          "start": 6.01400000000001,
+          "end": 6.213999999999999,
+          "score": 0.407,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "true.",
+          "start": 6.293999999999983,
+          "end": 6.4739999999999895,
+          "score": 0.566,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 6.494000000000028,
+      "end": 6.774999999999977,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 6.494000000000028,
+          "end": 6.774999999999977,
+          "score": 0.64,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 7.115000000000009,
+      "end": 7.355000000000018,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 7.115000000000009,
+          "end": 7.355000000000018,
+          "score": 0.65,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 8.916999999999973,
+      "end": 9.076999999999998,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 8.916999999999973,
+          "end": 9.076999999999998,
+          "score": 0.615,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

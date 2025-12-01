@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "chunk_id": 50,
+    "start_time": 1500,
+    "end_time": 1530,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "start": 13.803000000000111,
+      "end": 15.208000000000084,
+      "text": " Yeah, yeah.",
+      "words": [
+        {
+          "word": "Yeah,",
+          "start": 13.803000000000111,
+          "end": 14.071999999999889,
+          "score": 0.361,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "yeah.",
+          "start": 14.608999999999924,
+          "end": 15.208000000000084,
+          "score": 0.571,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

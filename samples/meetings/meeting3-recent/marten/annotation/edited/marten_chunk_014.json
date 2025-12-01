@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "chunk_id": 14,
+    "start_time": 420,
+    "end_time": 450,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 13,
+      "start": 27.033000000000015,
+      "end": 28.535000000000025,
+      "text": " It's good to have.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 27.033000000000015,
+          "end": 27.473000000000013,
+          "word": "It's"
+        },
+        {
+          "start": 27.894000000000005,
+          "end": 28.074000000000012,
+          "word": "good"
+        },
+        {
+          "start": 28.134000000000015,
+          "end": 28.214,
+          "word": "to"
+        },
+        {
+          "start": 28.274,
+          "end": 28.535000000000025,
+          "word": "have."
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "start": 28.935000000000002,
+      "end": 30,
+      "text": "It would be good, but it's quite difficult to...",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 28.935000000000002,
+          "end": 29.375999999999976,
+          "word": "It"
+        }
+      ]
+    }
+  ]
+}

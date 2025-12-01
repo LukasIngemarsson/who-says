@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "chunk_id": 17,
+    "start_time": 510,
+    "end_time": 540,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "start": 25.64300000000003,
+      "end": 26.019999999999982,
+      "text": " Thank you.",
+      "words": [
+        {
+          "word": "Thank",
+          "start": 25.64300000000003,
+          "end": 25.908999999999992,
+          "score": 0.115,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you.",
+          "start": 25.93100000000004,
+          "end": 26.019999999999982,
+          "score": 0.161,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

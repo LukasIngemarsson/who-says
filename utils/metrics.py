@@ -297,6 +297,8 @@ def evaluate_asr(reference_transcriptions, hypothesis_transcriptions):
     return metrics
 
 def evaluate_phonemes(reference_phoneme_sequences, hypothesis_phoneme_sequences):
+    if not reference_phoneme_sequences or not hypothesis_phoneme_sequences:
+        return {"per": None}
     # Evaluate PER over a list of phoneme sequences.
     reference = " ".join(reference_phoneme_sequences)
     hypothesis = " ".join(hypothesis_phoneme_sequences)
@@ -402,9 +404,24 @@ def evaluate_pipeline(pipeline_output, annotation_data):
     output_transcriptions = [seg["text"] for seg in pipeline_output['transcription']]
     asr_metrics = evaluate_asr(reference_transcriptions, output_transcriptions)
 
-    ref_phoneme_sequences = [seg["phonemes"] for seg in reference_segments]
-    hyp_phoneme_sequences = [seg["phonemes"] for seg in pipeline_output['transcription']]
-    phoneme_metrics = evaluate_phonemes(ref_phoneme_sequences, hyp_phoneme_sequences)
+    # Phoneme-level metrics (optional, only if phonemes exist)
+    ref_phoneme_sequences = []
+    hyp_phoneme_sequences = []
+
+    # Align reference and hypothesis by index, and collect only if both have phonemes
+    for ref_seg, hyp_seg in zip(reference_segments, pipeline_output['transcription']):
+        ref_ph = ref_seg.get("phonemes")
+        hyp_ph = hyp_seg.get("phonemes")
+
+        if ref_ph and hyp_ph:
+            ref_phoneme_sequences.append(ref_ph)
+            hyp_phoneme_sequences.append(hyp_ph)
+
+    if ref_phoneme_sequences and hyp_phoneme_sequences:
+        phoneme_metrics = evaluate_phonemes(ref_phoneme_sequences, hyp_phoneme_sequences)
+    else:
+        logger.warning("No phoneme ground truth available – PER not computed.")
+        phoneme_metrics = {"per": None}
 
     diarization_metrics = evaluate_diarization(
         reference_segments,
@@ -447,7 +464,15 @@ def format_metrics_report(metrics):
     lines.append(f"{'ASR':<25} {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {asr['wer']:>9.2f}% {0:>9.2f}%")
 
     phoneme = metrics['phoneme']
-    lines.append(f"{'Phoneme':<25} {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {phoneme['per']:>9.2f}%")
+    per_val = phoneme.get('per') if phoneme is not None else None
+    if per_val is None:
+        per_val = 0.0  # or you could choose to display this as 0.0% meaning "not computed"
+    
+    lines.append(
+        f"{'Phoneme':<25} "
+        f"{0:>9.2f}% {0:>9.2f}% {0:>9.2f}% "
+        f"{0:>9.2f}% {per_val:>9.2f}%"
+    )
 
     lines.append("")
     lines.append("Diarization Error Rate (DER)")

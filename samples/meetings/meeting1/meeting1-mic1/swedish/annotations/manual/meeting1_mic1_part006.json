@@ -1,0 +1,304 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:11:22.010Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 10
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 5.577,
+      "text": "Jag har skapat bara en Who-says klass liksom, om ni lägger in alla komponenter där så kan vi...",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.3,
+          "word": " Vi"
+        },
+        {
+          "start": 0.3,
+          "end": 0.48,
+          "word": " har"
+        },
+        {
+          "start": 0.48,
+          "end": 0.8,
+          "word": " skapat"
+        },
+        {
+          "start": 0.8,
+          "end": 0.98,
+          "word": " en"
+        },
+        {
+          "start": 0.98,
+          "end": 1.4,
+          "word": " Who"
+        },
+        {
+          "start": 1.4,
+          "end": 1.7,
+          "word": " Ss"
+        },
+        {
+          "start": 1.7,
+          "end": 2.08,
+          "word": "-klass"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 5.577,
+      "end": 9.679,
+      "text": "fylla i call klassen där. Och bara köra igenom hela pipelinen.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 4.08,
+          "end": 4.38,
+          "word": " så"
+        },
+        {
+          "start": 4.38,
+          "end": 4.6,
+          "word": " kan"
+        },
+        {
+          "start": 4.6,
+          "end": 4.78,
+          "word": " vi"
+        },
+        {
+          "start": 4.78,
+          "end": 6.18,
+          "word": " fippla"
+        },
+        {
+          "start": 6.18,
+          "end": 6.36,
+          "word": " i"
+        },
+        {
+          "start": 6.36,
+          "end": 7.18,
+          "word": " Carl"
+        },
+        {
+          "start": 7.18,
+          "end": 7.64,
+          "word": "-klassen"
+        },
+        {
+          "start": 7.64,
+          "end": 7.82,
+          "word": " där"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 10.559999999999999,
+      "end": 11.72,
+      "text": "Vart gjorde du det någonstans?",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 10.559999999999999,
+          "end": 11.04,
+          "word": " Vart"
+        },
+        {
+          "start": 11.04,
+          "end": 11.12,
+          "word": " är"
+        },
+        {
+          "start": 11.12,
+          "end": 11.22,
+          "word": " det"
+        },
+        {
+          "start": 11.22,
+          "end": 11.72,
+          "word": " någonstans?"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 11.9,
+      "end": 12.199,
+      "text": "I main tror jag",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 11.9,
+          "end": 12.06,
+          "word": " I"
+        },
+        {
+          "start": 12.06,
+          "end": 12.18,
+          "word": " main"
+        },
+        {
+          "start": 12.18,
+          "end": 12.7,
+          "word": " of"
+        },
+        {
+          "start": 12.7,
+          "end": 13.02,
+          "word": " pie"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 12.399,
+      "end": 13.019,
+      "text": "Main dot py",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 5,
+      "start": 15.739999999999998,
+      "end": 19.979,
+      "text": "Ah, I see, I see. Och så bara importerar man de som ehh...",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 15.739999999999998,
+          "end": 16.22,
+          "word": " Ah,"
+        },
+        {
+          "start": 16.68,
+          "end": 16.98,
+          "word": " I"
+        },
+        {
+          "start": 16.98,
+          "end": 17.14,
+          "word": " see,"
+        },
+        {
+          "start": 17.16,
+          "end": 17.3,
+          "word": " I"
+        },
+        {
+          "start": 17.3,
+          "end": 17.46,
+          "word": " see"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 20.198,
+      "end": 20.98,
+      "text": "Ja, precis",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 20.099999999999998,
+          "end": 20.58,
+          "word": " Ja,"
+        },
+        {
+          "start": 20.76,
+          "end": 20.98,
+          "word": " precis"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 21.478,
+      "end": 21.899,
+      "text": "Fattar",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 20.98,
+          "end": 21.9,
+          "word": " Fattar"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 23.259999999999998,
+      "end": 24.4,
+      "text": "Det är ju dunder.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 23.259999999999998,
+          "end": 23.74,
+          "word": " Det"
+        },
+        {
+          "start": 23.74,
+          "end": 23.94,
+          "word": " är"
+        },
+        {
+          "start": 23.94,
+          "end": 24,
+          "word": " ju"
+        },
+        {
+          "start": 24,
+          "end": 24.4,
+          "word": " dunder"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "start": 27.84,
+      "end": 29.36,
+      "text": "Förresten, du får säga också om..",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 27.84,
+          "end": 28.32,
+          "word": " Förresten,"
+        },
+        {
+          "start": 28.32,
+          "end": 28.38,
+          "word": " du"
+        },
+        {
+          "start": 28.38,
+          "end": 28.46,
+          "word": " får"
+        },
+        {
+          "start": 28.46,
+          "end": 28.72,
+          "word": " säga"
+        },
+        {
+          "start": 28.72,
+          "end": 29,
+          "word": " också"
+        },
+        {
+          "start": 29,
+          "end": 29.36,
+          "word": " om"
+        }
+      ]
+    }
+  ]
+}

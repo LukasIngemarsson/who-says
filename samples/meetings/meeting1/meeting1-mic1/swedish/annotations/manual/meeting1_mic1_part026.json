@@ -1,0 +1,353 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:51:47.538Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 13
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 1.26,
+      "text": "Alltså kortsagt.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.76,
+          "word": " Alltså"
+        },
+        {
+          "start": 0.76,
+          "end": 1.26,
+          "word": " kortsagt."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 3.26,
+      "end": 4,
+      "text": "Nice ju",
+      "speaker": "Mårten",
+      "words": []
+    },
+    {
+      "id": 2,
+      "start": 4.44,
+      "end": 7.28,
+      "text": "Har vi.. Har vi så att man har",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 4.44,
+          "end": 4.84,
+          "word": " Har"
+        },
+        {
+          "start": 4.84,
+          "end": 5.08,
+          "word": " vi"
+        },
+        {
+          "start": 5.08,
+          "end": 6.5,
+          "word": " så"
+        },
+        {
+          "start": 6.5,
+          "end": 6.66,
+          "word": " att"
+        },
+        {
+          "start": 6.66,
+          "end": 6.86,
+          "word": " man"
+        },
+        {
+          "start": 6.86,
+          "end": 7.28,
+          "word": " har"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 8.5,
+      "end": 13.259,
+      "text": "någonstans dokumenterat vad alla klasser.. alltså vad man förväntar sig?",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 9.459999999999988,
+          "end": 9.859999999999994,
+          "word": " någonstans"
+        },
+        {
+          "start": 9.859999999999994,
+          "end": 10.26,
+          "word": " dokumenterat"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 13.4,
+      "end": 14.1,
+      "text": "Alltså..",
+      "speaker": "Abbas",
+      "words": []
+    },
+    {
+      "id": 5,
+      "start": 14.1,
+      "end": 14.259,
+      "text": "För input?",
+      "speaker": "Lukas",
+      "words": []
+    },
+    {
+      "id": 6,
+      "start": 14.759,
+      "end": 15,
+      "text": "Ja exakt!",
+      "speaker": "Abbas",
+      "words": []
+    },
+    {
+      "id": 7,
+      "start": 15.2,
+      "end": 18.5,
+      "text": "Det var det jag sa att vi ska gör, lägga till docs på funktionerna.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 14.57999999999999,
+          "end": 14.979999999999995,
+          "word": " Det"
+        },
+        {
+          "start": 14.979999999999995,
+          "end": 15.38,
+          "word": " var"
+        },
+        {
+          "start": 15.38,
+          "end": 15.5,
+          "word": " det"
+        },
+        {
+          "start": 15.5,
+          "end": 15.7,
+          "word": " jag"
+        },
+        {
+          "start": 15.7,
+          "end": 15.7,
+          "word": " sa"
+        },
+        {
+          "start": 15.7,
+          "end": 15.9,
+          "word": " att"
+        },
+        {
+          "start": 15.9,
+          "end": 15.92,
+          "word": " vi"
+        },
+        {
+          "start": 15.92,
+          "end": 16.94,
+          "word": " ska"
+        },
+        {
+          "start": 16.94,
+          "end": 17.24,
+          "word": " göra."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 19.53999999999999,
+      "end": 21.46,
+      "text": "Det var också det vi ville komma fram till också ",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 19.53999999999999,
+          "end": 19.939999999999994,
+          "word": " Det"
+        },
+        {
+          "start": 19.939999999999994,
+          "end": 20.34,
+          "word": " var"
+        },
+        {
+          "start": 20.34,
+          "end": 20.46,
+          "word": " också"
+        },
+        {
+          "start": 20.46,
+          "end": 20.58,
+          "word": " det"
+        },
+        {
+          "start": 20.58,
+          "end": 20.66,
+          "word": " vi"
+        },
+        {
+          "start": 20.66,
+          "end": 20.84,
+          "word": " ville"
+        },
+        {
+          "start": 20.84,
+          "end": 20.98,
+          "word": " komma"
+        },
+        {
+          "start": 20.98,
+          "end": 21.12,
+          "word": " fram"
+        },
+        {
+          "start": 21.12,
+          "end": 21.32,
+          "word": " till"
+        },
+        {
+          "start": 21.32,
+          "end": 21.46,
+          "word": " också"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "start": 22,
+      "end": 23.32,
+      "text": "för att ha något såhär konsekvent sätt.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 21.9,
+          "end": 22.1,
+          "word": " för"
+        },
+        {
+          "start": 22.1,
+          "end": 22.22,
+          "word": " att"
+        },
+        {
+          "start": 22.22,
+          "end": 22.26,
+          "word": " ha"
+        },
+        {
+          "start": 22.26,
+          "end": 22.46,
+          "word": " något"
+        },
+        {
+          "start": 22.46,
+          "end": 23.16,
+          "word": " konsekvent"
+        },
+        {
+          "start": 23.16,
+          "end": 23.32,
+          "word": " sätt."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "start": 24.2,
+      "end": 26.12,
+      "text": "Alltså till exempel dimensionerna för audio filerna ",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 24.2,
+          "end": 24.6,
+          "word": " Till"
+        },
+        {
+          "start": 24.6,
+          "end": 24.84,
+          "word": " exempel"
+        },
+        {
+          "start": 24.84,
+          "end": 25.4,
+          "word": " dimensionerna"
+        },
+        {
+          "start": 25.4,
+          "end": 25.54,
+          "word": " för"
+        },
+        {
+          "start": 25.54,
+          "end": 26.12,
+          "word": " adiofilerna"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "start": 26.12,
+      "end": 26.92,
+      "text": "som kommer in.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 26.12,
+          "end": 26.48,
+          "word": " som"
+        },
+        {
+          "start": 26.48,
+          "end": 26.72,
+          "word": " kommer"
+        },
+        {
+          "start": 26.72,
+          "end": 26.92,
+          "word": " in."
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "start": 27.059,
+      "end": 30,
+      "text": "Eller inte audio filen. När man har hämtat in audio filen, vad..",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 27.06,
+          "end": 27.28,
+          "word": " Eller"
+        },
+        {
+          "start": 27.28,
+          "end": 27.46,
+          "word": " inte"
+        },
+        {
+          "start": 27.46,
+          "end": 28.02,
+          "word": " adiofilen."
+        }
+      ]
+    }
+  ]
+}

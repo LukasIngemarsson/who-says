@@ -1,0 +1,295 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:15:32.584Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 9
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 2.998,
+      "text": "Gör vi kluster då, ja, ehm",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.52,
+          "word": " Är"
+        },
+        {
+          "start": 0.52,
+          "end": 0.58,
+          "word": " vi"
+        },
+        {
+          "start": 0.58,
+          "end": 0.66,
+          "word": " i"
+        },
+        {
+          "start": 0.66,
+          "end": 0.9,
+          "word": " kluster"
+        },
+        {
+          "start": 0.9,
+          "end": 1,
+          "word": " eller"
+        },
+        {
+          "start": 1,
+          "end": 1.14,
+          "word": " nåt"
+        },
+        {
+          "start": 1.14,
+          "end": 1.36,
+          "word": " då?"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 3.6,
+      "end": 6.2,
+      "text": "Ja, det är nog de delarna har jag inte ens funderat på nu om jag ska vara helt ärlig men.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 1.42,
+          "end": 1.52,
+          "word": " Ja,"
+        },
+        {
+          "start": 2.76,
+          "end": 3.84,
+          "word": " de"
+        },
+        {
+          "start": 3.84,
+          "end": 4.74,
+          "word": " delarna"
+        },
+        {
+          "start": 4.74,
+          "end": 4.74,
+          "word": " har"
+        },
+        {
+          "start": 4.74,
+          "end": 4.8,
+          "word": " jag"
+        },
+        {
+          "start": 4.8,
+          "end": 4.86,
+          "word": " inte"
+        },
+        {
+          "start": 4.86,
+          "end": 4.98,
+          "word": " ens"
+        },
+        {
+          "start": 4.98,
+          "end": 5.26,
+          "word": " funderat"
+        },
+        {
+          "start": 5.26,
+          "end": 5.36,
+          "word": " på"
+        },
+        {
+          "start": 5.36,
+          "end": 5.48,
+          "word": " nu"
+        },
+        {
+          "start": 5.48,
+          "end": 5.58,
+          "word": " om"
+        },
+        {
+          "start": 5.58,
+          "end": 5.66,
+          "word": " jag"
+        },
+        {
+          "start": 5.66,
+          "end": 5.74,
+          "word": " ska"
+        },
+        {
+          "start": 5.74,
+          "end": 5.76,
+          "word": " vara"
+        },
+        {
+          "start": 5.76,
+          "end": 5.92,
+          "word": " helt"
+        },
+        {
+          "start": 5.92,
+          "end": 6.2,
+          "word": " ärlig."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 6.88,
+      "end": 12,
+      "text": "Har ni Liveshare förresten? Jag tänkte vi alla kan ju sätta oss tillsammans i liveshare",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 6.48,
+          "end": 6.94,
+          "word": " Har"
+        },
+        {
+          "start": 6.94,
+          "end": 7.22,
+          "word": " ni"
+        },
+        {
+          "start": 7.22,
+          "end": 7.98,
+          "word": " Liveshare"
+        },
+        {
+          "start": 7.98,
+          "end": 8.36,
+          "word": " förresten?"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 12.46,
+      "end": 13.26,
+      "text": "I Visual Studio COde menar du?",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 12.46,
+          "end": 12.92,
+          "word": " Finns"
+        },
+        {
+          "start": 12.92,
+          "end": 12.92,
+          "word": " det"
+        },
+        {
+          "start": 12.92,
+          "end": 13.22,
+          "word": " kod"
+        },
+        {
+          "start": 13.22,
+          "end": 13.26,
+          "word": " nu?"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 13.48,
+      "end": 13.9,
+      "text": "Ja, exakt.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 13.48,
+          "end": 13.76,
+          "word": " Ja,"
+        },
+        {
+          "start": 13.76,
+          "end": 13.9,
+          "word": " exakt."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 15.259,
+      "end": 16.66,
+      "text": "Sure.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 14.26,
+          "end": 14.66,
+          "word": " Sure."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 24.897,
+      "end": 26.12,
+      "text": "Vad är det som låter förresten?",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 23.799999999999997,
+          "end": 24.259999999999998,
+          "word": " Vad"
+        },
+        {
+          "start": 24.259999999999998,
+          "end": 24.72,
+          "word": " är"
+        },
+        {
+          "start": 24.72,
+          "end": 25.22,
+          "word": " det"
+        },
+        {
+          "start": 25.22,
+          "end": 25.34,
+          "word": " som"
+        },
+        {
+          "start": 25.34,
+          "end": 25.76,
+          "word": " låter"
+        },
+        {
+          "start": 25.76,
+          "end": 26.12,
+          "word": " förresten?"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 26.559,
+      "end": 27.019,
+      "text": "Oskar.",
+      "speaker": "Kalle",
+      "words": [
+        {
+          "start": 26.56,
+          "end": 27.02,
+          "word": " Oskar."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 27,
+      "end": 28.019,
+      "text": "Oskar pratar.",
+      "speaker": "Gor",
+      "words": []
+    }
+  ]
+}

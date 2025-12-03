@@ -4,8 +4,24 @@ from .metrics import (
     evaluate_pipeline,
     evaluate_segmentation,
     evaluate_clustering,
+    evaluate_diarization,
     format_metrics_report,
     format_timing_report
+)
+from .comparison import (
+    get_system_info,
+    discover_benchmark_files,
+    compare_vad_models,
+    compare_sc_models,
+    aggregate_results,
+    aggregate_sc_results
+)
+from .plot import (
+    plot_metrics,
+    plot_timing,
+    plot_sc_timing,
+    plot_sc_silhouette,
+    plot_sc_der
 )
 
 __all__ = [
@@ -15,6 +31,18 @@ __all__ = [
     "evaluate_pipeline",
     "evaluate_segmentation",
     "evaluate_clustering",
+    "evaluate_diarization",
     "format_metrics_report",
-    "format_timing_report"
+    "format_timing_report",
+    "get_system_info",
+    "discover_benchmark_files",
+    "compare_vad_models",
+    "compare_sc_models",
+    "aggregate_results",
+    "aggregate_sc_results",
+    "plot_metrics",
+    "plot_timing",
+    "plot_sc_timing",
+    "plot_sc_silhouette",
+    "plot_sc_der"
 ]

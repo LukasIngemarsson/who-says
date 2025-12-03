@@ -13,15 +13,19 @@ from .comparison import (
     discover_benchmark_files,
     compare_vad_models,
     compare_sc_models,
+    compare_asr_models,
     aggregate_results,
-    aggregate_sc_results
+    aggregate_sc_results,
+    aggregate_asr_results
 )
 from .plot import (
     plot_metrics,
     plot_timing,
     plot_sc_timing,
     plot_sc_silhouette,
-    plot_sc_der
+    plot_sc_der,
+    plot_asr_wer,
+    plot_asr_timing
 )
 
 __all__ = [
@@ -38,11 +42,15 @@ __all__ = [
     "discover_benchmark_files",
     "compare_vad_models",
     "compare_sc_models",
+    "compare_asr_models",
     "aggregate_results",
     "aggregate_sc_results",
+    "aggregate_asr_results",
     "plot_metrics",
     "plot_timing",
     "plot_sc_timing",
     "plot_sc_silhouette",
-    "plot_sc_der"
+    "plot_sc_der",
+    "plot_asr_wer",
+    "plot_asr_timing"
 ]

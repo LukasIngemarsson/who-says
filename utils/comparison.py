@@ -17,7 +17,9 @@ from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedd
 from pipeline.speaker_recognition.embedding._pyannote import PyAnnoteEmbedding
 from pipeline.speaker_recognition.embedding.wav2vec2 import Wav2Vec2Embedding
 from pipeline.speaker_recognition.clustering.sklearn import SklearnClustering
-from utils import load_audio_from_file, load_annotation_file, evaluate_segmentation, evaluate_clustering, evaluate_diarization
+from pipeline.ASR.faster_whisper import FasterWhisperASR
+from utils.abc import load_audio_from_file
+from utils.metrics import load_annotation_file, evaluate_segmentation, evaluate_clustering, evaluate_diarization, evaluate_asr
 from utils.constants import SR
 
 
@@ -537,6 +539,113 @@ def aggregate_sc_results(models: Dict) -> Dict:
                 'mean': float(np.mean([r['timing']['clustering'] for r in results])),
                 'std': float(np.std([r['timing']['clustering'] for r in results])),
                 'total': float(np.sum([r['timing']['clustering'] for r in results]))
+            }
+        }
+
+    return models
+
+
+def compare_asr_models(
+    file_pairs: List[Tuple[Path, Path, str]]
+) -> Dict:
+    """
+    Compare ASR models with different sizes.
+
+    Tests 7 FasterWhisper models from tiny to large-v3.
+
+    Returns
+    -------
+    Dict
+        Dictionary with results for all 7 models
+    """
+    models_to_test = [
+        'tiny',
+        'base',
+        'small',
+        'medium',
+        'large-v3',
+        'large-v3-turbo',
+        'distil-large-v3'
+    ]
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    compute_type = "float16" if device == "cuda" else "float32"
+
+    models = {}
+    for model_name in models_to_test:
+        models[model_name] = {'results': []}
+
+    for audio_file, annotation_file, file_id in file_pairs:
+        logger.info(f"\nProcessing file: {file_id}")
+
+        waveform, sr = load_audio_from_file(audio_file, sr=SR)
+
+        if waveform.dim() > 1:
+            if waveform.shape[0] > 1 and waveform.shape[0] < waveform.shape[1]:
+                waveform = waveform.mean(dim=0)
+            elif waveform.shape[1] > 1 and waveform.shape[1] < waveform.shape[0]:
+                waveform = waveform.mean(dim=1)
+            else:
+                waveform = waveform.squeeze()
+                if waveform.dim() > 1:
+                    waveform = waveform.mean(dim=0)
+
+        annotation_data = load_annotation_file(annotation_file)
+
+        reference_transcriptions = [seg['text'] for seg in annotation_data['segments']]
+
+        for model_name in models_to_test:
+            logger.info(f"  Testing {model_name}...")
+
+            asr = FasterWhisperASR(
+                model=model_name,
+                device=device,
+                compute_type=compute_type
+            )
+
+            start_time = time.time()
+            result = asr.transcribe(waveform, language="en", return_timestamps=False, word_timestamps=False)
+            inference_time = time.time() - start_time
+
+            hypothesis_transcriptions = [result['text']]
+
+            metrics = evaluate_asr(reference_transcriptions, hypothesis_transcriptions)
+
+            models[model_name]['results'].append({
+                'file_id': file_id,
+                'audio_file': str(audio_file),
+                'metrics': metrics,
+                'timing': inference_time
+            })
+
+            logger.info(f"    WER: {metrics['wer']:.2f}%, Time: {inference_time:.2f}s")
+
+    return models
+
+
+def aggregate_asr_results(models: Dict) -> Dict:
+    """
+    Compute mean and std for ASR model results.
+    """
+    for model_name, model_data in models.items():
+        results = model_data['results']
+
+        if not results:
+            logger.warning(f"No results for {model_name}, skipping aggregation")
+            continue
+
+        wers = [r['metrics']['wer'] for r in results]
+        timings = [r['timing'] for r in results]
+
+        model_data['aggregated'] = {
+            'wer': {
+                'mean': float(np.mean(wers)),
+                'std': float(np.std(wers))
+            },
+            'timing': {
+                'mean': float(np.mean(timings)),
+                'std': float(np.std(timings)),
+                'total': float(np.sum(timings))
             }
         }
 

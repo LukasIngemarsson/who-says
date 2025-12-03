@@ -28,14 +28,48 @@ Now that your in the docker filer, you can use the following parameters when wor
 ### Compare pipeline models
 Run from inside docker (after running `./run.sh start`)
 
-#### VAD models (currently Silero vs Pyannote)
-Evaluates speech detection accuracy using precision, recall, and F1 score against ground truth annotations.
+#### Compare models with benchmark datasets
+
+**Options:**
+- `--component`: Component to compare (`vad` or `sc`)
+- `--audio-dir`: Directory containing audio files (required)
+- `--annotation-dir`: Directory containing annotation JSON files (required)
+- `--language`: Language of dataset (default: `unknown`)
+- `--limit`: Limit number of files for quick testing
+- `--output-dir`: Output directory (default: `results/comparison/english`)
+
+
+**VAD Comparison** (Silero vs Pyannote):
+```bash
+python compare.py --component vad \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+**Speaker Clustering Comparison**:
+```bash
+python compare.py --component sc \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+**ASR Comparison** (7 Whisper models from tiny to large):
+```bash
+python compare.py --component asr \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+#### Single file comparison
+**VAD:**
 ```bash
 python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
 ```
 
-#### Speaker embedding models (currently SpeechBrain ECAPA vs Wav2Vec2)
-Evaluates how well embeddings distinguish between speakers using clustering silhouette score.
+**Speaker embedding and clustering:**
 ```bash
 python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
 ```

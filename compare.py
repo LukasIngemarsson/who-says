@@ -17,13 +17,17 @@ from utils import (
     discover_benchmark_files,
     compare_vad_models,
     compare_sc_models,
+    compare_asr_models,
     aggregate_results,
     aggregate_sc_results,
+    aggregate_asr_results,
     plot_metrics,
     plot_timing,
     plot_sc_timing,
     plot_sc_silhouette,
     plot_sc_der,
+    plot_asr_wer,
+    plot_asr_timing,
     load_audio_from_file
 )
 from utils.constants import SR
@@ -36,7 +40,7 @@ def main():
     parser.add_argument(
         "--component",
         required=True,
-        choices=["vad", "sc"],
+        choices=["vad", "sc", "asr"],
         help="Component to compare"
     )
     parser.add_argument(
@@ -210,6 +214,51 @@ def main():
             print(f"  Confusion:  {agg['confusion']['mean']:6.2f}% (±{agg['confusion']['std']:.2f}%)")
             print(f"  Embedding:  {agg['embedding_timing']['mean']:6.2f}s/file")
             print(f"  Clustering: {agg['clustering_timing']['mean']:6.2f}s/file")
+        print("="*60)
+
+    elif args.component == "asr":
+        logger.info("\n" + "="*60)
+        logger.info("Running ASR comparison...")
+        logger.info("="*60)
+
+        models = compare_asr_models(file_pairs)
+        models = aggregate_asr_results(models)
+
+        output_data = {
+            "comparison_type": "asr",
+            "timestamp": timestamp,
+            "system_info": system_info,
+            "dataset": dataset_info,
+            "models": {
+                name: {
+                    "per_file_results": data['results'],
+                    "aggregated": data['aggregated']
+                }
+                for name, data in models.items()
+            }
+        }
+
+        json_path = args.output_dir / f"asr_comparison_{timestamp}.json"
+        with open(json_path, 'w') as f:
+            json.dump(output_data, f, indent=2)
+        logger.info(f"\nSaved results: {json_path}")
+
+        wer_plot = args.output_dir / f"asr_wer_{timestamp}.png"
+        timing_plot = args.output_dir / f"asr_timing_{timestamp}.png"
+
+        plot_asr_wer(models, dataset_info, system_info, wer_plot)
+        plot_asr_timing(models, dataset_info, system_info, timing_plot)
+
+        print("\n" + "="*60)
+        print("ASR COMPARISON SUMMARY")
+        print("="*60)
+        for name, data in models.items():
+            if 'aggregated' not in data:
+                continue
+            agg = data['aggregated']
+            print(f"\n{name.upper()}:")
+            print(f"  WER:      {agg['wer']['mean']:6.2f}% (±{agg['wer']['std']:.2f}%)")
+            print(f"  Avg Time: {agg['timing']['mean']:6.2f}s/file")
         print("="*60)
 
 

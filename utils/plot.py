@@ -262,3 +262,87 @@ def plot_sc_der(
     plt.close()
 
     logger.info(f"Saved SC DER plot: {output_path}")
+
+
+def plot_asr_wer(
+    models: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """Generate ASR WER comparison plot."""
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    model_names = list(models.keys())
+    wer_means = [models[name]['aggregated']['wer']['mean'] for name in model_names]
+
+    x = np.arange(len(model_names))
+    bars = ax.bar(x, wer_means, color='#2E86AB')
+
+    ax.set_ylabel('WER (%)', fontsize=12)
+    ax.set_xlabel('Model', fontsize=12)
+    ax.set_xticks(x)
+    ax.set_xticklabels(model_names, fontsize=10, rotation=45, ha='right')
+    ax.grid(axis='y', alpha=0.3)
+
+    total_duration_min = dataset_info['total_duration_seconds'] / 60
+    title = f"ASR Model Comparison - Word Error Rate\n"
+    title += f"Language: {dataset_info['language'].title()} | "
+    title += f"Files: {dataset_info['num_files']} | "
+    title += f"Duration: {total_duration_min:.1f} min\n"
+    title += f"Hardware: {system_info['gpu']} ({system_info['vram']})"
+    ax.set_title(title, fontsize=11, pad=20)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved ASR WER plot: {output_path}")
+
+
+def plot_asr_timing(
+    models: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """Generate ASR timing comparison plot."""
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    model_names = list(models.keys())
+    means = [models[name]['aggregated']['timing']['mean'] for name in model_names]
+    totals = [models[name]['aggregated']['timing']['total'] for name in model_names]
+
+    x = np.arange(len(model_names))
+    bars = ax.bar(x, means, color='#A23B72')
+
+    max_height = max(means)
+    text_height_estimate = max_height * 0.08
+    y_max = max_height + text_height_estimate + (max_height * 0.15)
+    ax.set_ylim(0, y_max)
+
+    for i, (bar, total) in enumerate(zip(bars, totals)):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + (max_height * 0.03),
+                f'Total: {total:.1f}s',
+                ha='center', va='bottom', fontsize=9)
+
+    ax.set_ylabel('Mean Time per File (seconds)', fontsize=12)
+    ax.set_xlabel('Model', fontsize=12)
+    ax.set_xticks(x)
+    ax.set_xticklabels(model_names, fontsize=10, rotation=45, ha='right')
+    ax.grid(axis='y', alpha=0.3)
+
+    total_duration_min = dataset_info['total_duration_seconds'] / 60
+    title = f"ASR Model Comparison - Inference Time\n"
+    title += f"Language: {dataset_info['language'].title()} | "
+    title += f"Files: {dataset_info['num_files']} | "
+    title += f"Duration: {total_duration_min:.1f} min\n"
+    title += f"Hardware: {system_info['gpu']} ({system_info['vram']})"
+    ax.set_title(title, fontsize=11, pad=20)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved ASR timing plot: {output_path}")

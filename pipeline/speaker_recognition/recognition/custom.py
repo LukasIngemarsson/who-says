@@ -1,5 +1,3 @@
-from utils import load_audio_from_file
-
 import torch
 import torch.nn.functional as F
 
@@ -29,16 +27,20 @@ class CustomSpeakerRecognition:
 
 
 if __name__ == "__main__":
+    print("Started...")
     embedder = SpeechBrainEmbedding()
 
+    print("Embed 1...")
     path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
-    audio1, sr1 = load_audio_from_file(path1)
-    emb1 = embedder.embed(audio1, sr1)
+    emb1 = embedder.embed_from_file(path1).squeeze(0)
+    print(emb1.shape)
 
+    print("Embed 2...")
     path2 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part001.mp3"
-    audio2, sr2 = load_audio_from_file(path2)
-    emb2 = embedder.embed(audio2, sr2)
+    emb2 = embedder.embed_from_file(path2).squeeze(0)
+    print(emb2.shape)
 
     recognizer = CustomSpeakerRecognition()
     score, prediction = recognizer.verify(emb1, emb2)
     print(f"score: {score}, prediction: {prediction}") 
+

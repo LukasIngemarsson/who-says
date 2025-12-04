@@ -1,4 +1,4 @@
-from utils import load_audio_from_file, match_frequency
+from utils import load_audio_from_file, match_frequency, to_mono
 
 from speechbrain.inference.speaker import EncoderClassifier
 import torch
@@ -19,7 +19,7 @@ class SpeechBrainEmbedding:
     """
     def __init__(self, 
                 model: str = "speechbrain/spkrec-ecapa-voxceleb",
-                device: str = "cuda") -> None:
+                device: str = "cuda" if torch.cuda.is_available() else "cpu") -> None:
         self.device = device
         self.model = EncoderClassifier.from_hparams(
             source=model,
@@ -59,9 +59,11 @@ class SpeechBrainEmbedding:
 
         audio = match_frequency(audio, frequency)
 
+        audio = to_mono(audio)
+
         # Ensure audio has batch dimension for encode_batch
         if audio.dim() == 1:
-            audio = audio.unsqueeze(0)  # Add batch dimension: (n_samples,) -> (1, n_samples)
+            audio = audio.unsqueeze(0) 
 
         embedding = self.model.encode_batch(audio)
         return embedding

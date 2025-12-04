@@ -22,6 +22,8 @@ logger.info("Loading WhoSays pipeline... This may take a moment.")
 pipeline = WhoSays()
 logger.info("Pipeline loaded successfully. Server is ready.")
 
+KNOWN_SPEAKERS = {}
+
 @app.route('/')
 def index():
     logger.info(f"Serving {app.static_folder} or ../frontend/dist")
@@ -75,7 +77,10 @@ def process_audio():
             logger.info(f"Processing with num_speakers={num_speakers}")
 
             # 5. Run the pipeline
-            result = pipeline(temp_file_path, num_speakers=num_speakers, include_timing=True)
+            result = pipeline(temp_file_path, 
+                              num_speakers=num_speakers, 
+                              include_timing=True, 
+                              known_speakers=KNOWN_SPEAKERS)
             
             logger.info(f"Successfully processed file: {temp_file_path}")
             
@@ -95,6 +100,57 @@ def process_audio():
     except Exception as e:
         logger.error(f"Unhandled error in /process: {e}")
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+    
+@app.route('/upload_embeddings', methods=['POST'])
+def upload_embeddings():
+    """
+    Endpoint to enroll a new speaker.
+    Expects:
+    - 'file': A short audio file containing ONLY the target speaker.
+    - 'name': The name of the speaker (e.g., 'John Doe').
+    """
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+        
+        file = request.files['file']
+        speaker_name = request.form.get('name')
+
+        if not speaker_name:
+            return jsonify({"error": "Speaker 'name' is required"}), 400
+        
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+
+        # Save temp file
+        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(str(file.filename)).suffix) as temp_file:
+            file.save(temp_file)
+            temp_file_path = temp_file.name
+
+        try:
+            logger.info(f"Generating embedding for speaker: {speaker_name}")
+            
+            # Use the pipeline to generate the embedding vector
+            embedding_tensor = pipeline.get_reference_embedding(temp_file_path)
+            
+            # Store in memory
+            KNOWN_SPEAKERS[speaker_name] = embedding_tensor
+            
+            logger.info(f"Enrolled {speaker_name}. Total known speakers: {len(KNOWN_SPEAKERS)}")
+            
+            return jsonify({
+                "message": f"Successfully enrolled speaker: {speaker_name}",
+                "vector_size": embedding_tensor.shape[0]
+            })
+
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+
+    except Exception as e:
+        logger.error(f"Error in upload_embeddings: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

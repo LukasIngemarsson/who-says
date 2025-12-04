@@ -85,7 +85,19 @@ def process_audio():
             logger.info(f"Successfully processed file: {temp_file_path}")
             
             # 6. Return the JSON result
-            return jsonify(result)
+            import numpy as np
+
+            def make_serializable(obj):
+                if isinstance(obj, np.ndarray):
+                    return obj.tolist()
+                if isinstance(obj, dict):
+                    return {k: make_serializable(v) for k, v in obj.items()}
+                if isinstance(obj, list):
+                    return [make_serializable(i) for i in obj]
+                return obj
+
+            # Then wrap your response with this function before returning
+            return jsonify(make_serializable(result))
 
         except Exception as e:
             logger.error(f"Error during pipeline processing: {e}")

@@ -1,0 +1,84 @@
+{
+  "segments": [
+    {
+      "start": 12.687,
+      "end": 25.448,
+      "text": " Can you say that again?",
+      "words": [
+        {
+          "word": "Can",
+          "start": 12.687,
+          "end": 24.706,
+          "score": 0.782,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 24.746,
+          "end": 24.806,
+          "score": 0.994,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "say",
+          "start": 24.846,
+          "end": 24.946,
+          "score": 0.662,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that",
+          "start": 24.967,
+          "end": 25.067,
+          "score": 0.899,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "again?",
+          "start": 25.127,
+          "end": 25.448,
+          "score": 0.886,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Can",
+      "start": 12.687,
+      "end": 24.706,
+      "score": 0.782,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "you",
+      "start": 24.746,
+      "end": 24.806,
+      "score": 0.994,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "say",
+      "start": 24.846,
+      "end": 24.946,
+      "score": 0.662,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "that",
+      "start": 24.967,
+      "end": 25.067,
+      "score": 0.899,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "again?",
+      "start": 25.127,
+      "end": 25.448,
+      "score": 0.886,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

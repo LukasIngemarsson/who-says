@@ -1,0 +1,32 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 16,
+      "text": " I will fix benchmark for phonemes and What did you... yeah, remove words in frontend.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 16.737,
+      "end": 19.481,
+      "text": "This makes sense for me so I will understand what it means.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 20.402,
+      "end": 21.464,
+      "text": "So no worries about this.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 25.7,
+      "end": 26.612,
+      "text": "Any of you guys?",
+      "speaker": "GOR"
+    }
+  ]
+}

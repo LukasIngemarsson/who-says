@@ -1,0 +1,640 @@
+{
+  "segments": [
+    {
+      "start": 0.554,
+      "end": 5.24,
+      "text": " Do you have your like regarding the backend for the that you set up?",
+      "words": [
+        {
+          "word": "Do",
+          "start": 0.554,
+          "end": 0.995,
+          "score": 0.638,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 1.015,
+          "end": 1.135,
+          "score": 0.624,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "have",
+          "start": 1.175,
+          "end": 1.335,
+          "score": 0.94,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "your",
+          "start": 1.395,
+          "end": 1.675,
+          "score": 0.668,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 2.436,
+          "end": 2.557,
+          "score": 0.938,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "regarding",
+          "start": 2.617,
+          "end": 2.917,
+          "score": 0.943,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 2.937,
+          "end": 3.017,
+          "score": 0.826,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "backend",
+          "start": 3.057,
+          "end": 3.418,
+          "score": 0.918,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "for",
+          "start": 3.478,
+          "end": 3.698,
+          "score": 0.612,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 3.718,
+          "end": 3.778,
+          "score": 0.332,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that",
+          "start": 4.239,
+          "end": 4.84,
+          "score": 0.794,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 4.86,
+          "end": 4.96,
+          "score": 0.982,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "set",
+          "start": 4.98,
+          "end": 5.12,
+          "score": 0.86,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "up?",
+          "start": 5.18,
+          "end": 5.24,
+          "score": 0.898,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 5.5,
+      "end": 16.154,
+      "text": "Do you have your computer running all the time so like we can It sets it up.",
+      "words": [
+        {
+          "word": "Do",
+          "start": 5.5,
+          "end": 5.58,
+          "score": 0.616,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 5.601,
+          "end": 5.681,
+          "score": 0.789,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "have",
+          "start": 5.701,
+          "end": 5.801,
+          "score": 0.88,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "your",
+          "start": 5.841,
+          "end": 5.981,
+          "score": 0.834,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "computer",
+          "start": 6.221,
+          "end": 6.602,
+          "score": 0.965,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "running",
+          "start": 6.622,
+          "end": 6.822,
+          "score": 0.922,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "all",
+          "start": 6.842,
+          "end": 6.922,
+          "score": 0.92,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 6.962,
+          "end": 7.042,
+          "score": 0.808,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "time",
+          "start": 7.082,
+          "end": 7.283,
+          "score": 0.843,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "so",
+          "start": 7.363,
+          "end": 7.603,
+          "score": 0.916,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 7.683,
+          "end": 7.803,
+          "score": 0.592,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 7.883,
+          "end": 8.024,
+          "score": 0.714,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "can",
+          "start": 8.044,
+          "end": 8.244,
+          "score": 0.783,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "It",
+          "start": 8.284,
+          "end": 15.233,
+          "score": 0.964,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "sets",
+          "start": 15.593,
+          "end": 15.894,
+          "score": 0.769,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 15.954,
+          "end": 15.994,
+          "score": 0.98,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "up.",
+          "start": 16.074,
+          "end": 16.154,
+          "score": 0.993,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 16.274,
+      "end": 19.478,
+      "text": "It sets it up on the like the person's own machine.",
+      "words": [
+        {
+          "word": "It",
+          "start": 16.274,
+          "end": 16.354,
+          "score": 0.965,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "sets",
+          "start": 16.374,
+          "end": 16.575,
+          "score": 0.897,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 16.615,
+          "end": 16.655,
+          "score": 0.996,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "up",
+          "start": 16.715,
+          "end": 16.775,
+          "score": 0.978,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "on",
+          "start": 16.855,
+          "end": 16.915,
+          "score": 0.98,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 16.955,
+          "end": 17.276,
+          "score": 0.908,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 17.576,
+          "end": 17.696,
+          "score": 0.811,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 17.716,
+          "end": 17.796,
+          "score": 0.822,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "person's",
+          "start": 17.816,
+          "end": 18.257,
+          "score": 0.863,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "own",
+          "start": 18.537,
+          "end": 18.737,
+          "score": 0.914,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "machine.",
+          "start": 19.158,
+          "end": 19.478,
+          "score": 0.953,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 20.66,
+      "end": 20.74,
+      "text": "Okay",
+      "words": [
+        {
+          "word": "Okay",
+          "start": 20.66,
+          "end": 20.74,
+          "score": 0.251,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Do",
+      "start": 0.554,
+      "end": 0.995,
+      "score": 0.638,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "you",
+      "start": 1.015,
+      "end": 1.135,
+      "score": 0.624,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "have",
+      "start": 1.175,
+      "end": 1.335,
+      "score": 0.94,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "your",
+      "start": 1.395,
+      "end": 1.675,
+      "score": 0.668,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like",
+      "start": 2.436,
+      "end": 2.557,
+      "score": 0.938,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "regarding",
+      "start": 2.617,
+      "end": 2.917,
+      "score": 0.943,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 2.937,
+      "end": 3.017,
+      "score": 0.826,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "backend",
+      "start": 3.057,
+      "end": 3.418,
+      "score": 0.918,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "for",
+      "start": 3.478,
+      "end": 3.698,
+      "score": 0.612,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 3.718,
+      "end": 3.778,
+      "score": 0.332,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "that",
+      "start": 4.239,
+      "end": 4.84,
+      "score": 0.794,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "you",
+      "start": 4.86,
+      "end": 4.96,
+      "score": 0.982,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "set",
+      "start": 4.98,
+      "end": 5.12,
+      "score": 0.86,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "up?",
+      "start": 5.18,
+      "end": 5.24,
+      "score": 0.898,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Do",
+      "start": 5.5,
+      "end": 5.58,
+      "score": 0.616,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "you",
+      "start": 5.601,
+      "end": 5.681,
+      "score": 0.789,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "have",
+      "start": 5.701,
+      "end": 5.801,
+      "score": 0.88,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "your",
+      "start": 5.841,
+      "end": 5.981,
+      "score": 0.834,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "computer",
+      "start": 6.221,
+      "end": 6.602,
+      "score": 0.965,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "running",
+      "start": 6.622,
+      "end": 6.822,
+      "score": 0.922,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "all",
+      "start": 6.842,
+      "end": 6.922,
+      "score": 0.92,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 6.962,
+      "end": 7.042,
+      "score": 0.808,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "time",
+      "start": 7.082,
+      "end": 7.283,
+      "score": 0.843,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "so",
+      "start": 7.363,
+      "end": 7.603,
+      "score": 0.916,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like",
+      "start": 7.683,
+      "end": 7.803,
+      "score": 0.592,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we",
+      "start": 7.883,
+      "end": 8.024,
+      "score": 0.714,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "can",
+      "start": 8.044,
+      "end": 8.244,
+      "score": 0.783,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "It",
+      "start": 8.284,
+      "end": 15.233,
+      "score": 0.964,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "sets",
+      "start": 15.593,
+      "end": 15.894,
+      "score": 0.769,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "it",
+      "start": 15.954,
+      "end": 15.994,
+      "score": 0.98,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "up.",
+      "start": 16.074,
+      "end": 16.154,
+      "score": 0.993,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "It",
+      "start": 16.274,
+      "end": 16.354,
+      "score": 0.965,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "sets",
+      "start": 16.374,
+      "end": 16.575,
+      "score": 0.897,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "it",
+      "start": 16.615,
+      "end": 16.655,
+      "score": 0.996,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "up",
+      "start": 16.715,
+      "end": 16.775,
+      "score": 0.978,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "on",
+      "start": 16.855,
+      "end": 16.915,
+      "score": 0.98,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 16.955,
+      "end": 17.276,
+      "score": 0.908,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like",
+      "start": 17.576,
+      "end": 17.696,
+      "score": 0.811,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 17.716,
+      "end": 17.796,
+      "score": 0.822,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "person's",
+      "start": 17.816,
+      "end": 18.257,
+      "score": 0.863,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "own",
+      "start": 18.537,
+      "end": 18.737,
+      "score": 0.914,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "machine.",
+      "start": 19.158,
+      "end": 19.478,
+      "score": 0.953,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Okay",
+      "start": 20.66,
+      "end": 20.74,
+      "score": 0.251,
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

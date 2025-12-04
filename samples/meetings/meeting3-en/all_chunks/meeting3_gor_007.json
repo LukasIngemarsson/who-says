@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T21:51:11.832Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 5.633,
+      "end": 6,
+      "text": " Yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 19.148,
+      "end": 19.93,
+      "text": "Sounds reasonable",
+      "speaker": "GOR"
+    }
+  ]
+}

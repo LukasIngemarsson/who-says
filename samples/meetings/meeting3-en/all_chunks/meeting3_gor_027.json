@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:24:02.443Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 4.3,
+      "text": " anything you need to save it yourself if you like it or not yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 19.3,
+      "end": 29,
+      "text": "yeah yeah yeah if you press this one it's gonna save in your download so it's quite yeah quite easy to follow",
+      "speaker": "GOR"
+    }
+  ]
+}

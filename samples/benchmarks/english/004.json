@@ -1,0 +1,81 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 0.531,
+      "speaker": "LUKAS",
+      "text": " been saying."
+    },
+    {
+      "id": 2,
+      "start": 0.7900000000000063,
+      "end": 1.1119999999999948,
+      "text": "Right.",
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 0.972,
+      "end": 4.655,
+      "speaker": "LUKAS",
+      "text": "And then there's also like word-level annotations that we're not using."
+    },
+    {
+      "start": 4.735,
+      "end": 11.962,
+      "speaker": "LUKAS",
+      "text": "So in the current like debug app, we just we update the segment-level transcription but not the word-level."
+    },
+    {
+      "start": 12.142,
+      "end": 15.405,
+      "speaker": "LUKAS",
+      "text": "So we're basically not using it or we're not updating it."
+    },
+    {
+      "start": 15.425,
+      "end": 18.368,
+      "speaker": "LUKAS",
+      "text": "So it's just it's not useful for anything."
+    },
+    {
+      "start": 19.149,
+      "end": 20.67,
+      "speaker": "LUKAS",
+      "text": "But we still keep it in the JSON file."
+    },
+    {
+      "id": 3,
+      "start": 19.199000000000012,
+      "end": 21,
+      "text": " Oh, okay.",
+      "speaker": "MARTEN"
+    },
+    {
+      "start": 20.69,
+      "end": 28.738,
+      "speaker": "LUKAS",
+      "text": "So I was just saying if if we're not using them, do we just we should just remove them instead when we when we edit them, like have the app do that."
+    },
+    {
+      "id": 0,
+      "start": 27.8,
+      "end": 29.3,
+      "text": " Sounds reasonable.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 4,
+      "start": 28.610000000000014,
+      "end": 28.831999999999994,
+      "text": "Yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 1,
+      "start": 29.4,
+      "end": 30,
+      "text": "I can.",
+      "speaker": "GOR"
+    }
+  ]
+}

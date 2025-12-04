@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:01:03.000Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 7
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 5.96,
+      "text": " some benchmarks for some of the models here, like for recognition and so on.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 6.36,
+      "end": 9.886,
+      "text": "I was thinking like phonematic part, I haven't fixed any benchmark.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 9.906,
+      "end": 11.768,
+      "text": "Do we need a benchmark for it?",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 12.089,
+      "end": 12.81,
+      "text": "I can fix it.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 4,
+      "start": 13.19,
+      "end": 16.435,
+      "text": "If we don't, then we can just skip it.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 5,
+      "start": 19.5,
+      "end": 20.341,
+      "text": "What do you think?",
+      "speaker": "GOR"
+    },
+    {
+      "id": 6,
+      "start": 20.561,
+      "end": 22.947,
+      "text": "Do we need phonematic benchmark?",
+      "speaker": "GOR"
+    }
+  ]
+}

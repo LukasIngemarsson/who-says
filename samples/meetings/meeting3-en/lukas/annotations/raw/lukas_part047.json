@@ -1,0 +1,252 @@
+{
+  "segments": [
+    {
+      "start": 24.517,
+      "end": 29.987,
+      "text": " Yeah, yeah, I was thinking because I haven't like synced with Gord really I was just doing",
+      "words": [
+        {
+          "word": "Yeah,",
+          "start": 24.517,
+          "end": 24.901,
+          "score": 0.693,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "yeah,",
+          "start": 25.526,
+          "end": 25.728,
+          "score": 0.486,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 25.809,
+          "end": 26.112,
+          "score": 0.674,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "was",
+          "start": 26.132,
+          "end": 26.233,
+          "score": 0.669,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "thinking",
+          "start": 26.293,
+          "end": 26.536,
+          "score": 0.873,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "because",
+          "start": 26.576,
+          "end": 26.818,
+          "score": 0.94,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 26.838,
+          "end": 26.858,
+          "score": 0.998,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "haven't",
+          "start": 27.202,
+          "end": 27.424,
+          "score": 0.817,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 27.605,
+          "end": 27.848,
+          "score": 0.915,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "synced",
+          "start": 28.493,
+          "end": 28.736,
+          "score": 0.799,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "with",
+          "start": 28.796,
+          "end": 28.917,
+          "score": 0.856,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "Gord",
+          "start": 28.998,
+          "end": 29.281,
+          "score": 0.812,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "really",
+          "start": 29.301,
+          "end": 29.523,
+          "score": 0.753,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 29.583,
+          "end": 29.624,
+          "score": 0.802,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "was",
+          "start": 29.644,
+          "end": 29.745,
+          "score": 0.782,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just",
+          "start": 29.785,
+          "end": 29.866,
+          "score": 0.0,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "doing",
+          "start": 29.886,
+          "end": 29.987,
+          "score": 0.0,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Yeah,",
+      "start": 24.517,
+      "end": 24.901,
+      "score": 0.693,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "yeah,",
+      "start": 25.526,
+      "end": 25.728,
+      "score": 0.486,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 25.809,
+      "end": 26.112,
+      "score": 0.674,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "was",
+      "start": 26.132,
+      "end": 26.233,
+      "score": 0.669,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "thinking",
+      "start": 26.293,
+      "end": 26.536,
+      "score": 0.873,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "because",
+      "start": 26.576,
+      "end": 26.818,
+      "score": 0.94,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 26.838,
+      "end": 26.858,
+      "score": 0.998,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "haven't",
+      "start": 27.202,
+      "end": 27.424,
+      "score": 0.817,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "like",
+      "start": 27.605,
+      "end": 27.848,
+      "score": 0.915,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "synced",
+      "start": 28.493,
+      "end": 28.736,
+      "score": 0.799,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "with",
+      "start": 28.796,
+      "end": 28.917,
+      "score": 0.856,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "Gord",
+      "start": 28.998,
+      "end": 29.281,
+      "score": 0.812,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "really",
+      "start": 29.301,
+      "end": 29.523,
+      "score": 0.753,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 29.583,
+      "end": 29.624,
+      "score": 0.802,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "was",
+      "start": 29.644,
+      "end": 29.745,
+      "score": 0.782,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "just",
+      "start": 29.785,
+      "end": 29.866,
+      "score": 0.0,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "doing",
+      "start": 29.886,
+      "end": 29.987,
+      "score": 0.0,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

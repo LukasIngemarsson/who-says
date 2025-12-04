@@ -1,0 +1,50 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 9.013,
+      "text": " But if you press this button, it will create the annotation and upload it for you without you needing to go anywhere else and do anything else.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 9.498,
+      "end": 13.026,
+      "speaker": "LUKAS",
+      "text": " Yeah, I get what it does and stuff."
+    },
+    {
+      "id": 1,
+      "start": 9.663,
+      "end": 10.964,
+      "text": "So this is the whole point, yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 13.247,
+      "end": 18.279,
+      "speaker": "LUKAS",
+      "text": "I was just wondering why, because you said you set up a separate server and stuff, is that just for simplicity?"
+    },
+    {
+      "start": 18.319,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "Because I'm thinking, yeah, okay, because I was thinking we would set up a small server and stuff to store embedded segments and stuff like that, that was the"
+    },
+    {
+      "id": 2,
+      "start": 19.074,
+      "end": 21.257,
+      "text": "Yeah, it's only for simplicity.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 22.558,
+      "end": 23,
+      "text": "It doesn't...",
+      "speaker": "GOR"
+    }
+  ]
+}

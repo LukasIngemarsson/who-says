@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "chunk_id": 4,
+    "start_time": 120,
+    "end_time": 150,
+    "segments_count": 3
+  },
+  "segments": [
+    {
+      "id": 2,
+      "start": 0.7900000000000063,
+      "end": 1.1119999999999948,
+      "text": "Right.",
+      "speaker": "SPEAKER_01",
+      "words": [
+        {
+          "start": 0.7909999999999968,
+          "end": 1.1119999999999948,
+          "word": "Right."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 19.199000000000012,
+      "end": 21,
+      "text": " Oh, okay.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 20.801999999999992,
+          "end": 21.343999999999994,
+          "word": "Oh,"
+        },
+        {
+          "start": 21.364000000000004,
+          "end": 29.592000000000013,
+          "word": "okay."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 28.610000000000014,
+      "end": 28.831999999999994,
+      "text": "Yeah.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 29.611999999999995,
+          "end": 29.833,
+          "word": "Yeah."
+        }
+      ]
+    }
+  ]
+}

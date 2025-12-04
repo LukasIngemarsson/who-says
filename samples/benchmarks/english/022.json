@@ -1,0 +1,37 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 10.147,
+      "text": "..end server in a like Conda environment or something because you will need to install some different versions of like Torch and Whisper so that's recommended.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 11.409,
+      "end": 20.6,
+      "text": "I had like hard time to fix those but if you just follow these instructions here it should work quite nicely.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 21.142,
+      "end": 24.901,
+      "speaker": "LUKAS",
+      "text": " And I just have another question about the same thing."
+    },
+    {
+      "start": 25.163,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "It's like why do we need the back end rather than just writing to a folder?"
+    },
+    {
+      "id": 2,
+      "start": 25.2,
+      "end": 25.5,
+      "text": "Mhm.",
+      "speaker": "GOR"
+    }
+  ]
+}

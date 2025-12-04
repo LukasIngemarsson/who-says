@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:14:24.446Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 3
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 10.147,
+      "text": "..end server in a like Conda environment or something because you will need to install some different versions of like Torch and Whisper so that's recommended.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 11.409,
+      "end": 20.6,
+      "text": "I had like hard time to fix those but if you just follow these instructions here it should work quite nicely.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 25.2,
+      "end": 25.5,
+      "text": "Mhm.",
+      "speaker": "GOR"
+    }
+  ]
+}

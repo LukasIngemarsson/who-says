@@ -1,0 +1,24 @@
+{
+  "segments": [
+    {
+      "id": 17,
+      "start": 11.748000000000047,
+      "end": 30,
+      "text": " yeah it's it's difficult to to get a you can't really just because you have accuracy of the the pipeline it doesn't really give a generalization of like how how well it actually performs",
+      "speaker": "MARTEN"
+    },
+    {
+      "start": 23.403,
+      "end": 23.746,
+      "speaker": "LUKAS",
+      "text": " Yeah."
+    },
+    {
+      "id": 0,
+      "start": 23.42,
+      "end": 24.487,
+      "text": " you",
+      "speaker": "OSCAR"
+    }
+  ]
+}

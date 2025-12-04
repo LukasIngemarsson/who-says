@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:59:54.681Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 4.458,
+      "text": " If no one else has anything to add then we should be done.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 4.979,
+      "end": 10.2,
+      "text": "Do we want to write down something for Abbas to know or this should be enough?",
+      "speaker": "GOR"
+    }
+  ]
+}

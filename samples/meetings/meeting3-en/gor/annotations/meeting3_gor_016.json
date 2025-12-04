@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:04:13.283Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 12.5,
+      "text": " So I'll just look around and see if there is something to use or if AI can help me somehow create something. Yeah. Yup.",
+      "speaker": "GOR"
+    }
+  ]
+}

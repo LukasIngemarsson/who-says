@@ -1,0 +1,54 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 12.446,
+      "speaker": "LUKAS",
+      "text": " It's also hard to actually fix that, I think, because you would still have to, like, especially if you're doing, like, word-level changes, you have to change the times, too, as well as the words and then add stuff."
+    },
+    {
+      "start": 4.385,
+      "end": 4.996,
+      "speaker": "KALLE",
+      "text": " Yeah."
+    },
+    {
+      "id": 0,
+      "start": 6.292,
+      "end": 11.239,
+      "text": " Exactly.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 12.466,
+      "end": 14.729,
+      "speaker": "LUKAS",
+      "text": "In my opinion, we just exclude them completely."
+    },
+    {
+      "start": 15.009,
+      "end": 17.152,
+      "speaker": "LUKAS",
+      "text": "That's my take on it."
+    },
+    {
+      "id": 1,
+      "start": 18.165999999999997,
+      "end": 20.771,
+      "text": " Wait, say that again. I didn't really hear what the...",
+      "speaker": "MARTEN"
+    },
+    {
+      "start": 20.496,
+      "end": 26.463,
+      "speaker": "LUKAS",
+      "text": "Well, like we're just discussing that whisper outputs for each segment."
+    },
+    {
+      "start": 26.483,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "It outputs, like, the full sentence for the segment or whatever the person"
+    }
+  ]
+}

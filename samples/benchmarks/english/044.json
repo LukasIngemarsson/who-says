@@ -1,0 +1,63 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 1.953,
+      "text": " Recording captures all of our voices though.",
+      "speaker": "OSCAR"
+    },
+    {
+      "id": 0,
+      "start": 2.562,
+      "end": 3.063,
+      "text": " None.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 3.743,
+      "end": 4.89,
+      "speaker": "LUKAS",
+      "text": " Yeah that's why we merge them."
+    },
+    {
+      "start": 7.285,
+      "end": 8.472,
+      "speaker": "LUKAS",
+      "text": "And then we have all the voices."
+    },
+    {
+      "start": 8.851,
+      "end": 12.376,
+      "speaker": "KALLE",
+      "text": " And that should be easy to do with something like Audacity."
+    },
+    {
+      "start": 14.499,
+      "end": 25.431,
+      "speaker": "KALLE",
+      "text": "It's just stack, importing all of them and then just exporting them, as one file, I think."
+    },
+    {
+      "id": 1,
+      "start": 14.675,
+      "end": 14.915,
+      "text": "Yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 16.266,
+      "end": 27.456,
+      "text": "Okay.",
+      "speaker": "OSCAR"
+    },
+    {
+      "id": 2,
+      "start": 27.2,
+      "end": 29.211,
+      "text": "Should work fine in my opinion.",
+      "speaker": "GOR"
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "meta": {
+    "chunk_id": 39,
+    "start_time": 1170,
+    "end_time": 1200,
+    "segments_count": 4
+  },
+  "segments": [
+    {
+      "start": 20.22499999999991,
+      "end": 20.50500000000011,
+      "text": " Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 20.22499999999991,
+          "end": 20.50500000000011,
+          "score": 0.401,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 21.867999999999938,
+      "end": 24.5329999999999,
+      "text": "I don't think you need to do it too complicated either.",
+      "words": [
+        {
+          "word": "I",
+          "start": 21.867999999999938,
+          "end": 21.92800000000011,
+          "score": 0.844,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "don't",
+          "start": 21.968000000000075,
+          "end": 22.087999999999965,
+          "score": 0.888,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "think",
+          "start": 22.12799999999993,
+          "end": 22.249000000000024,
+          "score": 0.896,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 22.269000000000005,
+          "end": 22.348999999999933,
+          "score": 0.039,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "need",
+          "start": 22.368999999999915,
+          "end": 22.489000000000033,
+          "score": 0.398,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 22.528999999999996,
+          "end": 22.56899999999996,
+          "score": 0.882,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "do",
+          "start": 22.628999999999905,
+          "end": 22.729000000000042,
+          "score": 0.99,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 22.788999999999987,
+          "end": 22.829999999999927,
+          "score": 0.871,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "too",
+          "start": 23.210000000000036,
+          "end": 23.43100000000004,
+          "score": 0.744,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "complicated",
+          "start": 23.730999999999995,
+          "end": 24.271999999999935,
+          "score": 0.861,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "either.",
+          "start": 24.332000000000107,
+          "end": 24.5329999999999,
+          "score": 0.768,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 25.05300000000011,
+      "end": 27.577999999999975,
+      "text": "We don't really need a database or something like that.",
+      "words": [
+        {
+          "word": "We",
+          "start": 25.05300000000011,
+          "end": 25.134000000000015,
+          "score": 0.932,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "don't",
+          "start": 25.59400000000005,
+          "end": 25.714999999999918,
+          "score": 0.902,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "really",
+          "start": 25.815000000000055,
+          "end": 26.0150000000001,
+          "score": 0.907,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "need",
+          "start": 26.055000000000064,
+          "end": 26.174999999999955,
+          "score": 0.845,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "a",
+          "start": 26.256000000000085,
+          "end": 26.31600000000003,
+          "score": 0.293,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "database",
+          "start": 26.55600000000004,
+          "end": 26.936999999999898,
+          "score": 0.564,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "or",
+          "start": 26.99700000000007,
+          "end": 27.057000000000016,
+          "score": 0.9,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "something",
+          "start": 27.09699999999998,
+          "end": 27.297000000000025,
+          "score": 0.888,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "like",
+          "start": 27.33699999999999,
+          "end": 27.417999999999893,
+          "score": 0.179,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that.",
+          "start": 27.438000000000102,
+          "end": 27.577999999999975,
+          "score": 0.686,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 27.6579999999999,
+      "end": 30,
+      "text": "You can probably just store it in a temporary file or something like that.",
+      "words": [
+        {
+          "word": "You",
+          "start": 27.6579999999999,
+          "end": 27.718000000000075,
+          "score": 0.264,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "can",
+          "start": 27.738000000000056,
+          "end": 27.87799999999993,
+          "score": 0.844,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "probably",
+          "start": 28.05899999999997,
+          "end": 28.298999999999978,
+          "score": 0.88,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just",
+          "start": 28.338999999999942,
+          "end": 28.479000000000042,
+          "score": 0.867,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "store",
+          "start": 28.5,
+          "end": 28.680000000000064,
+          "score": 0.703,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 28.720000000000027,
+          "end": 28.799999999999955,
+          "score": 0.839,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

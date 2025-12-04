@@ -1,0 +1,72 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.671,
+      "speaker": "LUKAS",
+      "text": " maybe gonna give us like a higher chance of accuracy when identifying later."
+    },
+    {
+      "id": 0,
+      "start": 5.566,
+      "end": 6,
+      "text": " I see.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 5.977,
+      "end": 6.7,
+      "speaker": "LUKAS",
+      "text": "If that makes sense."
+    },
+    {
+      "id": 10,
+      "start": 10.951999999999998,
+      "end": 12.293000000000006,
+      "text": "That's true. That's true. Yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 11,
+      "start": 13.293000000000006,
+      "end": 14.293000000000006,
+      "text": "Yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 1,
+      "start": 16.204,
+      "end": 17.586,
+      "text": "Okay.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 12,
+      "start": 16.293000000000006,
+      "end": 17.293000000000006,
+      "text": "Yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 2,
+      "start": 21.092,
+      "end": 23.015,
+      "text": "I was going to say something, but I forgot.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 23.356,
+      "end": 24.458,
+      "text": "Yeah, right.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 4,
+      "start": 25.059,
+      "end": 29.987,
+      "text": "For the benchmarks, I saw that you guys fixed",
+      "speaker": "GOR"
+    }
+  ]
+}

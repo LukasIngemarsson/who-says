@@ -1,0 +1,36 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 7.345,
+      "speaker": "LUKAS",
+      "text": " in memory, if we're doing it on our own device anyways, like what's the point of setting up a separate environment?"
+    },
+    {
+      "id": 0,
+      "start": 4.3,
+      "end": 15.235,
+      "text": " So, wait a second, I can start up the frontend so you can see what I mean exactly, right?",
+      "speaker": "GOR"
+    },
+    {
+      "start": 15.861,
+      "end": 16.101,
+      "speaker": "LUKAS",
+      "text": "Yeah."
+    },
+    {
+      "id": 1,
+      "start": 17.358,
+      "end": 29,
+      "text": "Give me a second. Web app. Then we do npm run dev.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 29.707,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "Because we"
+    }
+  ]
+}

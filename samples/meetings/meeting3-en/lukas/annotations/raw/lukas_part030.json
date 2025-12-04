@@ -1,0 +1,112 @@
+{
+  "segments": [
+    {
+      "start": 5.785,
+      "end": 27.456,
+      "text": " No, keep the notes at the bottom.",
+      "words": [
+        {
+          "word": "No,",
+          "start": 5.785,
+          "end": 6.065,
+          "score": 0.802,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "keep",
+          "start": 6.146,
+          "end": 7.027,
+          "score": 0.758,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 7.067,
+          "end": 7.548,
+          "score": 0.738,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "notes",
+          "start": 7.588,
+          "end": 7.808,
+          "score": 0.593,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "at",
+          "start": 8.108,
+          "end": 8.148,
+          "score": 0.956,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 8.168,
+          "end": 8.249,
+          "score": 0.831,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "bottom.",
+          "start": 8.289,
+          "end": 27.456,
+          "score": 0.976,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "No,",
+      "start": 5.785,
+      "end": 6.065,
+      "score": 0.802,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "keep",
+      "start": 6.146,
+      "end": 7.027,
+      "score": 0.758,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 7.067,
+      "end": 7.548,
+      "score": 0.738,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "notes",
+      "start": 7.588,
+      "end": 7.808,
+      "score": 0.593,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "at",
+      "start": 8.108,
+      "end": 8.148,
+      "score": 0.956,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 8.168,
+      "end": 8.249,
+      "score": 0.831,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "bottom.",
+      "start": 8.289,
+      "end": 27.456,
+      "score": 0.976,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

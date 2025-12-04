@@ -1,0 +1,63 @@
+{
+  "segments": [
+    {
+      "start": 4.216,
+      "end": 7.042,
+      "speaker": "LUKAS",
+      "text": " So maybe we want to divide what we have to do now."
+    },
+    {
+      "id": 0,
+      "start": 8.84,
+      "end": 12.965,
+      "text": " Yes, I was just going to fix that.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 13.025,
+      "end": 16.91,
+      "text": "So do we need these old ones or are we done with these?",
+      "speaker": "GOR"
+    },
+    {
+      "start": 16.999,
+      "end": 18.552,
+      "speaker": "KALLE",
+      "text": " Well, the report is done."
+    },
+    {
+      "id": 2,
+      "start": 17.651,
+      "end": 18.132,
+      "text": "What do you think?",
+      "speaker": "GOR"
+    },
+    {
+      "start": 21.123,
+      "end": 24.925,
+      "speaker": "KALLE",
+      "text": "Well, at least the hand in that way did."
+    },
+    {
+      "id": 3,
+      "start": 22.057,
+      "end": 27.384,
+      "text": "Okay, I'm going to test.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 24.777,
+      "end": 26.14,
+      "speaker": "LUKAS",
+      "text": "Yeah, I'd leave the notes."
+    },
+    {
+      "id": 4,
+      "start": 27.404,
+      "end": 29.987,
+      "text": "Yeah, so we can just",
+      "speaker": "GOR"
+    }
+  ]
+}

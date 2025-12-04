@@ -1,0 +1,584 @@
+{
+  "segments": [
+    {
+      "start": 2.022,
+      "end": 3.645,
+      "text": " I mean, it shouldn't be...",
+      "words": [
+        {
+          "word": "I",
+          "start": 2.022,
+          "end": 2.202,
+          "score": 0.804,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "mean,",
+          "start": 2.262,
+          "end": 2.403,
+          "score": 0.926,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 2.463,
+          "end": 2.503,
+          "score": 0.848,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "shouldn't",
+          "start": 2.563,
+          "end": 2.844,
+          "score": 0.781,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "be...",
+          "start": 3.425,
+          "end": 3.645,
+          "score": 0.987,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 3.685,
+      "end": 5.789,
+      "text": "It's not something hard.",
+      "words": [
+        {
+          "word": "It's",
+          "start": 3.685,
+          "end": 5.008,
+          "score": 0.622,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "not",
+          "start": 5.048,
+          "end": 5.168,
+          "score": 0.97,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "something",
+          "start": 5.228,
+          "end": 5.509,
+          "score": 0.968,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "hard.",
+          "start": 5.569,
+          "end": 5.789,
+          "score": 0.944,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 6.23,
+      "end": 10.859,
+      "text": "So, I mean, if you want to do it now, go ahead.",
+      "words": [
+        {
+          "word": "So,",
+          "start": 6.23,
+          "end": 6.451,
+          "score": 0.763,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 6.471,
+          "end": 6.511,
+          "score": 0.882,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "mean,",
+          "start": 6.531,
+          "end": 6.691,
+          "score": 0.923,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "if",
+          "start": 6.731,
+          "end": 9.056,
+          "score": 0.875,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "you",
+          "start": 9.096,
+          "end": 9.196,
+          "score": 0.939,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "want",
+          "start": 9.236,
+          "end": 9.336,
+          "score": 0.724,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 9.376,
+          "end": 9.436,
+          "score": 0.975,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "do",
+          "start": 9.477,
+          "end": 9.577,
+          "score": 0.988,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 9.657,
+          "end": 9.697,
+          "score": 0.748,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "now,",
+          "start": 9.757,
+          "end": 9.978,
+          "score": 0.943,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "go",
+          "start": 10.519,
+          "end": 10.639,
+          "score": 0.975,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "ahead.",
+          "start": 10.679,
+          "end": 10.859,
+          "score": 0.53,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 11.14,
+      "end": 17.432,
+      "text": "I think it shouldn't take more than an hour or two to just add a button that records.",
+      "words": [
+        {
+          "word": "I",
+          "start": 11.14,
+          "end": 11.2,
+          "score": 0.926,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "think",
+          "start": 11.24,
+          "end": 11.4,
+          "score": 0.975,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 11.42,
+          "end": 11.46,
+          "score": 0.5,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "shouldn't",
+          "start": 11.601,
+          "end": 11.841,
+          "score": 0.932,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "take",
+          "start": 11.881,
+          "end": 12.042,
+          "score": 0.938,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "more",
+          "start": 12.322,
+          "end": 13.585,
+          "score": 0.788,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "than",
+          "start": 13.645,
+          "end": 13.785,
+          "score": 0.885,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "an",
+          "start": 13.805,
+          "end": 14.106,
+          "score": 0.66,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "hour",
+          "start": 14.126,
+          "end": 14.446,
+          "score": 0.641,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "or",
+          "start": 14.566,
+          "end": 14.627,
+          "score": 0.541,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "two",
+          "start": 14.687,
+          "end": 14.847,
+          "score": 0.765,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 14.907,
+          "end": 14.987,
+          "score": 0.706,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just",
+          "start": 15.027,
+          "end": 15.268,
+          "score": 0.874,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "add",
+          "start": 15.809,
+          "end": 15.929,
+          "score": 0.826,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "a",
+          "start": 16.13,
+          "end": 16.15,
+          "score": 0.898,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "button",
+          "start": 16.21,
+          "end": 16.49,
+          "score": 0.958,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that",
+          "start": 16.731,
+          "end": 16.851,
+          "score": 0.984,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "records.",
+          "start": 16.891,
+          "end": 17.432,
+          "score": 0.95,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "I",
+      "start": 2.022,
+      "end": 2.202,
+      "score": 0.804,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "mean,",
+      "start": 2.262,
+      "end": 2.403,
+      "score": 0.926,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "it",
+      "start": 2.463,
+      "end": 2.503,
+      "score": 0.848,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "shouldn't",
+      "start": 2.563,
+      "end": 2.844,
+      "score": 0.781,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "be...",
+      "start": 3.425,
+      "end": 3.645,
+      "score": 0.987,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "It's",
+      "start": 3.685,
+      "end": 5.008,
+      "score": 0.622,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "not",
+      "start": 5.048,
+      "end": 5.168,
+      "score": 0.97,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "something",
+      "start": 5.228,
+      "end": 5.509,
+      "score": 0.968,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "hard.",
+      "start": 5.569,
+      "end": 5.789,
+      "score": 0.944,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "So,",
+      "start": 6.23,
+      "end": 6.451,
+      "score": 0.763,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 6.471,
+      "end": 6.511,
+      "score": 0.882,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "mean,",
+      "start": 6.531,
+      "end": 6.691,
+      "score": 0.923,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "if",
+      "start": 6.731,
+      "end": 9.056,
+      "score": 0.875,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "you",
+      "start": 9.096,
+      "end": 9.196,
+      "score": 0.939,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "want",
+      "start": 9.236,
+      "end": 9.336,
+      "score": 0.724,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 9.376,
+      "end": 9.436,
+      "score": 0.975,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "do",
+      "start": 9.477,
+      "end": 9.577,
+      "score": 0.988,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "it",
+      "start": 9.657,
+      "end": 9.697,
+      "score": 0.748,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "now,",
+      "start": 9.757,
+      "end": 9.978,
+      "score": 0.943,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "go",
+      "start": 10.519,
+      "end": 10.639,
+      "score": 0.975,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "ahead.",
+      "start": 10.679,
+      "end": 10.859,
+      "score": 0.53,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "I",
+      "start": 11.14,
+      "end": 11.2,
+      "score": 0.926,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "think",
+      "start": 11.24,
+      "end": 11.4,
+      "score": 0.975,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "it",
+      "start": 11.42,
+      "end": 11.46,
+      "score": 0.5,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "shouldn't",
+      "start": 11.601,
+      "end": 11.841,
+      "score": 0.932,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "take",
+      "start": 11.881,
+      "end": 12.042,
+      "score": 0.938,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "more",
+      "start": 12.322,
+      "end": 13.585,
+      "score": 0.788,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "than",
+      "start": 13.645,
+      "end": 13.785,
+      "score": 0.885,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "an",
+      "start": 13.805,
+      "end": 14.106,
+      "score": 0.66,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "hour",
+      "start": 14.126,
+      "end": 14.446,
+      "score": 0.641,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "or",
+      "start": 14.566,
+      "end": 14.627,
+      "score": 0.541,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "two",
+      "start": 14.687,
+      "end": 14.847,
+      "score": 0.765,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "to",
+      "start": 14.907,
+      "end": 14.987,
+      "score": 0.706,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "just",
+      "start": 15.027,
+      "end": 15.268,
+      "score": 0.874,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "add",
+      "start": 15.809,
+      "end": 15.929,
+      "score": 0.826,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "a",
+      "start": 16.13,
+      "end": 16.15,
+      "score": 0.898,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "button",
+      "start": 16.21,
+      "end": 16.49,
+      "score": 0.958,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "that",
+      "start": 16.731,
+      "end": 16.851,
+      "score": 0.984,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "records.",
+      "start": 16.891,
+      "end": 17.432,
+      "score": 0.95,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

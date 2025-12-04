@@ -1,0 +1,347 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:35:23.761Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 8
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 0.86,
+      "text": "Ja, ja, vi kör.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.14,
+          "word": " Ja,"
+        },
+        {
+          "start": 0.16,
+          "end": 0.26,
+          "word": " ja,"
+        },
+        {
+          "start": 0.34,
+          "end": 0.42,
+          "word": " vi"
+        },
+        {
+          "start": 0.42,
+          "end": 0.46,
+          "word": " kör."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 1.16,
+      "end": 2.92,
+      "text": "Det är inte så här superkonkret kanske.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 0.66,
+          "end": 1.08,
+          "word": " Det"
+        },
+        {
+          "start": 1.08,
+          "end": 1.3,
+          "word": " är"
+        },
+        {
+          "start": 1.3,
+          "end": 1.8,
+          "word": " inte"
+        },
+        {
+          "start": 1.8,
+          "end": 2.04,
+          "word": " så"
+        },
+        {
+          "start": 2.04,
+          "end": 2.7,
+          "word": " superkonkret"
+        },
+        {
+          "start": 2.7,
+          "end": 2.92,
+          "word": " kanske."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 3.52,
+      "end": 3.94,
+      "text": "Absolut.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 3.52,
+          "end": 3.94,
+          "word": " Absolut."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 5.1,
+      "end": 9,
+      "text": "Jag vet inte om jag ska peka runt om folk följer med om jag gör det.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 5.1,
+          "end": 5.52,
+          "word": " Jag"
+        },
+        {
+          "start": 5.52,
+          "end": 5.68,
+          "word": " vet"
+        },
+        {
+          "start": 5.68,
+          "end": 5.76,
+          "word": " inte"
+        },
+        {
+          "start": 5.76,
+          "end": 5.92,
+          "word": " om"
+        },
+        {
+          "start": 5.92,
+          "end": 6.06,
+          "word": " jag"
+        },
+        {
+          "start": 6.06,
+          "end": 6.52,
+          "word": " ska"
+        },
+        {
+          "start": 6.52,
+          "end": 6.86,
+          "word": " peka"
+        },
+        {
+          "start": 6.86,
+          "end": 7,
+          "word": " runt"
+        },
+        {
+          "start": 7,
+          "end": 7.26,
+          "word": " om"
+        },
+        {
+          "start": 7.26,
+          "end": 8.1,
+          "word": " folk"
+        },
+        {
+          "start": 8.1,
+          "end": 8.46,
+          "word": " följer"
+        },
+        {
+          "start": 8.46,
+          "end": 8.6,
+          "word": " med"
+        },
+        {
+          "start": 8.6,
+          "end": 8.68,
+          "word": " om"
+        },
+        {
+          "start": 8.68,
+          "end": 8.72,
+          "word": " jag"
+        },
+        {
+          "start": 8.72,
+          "end": 8.88,
+          "word": " gör"
+        },
+        {
+          "start": 8.88,
+          "end": 9,
+          "word": " det."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 9.16,
+      "end": 12.82,
+      "text": "Ja, man borde kunna klicka på, ehm, pin.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 9.16,
+          "end": 9.24,
+          "word": " Ja,"
+        },
+        {
+          "start": 9.26,
+          "end": 9.52,
+          "word": " man"
+        },
+        {
+          "start": 9.52,
+          "end": 10.52,
+          "word": " borde"
+        },
+        {
+          "start": 10.52,
+          "end": 10.66,
+          "word": " kunna"
+        },
+        {
+          "start": 10.66,
+          "end": 11.02,
+          "word": " klicka"
+        },
+        {
+          "start": 11.02,
+          "end": 11.22,
+          "word": " på"
+        },
+        {
+          "start": 11.22,
+          "end": 12.82,
+          "word": " pin."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 16.84,
+      "end": 18.32,
+      "text": "Där ja, klicka på den här.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 16.84,
+          "end": 17.26,
+          "word": " Där"
+        },
+        {
+          "start": 17.26,
+          "end": 17.28,
+          "word": " ja,"
+        },
+        {
+          "start": 17.36,
+          "end": 17.84,
+          "word": " klicka"
+        },
+        {
+          "start": 17.84,
+          "end": 18,
+          "word": " på"
+        },
+        {
+          "start": 18,
+          "end": 18.08,
+          "word": " den"
+        },
+        {
+          "start": 18.08,
+          "end": 18.32,
+          "word": " här."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "start": 21.338,
+      "end": 23.58,
+      "text": "Follow participants.",
+      "speaker": "Mårten",
+      "words": [
+        {
+          "start": 18.34,
+          "end": 18.76,
+          "word": " I'm"
+        },
+        {
+          "start": 18.76,
+          "end": 18.92,
+          "word": " sure"
+        },
+        {
+          "start": 18.92,
+          "end": 20.26,
+          "word": " to"
+        },
+        {
+          "start": 20.26,
+          "end": 20.58,
+          "word": " follow"
+        },
+        {
+          "start": 20.58,
+          "end": 23.58,
+          "word": " participants."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 24.4,
+      "end": 26.36,
+      "text": "Nu följer jag Gor, men jag vet inte.",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 24.4,
+          "end": 24.78,
+          "word": " Nu"
+        },
+        {
+          "start": 24.78,
+          "end": 25.1,
+          "word": " följer"
+        },
+        {
+          "start": 25.1,
+          "end": 25.18,
+          "word": " jag"
+        },
+        {
+          "start": 25.18,
+          "end": 25.48,
+          "word": " Gore,"
+        },
+        {
+          "start": 25.66,
+          "end": 25.86,
+          "word": " men"
+        },
+        {
+          "start": 25.86,
+          "end": 26.04,
+          "word": " jag"
+        },
+        {
+          "start": 26.04,
+          "end": 26.24,
+          "word": " vet"
+        },
+        {
+          "start": 26.24,
+          "end": 26.36,
+          "word": " inte."
+        }
+      ]
+    }
+  ]
+}

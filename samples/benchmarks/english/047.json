@@ -1,0 +1,37 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 3,
+      "text": " remove the words from the JSON file.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 3.535,
+      "end": 13.126,
+      "text": "So I will try to do this as fast as I can, but I have some work booked for today, so I probably will do it tomorrow if it's okay with you guys.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 12.392,
+      "end": 22.849,
+      "speaker": "KALLE",
+      "text": " And also I think Lucas, lovable thing, removed the words as it is right now, right?"
+    },
+    {
+      "id": 2,
+      "start": 23.097,
+      "end": 23.558,
+      "text": "All right.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 24.517,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": " Yeah, yeah, I was thinking because I haven't like synced with Gor really I was just doing"
+    }
+  ]
+}

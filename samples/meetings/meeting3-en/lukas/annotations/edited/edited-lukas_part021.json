@@ -1,0 +1,37 @@
+{
+  "segments": [
+    {
+      "start": 0.554,
+      "end": 5.24,
+      "speaker": "LUKAS",
+      "text": " Do you have your like regarding the backend for the that you set up?"
+    },
+    {
+      "start": 5.5,
+      "end": 9.04,
+      "speaker": "LUKAS",
+      "text": "Do you have your computer running all the time so like we can..."
+    },
+    {
+      "start": 14.6,
+      "end": 16.274,
+      "speaker": "LUKAS",
+      "text": " It sets it up."
+    },
+    {
+      "start": 16.274,
+      "end": 19.478,
+      "speaker": "LUKAS",
+      "text": "It sets it up on the like the person's own machine."
+    },
+    {
+      "start": 20.66,
+      "end": 20.74,
+      "speaker": "LUKAS",
+      "text": "Okay"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:36:30.692Z"
+  }
+}

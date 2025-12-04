@@ -1,0 +1,37 @@
+{
+  "segments": [
+    {
+      "start": 0.2,
+      "end": 3.055,
+      "speaker": "KALLE",
+      "text": " So I think, yeah, I agree."
+    },
+    {
+      "id": 0,
+      "start": 5.785,
+      "end": 19.449,
+      "text": " Did we also talk about like when the so in the demo when we use the app that everyone that's in the conversation gets to upload like a sample or is that something that we should do later if we have time?",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 0,
+      "start": 6.443,
+      "end": 7,
+      "text": " Nice.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 24,
+      "end": 25.448,
+      "speaker": "LUKAS",
+      "text": " Can you say that again?"
+    },
+    {
+      "id": 1,
+      "start": 25.68,
+      "end": 29.987,
+      "text": "Yeah so in the demo app like let's say we're sort of",
+      "speaker": "JOHAN"
+    }
+  ]
+}

@@ -42,6 +42,55 @@ docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
  - "--output", "-o", type=Path, help="Output JSON file path (optional)"
  - "--pretty", action="store_true", help="Pretty print the output"
  - "--timing", action="store_true", help="Include timing metrics for each model run"
+
+### Compare pipeline models
+Run from inside docker (after running `./run.sh start`)
+
+#### Compare models with benchmark datasets
+
+**Options:**
+- `--component`: Component to compare (`vad` or `sc`)
+- `--audio-dir`: Directory containing audio files (required)
+- `--annotation-dir`: Directory containing annotation JSON files (required)
+- `--language`: Language of dataset (default: `unknown`)
+- `--limit`: Limit number of files for quick testing
+- `--output-dir`: Output directory (default: `results/comparison/english`)
+
+
+**VAD Comparison** (Silero vs Pyannote):
+```bash
+python compare.py --component vad \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+**Speaker Clustering Comparison**:
+```bash
+python compare.py --component sc \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+**ASR Comparison** (7 Whisper models from tiny to large):
+```bash
+python compare.py --component asr \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+#### Single file comparison
+**VAD:**
+```bash
+python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
+```
+
+**Speaker embedding and clustering:**
+```bash
+python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
+```
  
 <!-- Running w/o the script: -->
 <!-- Build image -->
@@ -74,20 +123,6 @@ docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
 
-### Compare pipeline models
-Run from inside docker (after running `./run.sh start`)
-
-#### VAD models (currently Silero vs Pyannote)
-Evaluates speech detection accuracy using precision, recall, and F1 score against ground truth annotations.
-```bash
-python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
-```
-
-#### Speaker embedding models (currently SpeechBrain ECAPA vs Wav2Vec2)
-Evaluates how well embeddings distinguish between speakers using clustering silhouette score.
-```bash
-python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
-```
 
 ## Update `requirements.txt`
 

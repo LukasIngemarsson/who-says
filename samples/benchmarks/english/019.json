@@ -1,0 +1,49 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.261,
+      "speaker": "LUKAS",
+      "text": " Committed to like the folder that you're in, so perhaps he's done something there."
+    },
+    {
+      "start": 4.662,
+      "end": 5.123,
+      "speaker": "LUKAS",
+      "text": "In embedding."
+    },
+    {
+      "id": 0,
+      "start": 6.376,
+      "end": 16.489,
+      "text": " Yep, he added some compare embedding clustering and then he added a Vav2Vector something.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 6.827,
+      "end": 7.088,
+      "speaker": "LUKAS",
+      "text": "You see?"
+    },
+    {
+      "start": 17.232,
+      "end": 17.533,
+      "speaker": "LUKAS",
+      "text": "Okay."
+    },
+    {
+      "id": 1,
+      "start": 18.712,
+      "end": 26.122,
+      "text": "So yeah, I think he wrote some explanation for what this is so we can maybe read his.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 27.624,
+      "end": 29.987,
+      "text": "But like there is a benchmark for",
+      "speaker": "GOR"
+    }
+  ]
+}

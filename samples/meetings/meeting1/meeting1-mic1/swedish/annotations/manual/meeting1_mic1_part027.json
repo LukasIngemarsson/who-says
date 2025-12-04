@@ -1,0 +1,436 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:54:09.470Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 10
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 0,
+      "end": 2.88,
+      "text": "Vad har den för format? Den är kanske en torch tensor med...",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 0,
+          "end": 0.42,
+          "word": " Vad"
+        },
+        {
+          "start": 0.42,
+          "end": 0.56,
+          "word": " har"
+        },
+        {
+          "start": 0.56,
+          "end": 0.66,
+          "word": " den"
+        },
+        {
+          "start": 0.66,
+          "end": 0.86,
+          "word": " för"
+        },
+        {
+          "start": 0.86,
+          "end": 1.06,
+          "word": " format?"
+        },
+        {
+          "start": 1.24,
+          "end": 1.3,
+          "word": " Den"
+        },
+        {
+          "start": 1.3,
+          "end": 1.36,
+          "word": " är"
+        },
+        {
+          "start": 1.36,
+          "end": 1.46,
+          "word": " kanske"
+        },
+        {
+          "start": 1.46,
+          "end": 1.72,
+          "word": " en"
+        },
+        {
+          "start": 1.72,
+          "end": 2.02,
+          "word": " torch"
+        },
+        {
+          "start": 2.02,
+          "end": 2.46,
+          "word": " tensor"
+        },
+        {
+          "start": 2.46,
+          "end": 2.88,
+          "word": " med..."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 3,
+      "end": 4,
+      "text": "Exakt.",
+      "speaker": "Abbas",
+      "words": []
+    },
+    {
+      "id": 2,
+      "start": 4.480000000000002,
+      "end": 10.62,
+      "text": "Eller inte en torch tensor, men någon sorts lista som innehåller, eller en dictionary som innehåller grejer.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 4.480000000000002,
+          "end": 4.900000000000001,
+          "word": " Eller"
+        },
+        {
+          "start": 4.900000000000001,
+          "end": 5.32,
+          "word": " inte"
+        },
+        {
+          "start": 5.32,
+          "end": 5.76,
+          "word": " en"
+        },
+        {
+          "start": 5.76,
+          "end": 5.92,
+          "word": " torch"
+        },
+        {
+          "start": 5.92,
+          "end": 6.26,
+          "word": " tensor,"
+        },
+        {
+          "start": 6.32,
+          "end": 6.38,
+          "word": " men"
+        },
+        {
+          "start": 6.38,
+          "end": 7.48,
+          "word": " någon"
+        },
+        {
+          "start": 7.48,
+          "end": 8.22,
+          "word": " sorts"
+        },
+        {
+          "start": 8.22,
+          "end": 8.54,
+          "word": " lista"
+        },
+        {
+          "start": 8.54,
+          "end": 8.76,
+          "word": " som"
+        },
+        {
+          "start": 8.76,
+          "end": 9.3,
+          "word": " innehåller,"
+        },
+        {
+          "start": 9.3,
+          "end": 9.46,
+          "word": " eller"
+        },
+        {
+          "start": 9.46,
+          "end": 9.54,
+          "word": " en"
+        },
+        {
+          "start": 9.54,
+          "end": 9.98,
+          "word": " dictionary"
+        },
+        {
+          "start": 9.98,
+          "end": 10.16,
+          "word": " som"
+        },
+        {
+          "start": 10.16,
+          "end": 10.42,
+          "word": " innehåller"
+        },
+        {
+          "start": 10.42,
+          "end": 10.62,
+          "word": " grejer."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 7.4,
+      "end": 8,
+      "text": "Någonting.",
+      "speaker": "Kalle",
+      "words": []
+    },
+    {
+      "id": 4,
+      "start": 11.640000000000002,
+      "end": 17.04,
+      "text": "Men det lär ju vara olika också. Olika komponenter kommer att få behöva olika input tror jag.",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 11.640000000000002,
+          "end": 12.06,
+          "word": " Men"
+        },
+        {
+          "start": 12.06,
+          "end": 12.16,
+          "word": " det"
+        },
+        {
+          "start": 12.16,
+          "end": 12.3,
+          "word": " lär"
+        },
+        {
+          "start": 12.3,
+          "end": 12.36,
+          "word": " ju"
+        },
+        {
+          "start": 12.36,
+          "end": 12.4,
+          "word": " vara"
+        },
+        {
+          "start": 12.4,
+          "end": 12.66,
+          "word": " olika"
+        },
+        {
+          "start": 12.66,
+          "end": 12.9,
+          "word": " också."
+        },
+        {
+          "start": 13.2,
+          "end": 13.62,
+          "word": " Olika"
+        },
+        {
+          "start": 13.62,
+          "end": 14.12,
+          "word": " komponenter"
+        },
+        {
+          "start": 14.12,
+          "end": 15,
+          "word": " kommer"
+        },
+        {
+          "start": 15,
+          "end": 15.36,
+          "word": " att"
+        },
+        {
+          "start": 15.36,
+          "end": 15.4,
+          "word": " få"
+        },
+        {
+          "start": 15.4,
+          "end": 15.68,
+          "word": " behöva"
+        },
+        {
+          "start": 15.68,
+          "end": 15.82,
+          "word": " olika"
+        },
+        {
+          "start": 15.82,
+          "end": 16.64,
+          "word": " input"
+        },
+        {
+          "start": 16.64,
+          "end": 16.88,
+          "word": " tror"
+        },
+        {
+          "start": 16.88,
+          "end": 17.04,
+          "word": " jag."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 14.5,
+      "end": 15,
+      "text": "Absolut.",
+      "speaker": "Lukas",
+      "words": []
+    },
+    {
+      "id": 6,
+      "start": 16,
+      "end": 16.15,
+      "text": "Absolut.",
+      "speaker": "Lukas",
+      "words": []
+    },
+    {
+      "id": 7,
+      "start": 18.24,
+      "end": 25.48,
+      "text": "Men om alla har någon slags ehh, i den funktionen, typ en embed funktionen. Om man har bara lite som du sa, en kommentar typ.",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 18.240000000000002,
+          "end": 18.66,
+          "word": " Men"
+        },
+        {
+          "start": 18.66,
+          "end": 18.84,
+          "word": " om"
+        },
+        {
+          "start": 18.84,
+          "end": 18.98,
+          "word": " alla"
+        },
+        {
+          "start": 18.98,
+          "end": 19.2,
+          "word": " har"
+        },
+        {
+          "start": 19.2,
+          "end": 19.46,
+          "word": " någon"
+        },
+        {
+          "start": 19.46,
+          "end": 20.08,
+          "word": " slags,"
+        },
+        {
+          "start": 20.08,
+          "end": 20.96,
+          "word": " i"
+        },
+        {
+          "start": 20.96,
+          "end": 21.2,
+          "word": " den"
+        },
+        {
+          "start": 21.2,
+          "end": 22.64,
+          "word": " funktionen,"
+        },
+        {
+          "start": 22.64,
+          "end": 22.76,
+          "word": " typ"
+        },
+        {
+          "start": 22.76,
+          "end": 22.88,
+          "word": " en"
+        },
+        {
+          "start": 22.88,
+          "end": 23.48,
+          "word": " bäddfunktion."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "start": 25.54,
+      "end": 27.14,
+      "text": "Den förväntar sig den här inputen.",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 25.54,
+          "end": 25.96,
+          "word": " Vem"
+        },
+        {
+          "start": 25.96,
+          "end": 26.26,
+          "word": " förväntar"
+        },
+        {
+          "start": 26.26,
+          "end": 26.38,
+          "word": " sig"
+        },
+        {
+          "start": 26.38,
+          "end": 26.58,
+          "word": " den"
+        },
+        {
+          "start": 26.58,
+          "end": 26.7,
+          "word": " här"
+        },
+        {
+          "start": 26.7,
+          "end": 27.14,
+          "word": " inputen?"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "start": 27.720000000000002,
+      "end": 30,
+      "text": "Kanske ett exempel också så..",
+      "speaker": "Abbas",
+      "words": [
+        {
+          "start": 27.720000000000002,
+          "end": 28.14,
+          "word": " Kanske"
+        },
+        {
+          "start": 28.14,
+          "end": 28.24,
+          "word": " ett"
+        },
+        {
+          "start": 28.24,
+          "end": 28.48,
+          "word": " exempel"
+        },
+        {
+          "start": 28.48,
+          "end": 28.88,
+          "word": " också."
+        }
+      ]
+    }
+  ]
+}

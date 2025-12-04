@@ -10,7 +10,6 @@ import numpy as np
 from loguru import logger
 from scipy.optimize import linear_sum_assignment
 
-from pipeline.speaker_segmentation.VAD.silero import SileroVAD
 from pipeline.speaker_segmentation.VAD.pyannote_vad import PyannoteVAD
 from pipeline.speaker_segmentation.SCD import SCD
 from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedding
@@ -18,7 +17,7 @@ from pipeline.speaker_recognition.embedding._pyannote import PyAnnoteEmbedding
 from pipeline.speaker_recognition.embedding.wav2vec2 import Wav2Vec2Embedding
 from pipeline.speaker_recognition.clustering.sklearn import SklearnClustering
 from pipeline.ASR.faster_whisper import FasterWhisperASR
-from utils.abc import load_audio_from_file
+from utils.audio import load_audio_from_file
 from utils.metrics import load_annotation_file, evaluate_segmentation, evaluate_clustering, evaluate_diarization, evaluate_asr
 from utils.constants import SR
 
@@ -247,6 +246,8 @@ def compare_vad_models(
     Returns:
         Dictionary with results for both models
     """
+    from pipeline.speaker_segmentation.VAD.silero import SileroVAD
+
     silero_vad = SileroVAD()
     pyannote_vad = PyannoteVAD()
 

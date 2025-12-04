@@ -25,3 +25,17 @@ def match_frequency(audio: torch.Tensor, frequency: int, sr: int = SR) -> torch.
         audio = torchaudio.functional.resample(audio, orig_freq=frequency, new_freq=sr)
     return audio
 
+
+def to_mono(audio):
+    """
+    Converts multi-channel audio to mono by averaging across channels.
+    Args:
+        audio (torch.Tensor): Audio tensor of shape (channels, time) or (time,)
+    Returns:
+        torch.Tensor: Mono audio tensor of shape (time,)
+    """
+    if audio.ndim == 2:
+        # Average across channels
+        return audio.mean(dim=0)
+    return audio
+

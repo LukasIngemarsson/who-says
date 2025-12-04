@@ -1,4 +1,4 @@
-from .abc import load_audio_from_file, match_frequency
+from .audio import load_audio_from_file, match_frequency, to_mono
 from .metrics import (
     load_annotation_file,
     evaluate_pipeline,
@@ -31,6 +31,7 @@ from .plot import (
 __all__ = [
     "load_audio_from_file",
     "match_frequency",
+    "to_mono",
     "load_annotation_file",
     "evaluate_pipeline",
     "evaluate_segmentation",

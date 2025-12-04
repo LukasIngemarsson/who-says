@@ -10,7 +10,6 @@ import numpy as np
 from loguru import logger
 from scipy.optimize import linear_sum_assignment
 
-from pipeline.speaker_segmentation.VAD.silero import SileroVAD
 from pipeline.speaker_segmentation.VAD.pyannote_vad import PyannoteVAD
 from pipeline.speaker_segmentation.SCD import SCD
 from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedding
@@ -247,6 +246,7 @@ def compare_vad_models(
     Returns:
         Dictionary with results for both models
     """
+    from pipeline.speaker_segmentation.VAD.silero import SileroVAD
     silero_vad = SileroVAD()
     pyannote_vad = PyannoteVAD()
 

@@ -31,14 +31,14 @@ class CustomSpeakerRecognition:
 if __name__ == "__main__":
     embedder = SpeechBrainEmbedding()
 
-    path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/"
+    path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
     audio1, sr1 = load_audio_from_file(path1)
     emb1 = embedder.embed(audio1, sr1)
 
-    path2 = "samples/multi_speaker_sample.mp3"
+    path2 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part001.mp3"
     audio2, sr2 = load_audio_from_file(path2)
     emb2 = embedder.embed(audio2, sr2)
 
     recognizer = CustomSpeakerRecognition()
-    score_1, prediction_1 = recognizer.verify(emb, emb_sep_1)
-    print(f"score: {score_1}, prediction: {prediction_1}") 
+    score, prediction = recognizer.verify(emb1, emb2)
+    print(f"score: {score}, prediction: {prediction}") 

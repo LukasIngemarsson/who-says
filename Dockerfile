@@ -30,4 +30,4 @@ ENV FLASK_STATIC_FOLDER=/app/client
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--workers", "1", "--bind", "0.0.0.0:8000", "app:app"]
+CMD ["gunicorn", "--workers", "1", "--timeout", "360", "--keep-alive", "5", "--bind", "0.0.0.0:8000", "app:app"]

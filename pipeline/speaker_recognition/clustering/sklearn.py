@@ -1,4 +1,4 @@
-from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN 
+from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN, MiniBatchKMeans
 import torch
 
 class SklearnClustering:
@@ -18,12 +18,23 @@ class SklearnClustering:
             self.model = AgglomerativeClustering(**kwargs)
         elif algorithm == "kmeans":
             self.model = KMeans(**kwargs)
+        elif algorithm == "minibatchkmeans":
+            self.model = MiniBatchKMeans(**kwargs)
         elif algorithm == "dbscan":
             self.model = DBSCAN(**kwargs)
         else:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
 
-    def cluster_segments(self, embeddings: torch.Tensor, n_clusters: int = None) -> torch.Tensor:
+    def partial_cluster(self, embedding: torch.Tensor):
+        # Only works for MiniBatchKMeans
+        if hasattr(self.model, "partial_fit"):
+            self.model.partial_fit(embedding.cpu().numpy().reshape(1, -1))
+            label = self.model.predict(embedding.cpu().numpy().reshape(1, -1))
+            return torch.tensor(label)
+        else:
+            raise NotImplementedError("partial_fit not supported for this algorithm")
+
+    def cluster_segments(self, embeddings: torch.Tensor, n_clusters: int = -1) -> torch.Tensor:
         """
         Assign clusters to segment embeddings.
 
@@ -40,7 +51,7 @@ class SklearnClustering:
             Cluster labels for each segment.
         """
         # If n_clusters is provided and the model supports it, update it
-        if n_clusters is not None and hasattr(self.model, 'n_clusters'):
+        if n_clusters != -1 and hasattr(self.model, 'n_clusters'):
             self.model.n_clusters = n_clusters
 
         labels = self.model.fit_predict(embeddings.cpu().numpy())

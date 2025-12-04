@@ -1,4 +1,4 @@
-FROM node:18-alpine as build-step
+FROM node:18-alpine AS build-step
 WORKDIR /build
 
 COPY frontend/package*.json ./

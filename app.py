@@ -1,102 +1,138 @@
 import os
 import tempfile
+import subprocess
 from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 from loguru import logger
 from dotenv import load_dotenv
+import numpy as np
 
-from main import WhoSays
+import warnings
+warnings.filterwarnings("ignore")
+
+# Import main logic
+try:
+    from main import WhoSays
+    PIPELINE_AVAILABLE = True
+except ImportError:
+    logger.warning("Could not import WhoSays from main.py. Running in mock mode.")
+    PIPELINE_AVAILABLE = False
 
 load_dotenv(".env")
 
 static_folder_path = os.environ.get("FLASK_STATIC_FOLDER", "../frontend/dist")
-
 static_folder_path = os.path.abspath(static_folder_path)
  
 app = Flask(__name__, static_folder=static_folder_path, static_url_path='')
 
-""" from flask_cors import CORS
-CORS(app) """
-
-logger.info("Loading WhoSays pipeline... This may take a moment.")
-pipeline = WhoSays()
-logger.info("Pipeline loaded successfully. Server is ready.")
+if PIPELINE_AVAILABLE:
+    logger.info("Loading WhoSays pipeline... This may take a moment.")
+    pipeline = WhoSays()
+    logger.info("Pipeline loaded successfully. Server is ready.")
+else:
+    pipeline = None
 
 KNOWN_SPEAKERS = {}
 
+def make_serializable(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, dict):
+        return {k: make_serializable(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [make_serializable(i) for i in obj]
+    return obj
+
+def convert_to_wav(input_path):
+    """
+    Converts any audio file to a standard PCM WAV file using ffmpeg.
+    Returns the path to the new wav file.
+    """
+    try:
+        # Create a temp file for the output
+        output_fd, output_path = tempfile.mkstemp(suffix='.wav')
+        os.close(output_fd)
+        
+        # Run ffmpeg command: -i input -ac 1 (mono) -ar 16000 (16kHz) output.wav
+        # 16kHz mono is the standard for most speech embedding models (like wav2vec, pyannote)
+        command = [
+            'ffmpeg', 
+            '-y', # Overwrite output
+            '-i', input_path,
+            '-ac', '1', # Convert to mono
+            '-ar', '16000', # Convert to 16kHz
+            output_path
+        ]
+        
+        # Run process, suppress stdout/stderr unless error
+        subprocess.run(command, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        
+        logger.info(f"Converted {input_path} to {output_path}")
+        return output_path
+        
+    except subprocess.CalledProcessError as e:
+        logger.error(f"FFmpeg conversion failed: {e.stderr.decode()}")
+        # If conversion fails, we might try returning the original path or raising error
+        raise Exception(f"Could not convert audio file: {e.stderr.decode()}")
+
 @app.route('/')
 def index():
-    logger.info(f"Serving {app.static_folder} or ../frontend/dist")
-    return send_from_directory(app.static_folder or '../frontend/dist', 'index.html')
+    logger.info(f"Serving {app.static_folder}")
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/<path:path>')
 def catch_all(path):
-    # Check if the file exists in the static folder (e.g. css/js files)
     file_path = os.path.join(app.static_folder, path)
     if os.path.exists(file_path):
         return send_from_directory(app.static_folder, path)
-
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/status', methods=['GET'])
 def status():
-    return jsonify({"status": "WhoSays server is running."})
+    return jsonify({
+        "status": "WhoSays server is running.",
+        "pipeline_loaded": PIPELINE_AVAILABLE,
+        "known_speakers": list(KNOWN_SPEAKERS.keys())
+    })
 
 @app.route('/process', methods=['POST'])
 def process_audio():
-    """
-    The main endpoint to process an uploaded audio file.
-    Expects a multipart-form request with:
-    - 'file': The audio file (e.g., .wav, .mp3)
-    - 'num_speakers': (Optional) The number of speakers, defaults to 2
-    """
+    if not PIPELINE_AVAILABLE:
+        return jsonify({"error": "Pipeline not available. Server running in mock mode."}), 503
+
     try:
-        # 1. Check if the file part is present
         if 'file' not in request.files:
-            logger.warning("No 'file' part in request")
             return jsonify({"error": "No 'file' part in the request"}), 400
 
         file = request.files['file']
-
-        # 2. Check if a file was selected
         if file.filename == '':
-            logger.warning("No file selected")
             return jsonify({"error": "No file selected"}), 400
 
-        # 3. Get number of speakers from form data
         num_speakers = request.form.get('num_speakers', 2, type=int)
 
         temp_file_path = None
+        wav_path = None
+        
         try:
-            # 4. Save the file to a temporary location
-            with tempfile.NamedTemporaryFile(delete=False, suffix=Path(str(file.filename)).suffix) as temp_file:
+            # 1. Save original file
+            suffix = Path(str(file.filename)).suffix
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
                 file.save(temp_file)
                 temp_file_path = temp_file.name
             
-            logger.info(f"Received file '{file.filename}'. Saved to temp path: {temp_file_path}")
-            logger.info(f"Processing with num_speakers={num_speakers}")
-
-            # 5. Run the pipeline
-            result = pipeline(temp_file_path, 
-                              num_speakers=num_speakers, 
-                              include_timing=True, 
-                              known_speakers=KNOWN_SPEAKERS)
+            # 2. Convert to WAV (Standardize input)
+            wav_path = convert_to_wav(temp_file_path)
             
-            logger.info(f"Successfully processed file: {temp_file_path}")
+            logger.info(f"Processing converted file '{wav_path}' with {num_speakers} speakers")
+
+            # 3. Run Pipeline on WAV file
+            result = pipeline(
+                wav_path, 
+                num_speakers=num_speakers, 
+                include_timing=True, 
+                known_speakers=KNOWN_SPEAKERS
+            )
             
-            # 6. Return the JSON result
-            import numpy as np
-
-            def make_serializable(obj):
-                if isinstance(obj, np.ndarray):
-                    return obj.tolist()
-                if isinstance(obj, dict):
-                    return {k: make_serializable(v) for k, v in obj.items()}
-                if isinstance(obj, list):
-                    return [make_serializable(i) for i in obj]
-                return obj
-
-            # Then wrap your response with this function before returning
             return jsonify(make_serializable(result))
 
         except Exception as e:
@@ -104,10 +140,11 @@ def process_audio():
             return jsonify({"error": "Internal server error", "details": str(e)}), 500
         
         finally:
-            # 7. Clean up the temporary file
+            # Clean up both original and converted files
             if temp_file_path and os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
-                logger.info(f"Cleaned up temporary file: {temp_file_path}")
+            if wav_path and os.path.exists(wav_path):
+                os.remove(wav_path)
 
     except Exception as e:
         logger.error(f"Unhandled error in /process: {e}")
@@ -115,12 +152,10 @@ def process_audio():
     
 @app.route('/upload_embeddings', methods=['POST'])
 def upload_embeddings():
-    """
-    Endpoint to enroll a new speaker.
-    Expects:
-    - 'file': A short audio file containing ONLY the target speaker.
-    - 'name': The name of the speaker (e.g., 'John Doe').
-    """
+    if not PIPELINE_AVAILABLE:
+        name = request.form.get('name', 'Unknown')
+        return jsonify({"message": f"Mock enrollment for {name}", "vector_size": 0})
+
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file part"}), 400
@@ -131,38 +166,52 @@ def upload_embeddings():
         if not speaker_name:
             return jsonify({"error": "Speaker 'name' is required"}), 400
         
-        if file.filename == '':
-            return jsonify({"error": "No selected file"}), 400
-
-        # Save temp file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(str(file.filename)).suffix) as temp_file:
-            file.save(temp_file)
-            temp_file_path = temp_file.name
+        # Determine suffix (browser uploads might default to .webm or .blob)
+        suffix = Path(str(file.filename)).suffix or ".webm"
+        
+        temp_file_path = None
+        wav_path = None
 
         try:
-            logger.info(f"Generating embedding for speaker: {speaker_name}")
+            # 1. Save upload temporarily
+            with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+                file.save(temp_file)
+                temp_file_path = temp_file.name
+
+            # 2. Convert to Standard WAV using ffmpeg
+            # This solves the "Unsupported format" issue
+            wav_path = convert_to_wav(temp_file_path)
+
+            logger.info(f"Generating embedding for speaker: {speaker_name} from {wav_path}")
             
-            # Use the pipeline to generate the embedding vector
-            embedding_tensor = pipeline.get_reference_embedding(temp_file_path)
+            # 3. Generate embedding from the clean WAV file
+            embedding_tensor = pipeline.get_reference_embedding(wav_path)
             
-            # Store in memory
+            # Store in global dictionary
             KNOWN_SPEAKERS[speaker_name] = embedding_tensor
             
             logger.info(f"Enrolled {speaker_name}. Total known speakers: {len(KNOWN_SPEAKERS)}")
             
+            shape = embedding_tensor.shape if hasattr(embedding_tensor, 'shape') else "unknown"
+
             return jsonify({
                 "message": f"Successfully enrolled speaker: {speaker_name}",
-                "vector_size": embedding_tensor.shape[0]
+                "vector_size": shape
             })
 
+        except Exception as e:
+            logger.error(f"Pipeline error during embedding generation: {e}")
+            return jsonify({"error": f"Processing failed: {str(e)}"}), 500
+
         finally:
-            if os.path.exists(temp_file_path):
+            if temp_file_path and os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
+            if wav_path and os.path.exists(wav_path):
+                os.remove(wav_path)
 
     except Exception as e:
         logger.error(f"Error in upload_embeddings: {e}")
         return jsonify({"error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

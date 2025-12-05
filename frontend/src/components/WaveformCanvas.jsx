@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { FileAudio, RefreshCw, AlertCircle } from "lucide-react";
-import { SPEAKER_COLORS, formatTime } from "../utils/constants.js";
+import { formatTime, getSpeakerColor } from "../utils/functions.js";
 
 const WaveformCanvas = ({
   audioBuffer,
@@ -16,7 +16,6 @@ const WaveformCanvas = ({
   const animationRef = useRef(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
 
-  // Handle Seek Click
   const handleClick = (e) => {
     if (!containerRef.current || !duration) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -26,7 +25,6 @@ const WaveformCanvas = ({
     onSeek(seekTime);
   };
 
-  // Handle Hover Logic
   const handleMouseMove = (e) => {
     if (!containerRef.current || segments.length === 0) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -47,7 +45,6 @@ const WaveformCanvas = ({
     const width = containerRef.current.offsetWidth;
     const height = 240;
 
-    // Handle high DPI
     const dpr = window.devicePixelRatio || 1;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -58,7 +55,6 @@ const WaveformCanvas = ({
     ctx.clearRect(0, 0, width, height);
     const centerY = height / 2;
 
-    // 1. Draw Waveform
     if (audioBuffer) {
       const rawData = audioBuffer.getChannelData(0);
       const samples = 800;
@@ -76,13 +72,11 @@ const WaveformCanvas = ({
         const x = i * barWidth;
         const y = centerY - barHeight / 2;
 
-        // Color based on playback
         const isPlayed = i / samples < currentTime / duration;
         ctx.fillStyle = isPlayed ? "#3b82f6" : "#475569";
         ctx.fillRect(x, y, barWidth - 0.5, barHeight);
       }
     } else if (isRecording) {
-      // Fake recording visualizer
       ctx.fillStyle = "#ef4444";
       const time = Date.now() / 200;
       for (let i = 0; i < 50; i++) {
@@ -94,7 +88,6 @@ const WaveformCanvas = ({
       ctx.textAlign = "center";
       ctx.fillText("Recording Audio...", width / 2, centerY + 60);
     } else {
-      // Placeholder line
       ctx.beginPath();
       ctx.strokeStyle = "#334155";
       ctx.lineWidth = 2;
@@ -103,21 +96,19 @@ const WaveformCanvas = ({
       ctx.stroke();
     }
 
-    // 2. Draw Segments
     if (segments.length > 0 && !isRecording) {
       segments.forEach((seg) => {
         const x = (seg.start / duration) * width;
         const w = (seg.duration / duration) * width;
-        const color = SPEAKER_COLORS[seg.cluster_id] || SPEAKER_COLORS.default;
+        const color = getSpeakerColor(seg.cluster_id);
 
-        ctx.fillStyle = color + "15";
+        ctx.fillStyle = color + "20";
         ctx.fillRect(x, 0, w, height);
         ctx.fillStyle = color;
         ctx.fillRect(x, 0, w, 4);
       });
     }
 
-    // 3. Playhead
     if (!isRecording && duration > 0) {
       const playheadX = (currentTime / duration) * width;
       ctx.beginPath();
@@ -143,20 +134,18 @@ const WaveformCanvas = ({
 
   return (
     <div className="space-y-4">
-      {/* Time Header */}
       <div className="flex items-center justify-between text-sm text-slate-400 px-1">
         <span className="font-mono">{formatTime(currentTime)}</span>
         <div className="flex items-center gap-2">
           {segments.length === 0 && duration > 0 && !processing && (
             <span className="flex items-center gap-1.5 text-amber-500 bg-amber-500/10 px-2 py-1 rounded text-xs">
-              <AlertCircle size={12} /> Live audio - No transcription
+              <AlertCircle size={12} /> Audio loaded - No transcription
             </span>
           )}
           <span className="font-mono">{formatTime(duration)}</span>
         </div>
       </div>
 
-      {/* Main Canvas Container */}
       <div
         ref={containerRef}
         className="relative w-full h-[240px] bg-slate-900 rounded-xl border border-slate-800 shadow-inner overflow-hidden cursor-pointer group"
@@ -169,7 +158,7 @@ const WaveformCanvas = ({
             <div className="flex flex-col items-center gap-3">
               <RefreshCw className="animate-spin text-blue-500 w-8 h-8" />
               <span className="text-blue-400 font-medium">
-                Processing Audio...
+                Processing on Server...
               </span>
             </div>
           </div>
@@ -187,7 +176,7 @@ const WaveformCanvas = ({
                 <span
                   className="w-2.5 h-2.5 rounded-full ring-2 ring-slate-900"
                   style={{
-                    backgroundColor: SPEAKER_COLORS[hoveredSegment.cluster_id],
+                    backgroundColor: getSpeakerColor(hoveredSegment.cluster_id),
                   }}
                 />
                 <span className="text-xs font-bold text-slate-300 tracking-wider">

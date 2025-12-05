@@ -6,6 +6,7 @@ import ActionCard from "./components/ActionCard.jsx";
 import WaveformCanvas from "./components/WaveformCanvas.jsx";
 import PlayerControls from "./components/PlayerControls.jsx";
 import SpeakerLegend from "./components/SpeakerLegend.jsx";
+import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
 
 const App = () => {
   const [mode, setMode] = useState("upload");
@@ -14,7 +15,8 @@ const App = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [segments, setSegments] = useState([]); // Empty by default now
+  const [segments, setSegments] = useState([]);
+  const [fullTranscriptionResult, setFullTranscriptionResult] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [numSpeakers, setNumSpeakers] = useState(2);
   const [errorMsg, setErrorMsg] = useState("");
@@ -22,14 +24,13 @@ const App = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
 
+  const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
+
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
 
-  // --- AUDIO PROCESSING ---
-
-  // Helper to decode audio for waveform visualization
   const decodeAudioForVisualization = async (arrayBuffer) => {
     const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -49,11 +50,10 @@ const App = () => {
     setAudioUrl(null);
     setAudioBuffer(null);
     setSegments([]);
+    setFullTranscriptionResult(null);
     setDuration(0);
     setErrorMsg("");
   };
-
-  // --- FILE UPLOAD ---
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -62,20 +62,16 @@ const App = () => {
     handleReset();
     setProcessing(true);
 
-    // 1. Create FormData for the backend
     const formData = new FormData();
     formData.append("file", file);
     formData.append("num_speakers", numSpeakers);
 
-    // 2. Set Audio URL for playback immediately
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
 
-    // 3. Decode for Waveform
     const fileBufferForWaveform = await file.arrayBuffer();
     await decodeAudioForVisualization(fileBufferForWaveform);
 
-    // 4. Send to Backend
     try {
       const response = await fetch("/process", {
         method: "POST",
@@ -88,11 +84,9 @@ const App = () => {
         throw new Error(data.error || "Processing failed");
       }
 
-      // 5. Update state with backend results
-      // Assuming backend returns { segments: [...], duration: ..., etc }
-      // or directly the object as in your example.
       if (data.segments) {
         setSegments(data.segments);
+        setFullTranscriptionResult(data);
       } else {
         console.warn("No segments found in response", data);
       }
@@ -104,7 +98,18 @@ const App = () => {
     }
   };
 
-  // --- RECORDING ---
+  const handleDownloadJson = () => {
+    if (!fullTranscriptionResult) return;
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(fullTranscriptionResult, null, 2));
+    const downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "transcription_result.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
 
   const startRecording = async () => {
     try {
@@ -119,11 +124,8 @@ const App = () => {
       mediaRecorderRef.current.onstop = async () => {
         const blob = new Blob(chunksRef.current, { type: "audio/webm" });
         const file = new File([blob], "recording.webm", { type: "audio/webm" });
-
-        // Treat recording stop exactly like a file upload
         const fakeEvent = { target: { files: [file] } };
         await handleFileUpload(fakeEvent);
-
         stream.getTracks().forEach((track) => track.stop());
       };
 
@@ -148,8 +150,6 @@ const App = () => {
     }
   };
 
-  // --- PLAYBACK ---
-
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) audioRef.current.pause();
@@ -168,7 +168,16 @@ const App = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-8 font-sans selection:bg-blue-500/30">
       <div className="max-w-5xl mx-auto space-y-8">
-        <Header mode={mode} setMode={setMode} />
+        <Header
+          mode={mode}
+          setMode={setMode}
+          onAddSpeaker={() => setIsAddSpeakerModalOpen(true)}
+        />
+
+        <AddSpeakerModal
+          isOpen={isAddSpeakerModalOpen}
+          onClose={() => setIsAddSpeakerModalOpen(false)}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ActionCard
@@ -207,7 +216,10 @@ const App = () => {
           disabled={!audioBuffer || isRecording}
         />
 
-        <SpeakerLegend segments={segments} />
+        <SpeakerLegend
+          segments={segments}
+          onDownload={fullTranscriptionResult ? handleDownloadJson : null}
+        />
       </div>
 
       <audio
@@ -219,7 +231,6 @@ const App = () => {
         onEnded={() => setIsPlaying(false)}
         onLoadedMetadata={() => {
           if (audioRef.current && segments.length === 0) {
-            // Only update duration if we don't have it from buffer yet
             if (duration === 0) setDuration(audioRef.current.duration);
           }
         }}

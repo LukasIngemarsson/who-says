@@ -1,24 +1,38 @@
-import { SPEAKER_COLORS } from "../utils/constants";
+import { getSpeakerColor } from "../utils/functions";
+import { Download } from "lucide-react";
 
-const SpeakerLegend = ({ segments }) => {
+const SpeakerLegend = ({ segments, onDownload }) => {
   if (segments.length === 0) return null;
 
+  const uniqueSpeakers = [...new Set(segments.map((s) => s.cluster_id))].sort();
+
   return (
-    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-800/50">
+    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
       <div className="flex flex-wrap gap-4 justify-center text-sm">
-        {[0, 1, 2].map((id) => (
+        {uniqueSpeakers.map((id) => (
           <div
             key={id}
             className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-full border border-slate-800"
           >
             <div
               className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: SPEAKER_COLORS[id] }}
+              style={{ backgroundColor: getSpeakerColor(id) }}
             />
             <span className="text-slate-300 font-medium">Speaker {id}</span>
           </div>
         ))}
       </div>
+
+      {onDownload && (
+        <button
+          onClick={onDownload}
+          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors border border-slate-700 shadow-sm"
+          title="Download raw analysis results"
+        >
+          <Download size={16} />
+          Download JSON
+        </button>
+      )}
     </div>
   );
 };

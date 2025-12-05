@@ -1,4 +1,4 @@
-from utils import load_audio_from_file, match_frequency, to_mono
+from utils import load_audio_from_file, match_frequency
 
 from speechbrain.inference.speaker import EncoderClassifier
 import torch
@@ -58,8 +58,6 @@ class SpeechBrainEmbedding:
             raise ValueError("Model is None.")
 
         audio = match_frequency(audio, frequency)
-
-        audio = to_mono(audio)
 
         # Ensure audio has batch dimension for encode_batch
         if audio.dim() == 1:

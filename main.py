@@ -43,11 +43,8 @@ class WhoSays(object):
         Helper to generate an embedding for a specific user enrollment file.
         Assumes the file contains only the target speaker.
         """
-        waveform, sr = load_audio_from_file(file_path=audio_file, sr=self.config.sr)
-        
-        # Handle channels (mono)
-        if waveform.dim() > 1:
-            waveform = waveform.mean(dim=0, keepdim=True) if waveform.shape[0] > 1 else waveform
+        # NOTE: moved conversion to mono to the audio load function itself
+        waveform, sr = load_audio_from_file(file_path=audio_file, sr=self.config.sr, convert_to_mono=True)
             
         waveform = waveform.to(self.config.device)
         

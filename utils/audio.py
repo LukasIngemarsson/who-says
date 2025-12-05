@@ -6,7 +6,7 @@ import torchaudio
 import torch
 
 
-def load_audio_from_file(file_path: str | Path, sr: int = SR) -> tuple[torch.Tensor, int]:
+def load_audio_from_file(file_path: str | Path, sr: int = SR, convert_to_mono:bool=False) -> tuple[torch.Tensor, int]:
     file_path = str(file_path)
     if file_path.endswith(".wav"):
         audio, sr = sf.read(file_path)
@@ -16,6 +16,9 @@ def load_audio_from_file(file_path: str | Path, sr: int = SR) -> tuple[torch.Ten
         audio = match_frequency(audio, org_sr, sr)
     else:
         raise ValueError(f"Unsupported audio format for file: {file_path}")
+
+    if convert_to_mono:
+        audio = to_mono(audio)
 
     return audio, sr
 

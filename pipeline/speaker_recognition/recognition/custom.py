@@ -1,7 +1,6 @@
 import torch
 import torch.nn.functional as F
 import json
-from utils.constants import SR
 
 from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedding
 from utils.audio import load_audio_from_file
@@ -82,10 +81,10 @@ if __name__ == "__main__":
     embedder = SpeechBrainEmbedding()
 
     path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
-    audio1, sr1 = load_audio_from_file(path1)
+    audio1, sr1 = load_audio_from_file(path1, convert_to_mono=True)
 
     path2 = "samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"
-    audio2, sr2 = load_audio_from_file(path2)
+    audio2, sr2 = load_audio_from_file(path2, convert_to_mono=True)
 
     recognizer = CustomSpeakerRecognition()
     score, prediction = recognizer.verify(audio1, audio2, sr1, sr2)
@@ -107,19 +106,19 @@ if __name__ == "__main__":
         return "unknown"
 
     path_comb = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
-    audio_comb, sr_comb = load_audio_from_file(path_comb)
+    audio_comb, sr_comb = load_audio_from_file(path_comb, convert_to_mono=True)
 
     reference_audio = {
         "lukas": [
-            load_audio_from_file("samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"),
+            load_audio_from_file("samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3", convert_to_mono=True),
             # Add more (audio, sr) tuples as needed
         ],
         "marten": [
-            load_audio_from_file("samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"),
+            load_audio_from_file("samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3", convert_to_mono=True),
             # Add more (audio, sr) tuples as needed
         ],
         "gor": [
-            load_audio_from_file("samples/meetings/meeting3-en/gor/audio_chunks/meeting3_gor_002.mp3"),
+            load_audio_from_file("samples/meetings/meeting3-en/gor/audio_chunks/meeting3_gor_002.mp3", convert_to_mono=True),
             # Add more (audio, sr) tuples as needed
         ]
     }
@@ -129,7 +128,7 @@ if __name__ == "__main__":
 
     # New audio to identify
     new_audio_path = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
-    new_audio, new_sr = load_audio_from_file(new_audio_path)
+    new_audio, new_sr = load_audio_from_file(new_audio_path, convert_to_mono=True)
     duration = int(new_audio.shape[-1] / new_sr)
 
     for t in range(duration):

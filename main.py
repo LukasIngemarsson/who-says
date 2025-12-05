@@ -431,16 +431,25 @@ if __name__ == "__main__":
     if 'timing' in result:
         print(format_timing_report(result['timing'], result['total_time']))
 
+    def make_serializable(obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, dict):
+            return {k: make_serializable(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [make_serializable(i) for i in obj]
+        return obj
+
     # Save to file if requested
     if args.output:
         with open(args.output, 'w', encoding='utf-8') as f:
-            json.dump(result, f, indent=2 if args.pretty else None, ensure_ascii=False)
+            json.dump(make_serializable(result), f, indent=2 if args.pretty else None, ensure_ascii=False)
         logger.info(f"Results saved to {args.output}")
 
     # Print JSON if pretty flag is set
     if args.pretty and not args.output:
         print("\nJSON OUTPUT:")
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        print(json.dumps(make_serializable(result), indent=2, ensure_ascii=False))
 
     logger.info("Done!")
 

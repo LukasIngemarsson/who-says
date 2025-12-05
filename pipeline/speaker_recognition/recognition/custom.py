@@ -1,57 +1,99 @@
 import torch
 import torch.nn.functional as F
 import json
-from scipy.optimize import linear_sum_assignment
+from utils.constants import SR
 
-from pipeline.speaker_recognition.clustering.sklearn import SklearnClustering
 from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedding
 from utils.audio import load_audio_from_file
 
 
 class CustomSpeakerRecognition:
-    def __init__(self, threshold: float = 0.6) -> None:
-        self.threshold = threshold
+    def __init__(self, embedder = SpeechBrainEmbedding()) -> None:
+        self.embedder = embedder
+        self.reference_embeddings = {}
 
-    def verify(self, emb1: torch.Tensor, emb2: torch.Tensor) -> tuple[float, bool]:
+
+    def create_reference_embeddings(
+        self,
+        speaker_to_audio: dict[str, list[tuple[torch.Tensor, int]]]
+    ) -> None:
         """
-        Compare two speaker embeddings and predict if they are from the same speaker.
-
+        Given a dict mapping speaker names to reference audio (in-memory),
+        compute and store mean embeddings.
         Args:
-            emb1 (torch.Tensor): First speaker embedding.
-            emb2 (torch.Tensor): Second speaker embedding.
-
-        Returns:
-            tuple[float, bool]: Similarity score and prediction (True if same speaker).
+            speaker_to_audio (dict): {speaker_name: (audio, sr) or list of (audio, sr)}
         """
+        for speaker, refs in speaker_to_audio.items():
+            embs = []
+            for audio, sr in refs:
+                emb = embedder.embed(audio, sr).squeeze(0)
+                embs.append(emb)
+            mean_emb = torch.stack(embs).mean(dim=0)
+            self.reference_embeddings[speaker] = mean_emb
 
-        score = F.cosine_similarity(emb1, emb2)
-        assert len(score) == 1
 
-        score = score.item()
-        prediction = score > self.threshold
-
+    def verify(
+        self,
+        x1: torch.Tensor,
+        x2: torch.Tensor,
+        sr1: int | None = None,
+        sr2: int | None = None,
+        thres: float = 0.5
+    ) -> tuple[float, bool]:
+        """
+        Computes similarity score between two audio chunks or embeddings.
+        If sample rates are provided, treats x1 and x2 as audio and embeds them.
+        Otherwise, treats them as embeddings.
+        """
+        if sr1 is not None and sr2 is not None:
+            emb1 = self.embedder.embed(x1, sr1).squeeze(0)
+            emb2 = self.embedder.embed(x2, sr2).squeeze(0)
+        else:
+            emb1 = x1
+            emb2 = x2
+        score = F.cosine_similarity(emb1, emb2).item()
+        prediction = score > thres
         return score, prediction
 
 
+    def predict_speaker(
+        self,
+        x: torch.Tensor,
+        sr: int | None = None
+    ) -> tuple[str, dict[str, float]]:
+        """
+        Given audio or embedding, returns the speaker with the highest similarity and the similarity scores.
+        If sample rate is provided, treats x as audio and embeds it.
+        Otherwise, treats x as embedding.
+        """
+        emb = self.embedder.embed(x, sr).squeeze(0) if sr is not None else x
+        similarities = {}
+        for speaker, ref_emb in self.reference_embeddings.items():
+            score, _ = self.verify(emb, ref_emb)
+            similarities[speaker] = score
+        best_speaker = max(similarities, key=lambda k: similarities[k])
+        return best_speaker, similarities
+
+
+
 if __name__ == "__main__":
-    print("1. Running cosine distance test...")
+    #### OFFLINE RECOG TEST
+    print("1. Running offline test...")
     embedder = SpeechBrainEmbedding()
 
     path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
     audio1, sr1 = load_audio_from_file(path1)
-    emb1 = embedder.embed(audio1, sr1).squeeze(0)
 
     path2 = "samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"
     audio2, sr2 = load_audio_from_file(path2)
-    emb2 = embedder.embed(audio2, sr2).squeeze(0)
 
     recognizer = CustomSpeakerRecognition()
-    score, prediction = recognizer.verify(emb1, emb2)
+    score, prediction = recognizer.verify(audio1, audio2, sr1, sr2)
     print(f"Mårten vs. Lukas - score: {score:.4f}, prediction: {prediction}") 
 
 
-    print("2. Running progressive clustering test...")
-    clustering = SklearnClustering(algorithm="minibatchkmeans", n_clusters=2)
+    #### ONLINE RECOG TEST
+    print("2. Running online test...")
 
     path_annot = "samples/benchmarks/english/001.json"
     with open(path_annot, "r") as f:
@@ -67,42 +109,38 @@ if __name__ == "__main__":
     path_comb = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
     audio_comb, sr_comb = load_audio_from_file(path_comb)
 
-    duration = int(audio_comb.shape[-1] / sr_comb)
-    embeddings = []
-    prev_centroids = None
+    reference_audio = {
+        "lukas": [
+            load_audio_from_file("samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"),
+            # Add more (audio, sr) tuples as needed
+        ],
+        "marten": [
+            load_audio_from_file("samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"),
+            # Add more (audio, sr) tuples as needed
+        ],
+        "gor": [
+            load_audio_from_file("samples/meetings/meeting3-en/gor/audio_chunks/meeting3_gor_002.mp3"),
+            # Add more (audio, sr) tuples as needed
+        ]
+    }
 
-    for t in range(0, duration):
-        start_sample = t * sr_comb
-        end_sample = (t + 1) * sr_comb
-        chunk = audio_comb[:, start_sample:end_sample]
+    recognizer = CustomSpeakerRecognition()
+    recognizer.create_reference_embeddings(reference_audio)
 
-        if chunk.shape[0] == 0:
+    # New audio to identify
+    new_audio_path = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
+    new_audio, new_sr = load_audio_from_file(new_audio_path)
+    duration = int(new_audio.shape[-1] / new_sr)
+
+    for t in range(duration):
+        start_sample = t * new_sr
+        end_sample = (t + 2) * new_sr
+        chunk = new_audio[:, start_sample:end_sample]
+
+        actual_speaker = get_speaker_for_second(segments, t)
+
+        if chunk.shape[1] == 0 or actual_speaker == "unknown":
             continue
 
-        emb = embedder.embed(chunk, sr_comb).squeeze()
-        embeddings.append(emb.cpu())
-
-        if len(embeddings) < 2:
-            continue
-
-        # Recluster all embeddings seen so far
-        clustering = SklearnClustering(algorithm="kmeans", n_clusters=2)
-        X = torch.stack(embeddings)
-        clustering.model.fit(X)
-        centroids = torch.tensor(clustering.model.cluster_centers_)
-        labels = torch.from_numpy(clustering.model.labels_)
-
-        # Align cluster IDs to previous centroids
-        if prev_centroids is not None:
-            # Compute cost matrix using torch
-            cost = torch.cdist(prev_centroids, centroids)
-            row_ind, col_ind = linear_sum_assignment(cost.numpy())
-            label_map = {new: old for old, new in zip(row_ind, col_ind)}
-            aligned_labels = torch.tensor([label_map[int(label)] for label in labels])
-        else:
-            aligned_labels = labels
-
-        prev_centroids = centroids
-
-        ref_label = get_speaker_for_second(segments, t)
-        print(f"Second {t}-{t+1}: Cluster {aligned_labels[-1].item()} | Reference: {ref_label}")
+        best_speaker, similarities = recognizer.predict_speaker(chunk, new_sr)
+        print(f"Second {t}-{t+1}: Assigned speaker: {best_speaker} | GT speaker: {actual_speaker} | Similarities: {similarities}")

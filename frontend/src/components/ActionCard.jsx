@@ -1,5 +1,5 @@
 import { Upload, Mic, Square, Users } from "lucide-react";
-import { formatTime } from "../utils/constants.js";
+import { formatTime } from "../utils/functions.js";
 
 const ActionCard = ({
   mode,

@@ -141,7 +141,7 @@ def process_audio():
             
             wav_path = convert_to_wav(temp_file_path)
             logger.info(f"Processing converted file '{wav_path}' with {num_speakers} speakers")
-
+            logger.info(f"Using {len(KNOWN_SPEAKERS)} enrolled speakers: {list(KNOWN_SPEAKERS.keys())}")
             result = pipeline(
                 wav_path, 
                 num_speakers=num_speakers, 

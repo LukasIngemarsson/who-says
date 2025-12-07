@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 
 import Header from "./components/Header.jsx";
@@ -30,6 +30,7 @@ const App = () => {
 
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
   const chunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
 
@@ -116,42 +117,129 @@ const App = () => {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 16000
+        } 
+      });
+      
+      streamRef.current = stream;
       chunksRef.current = [];
 
-      mediaRecorderRef.current.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
+      // Determine supported mime type
+      let mimeType = "audio/webm";
+      if (!MediaRecorder.isTypeSupported("audio/webm")) {
+        if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) {
+          mimeType = "audio/webm;codecs=opus";
+        } else if (MediaRecorder.isTypeSupported("audio/ogg;codecs=opus")) {
+          mimeType = "audio/ogg;codecs=opus";
+        } else {
+          mimeType = ""; // Use browser default
+        }
+      }
+
+      const options = mimeType ? { mimeType } : {};
+      const recorder = new MediaRecorder(stream, options);
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
       };
 
-      mediaRecorderRef.current.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        const file = new File([blob], "recording.webm", { type: "audio/webm" });
-        const fakeEvent = { target: { files: [file] } };
-        await handleFileUpload(fakeEvent);
-        stream.getTracks().forEach((track) => track.stop());
+      recorder.onerror = (e) => {
+        console.error("MediaRecorder error:", e);
+        setErrorMsg("Recording error occurred");
+        stopRecording();
       };
 
-      mediaRecorderRef.current.start();
+      recorder.onstop = async () => {
+        try {
+          // Determine blob type from mimeType
+          const blobType = mimeType || "audio/webm";
+          const blob = new Blob(chunksRef.current, { type: blobType });
+          const file = new File([blob], `recording.${blobType.includes('ogg') ? 'ogg' : 'webm'}`, { 
+            type: blobType 
+          });
+          const fakeEvent = { target: { files: [file] } };
+          await handleFileUpload(fakeEvent);
+        } catch (error) {
+          console.error("Error processing recording:", error);
+          setErrorMsg("Failed to process recording: " + error.message);
+        } finally {
+          // Clean up stream
+          if (streamRef.current) {
+            streamRef.current.getTracks().forEach((track) => {
+              track.stop();
+            });
+            streamRef.current = null;
+          }
+        }
+      };
+
+      // Start recording with timeslice to collect data periodically
+      recorder.start(1000); // Collect data every second
       setIsRecording(true);
       handleReset();
       setRecordingTime(0);
+      setErrorMsg("");
+      
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      alert("Microphone access failed.");
+      let errorMessage = "Microphone access failed.";
+      if (err.name === "NotAllowedError") {
+        errorMessage = "Microphone access denied. Please allow microphone access and try again.";
+      } else if (err.name === "NotFoundError") {
+        errorMessage = "No microphone found. Please connect a microphone and try again.";
+      } else if (err.name === "NotReadableError") {
+        errorMessage = "Microphone is already in use by another application.";
+      }
+      setErrorMsg(errorMessage);
+      setIsRecording(false);
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      clearInterval(recordingTimerRef.current);
+      try {
+        if (mediaRecorderRef.current.state !== "inactive") {
+          mediaRecorderRef.current.stop();
+        }
+        setIsRecording(false);
+        
+        if (recordingTimerRef.current) {
+          clearInterval(recordingTimerRef.current);
+          recordingTimerRef.current = null;
+        }
+      } catch (error) {
+        console.error("Error stopping recording:", error);
+        setErrorMsg("Error stopping recording: " + error.message);
+        setIsRecording(false);
+      }
     }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (recordingTimerRef.current) {
+        clearInterval(recordingTimerRef.current);
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
+      }
+    };
+  }, []);
 
   const togglePlay = () => {
     if (audioRef.current) {

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import { FileAudio, RefreshCw, AlertCircle } from "lucide-react";
 import { formatTime, getSpeakerColor } from "../utils/functions.js";
 
@@ -15,6 +15,16 @@ const WaveformCanvas = ({
   const containerRef = useRef(null);
   const animationRef = useRef(null);
   const [hoveredSegment, setHoveredSegment] = useState(null);
+
+  // Find the segment currently being played (updates with currentTime)
+  const currentSegment = useMemo(() => {
+    return segments.find(
+      (seg) => currentTime >= seg.start && currentTime <= seg.end
+    );
+  }, [segments, currentTime]);
+
+  // Display hovered segment if available, otherwise current playing segment
+  const displaySegment = hoveredSegment || currentSegment;
 
   const handleClick = (e) => {
     if (!containerRef.current || !duration) return;
@@ -146,6 +156,32 @@ const WaveformCanvas = ({
         </div>
       </div>
 
+      {/* Text display for current/hovered segment */}
+      {displaySegment && !isRecording && !processing && (
+        <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-800/50">
+          <div className="flex items-center gap-2 mb-2">
+            <span
+              className="w-2.5 h-2.5 rounded-full ring-2 ring-slate-900"
+              style={{
+                backgroundColor: getSpeakerColor(displaySegment.cluster_id),
+              }}
+            />
+            <span className="text-xs font-bold text-slate-300 tracking-wider">
+              {displaySegment.speaker}
+            </span>
+            <span className="text-xs font-mono text-slate-500 ml-auto border border-slate-700 px-1.5 py-0.5 rounded">
+              {displaySegment.start.toFixed(1)}s - {displaySegment.end.toFixed(1)}s
+            </span>
+            {hoveredSegment && (
+              <span className="text-xs text-slate-500 italic">(hovering)</span>
+            )}
+          </div>
+          <p className="text-slate-100 text-sm leading-relaxed font-medium">
+            {displaySegment.text || <span className="text-slate-500 italic">[no text]</span>}
+          </p>
+        </div>
+      )}
+
       <div
         ref={containerRef}
         className="relative w-full h-[240px] bg-slate-900 rounded-xl border border-slate-800 shadow-inner overflow-hidden cursor-pointer group"
@@ -168,31 +204,6 @@ const WaveformCanvas = ({
           ref={canvasRef}
           className="absolute inset-0 w-full h-full z-10"
         />
-
-        {hoveredSegment && !isRecording && (
-          <div className="absolute z-30 bottom-4 left-4 right-4 animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none">
-            <div className="bg-slate-800/90 border border-slate-700 p-4 rounded-lg shadow-2xl backdrop-blur-md">
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="w-2.5 h-2.5 rounded-full ring-2 ring-slate-900"
-                  style={{
-                    backgroundColor: getSpeakerColor(hoveredSegment.cluster_id),
-                  }}
-                />
-                <span className="text-xs font-bold text-slate-300 tracking-wider">
-                  {hoveredSegment.speaker}
-                </span>
-                <span className="text-xs font-mono text-slate-500 ml-auto border border-slate-700 px-1.5 py-0.5 rounded">
-                  {hoveredSegment.start.toFixed(1)}s -{" "}
-                  {hoveredSegment.end.toFixed(1)}s
-                </span>
-              </div>
-              <p className="text-slate-100 text-sm leading-relaxed font-medium">
-                "{hoveredSegment.text}"
-              </p>
-            </div>
-          </div>
-        )}
 
         {!audioBuffer && !isRecording && !processing && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">

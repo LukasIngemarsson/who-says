@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Upload, Mic, Square, Users } from "lucide-react";
 import { formatTime } from "../utils/functions.js";
 
@@ -12,6 +13,29 @@ const ActionCard = ({
   setNumSpeakers,
   isProcessing,
 }) => {
+  const [inputValue, setInputValue] = useState(numSpeakers.toString());
+
+  // Sync input value when numSpeakers changes externally
+  useEffect(() => {
+    setInputValue(numSpeakers.toString());
+  }, [numSpeakers]);
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+  };
+
+  const handleInputBlur = (e) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value >= 1 && value <= 10) {
+      setNumSpeakers(value);
+      setInputValue(value.toString());
+    } else {
+      // Reset to current valid value if invalid
+      setInputValue(numSpeakers.toString());
+    }
+  };
+
   return (
     <div className="md:col-span-3 bg-slate-900 rounded-xl border border-slate-800 p-6 flex flex-col items-center justify-center min-h-[200px] relative overflow-hidden transition-all duration-300 hover:border-slate-700">
       {/* Settings Bar */}
@@ -23,9 +47,10 @@ const ActionCard = ({
             type="number"
             min="1"
             max="10"
-            value={numSpeakers}
-            onChange={(e) => setNumSpeakers(parseInt(e.target.value) || 2)}
-            className="w-8 bg-transparent text-center text-sm font-bold text-white focus:outline-none appearance-none"
+            value={inputValue}
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            className="w-10 bg-transparent text-center text-sm font-bold text-white focus:outline-none appearance-none"
           />
         </div>
       </div>

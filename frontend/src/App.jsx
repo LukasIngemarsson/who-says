@@ -63,6 +63,7 @@ const App = () => {
 
     handleReset();
     setProcessing(true);
+    setErrorMsg("");
 
     const formData = new FormData();
     formData.append("file", file);

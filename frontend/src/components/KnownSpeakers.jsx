@@ -49,3 +49,4 @@ const KnownSpeakers = ({ refreshTrigger }) => {
 };
 
 export default KnownSpeakers;
+

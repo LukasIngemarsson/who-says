@@ -7,6 +7,7 @@ import WaveformCanvas from "./components/WaveformCanvas.jsx";
 import PlayerControls from "./components/PlayerControls.jsx";
 import SpeakerLegend from "./components/SpeakerLegend.jsx";
 import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
+import KnownSpeakers from "./components/KnownSpeakers.jsx";
 
 const App = () => {
   const [mode, setMode] = useState("upload");
@@ -25,6 +26,7 @@ const App = () => {
   const [recordingTime, setRecordingTime] = useState(0);
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
+  const [speakerRefreshTrigger, setSpeakerRefreshTrigger] = useState(0);
 
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -176,8 +178,13 @@ const App = () => {
 
         <AddSpeakerModal
           isOpen={isAddSpeakerModalOpen}
-          onClose={() => setIsAddSpeakerModalOpen(false)}
+          onClose={() => {
+            setIsAddSpeakerModalOpen(false);
+            setSpeakerRefreshTrigger(prev => prev + 1); // Trigger refresh
+          }}
         />
+
+        <KnownSpeakers refreshTrigger={speakerRefreshTrigger} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ActionCard

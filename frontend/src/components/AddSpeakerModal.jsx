@@ -13,7 +13,7 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
   const [name, setName] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
-  const [status, setStatus] = useState("idle"); // idle, recording, recorded, saving, success, error
+  const [status, setStatus] = useState("idle");
   const [error, setError] = useState("");
 
   const mediaRecorderRef = useRef(null);
@@ -21,7 +21,6 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (!isOpen) {
-      // Reset state when closed
       setName("");
       setAudioBlob(null);
       setStatus("idle");
@@ -79,9 +78,7 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
       if (!response.ok) throw new Error(data.error || "Failed to save");
 
       setStatus("success");
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      setTimeout(() => onClose(), 1500);
     } catch (err) {
       setError(err.message);
       setStatus("error");
@@ -89,6 +86,9 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
   };
 
   if (!isOpen) return null;
+
+  const hasAudio = status === "recorded" || status === "saving" || status === "success";
+  const isDisabled = !name || !audioBlob || status === "saving" || status === "success";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -102,8 +102,7 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
 
         <h2 className="text-xl font-bold text-white mb-1">Add New Speaker</h2>
         <p className="text-slate-400 text-sm mb-6">
-          Record a short voice snippet (5-10s) to create a reference for this
-          speaker.
+          Record a short voice snippet (5-10s) to create a reference for this speaker.
         </p>
 
         <div className="space-y-4">
@@ -131,17 +130,13 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
                   <div className="w-3 h-3 bg-red-500 rounded-full" />
                   <span className="font-mono text-sm">Recording...</span>
                 </div>
-              ) : status === "recorded" ||
-                status === "saving" ||
-                status === "success" ? (
+              ) : hasAudio ? (
                 <div className="flex items-center gap-2 text-green-400">
                   <Check size={16} />
                   <span className="text-sm">Audio captured</span>
                 </div>
               ) : (
-                <span className="text-slate-600 text-sm italic">
-                  No audio recorded
-                </span>
+                <span className="text-slate-600 text-sm italic">No audio recorded</span>
               )}
 
               {status === "recording" ? (
@@ -176,11 +171,9 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
 
           <button
             onClick={handleSave}
-            disabled={
-              !name || !audioBlob || status === "saving" || status === "success"
-            }
+            disabled={isDisabled}
             className={`w-full py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 transition-all mt-2 ${
-              !name || !audioBlob
+              isDisabled
                 ? "bg-slate-800 text-slate-600 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20"
             }`}

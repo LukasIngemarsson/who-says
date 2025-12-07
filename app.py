@@ -6,6 +6,9 @@ from flask import Flask, jsonify, request, send_from_directory
 from loguru import logger
 from dotenv import load_dotenv
 import numpy as np
+import threading
+import torch
+import time
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -25,14 +28,67 @@ static_folder_path = os.path.abspath(static_folder_path)
  
 app = Flask(__name__, static_folder=static_folder_path, static_url_path='')
 
-if PIPELINE_AVAILABLE:
-    logger.info("Loading WhoSays pipeline... This may take a moment.")
-    pipeline = WhoSays()
-    logger.info("Pipeline loaded successfully. Server is ready.")
-else:
-    pipeline = None
+# Initialize pipeline lazily
+pipeline = None
+pipeline_loading = False
+pipeline_lock = threading.Lock()
+
+def load_pipeline():
+    """Load the pipeline in the background."""
+    global pipeline, pipeline_loading
+    with pipeline_lock:
+        if pipeline is None and not pipeline_loading:
+            pipeline_loading = True
+            try:
+                logger.info("Loading WhoSays pipeline... This may take a moment.")
+                pipeline = WhoSays()
+                logger.info("Pipeline loaded successfully.")
+            except Exception as e:
+                logger.error(f"Failed to load pipeline: {e}")
+                pipeline = None
+            finally:
+                pipeline_loading = False
+
+def get_pipeline():
+    """Get pipeline, loading it if necessary."""
+    global pipeline
+    if pipeline is None:
+        if not PIPELINE_AVAILABLE:
+            return None
+        if pipeline_loading:
+            # Wait for background loading to complete
+            while pipeline_loading:
+                time.sleep(0.1)  # Fixed: was threading.Event().wait(0.1)
+        else:
+            # Load synchronously if not already loading
+            load_pipeline()
+    return pipeline
 
 KNOWN_SPEAKERS = {}
+
+EMBEDDINGS_DIR = Path(__file__).parent / "embeddings"
+EMBEDDINGS_DIR.mkdir(exist_ok=True)
+
+def save_embedding(name, tensor):
+    """Save a single embedding to disk."""
+    try:
+        file_path = EMBEDDINGS_DIR / f"{name}.pt"
+        torch.save(tensor.cpu(), file_path)
+        logger.info(f"Saved embedding for {name} to {file_path}")
+    except Exception as e:
+        logger.error(f"Failed to save embedding for {name}: {e}")
+
+def load_embeddings():
+    """Load all embeddings from disk."""
+    KNOWN_SPEAKERS.clear()
+    try:
+        for file_path in EMBEDDINGS_DIR.glob("*.pt"):
+            name = file_path.stem
+            tensor = torch.load(file_path)
+            KNOWN_SPEAKERS[name] = tensor
+        logger.info(f"Loaded {len(KNOWN_SPEAKERS)} embeddings from {EMBEDDINGS_DIR}")
+    except Exception as e:
+        logger.error(f"Failed to load embeddings: {e}")
 
 def make_serializable(obj):
     if isinstance(obj, np.ndarray):
@@ -97,7 +153,8 @@ def status():
 
 @app.route('/process', methods=['POST'])
 def process_audio():
-    if not PIPELINE_AVAILABLE:
+    pipeline = get_pipeline()
+    if not pipeline:
         return jsonify({"error": "Pipeline not available. Server running in mock mode."}), 503
 
     try:
@@ -152,7 +209,8 @@ def process_audio():
     
 @app.route('/upload_embeddings', methods=['POST'])
 def upload_embeddings():
-    if not PIPELINE_AVAILABLE:
+    pipeline = get_pipeline()
+    if not pipeline:
         name = request.form.get('name', 'Unknown')
         return jsonify({"message": f"Mock enrollment for {name}", "vector_size": 0})
 
@@ -194,6 +252,9 @@ def upload_embeddings():
             
             shape = embedding_tensor.shape if hasattr(embedding_tensor, 'shape') else "unknown"
 
+            # Save the embedding to disk
+            save_embedding(speaker_name, embedding_tensor)
+
             return jsonify({
                 "message": f"Successfully enrolled speaker: {speaker_name}",
                 "vector_size": shape
@@ -213,5 +274,14 @@ def upload_embeddings():
         logger.error(f"Error in upload_embeddings: {e}")
         return jsonify({"error": str(e)}), 500
 
+# Thread because the pipeline takes forever to load and the frontend website was slow to load :)
+if PIPELINE_AVAILABLE:
+    threading.Thread(target=load_pipeline, daemon=True).start()
+    # Load embeddings after a short delay to let pipeline start loading
+    def load_embeddings_delayed():
+        time.sleep(1)
+        load_embeddings()
+    threading.Thread(target=load_embeddings_delayed, daemon=True).start()
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)

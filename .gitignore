@@ -15,3 +15,6 @@ __pycache__/
 .cache/
 .env
 venv
+
+
+*.pt

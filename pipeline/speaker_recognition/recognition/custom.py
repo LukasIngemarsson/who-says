@@ -160,10 +160,11 @@ if __name__ == "__main__":
     segments = annotations["segments"]
 
     def get_speaker_for_second(segments, t):
+        speakers = []
         for seg in segments:
             if seg["start"] <= t < seg["end"]:
-                return seg["speaker"]
-        return "unknown"
+                speakers.append(seg["speaker"])
+        return speakers 
 
     path_comb = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
     audio_comb, sr_comb = load_audio_from_file(path_comb, convert_to_mono=True)
@@ -191,16 +192,20 @@ if __name__ == "__main__":
     new_audio, new_sr = load_audio_from_file(new_audio_path, convert_to_mono=True)
     duration = int(new_audio.shape[-1] / new_sr)
 
-    STEP_SIZE = 3
+    STEP_SIZE = 2
 
-    for t in range(duration):
+    for t in range(0, duration, STEP_SIZE):
         start_sample = t * new_sr
         end_sample = (t + STEP_SIZE) * new_sr
         chunk = new_audio[start_sample:end_sample]
 
         actual_speaker = get_speaker_for_second(segments, t)
 
-        if actual_speaker == "unknown":
+        if len(actual_speaker) == 0:
+            print(f"Second {t}-{t+STEP_SIZE}: SILENCE.")
+            continue
+        if len(actual_speaker) > 1:
+            print(f"Second {t}-{t+STEP_SIZE}: OVERLAP. | GT: {actual_speaker}")
             continue
 
         best_speaker, similarities = recognizer.predict_speaker(chunk, new_sr)
@@ -217,14 +222,74 @@ if __name__ == "__main__":
     for cluster_id, speaker in recognizer_online.cluster_to_speaker.items():
         print(f"  Cluster {cluster_id}: {speaker}")
 
-    for t in range(duration):
+    # Collect all embeddings and their cluster assignments
+    all_embeddings = []
+    all_cluster_ids = []
+
+    for t in range(0, duration, STEP_SIZE):
         start_sample = t * new_sr
         end_sample = (t + STEP_SIZE) * new_sr
         chunk = new_audio[start_sample:end_sample]
 
         actual_speaker = get_speaker_for_second(segments, t)
-        if actual_speaker == "unknown":
+        if len(actual_speaker) == 0:
+            print(f"Second {t}-{t+STEP_SIZE}: SILENCE.")
+            continue
+        if len(actual_speaker) > 1:
+            print(f"Second {t}-{t+STEP_SIZE}: OVERLAP. | GT: {actual_speaker}")
             continue
 
         speaker_name, cluster_id, distances = recognizer_online.predict_speaker_online(chunk, new_sr)
         print(f"Second {t}-{t+STEP_SIZE}: Cluster: {cluster_id} | Assigned speaker: {speaker_name} | GT: {actual_speaker} | Distances: {distances}")
+
+        emb = recognizer_online.embedder.embed(chunk, new_sr).squeeze(0).cpu().numpy()
+        emb = np.squeeze(emb)
+        all_embeddings.append(emb)
+        all_cluster_ids.append(cluster_id)
+
+    all_embeddings = np.array(all_embeddings)
+    centroids = recognizer_online.kmeans.cluster_centers_
+
+    # Reduce to 2D for plotting
+    from sklearn.decomposition import PCA
+    pca = PCA(n_components=2)
+    all_embeddings_2d = pca.fit_transform(all_embeddings)
+    centroids_2d = pca.transform(centroids)
+
+    import matplotlib.pyplot as plt
+
+    plt.figure(figsize=(8, 6))
+    cmap = plt.get_cmap('tab10')
+    num_clusters = len(recognizer_online.cluster_to_speaker)
+    colors = [cmap(i) for i in range(num_clusters)]
+
+    # Plot each cluster's points and its centroid with matching color
+    for cluster_id, speaker in recognizer_online.cluster_to_speaker.items():
+        idx = [i for i, cid in enumerate(all_cluster_ids) if cid == cluster_id]
+        # Cluster points
+        plt.scatter(
+            all_embeddings_2d[idx, 0],
+            all_embeddings_2d[idx, 1],
+            color=colors[cluster_id],
+            alpha=0.7,
+            label=f'{speaker} (cluster {cluster_id})'
+        )
+        # Centroid for this cluster
+        plt.scatter(
+            centroids_2d[cluster_id, 0],
+            centroids_2d[cluster_id, 1],
+            color=colors[cluster_id],
+            marker='X',
+            s=160,
+            edgecolor='black',
+            linewidths=2,
+            label=f'Centroid {cluster_id}'
+        )
+
+    plt.title("Speaker Embeddings and Cluster Centroids (PCA 2D)")
+    plt.xlabel("PCA 1")
+    plt.ylabel("PCA 2")
+    plt.tight_layout()
+    plt.legend()
+    plt.savefig("cluster_plot.png")
+    plt.close()

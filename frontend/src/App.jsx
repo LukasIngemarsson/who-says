@@ -8,6 +8,7 @@ import PlayerControls from "./components/PlayerControls.jsx";
 import SpeakerLegend from "./components/SpeakerLegend.jsx";
 import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
 import KnownSpeakers from "./components/KnownSpeakers.jsx";
+import SpeakerIdentificationModal from "./components/SpeakerIdentificationModal.jsx";
 
 const App = () => {
   const [mode, setMode] = useState("upload");
@@ -24,15 +25,39 @@ const App = () => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [currentSpeaker, setCurrentSpeaker] = useState(null); // Current speaker during recording
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
   const [speakerRefreshTrigger, setSpeakerRefreshTrigger] = useState(0);
+  const [isSpeakerModalOpen, setIsSpeakerModalOpen] = useState(false);
+  const [pendingAudioData, setPendingAudioData] = useState(null);
+  const [pendingSpeakerInfo, setPendingSpeakerInfo] = useState(null);
+  const [knownSpeakersList, setKnownSpeakersList] = useState([]);
+  const sessionIdRef = useRef(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const processorRef = useRef(null);
+  const audioBufferAccumulatorRef = useRef([]);
+  const lastProcessTimeRef = useRef(0);
+
+  const fetchKnownSpeakers = async () => {
+    try {
+      const response = await fetch("/status");
+      const data = await response.json();
+      setKnownSpeakersList(data.known_speakers || []);
+    } catch (error) {
+      console.error("Failed to fetch speakers:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchKnownSpeakers();
+  }, [speakerRefreshTrigger]);
 
   const decodeAudioForVisualization = async (arrayBuffer) => {
     const audioContext = new (window.AudioContext ||
@@ -128,6 +153,96 @@ const App = () => {
       
       streamRef.current = stream;
       chunksRef.current = [];
+      audioBufferAccumulatorRef.current = [];
+      lastProcessTimeRef.current = Date.now();
+
+      // Set up Web Audio API for raw audio capture
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 16000
+      });
+      audioContextRef.current = audioContext;
+      
+      const source = audioContext.createMediaStreamSource(stream);
+      const processor = audioContext.createScriptProcessor(4096, 1, 1);
+      processorRef.current = processor;
+      
+      processor.onaudioprocess = (e) => {
+        const inputData = e.inputBuffer.getChannelData(0);
+        audioBufferAccumulatorRef.current.push(new Float32Array(inputData));
+        
+        const now = Date.now();
+        // Increased from 3s to 5s to collect more audio before processing
+        if (now - lastProcessTimeRef.current >= 5000) {
+          // Combine accumulated samples
+          const totalLength = audioBufferAccumulatorRef.current.reduce((sum, arr) => sum + arr.length, 0);
+          
+          if (totalLength === 0) {
+            console.warn("No audio samples accumulated");
+            audioBufferAccumulatorRef.current = [];
+            lastProcessTimeRef.current = now;
+            return;
+          }
+          
+          const combined = new Float32Array(totalLength);
+          let offset = 0;
+          for (const chunk of audioBufferAccumulatorRef.current) {
+            combined.set(chunk, offset);
+            offset += chunk.length;
+          }
+          
+          // Check if audio has any significant amplitude
+          const maxAmplitude = Math.max(...Array.from(combined).map(Math.abs));
+          const avgAmplitude = Array.from(combined).reduce((sum, val) => sum + Math.abs(val), 0) / combined.length;
+          
+          console.log(`Sending audio chunk: ${totalLength} samples, max amplitude: ${maxAmplitude.toFixed(4)}, avg: ${avgAmplitude.toFixed(4)}`);
+          
+          // Convert to base64
+          const audioBytes = new Uint8Array(combined.buffer);
+          let binary = '';
+          const len = audioBytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(audioBytes[i]);
+          }
+          const base64Audio = btoa(binary);
+          
+          // Send to server
+          fetch("/identify_speaker", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              audio_data: base64Audio,
+              sample_rate: "16000",
+              session_id: sessionIdRef.current
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log("Speaker identification response:", data);
+            if (data.has_speech) {
+              if (data.speaker) {
+                setCurrentSpeaker(data.speaker);
+              } else {
+                // Speech detected but no matching speaker
+                setCurrentSpeaker("Unknown");
+              }
+              
+              // No modal during recording - just display who's talking
+            } else {
+              setCurrentSpeaker(null);
+            }
+          })
+          .catch(error => {
+            console.error("Error identifying speaker:", error);
+            setCurrentSpeaker(null);
+          });
+          
+          audioBufferAccumulatorRef.current = [];
+          lastProcessTimeRef.current = now;
+        }
+      };
+      
+      source.connect(processor);
+      processor.connect(audioContext.destination);
 
       // Determine supported mime type
       let mimeType = "audio/webm";
@@ -186,7 +301,10 @@ const App = () => {
       setIsRecording(true);
       handleReset();
       setRecordingTime(0);
+      setCurrentSpeaker(null); // Reset current speaker
       setErrorMsg("");
+      // Generate new session ID for next recording
+      sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
@@ -209,6 +327,12 @@ const App = () => {
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       try {
+        // Disconnect audio processor
+        if (processorRef.current) {
+          processorRef.current.disconnect();
+          processorRef.current = null;
+        }
+        
         if (mediaRecorderRef.current.state !== "inactive") {
           mediaRecorderRef.current.stop();
         }
@@ -231,6 +355,12 @@ const App = () => {
     return () => {
       if (recordingTimerRef.current) {
         clearInterval(recordingTimerRef.current);
+      }
+      if (processorRef.current) {
+        processorRef.current.disconnect();
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
@@ -273,6 +403,23 @@ const App = () => {
           }}
         />
 
+        <SpeakerIdentificationModal
+          isOpen={isSpeakerModalOpen}
+          onClose={() => {
+            setIsSpeakerModalOpen(false);
+            setPendingAudioData(null);
+            setPendingSpeakerInfo(null);
+            setSpeakerRefreshTrigger(prev => prev + 1);
+          }}
+          audioData={pendingAudioData}
+          speakerInfo={pendingSpeakerInfo}
+          knownSpeakers={knownSpeakersList}
+          onRefresh={() => {
+            fetchKnownSpeakers();
+            setSpeakerRefreshTrigger(prev => prev + 1);
+          }}
+        />
+
         <KnownSpeakers refreshTrigger={speakerRefreshTrigger} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -288,6 +435,38 @@ const App = () => {
             isProcessing={processing}
           />
         </div>
+
+        {/* Current speaker indicator during recording */}
+        {isRecording && (
+          <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-slate-100 mb-2">Live Recording</h3>
+                {currentSpeaker ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-400">Current Speaker:</span>
+                    <span className="text-2xl font-bold text-blue-400">{currentSpeaker}</span>
+                  </div>
+                ) : currentSpeaker === "Unknown" ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-400">Speech detected:</span>
+                    <span className="text-xl font-semibold text-yellow-400">Unknown Speaker</span>
+                    <span className="text-slate-500 text-sm">(Not enrolled)</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-400">Listening...</span>
+                    <span className="text-slate-500">(No speech detected)</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-slate-400">{recordingTime}s</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {errorMsg && (
           <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 flex items-center gap-2">

@@ -8,47 +8,72 @@ from utils.audio import load_audio_from_file
 
 
 class OnlineKMeansSpeakerRecognition:
-    def __init__(self, embedder = SpeechBrainEmbedding(), n_speakers: int = 3) -> None:
-        self.embedder = embedder
-        self.reference_embeddings = {}
+    """
+    Online speaker recognition using MiniBatchKMeans clustering on speaker embeddings.
 
-        self.n_speakers = n_speakers
-        self.kmeans = MiniBatchKMeans(
-            n_clusters=self.n_speakers,
-            random_state=42,
-            batch_size=10,
-            n_init='auto'
-        )
-        self.cluster_to_speaker = {}
+    Attributes:
+        embedder (SpeechBrainEmbedding): Embedding model for audio.
+        reference_embeddings (dict): Mean embeddings for each reference speaker.
+        n_speakers (int): Number of speakers/clusters.
+        kmeans (MiniBatchKMeans): Online KMeans clustering model.
+        cluster_to_speaker (dict): Mapping from cluster index to speaker name.
+    """
 
-
-    def create_reference_embeddings(
-        self,
-        speaker_to_audio: dict[str, list[tuple[torch.Tensor, int]]]
+    def __init__(
+        self, 
+        speaker_to_audio: dict[str, list[tuple[torch.Tensor, int]]],
+        n_speakers: int,
+        embedder: SpeechBrainEmbedding = SpeechBrainEmbedding(), 
     ) -> None:
         """
-        Given a dict mapping speaker names to reference audio (in-memory),
-        compute and store mean embeddings.
+        Initializes the online speaker recognition system.
+
         Args:
-            speaker_to_audio (dict): {speaker_name: (audio, sr) or list of (audio, sr)}
+            speaker_to_audio (dict): Mapping from speaker names to lists of (audio, sample_rate) tuples.
+            n_speakers (int): Number of speakers/clusters.
+            embedder (SpeechBrainEmbedding, optional): Embedding model instance.
         """
+        self.embedder = embedder
+        self.n_speakers = n_speakers
+
+        self.reference_embeddings = self._create_reference_embeddings(speaker_to_audio)
+        self.kmeans, self.cluster_to_speaker = self._init_online_kmeans_with_references() 
+
+    def _create_reference_embeddings(
+        self,
+        speaker_to_audio: dict[str, list[tuple[torch.Tensor, int]]] 
+    ) -> dict[str, torch.Tensor]:
+        """
+        Computes mean embeddings for each speaker from provided reference audio.
+
+        Args:
+            speaker_to_audio (dict): 
+                A dictionary mapping speaker names to a list of (audio, sample_rate) tuples.
+
+        Returns:
+            dict: A dictionary mapping each speaker name to their mean embedding tensor.
+        """
+        reference_embeddings = {}
         for speaker, refs in speaker_to_audio.items():
             embs = []
             for audio, sr in refs:
                 emb = self.embedder.embed(audio, sr).squeeze(0)
                 embs.append(emb)
             mean_emb = torch.stack(embs).mean(dim=0)
-            self.reference_embeddings[speaker] = mean_emb
+            reference_embeddings[speaker] = mean_emb
+        return reference_embeddings
 
-
-    def init_online_kmeans_with_references(self) -> None:
+    def _init_online_kmeans_with_references(self) -> tuple[MiniBatchKMeans, dict[int, str]]:
         """
-        Initialize MiniBatchKMeans using reference embeddings as initial cluster centers.
+        Initializes MiniBatchKMeans using reference embeddings as initial cluster centers.
         Each cluster is associated with a speaker.
+
+        Returns:
+            tuple: (MiniBatchKMeans instance, cluster-to-speaker mapping dictionary)
         """
         speakers = list(self.reference_embeddings.keys())
         centers = torch.stack([self.reference_embeddings[s].squeeze(0) for s in speakers]).cpu().numpy()
-        self.kmeans = MiniBatchKMeans(
+        kmeans = MiniBatchKMeans(
             n_clusters=len(speakers),
             random_state=42,
             batch_size=10,
@@ -56,27 +81,30 @@ class OnlineKMeansSpeakerRecognition:
             n_init='auto'
         )
         # Fit once with reference embeddings to initialize internal attributes
-        self.kmeans.fit(centers)
+        kmeans.fit(centers)
         # Overwrite cluster centers with reference embeddings
-        self.kmeans.cluster_centers_ = centers
-        self.cluster_to_speaker = {i: speakers[i] for i in range(len(speakers))}
+        kmeans.cluster_centers_ = centers
+        cluster_to_speaker = {i: speakers[i] for i in range(len(speakers))}
+        return kmeans, cluster_to_speaker
 
-    
     def predict_speaker_online(
         self,
         x: torch.Tensor,
         sr: int | None = None
     ) -> tuple[str, int, np.ndarray]:
         """
-        Predict speaker using online K-Means clustering.
-        Returns:
-            speaker_name: The mapped speaker name
-            cluster_id: The assigned cluster ID
-            distances: Distances to each cluster center
-        """
-        if self.kmeans is None:
-            self.init_online_kmeans_with_references()
+        Predicts the speaker for a given audio segment using online K-Means clustering.
 
+        Args:
+            x (torch.Tensor): Audio segment or embedding tensor.
+            sr (int, optional): Sample rate of the audio. If None, x is assumed to be an embedding.
+
+        Returns:
+            tuple:
+                - speaker_name (str): The mapped speaker name.
+                - cluster_id (int): The assigned cluster ID.
+                - distances (np.ndarray): Distances to each cluster center.
+        """
         emb = self.embedder.embed(x, sr).squeeze(0) if sr is not None else x
         emb_np = emb.cpu().numpy().reshape(1, -1)
 
@@ -89,6 +117,12 @@ class OnlineKMeansSpeakerRecognition:
     def get_speaker_from_cluster(self, cluster_id: int) -> str:
         """
         Returns the speaker name associated with a cluster ID.
+
+        Args:
+            cluster_id (int): Cluster index.
+
+        Returns:
+            str: Speaker name or 'unknown_{cluster_id}' if not mapped.
         """
         return self.cluster_to_speaker.get(cluster_id, f"unknown_{cluster_id}")
 
@@ -102,6 +136,16 @@ if __name__ == "__main__":
     segments = annotations["segments"]
 
     def get_speaker_for_second(segments, t):
+        """
+        Returns the list of speakers active at time t.
+
+        Args:
+            segments (list): List of segment dicts with 'start', 'end', and 'speaker'.
+            t (int): Time in seconds.
+
+        Returns:
+            list: List of speaker names active at time t.
+        """
         speakers = []
         for seg in segments:
             if seg["start"] <= t < seg["end"]:
@@ -133,9 +177,8 @@ if __name__ == "__main__":
 
     STEP_SIZE = 2
 
-    recognizer_online = OnlineKMeansSpeakerRecognition(n_speakers=3)
-    recognizer_online.create_reference_embeddings(reference_audio)
-    recognizer_online.init_online_kmeans_with_references()
+    recognizer_online = OnlineKMeansSpeakerRecognition(reference_audio, n_speakers=3)
+    # reference embeddings and kmeans are initialized in __init__
 
     print("Cluster ID to Speaker mapping:")
     for cluster_id, speaker in recognizer_online.cluster_to_speaker.items():
@@ -212,4 +255,3 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig("cluster_plot.png")
     plt.close()
-

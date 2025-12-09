@@ -7,7 +7,6 @@ __all__ = [
             "SpeechBrainEmbedding", 
             "PyAnnoteEmbedding",
             "SklearnClustering", 
-            "SpeechBrainSpeakerRecognition", 
             "SpeechBrainSourceSeparation"
            ]
 

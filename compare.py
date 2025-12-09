@@ -18,9 +18,11 @@ from utils import (
     compare_vad_models,
     compare_sc_models,
     compare_asr_models,
+    compare_e2e_pipelines,
     aggregate_results,
     aggregate_sc_results,
     aggregate_asr_results,
+    aggregate_e2e_results,
     plot_metrics,
     plot_timing,
     plot_sc_timing,
@@ -28,6 +30,9 @@ from utils import (
     plot_sc_der,
     plot_asr_wer,
     plot_asr_timing,
+    plot_e2e_der,
+    plot_e2e_wer,
+    plot_e2e_timing,
     load_audio_from_file
 )
 from utils.constants import SR
@@ -40,7 +45,7 @@ def main():
     parser.add_argument(
         "--component",
         required=True,
-        choices=["vad", "sc", "asr"],
+        choices=["vad", "sc", "asr", "e2e"],
         help="Component to compare"
     )
     parser.add_argument(
@@ -259,6 +264,63 @@ def main():
             print(f"\n{name.upper()}:")
             print(f"  WER:      {agg['wer']['mean']:6.2f}% (±{agg['wer']['std']:.2f}%)")
             print(f"  Avg Time: {agg['timing']['mean']:6.2f}s/file")
+        print("="*60)
+
+    elif args.component == "e2e":
+        logger.info("\n" + "="*60)
+        logger.info("Running End-to-End Pipeline comparison...")
+        logger.info("="*60)
+
+        pipelines = compare_e2e_pipelines(file_pairs)
+        pipelines = aggregate_e2e_results(pipelines)
+
+        output_data = {
+            "comparison_type": "e2e",
+            "timestamp": timestamp,
+            "system_info": system_info,
+            "dataset": dataset_info,
+            "evaluation_settings": {
+                "collar": 0.25,
+                "skip_overlap": False
+            },
+            "pipelines": {
+                name: {
+                    "has_transcription": data['has_transcription'],
+                    "per_file_results": data['results'],
+                    "aggregated": data['aggregated']
+                }
+                for name, data in pipelines.items()
+            }
+        }
+
+        json_path = args.output_dir / f"e2e_comparison_{timestamp}.json"
+        with open(json_path, 'w') as f:
+            json.dump(output_data, f, indent=2)
+        logger.info(f"\nSaved results: {json_path}")
+
+        der_plot = args.output_dir / f"e2e_der_{timestamp}.png"
+        wer_plot = args.output_dir / f"e2e_wer_{timestamp}.png"
+        timing_plot = args.output_dir / f"e2e_timing_{timestamp}.png"
+
+        plot_e2e_der(pipelines, dataset_info, system_info, der_plot)
+        plot_e2e_wer(pipelines, dataset_info, system_info, wer_plot)
+        plot_e2e_timing(pipelines, dataset_info, system_info, timing_plot)
+
+        print("\n" + "="*60)
+        print("END-TO-END PIPELINE COMPARISON SUMMARY")
+        print("="*60)
+        for name, data in pipelines.items():
+            if 'aggregated' not in data:
+                continue
+            agg = data['aggregated']
+            print(f"\n{name.upper()}:")
+            print(f"  DER:         {agg['der']['mean']:6.2f}% (±{agg['der']['std']:.2f}%)")
+            print(f"  Miss:        {agg['miss']['mean']:6.2f}% (±{agg['miss']['std']:.2f}%)")
+            print(f"  False Alarm: {agg['false_alarm']['mean']:6.2f}% (±{agg['false_alarm']['std']:.2f}%)")
+            print(f"  Confusion:   {agg['confusion']['mean']:6.2f}% (±{agg['confusion']['std']:.2f}%)")
+            if 'wer' in agg:
+                print(f"  WER:         {agg['wer']['mean']:6.2f}% (±{agg['wer']['std']:.2f}%)")
+            print(f"  Avg Time:    {agg['timing']['mean']:6.2f}s/file")
         print("="*60)
 
 

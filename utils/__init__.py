@@ -14,9 +14,11 @@ from .comparison import (
     compare_vad_models,
     compare_sc_models,
     compare_asr_models,
+    compare_e2e_pipelines,
     aggregate_results,
     aggregate_sc_results,
-    aggregate_asr_results
+    aggregate_asr_results,
+    aggregate_e2e_results
 )
 from .plot import (
     plot_metrics,
@@ -25,7 +27,10 @@ from .plot import (
     plot_sc_silhouette,
     plot_sc_der,
     plot_asr_wer,
-    plot_asr_timing
+    plot_asr_timing,
+    plot_e2e_der,
+    plot_e2e_wer,
+    plot_e2e_timing
 )
 
 __all__ = [
@@ -44,14 +49,19 @@ __all__ = [
     "compare_vad_models",
     "compare_sc_models",
     "compare_asr_models",
+    "compare_e2e_pipelines",
     "aggregate_results",
     "aggregate_sc_results",
     "aggregate_asr_results",
+    "aggregate_e2e_results",
     "plot_metrics",
     "plot_timing",
     "plot_sc_timing",
     "plot_sc_silhouette",
     "plot_sc_der",
     "plot_asr_wer",
-    "plot_asr_timing"
+    "plot_asr_timing",
+    "plot_e2e_der",
+    "plot_e2e_wer",
+    "plot_e2e_timing"
 ]

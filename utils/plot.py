@@ -216,10 +216,10 @@ def plot_sc_der(
     output_path: Path
 ):
     """Generate SC DER metrics comparison plot."""
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(12, 7))
 
-    metrics = ['der', 'miss', 'confusion']
-    metric_labels = ['DER', 'Miss Rate', 'Confusion']
+    metrics = ['der', 'miss', 'false_alarm', 'confusion']
+    metric_labels = ['DER', 'Miss Rate', 'False Alarm', 'Confusion']
     model_names = list(models.keys())
 
     x = np.arange(len(metrics))
@@ -346,3 +346,159 @@ def plot_asr_timing(
     plt.close()
 
     logger.info(f"Saved ASR timing plot: {output_path}")
+
+
+def plot_e2e_der(
+    pipelines: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """Generate end-to-end DER comparison plot."""
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    metrics = ['der', 'miss', 'false_alarm', 'confusion']
+    metric_labels = ['DER', 'Miss Rate', 'False Alarm', 'Confusion']
+    pipeline_names = [name for name in pipelines.keys() if 'aggregated' in pipelines[name]]
+
+    x = np.arange(len(metrics))
+    width = 0.25
+    num_pipelines = len(pipeline_names)
+
+    colors = {
+        'who-says': '#2E86AB',
+        'whisperx': '#A23B72',
+        'pyannote-3.1': '#F18F01'
+    }
+
+    for i, pipeline_name in enumerate(pipeline_names):
+        agg = pipelines[pipeline_name]['aggregated']
+        means = [agg[m]['mean'] for m in metrics]
+        offset = (i - num_pipelines/2) * width + width/2
+        color = colors.get(pipeline_name, '#808080')
+        ax.bar(x + offset, means, width, label=pipeline_name, color=color)
+
+    ax.set_ylabel('Score (%)', fontsize=12)
+    max_val = max([pipelines[name]['aggregated'][m]['mean']
+                   for name in pipeline_names
+                   for m in metrics])
+    ax.set_ylim(0, max_val * 1.2)
+    ax.set_xticks(x)
+    ax.set_xticklabels(metric_labels, fontsize=11)
+    ax.legend(fontsize=10, loc='upper right')
+    ax.grid(axis='y', alpha=0.3)
+
+    total_duration_min = dataset_info['total_duration_seconds'] / 60
+    title = f"End-to-End Pipeline Comparison - DER Metrics\n"
+    title += f"Language: {dataset_info['language'].title()} | "
+    title += f"Files: {dataset_info['num_files']} | "
+    title += f"Duration: {total_duration_min:.1f} min\n"
+    title += f"Hardware: {system_info['gpu']} ({system_info['vram']})"
+    ax.set_title(title, fontsize=11, pad=20)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved E2E DER plot: {output_path}")
+
+
+def plot_e2e_wer(
+    pipelines: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """Generate end-to-end WER comparison plot (only pipelines with ASR)."""
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    transcription_pipelines = {
+        name: data for name, data in pipelines.items()
+        if data['has_transcription'] and 'wer' in data.get('aggregated', {})
+    }
+
+    if not transcription_pipelines:
+        logger.warning("No pipelines with WER metrics to plot")
+        return
+
+    pipeline_names = list(transcription_pipelines.keys())
+    wer_means = [transcription_pipelines[name]['aggregated']['wer']['mean']
+                 for name in pipeline_names]
+
+    x = np.arange(len(pipeline_names))
+    colors = ['#2E86AB', '#A23B72']
+    bars = ax.bar(x, wer_means, color=colors[:len(pipeline_names)])
+
+    ax.set_ylabel('WER (%)', fontsize=12)
+    ax.set_xticks(x)
+    ax.set_xticklabels(pipeline_names, fontsize=11)
+    ax.grid(axis='y', alpha=0.3)
+
+    total_duration_min = dataset_info['total_duration_seconds'] / 60
+    title = f"End-to-End Pipeline Comparison - Word Error Rate\n"
+    title += f"Language: {dataset_info['language'].title()} | "
+    title += f"Files: {dataset_info['num_files']} | "
+    title += f"Duration: {total_duration_min:.1f} min\n"
+    title += f"Hardware: {system_info['gpu']} ({system_info['vram']})"
+    ax.set_title(title, fontsize=11, pad=20)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved E2E WER plot: {output_path}")
+
+
+def plot_e2e_timing(
+    pipelines: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """Generate end-to-end timing comparison plot."""
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    pipeline_names = [name for name in pipelines.keys() if 'aggregated' in pipelines[name]]
+    means = [pipelines[name]['aggregated']['timing']['mean']
+             for name in pipeline_names]
+    totals = [pipelines[name]['aggregated']['timing']['total']
+              for name in pipeline_names]
+
+    x = np.arange(len(pipeline_names))
+    colors = {
+        'who-says': '#2E86AB',
+        'whisperx': '#A23B72',
+        'pyannote-3.1': '#F18F01'
+    }
+    bar_colors = [colors.get(name, '#808080') for name in pipeline_names]
+    bars = ax.bar(x, means, color=bar_colors)
+
+    max_height = max(means)
+    text_height_estimate = max_height * 0.08
+    y_max = max_height + text_height_estimate + (max_height * 0.15)
+    ax.set_ylim(0, y_max)
+
+    for i, (bar, total) in enumerate(zip(bars, totals)):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + (max_height * 0.03),
+                f'Total: {total:.1f}s',
+                ha='center', va='bottom', fontsize=9)
+
+    ax.set_ylabel('Mean Time per File (seconds)', fontsize=12)
+    ax.set_xticks(x)
+    ax.set_xticklabels(pipeline_names, fontsize=11)
+    ax.grid(axis='y', alpha=0.3)
+
+    total_duration_min = dataset_info['total_duration_seconds'] / 60
+    title = f"End-to-End Pipeline Comparison - Inference Time\n"
+    title += f"Language: {dataset_info['language'].title()} | "
+    title += f"Files: {dataset_info['num_files']} | "
+    title += f"Duration: {total_duration_min:.1f} min\n"
+    title += f"Hardware: {system_info['gpu']} ({system_info['vram']})"
+    ax.set_title(title, fontsize=11, pad=20)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved E2E timing plot: {output_path}")

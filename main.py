@@ -211,6 +211,12 @@ class WhoSays(object):
         logger.info(f"Extracted embeddings for {segment_embeddings.shape[0]} segments")
 
         # Step 7: Speaker Clustering
+        # Adjust num_speakers if we have fewer segments than requested clusters
+        n_segments = segment_embeddings.shape[0]
+        if num_speakers is not None and n_segments < num_speakers:
+            logger.warning(f"Only {n_segments} segments detected but {num_speakers} speakers requested, using {n_segments} clusters")
+            num_speakers = n_segments
+
         logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
         if include_timing:
             start_time = time.time()

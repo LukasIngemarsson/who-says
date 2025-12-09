@@ -552,3 +552,162 @@ def aggregate_asr_results(models: Dict) -> Dict:
         }
 
     return models
+
+
+def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
+    """
+    Compare end-to-end diarization pipelines.
+
+    Evaluates complete pipeline output using DER and timing metrics.
+
+    Args:
+        file_pairs: List of (audio_path, annotation_path, file_id) tuples
+
+    Returns:
+        Dict mapping pipeline names to results:
+        {
+            'pipeline_name': {
+                'has_transcription': bool,
+                'results': [
+                    {
+                        'file_id': str,
+                        'audio_file': str,
+                        'duration': float,
+                        'n_speakers_pred': int,
+                        'n_speakers_ref': int,
+                        'der_metrics': {...},
+                        'wer_metrics': {...} or None,
+                        'timing': float
+                    }
+                ]
+            }
+        }
+    """
+    from pipeline.pyannote_full_pipeline import PyannoteFullPipeline
+    from main import WhoSays
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    pipelines = {
+        'who-says': {
+            'instance': WhoSays(),
+            'has_transcription': True
+        },
+        'pyannote-3.1': {
+            'instance': PyannoteFullPipeline(device=device),
+            'has_transcription': False
+        }
+    }
+
+    for name in pipelines:
+        pipelines[name]['results'] = []
+
+    for audio_file, annotation_file, file_id in tqdm(file_pairs, desc="Processing files"):
+        logger.info(f"\nProcessing: {file_id}")
+
+        annotation_data = load_annotation_file(annotation_file)
+        waveform, sr = load_audio_from_file(audio_file, sr=SR)
+        duration = waveform.shape[-1] / sr
+
+        ref_segments = annotation_data['segments']
+        ref_transcriptions = annotation_data.get('transcriptions')
+        n_speakers_ref = len(set(seg['speaker'] for seg in ref_segments))
+
+        for pipeline_name, pipeline_data in pipelines.items():
+            pipeline = pipeline_data['instance']
+            has_transcription = pipeline_data['has_transcription']
+
+            logger.info(f"  Running {pipeline_name}...")
+
+            try:
+                start_time = time.time()
+
+                if pipeline_name == 'who-says':
+                    result = pipeline(str(audio_file), num_speakers=n_speakers_ref, include_timing=False)
+                else:
+                    result = pipeline.process(audio_file)
+
+                inference_time = time.time() - start_time
+
+                pred_segments = result['segments']
+                n_speakers_pred = len(set(seg['speaker'] for seg in pred_segments))
+
+                der_metrics = evaluate_diarization(
+                    reference_segments=ref_segments,
+                    hypothesis_segments=pred_segments,
+                    total_duration=duration
+                )
+
+                wer_metrics = None
+                if has_transcription and ref_transcriptions:
+                    pred_transcriptions = [seg['text'] for seg in pred_segments]
+                    wer_metrics = evaluate_asr(ref_transcriptions, pred_transcriptions)
+
+                pipeline_data['results'].append({
+                    'file_id': file_id,
+                    'audio_file': str(audio_file),
+                    'duration': duration,
+                    'n_speakers_pred': n_speakers_pred,
+                    'n_speakers_ref': n_speakers_ref,
+                    'der_metrics': der_metrics,
+                    'wer_metrics': wer_metrics,
+                    'timing': inference_time
+                })
+
+                logger.info(f"    DER: {der_metrics['der']:.2f}%")
+                if wer_metrics:
+                    logger.info(f"    WER: {wer_metrics['wer']:.2f}%")
+                logger.info(f"    Time: {inference_time:.2f}s")
+
+            except Exception as e:
+                logger.error(f"    Error with {pipeline_name}: {e}")
+                continue
+
+    return pipelines
+
+
+def aggregate_e2e_results(pipelines: Dict) -> Dict:
+    """
+    Aggregate end-to-end pipeline results.
+
+    Computes mean and std for DER components and timing.
+
+    Args:
+        pipelines: Dict from compare_e2e_pipelines()
+
+    Returns:
+        Updated dict with 'aggregated' key for each pipeline
+    """
+    for pipeline_name, pipeline_data in pipelines.items():
+        results = pipeline_data['results']
+
+        if not results:
+            logger.warning(f"No results for {pipeline_name}, skipping aggregation")
+            continue
+
+        ders = [r['der_metrics']['der'] for r in results]
+        misses = [r['der_metrics']['miss'] for r in results]
+        false_alarms = [r['der_metrics']['false_alarm'] for r in results]
+        confusions = [r['der_metrics']['confusion'] for r in results]
+        timings = [r['timing'] for r in results]
+
+        aggregated = {
+            'der': {'mean': float(np.mean(ders)), 'std': float(np.std(ders))},
+            'miss': {'mean': float(np.mean(misses)), 'std': float(np.std(misses))},
+            'false_alarm': {'mean': float(np.mean(false_alarms)), 'std': float(np.std(false_alarms))},
+            'confusion': {'mean': float(np.mean(confusions)), 'std': float(np.std(confusions))},
+            'timing': {
+                'mean': float(np.mean(timings)),
+                'std': float(np.std(timings)),
+                'total': float(np.sum(timings))
+            }
+        }
+
+        if pipeline_data['has_transcription'] and results[0]['wer_metrics']:
+            wers = [r['wer_metrics']['wer'] for r in results if r['wer_metrics']]
+            if wers:
+                aggregated['wer'] = {'mean': float(np.mean(wers)), 'std': float(np.std(wers))}
+
+        pipeline_data['aggregated'] = aggregated
+
+    return pipelines

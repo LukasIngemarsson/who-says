@@ -8,7 +8,7 @@ from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedd
 from utils.audio import load_audio_from_file
 
 
-class CustomSpeakerRecognition:
+class OnlineKMeansSpeakerRecognition:
     def __init__(self, embedder = SpeechBrainEmbedding(), n_speakers: int = 3) -> None:
         self.embedder = embedder
         self.reference_embeddings = {}
@@ -105,6 +105,7 @@ class CustomSpeakerRecognition:
         self.kmeans.cluster_centers_ = centers
         self.cluster_to_speaker = {i: speakers[i] for i in range(len(speakers))}
 
+    
     def predict_speaker_online(
         self,
         x: torch.Tensor,
@@ -135,6 +136,7 @@ class CustomSpeakerRecognition:
         """
         return self.cluster_to_speaker.get(cluster_id, f"unknown_{cluster_id}")
 
+
 if __name__ == "__main__":
     #### OFFLINE RECOG TEST
     print("1. Running offline test...")
@@ -146,14 +148,12 @@ if __name__ == "__main__":
     path2 = "samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"
     audio2, sr2 = load_audio_from_file(path2, convert_to_mono=True)
 
-    recognizer = CustomSpeakerRecognition()
+    recognizer = OnlineKMeansSpeakerRecognition()
     score, prediction = recognizer.verify(audio1, audio2, sr1, sr2)
     print(f"Mårten vs. Lukas - score: {score:.4f}, prediction: {prediction}") 
 
 
-    #### ONLINE RECOG TEST W/ SINGLE REFERENCE (NO CLUSTERING)
-    print("2. Running online test...")
-
+    #### ONLINE KMEANS TEST WITH REFERENCE EMBEDDINGS
     path_annot = "samples/benchmarks/english/001.json"
     with open(path_annot, "r") as f:
         annotations = json.load(f)
@@ -184,9 +184,6 @@ if __name__ == "__main__":
         ]
     }
 
-    recognizer = CustomSpeakerRecognition()
-    recognizer.create_reference_embeddings(reference_audio)
-
     # New audio to identify
     new_audio_path = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
     new_audio, new_sr = load_audio_from_file(new_audio_path, convert_to_mono=True)
@@ -194,27 +191,8 @@ if __name__ == "__main__":
 
     STEP_SIZE = 2
 
-    for t in range(0, duration, STEP_SIZE):
-        start_sample = t * new_sr
-        end_sample = (t + STEP_SIZE) * new_sr
-        chunk = new_audio[start_sample:end_sample]
-
-        actual_speaker = get_speaker_for_second(segments, t)
-
-        if len(actual_speaker) == 0:
-            print(f"Second {t}-{t+STEP_SIZE}: SILENCE.")
-            continue
-        if len(actual_speaker) > 1:
-            print(f"Second {t}-{t+STEP_SIZE}: OVERLAP. | GT: {actual_speaker}")
-            continue
-
-        best_speaker, similarities = recognizer.predict_speaker(chunk, new_sr)
-        similarities = {k: f"{v:.3f}" for k, v in similarities.items()}
-        print(f"Second {t}-{t+STEP_SIZE}: Assigned speaker: {best_speaker} | GT speaker: {actual_speaker} | Similarities: {similarities}")
-
-    #### ONLINE KMEANS TEST WITH REFERENCE EMBEDDINGS
-    print("\n3. Running online K-Means test (reference-based)...")
-    recognizer_online = CustomSpeakerRecognition(n_speakers=3)
+    print("\n2. Running online K-Means test (reference-based)...")
+    recognizer_online = OnlineKMeansSpeakerRecognition(n_speakers=3)
     recognizer_online.create_reference_embeddings(reference_audio)
     recognizer_online.init_online_kmeans_with_references()
 
@@ -293,3 +271,4 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig("cluster_plot.png")
     plt.close()
+

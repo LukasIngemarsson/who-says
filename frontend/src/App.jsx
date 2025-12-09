@@ -166,46 +166,37 @@ const App = () => {
       const processor = audioContext.createScriptProcessor(4096, 1, 1);
       processorRef.current = processor;
       
+      // --- ADD THIS ABOVE onaudioprocess ---
+      let bufferAccumulator = [];  // <-- put this right before processor.onaudioprocess
+      // -------------------------------------
+
+
+      // --- REPLACE your entire onaudioprocess with this ---
       processor.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
-        audioBufferAccumulatorRef.current.push(new Float32Array(inputData));
-        
-        const now = Date.now();
-        // Increased from 3s to 5s to collect more audio before processing
-        if (now - lastProcessTimeRef.current >= 5000) {
-          // Combine accumulated samples
-          const totalLength = audioBufferAccumulatorRef.current.reduce((sum, arr) => sum + arr.length, 0);
-          
-          if (totalLength === 0) {
-            console.warn("No audio samples accumulated");
-            audioBufferAccumulatorRef.current = [];
-            lastProcessTimeRef.current = now;
-            return;
-          }
-          
-          const combined = new Float32Array(totalLength);
-          let offset = 0;
-          for (const chunk of audioBufferAccumulatorRef.current) {
-            combined.set(chunk, offset);
-            offset += chunk.length;
-          }
-          
-          // Check if audio has any significant amplitude
-          const maxAmplitude = Math.max(...Array.from(combined).map(Math.abs));
-          const avgAmplitude = Array.from(combined).reduce((sum, val) => sum + Math.abs(val), 0) / combined.length;
-          
-          console.log(`Sending audio chunk: ${totalLength} samples, max amplitude: ${maxAmplitude.toFixed(4)}, avg: ${avgAmplitude.toFixed(4)}`);
-          
-          // Convert to base64
-          const audioBytes = new Uint8Array(combined.buffer);
+
+        // append samples (browser may give 2048 even if you requested 4096)
+        bufferAccumulator.push(...inputData);
+
+        // once we have >= 4096 samples (~256ms), send exactly that
+        const TARGET_SIZE = 4096;
+
+        while (bufferAccumulator.length >= TARGET_SIZE) {
+
+          const slice = bufferAccumulator.slice(0, TARGET_SIZE);
+          bufferAccumulator = bufferAccumulator.slice(TARGET_SIZE);
+
+          // Convert Float32Array → Uint8Array → Base64
+          const floatArray = new Float32Array(slice);
+          const audioBytes = new Uint8Array(floatArray.buffer);
+
           let binary = '';
-          const len = audioBytes.byteLength;
-          for (let i = 0; i < len; i++) {
+          for (let i = 0; i < audioBytes.length; i++) {
             binary += String.fromCharCode(audioBytes[i]);
           }
           const base64Audio = btoa(binary);
-          
-          // Send to server
+
+          // Send to backend
           fetch("/identify_speaker", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -215,31 +206,24 @@ const App = () => {
               session_id: sessionIdRef.current
             })
           })
-          .then(response => response.json())
+          .then(r => r.json())
           .then(data => {
             console.log("Speaker identification response:", data);
+
             if (data.has_speech) {
-              if (data.speaker) {
-                setCurrentSpeaker(data.speaker);
-              } else {
-                // Speech detected but no matching speaker
-                setCurrentSpeaker("Unknown");
-              }
-              
-              // No modal during recording - just display who's talking
+              setCurrentSpeaker(data.speaker || "Unknown");
             } else {
               setCurrentSpeaker(null);
             }
           })
-          .catch(error => {
-            console.error("Error identifying speaker:", error);
+          .catch(err => {
+            console.error("Error identifying speaker:", err);
             setCurrentSpeaker(null);
           });
-          
-          audioBufferAccumulatorRef.current = [];
-          lastProcessTimeRef.current = now;
         }
       };
+
+      
       
       source.connect(processor);
       processor.connect(audioContext.destination);

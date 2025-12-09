@@ -45,7 +45,7 @@ class PyAnnoteEmbedding:
             raise ValueError("Missing HF_TOKEN_PYANNOTE_EMBEDDING in environment variables.")
         
         self.model = Model.from_pretrained(model, use_auth_token=token)
-        self.inference = Inference(self.model, window="whole", batch_size=batch_size)
+        self.inference = Inference(self.model, window=(1.5,0.25), batch_size=batch_size)
 
     def embed(self, audio: torch.Tensor, frequency: int) -> torch.Tensor:
         """

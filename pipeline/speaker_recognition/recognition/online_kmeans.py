@@ -1,5 +1,4 @@
 import torch
-import torch.nn.functional as F
 from sklearn.cluster import MiniBatchKMeans
 import json
 import numpy as np
@@ -36,53 +35,10 @@ class OnlineKMeansSpeakerRecognition:
         for speaker, refs in speaker_to_audio.items():
             embs = []
             for audio, sr in refs:
-                emb = embedder.embed(audio, sr).squeeze(0)
+                emb = self.embedder.embed(audio, sr).squeeze(0)
                 embs.append(emb)
             mean_emb = torch.stack(embs).mean(dim=0)
             self.reference_embeddings[speaker] = mean_emb
-
-
-    def verify(
-        self,
-        x1: torch.Tensor,
-        x2: torch.Tensor,
-        sr1: int | None = None,
-        sr2: int | None = None,
-        thres: float = 0.5
-    ) -> tuple[float, bool]:
-        """
-        Computes similarity score between two audio chunks or embeddings.
-        If sample rates are provided, treats x1 and x2 as audio and embeds them.
-        Otherwise, treats them as embeddings.
-        """
-        if sr1 is not None and sr2 is not None:
-            emb1 = self.embedder.embed(x1, sr1).squeeze(0)
-            emb2 = self.embedder.embed(x2, sr2).squeeze(0)
-        else:
-            emb1 = x1
-            emb2 = x2
-        score = F.cosine_similarity(emb1, emb2).item()
-        prediction = score > thres
-        return score, prediction
-
-
-    def predict_speaker(
-        self,
-        x: torch.Tensor,
-        sr: int | None = None
-    ) -> tuple[str, dict[str, float]]:
-        """
-        Given audio or embedding, returns the speaker with the highest similarity and the similarity scores.
-        If sample rate is provided, treats x as audio and embeds it.
-        Otherwise, treats x as embedding.
-        """
-        emb = self.embedder.embed(x, sr).squeeze(0) if sr is not None else x
-        similarities = {}
-        for speaker, ref_emb in self.reference_embeddings.items():
-            score, _ = self.verify(emb, ref_emb)
-            similarities[speaker] = score
-        best_speaker = max(similarities, key=lambda k: similarities[k])
-        return best_speaker, similarities
 
 
     def init_online_kmeans_with_references(self) -> None:
@@ -138,22 +94,8 @@ class OnlineKMeansSpeakerRecognition:
 
 
 if __name__ == "__main__":
-    #### OFFLINE RECOG TEST
-    print("1. Running offline test...")
-    embedder = SpeechBrainEmbedding()
-
-    path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
-    audio1, sr1 = load_audio_from_file(path1, convert_to_mono=True)
-
-    path2 = "samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"
-    audio2, sr2 = load_audio_from_file(path2, convert_to_mono=True)
-
-    recognizer = OnlineKMeansSpeakerRecognition()
-    score, prediction = recognizer.verify(audio1, audio2, sr1, sr2)
-    print(f"Mårten vs. Lukas - score: {score:.4f}, prediction: {prediction}") 
-
-
     #### ONLINE KMEANS TEST WITH REFERENCE EMBEDDINGS
+    print("\nRunning online K-Means test...")
     path_annot = "samples/benchmarks/english/001.json"
     with open(path_annot, "r") as f:
         annotations = json.load(f)
@@ -191,7 +133,6 @@ if __name__ == "__main__":
 
     STEP_SIZE = 2
 
-    print("\n2. Running online K-Means test (reference-based)...")
     recognizer_online = OnlineKMeansSpeakerRecognition(n_speakers=3)
     recognizer_online.create_reference_embeddings(reference_audio)
     recognizer_online.init_online_kmeans_with_references()

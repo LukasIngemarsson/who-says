@@ -35,7 +35,7 @@ class NaiveSpeakerRecognition:
         for speaker, refs in speaker_to_audio.items():
             embs = []
             for audio, sr in refs:
-                emb = embedder.embed(audio, sr).squeeze(0)
+                emb = self.embedder.embed(audio, sr).squeeze(0)
                 embs.append(emb)
             mean_emb = torch.stack(embs).mean(dim=0)
             self.reference_embeddings[speaker] = mean_emb

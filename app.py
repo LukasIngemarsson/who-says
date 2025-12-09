@@ -129,7 +129,8 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
         return ""
 
     # Require a minimum amount of new audio before attempting ASR
-    MIN_NEW_SAMPLES = int(0.7 * sr)  # ~0.7s of audio
+    # (more context → fewer hallucinations)
+    MIN_NEW_SAMPLES = int(1.5 * sr)  # ~1.5s of audio
     if len(buffer) - cursor < MIN_NEW_SAMPLES:
         return ""
 
@@ -144,6 +145,11 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
         return ""
 
     if not speech_segments_tail:
+        return ""
+
+    # Require at least some real speech duration in the tail
+    total_speech_tail = sum(max(0.0, seg["end"] - seg["start"]) for seg in speech_segments_tail)
+    if total_speech_tail < 0.5:  # < 0.5s of detected speech → too flimsy for ASR
         return ""
 
     # Offset segments to full-buffer timeline
@@ -174,7 +180,24 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
     last_end_time = new_segments[-1]["end"]
     state["cursor"] = min(int(last_end_time * sr), len(buffer))
 
-    return " ".join(texts).strip() if texts else ""
+    snippet = " ".join(texts).strip() if texts else ""
+    if not snippet:
+        return ""
+
+    # Heuristic: drop very common closing hallucinations on short/noisy tails
+    lowered = snippet.lower()
+    banned_phrases = [
+        "thank you very much for watching",
+        "thank you for watching",
+        "thanks for watching",
+        "see you in the next video",
+        "don't forget to like and subscribe",
+    ]
+    if any(p in lowered for p in banned_phrases):
+        logger.info(f"Dropping likely hallucinated closing snippet for session {session_id!r}: {snippet!r}")
+        return ""
+
+    return snippet
 def convert_to_wav(input_path):
     """Convert any input audio to 16kHz mono WAV using ffmpeg."""
     try:

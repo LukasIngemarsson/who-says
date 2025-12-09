@@ -13,6 +13,7 @@ import torch
 import torch.nn.functional as F
 
 import warnings
+from utils import load_audio_from_file, match_frequency
 warnings.filterwarnings("ignore")
 
 # -------------------------------------------------
@@ -20,12 +21,10 @@ warnings.filterwarnings("ignore")
 # -------------------------------------------------
 try:
     from main import WhoSays
-    from utils import load_audio_from_file
     PIPELINE_AVAILABLE = True
 except ImportError:
     logger.warning("Could not import WhoSays from main.py. Running in mock mode.")
     PIPELINE_AVAILABLE = False
-    load_audio_from_file = None
 
 load_dotenv(".env")
 
@@ -47,11 +46,14 @@ else:
 # -------------------------------------------------
 # Global state
 # -------------------------------------------------
+# Speaker identification buffers
 ROLLING_BUFFER = None        # 1-second rolling raw audio (torch.Tensor on pipeline device)
 SPEECH_BUFFER = None         # rolling speech-only buffer (up to ~2s)
 KNOWN_SPEAKERS = {}          # name -> normalized embedding (1D tensor on CPU)
 
 SESSION_STATE = {}           # kept in case you want to use later
+# Live ASR per session: session_id -> {"buffer": Tensor, "cursor": int}
+SESSION_ASR_STATE = {}
 
 EMBEDDINGS_DIR = Path(__file__).parent / "embeddings"
 EMBEDDINGS_DIR.mkdir(exist_ok=True)
@@ -111,6 +113,68 @@ def make_serializable(obj):
         return [make_serializable(i) for i in obj]
     return obj
 
+def get_live_snippet_for_session(session_id: str, sr: int) -> str:
+    """
+    Run VAD + ASR only on the NEW part of the session buffer that hasn't
+    been transcribed yet. Returns just the new text snippet.
+    """
+    state = SESSION_ASR_STATE.get(session_id)
+    if state is None:
+        return ""
+
+    buffer = state.get("buffer")
+    cursor = int(state.get("cursor", 0))
+
+    if buffer is None or buffer.numel() == 0 or cursor >= len(buffer):
+        return ""
+
+    # Require a minimum amount of new audio before attempting ASR
+    MIN_NEW_SAMPLES = int(0.7 * sr)  # ~0.7s of audio
+    if len(buffer) - cursor < MIN_NEW_SAMPLES:
+        return ""
+
+    tail = buffer[cursor:]
+    tail_start_time = cursor / sr
+
+    # VAD on the tail only
+    try:
+        speech_segments_tail = pipeline.vad(tail)
+    except Exception as e:
+        logger.error(f"VAD error in get_live_snippet_for_session({session_id}): {e}")
+        return ""
+
+    if not speech_segments_tail:
+        return ""
+
+    # Offset segments to full-buffer timeline
+    new_segments = []
+    for seg in speech_segments_tail:
+        seg_start = seg["start"] + tail_start_time
+        seg_end = seg["end"] + tail_start_time
+        new_segments.append({"start": seg_start, "end": seg_end})
+
+    # ASR on full buffer, but only for the new segments
+    try:
+        transcriptions = pipeline.asr.transcribe_segments(
+            buffer,
+            new_segments,
+            return_timestamps=False,
+        )
+    except Exception as e:
+        logger.error(f"ASR error in get_live_snippet_for_session({session_id}): {e}")
+        return ""
+
+    texts = []
+    for seg in transcriptions or []:
+        txt = (seg.get("text") or "").strip()
+        if txt:
+            texts.append(txt)
+
+    # Advance cursor to the end of the last processed segment
+    last_end_time = new_segments[-1]["end"]
+    state["cursor"] = min(int(last_end_time * sr), len(buffer))
+
+    return " ".join(texts).strip() if texts else ""
 def convert_to_wav(input_path):
     """Convert any input audio to 16kHz mono WAV using ffmpeg."""
     try:
@@ -227,9 +291,7 @@ def process_audio():
 # -------------------------------------------------
 @app.route('/upload_embeddings', methods=['POST'])
 def upload_embeddings():
-    """
-    Enroll a speaker: we now use the SAME embedder path as live mode, and normalize.
-    """
+    """Enroll a speaker: use the SAME embedder path as live mode, and normalize."""
     if not PIPELINE_AVAILABLE:
         name = request.form.get('name', 'Unknown')
         return jsonify({"message": f"Mock enrollment for {name}", "vector_size": 0})
@@ -283,14 +345,14 @@ def upload_embeddings():
                     live_like_emb = live_like_emb.squeeze(0)
 
                 enroll_norm = F.normalize(embedding_tensor, p=2, dim=0)
-                live_norm   = F.normalize(live_like_emb, p=2, dim=0)
+                live_norm = F.normalize(live_like_emb, p=2, dim=0)
 
                 sim = torch.dot(enroll_norm, live_norm).item()
                 logger.warning(f"[DEBUG] Enrollment self-similarity = {sim:.4f}")
 
             # ---- continue as before ----
             embedding_tensor = F.normalize(embedding_tensor, p=2, dim=0)
-      # Store on CPU in KNOWN_SPEAKERS
+            # Store on CPU in KNOWN_SPEAKERS
             KNOWN_SPEAKERS[speaker_name] = embedding_tensor.cpu()
             logger.info(f"Enrolled {speaker_name}. Total known speakers: {len(KNOWN_SPEAKERS)}")
 
@@ -322,12 +384,12 @@ def upload_embeddings():
 # -------------------------------------------------
 @app.route('/identify_speaker', methods=['POST'])
 def identify_speaker():
-    """
-    Real-time speaker identification using:
-      - 1s rolling audio buffer (for VAD)
-      - up to 2s rolling speech-only buffer (for embedding)
-      - cosine similarity vs enrolled, normalized embeddings
-      - stable speaker indicator with cooldown and margin
+    """Real-time speaker identification.
+
+    - 1s rolling audio buffer (for VAD)
+    - up to 2s rolling speech-only buffer (for embedding)
+    - cosine similarity vs enrolled, normalized embeddings
+    - stable speaker indicator with cooldown and margin
     """
     global ROLLING_BUFFER, SPEECH_BUFFER
     global CURRENT_SPEAKER, CURRENT_CONFIDENCE, LAST_SWITCH_TIME
@@ -336,26 +398,35 @@ def identify_speaker():
         return jsonify({"error": "Pipeline not available"}), 503
 
     try:
-        # ---------------------------
         # 1. Read raw PCM base64 audio
-        # ---------------------------
         if 'audio_data' not in request.form:
             return jsonify({"error": "No audio_data provided"}), 400
 
         audio_data_b64 = request.form.get('audio_data')
         sample_rate = int(request.form.get('sample_rate', 16000))
+        session_id = request.form.get('session_id', 'default')
 
         try:
             audio_bytes = base64.b64decode(audio_data_b64)
             audio_array = np.frombuffer(audio_bytes, dtype=np.float32)
 
+            # Start on CPU for potential resampling
             waveform = torch.from_numpy(audio_array).float()
             if waveform.dim() > 1:
                 waveform = waveform.mean(dim=0)
 
+            sr = sample_rate
+
+            # Resample to pipeline sample rate if needed
+            target_sr = pipeline.config.sr
+            if sr != target_sr:
+                waveform_2d = waveform.unsqueeze(0)  # (1, n_samples)
+                waveform_2d = match_frequency(waveform_2d, sr, sr=target_sr)
+                waveform = waveform_2d.squeeze(0)
+                sr = target_sr
+
             device = pipeline.config.device
             waveform = waveform.to(device)
-            sr = sample_rate
 
         except Exception as e:
             logger.error(f"Error decoding audio: {e}")
@@ -363,17 +434,22 @@ def identify_speaker():
 
         logger.info(f"Received {len(waveform)} samples, {len(waveform)/sr:.3f}s")
 
-        # ---------------------------
+        # Update per-session ASR buffer (kept separate from VAD/speaker buffers)
+        if session_id not in SESSION_ASR_STATE:
+            SESSION_ASR_STATE[session_id] = {
+                "buffer": torch.zeros(0, device=device),
+                "cursor": 0,
+            }
+        asr_state = SESSION_ASR_STATE[session_id]
+        asr_state["buffer"] = torch.cat([asr_state["buffer"], waveform.detach()])
+
         # 2. Initialize buffers on correct device
-        # ---------------------------
         if ROLLING_BUFFER is None:
             ROLLING_BUFFER = torch.zeros(sr, device=device)
         if SPEECH_BUFFER is None:
             SPEECH_BUFFER = torch.zeros(0, device=device)
 
-        # ---------------------------
         # 3. Update 1-second rolling audio buffer
-        # ---------------------------
         chunk = waveform
 
         if len(chunk) >= sr:
@@ -386,9 +462,7 @@ def identify_speaker():
 
         logger.info(f"VAD input window: {len(vad_input)} samples ({len(vad_input)/sr:.2f}s)")
 
-        # ---------------------------
-        # 4. Run VAD on rolling 1s window
-        # ---------------------------
+        # 4. Run VAD on rolling 1s window (for speaker detection)
         speech_segments = pipeline.vad(vad_input)
         logger.info(f"VAD found {len(speech_segments)} segments")
 
@@ -399,11 +473,10 @@ def identify_speaker():
                 "speaker": CURRENT_SPEAKER,
                 "has_speech": False if CURRENT_SPEAKER is None else True,
                 "confidence": ui_conf,
+                "transcript": "",
             })
 
-        # ---------------------------
-        # 5. Build rolling speech buffer (up to 2s)
-        # ---------------------------
+        # 5. Build rolling speech buffer (up to 2s) for speaker embedding
         speech_portions = []
         for seg in speech_segments:
             start_sample = int(seg['start'] * sr)
@@ -422,22 +495,20 @@ def identify_speaker():
 
         logger.info(f"Speech buffer: {len(SPEECH_BUFFER)} samples ({len(SPEECH_BUFFER)/sr:.2f}s speech)")
 
-        # ---------------------------
         # 6. Require minimum speech before embedding
-        # ---------------------------
         MIN_SPEECH_SAMPLES = int(1.0 * sr)  # at least 1s of speech
         if len(SPEECH_BUFFER) < MIN_SPEECH_SAMPLES:
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
+            live_snippet = get_live_snippet_for_session(session_id, sr)
             return jsonify({
                 "speaker": CURRENT_SPEAKER,
                 "has_speech": True,
                 "confidence": ui_conf,
-                "message": "Collecting more speech..."
+                "message": "Collecting more speech...",
+                "transcript": live_snippet,
             })
 
-        # ---------------------------
         # 7. Compute embedding from speech buffer
-        # ---------------------------
         embedding = pipeline.embedder.embed(SPEECH_BUFFER, sr)
         while embedding.dim() > 1:
             embedding = embedding.squeeze(0)
@@ -447,9 +518,7 @@ def identify_speaker():
 
         logger.info("Computed normalized embedding from speech buffer.")
 
-        # ---------------------------
         # 8. Compare with known speakers (track 2 best)
-        # ---------------------------
         best_speaker = None
         best_score = -1.0
         second_best_score = -1.0
@@ -489,10 +558,12 @@ def identify_speaker():
             margin < MARGIN_THRESHOLD):
             # Not confident enough in this frame; keep previous speaker
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
+            live_snippet = get_live_snippet_for_session(session_id, sr)
             return jsonify({
                 "speaker": CURRENT_SPEAKER,
                 "has_speech": True if CURRENT_SPEAKER else False,
                 "confidence": ui_conf,
+                "transcript": live_snippet,
             })
 
         # First speaker
@@ -514,12 +585,15 @@ def identify_speaker():
                 CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                 LAST_SWITCH_TIME = now
 
+        # Final response: include latest live snippet (tail-only ASR)
         ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
+        live_snippet = get_live_snippet_for_session(session_id, sr)
 
         return jsonify({
             "speaker": CURRENT_SPEAKER,
             "has_speech": True,
             "confidence": ui_conf,
+            "transcript": live_snippet,
         })
 
     except Exception as e:

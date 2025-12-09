@@ -62,7 +62,7 @@ class WhoSays(object):
         # Return the first (and only) embedding vector
         return emb[0]
 
-    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.5):
+    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.4):
         """
         Compare cluster centroids to known speaker embeddings.
         Returns a dictionary mapping Cluster ID (int) -> Name (str).

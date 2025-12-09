@@ -22,6 +22,7 @@ const App = () => {
   const [processing, setProcessing] = useState(false);
   const [numSpeakers, setNumSpeakers] = useState(2);
   const [errorMsg, setErrorMsg] = useState("");
+  const [liveMessages, setLiveMessages] = useState([]);
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -44,6 +45,7 @@ const App = () => {
   const processorRef = useRef(null);
   const audioBufferAccumulatorRef = useRef([]);
   const lastProcessTimeRef = useRef(0);
+  const lastSnippetRef = useRef("");
 
   const fetchKnownSpeakers = async () => {
     try {
@@ -81,6 +83,8 @@ const App = () => {
     setFullTranscriptionResult(null);
     setDuration(0);
     setErrorMsg("");
+    setLiveMessages([]);
+    lastSnippetRef.current = "";
   };
 
   const handleFileUpload = async (e) => {
@@ -155,6 +159,8 @@ const App = () => {
       chunksRef.current = [];
       audioBufferAccumulatorRef.current = [];
       lastProcessTimeRef.current = Date.now();
+      setLiveMessages([]);
+      lastSnippetRef.current = "";
 
       // Set up Web Audio API for raw audio capture
       const audioContext = new (window.AudioContext || window.webkitAudioContext)({
@@ -196,7 +202,7 @@ const App = () => {
           }
           const base64Audio = btoa(binary);
 
-          // Send to backend
+          // Always send request for speaker identification (and live transcript)
           fetch("/identify_speaker", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -206,20 +212,62 @@ const App = () => {
               session_id: sessionIdRef.current
             })
           })
-          .then(r => r.json())
-          .then(data => {
-            console.log("Speaker identification response:", data);
+            .then(r => r.json())
+            .then(data => {
+              console.log("Speaker identification response:", data);
 
-            if (data.has_speech) {
-              setCurrentSpeaker(data.speaker || "Unknown");
-            } else {
+              if (data.has_speech) {
+                setCurrentSpeaker(data.speaker || "Unknown");
+              } else {
+                setCurrentSpeaker(null);
+              }
+
+              // Live transcription coming from the same endpoint
+              if (typeof data.transcript === "string") {
+                const snippet = data.transcript.trim();
+                if (!snippet) return;
+
+                setLiveMessages(prev => {
+                  const lastMsg = prev[prev.length - 1];
+                  const lastText = lastMsg?.text || "";
+
+                  // If identical to last, ignore
+                  if (snippet === lastText) {
+                    lastSnippetRef.current = snippet;
+                    return prev;
+                  }
+
+                  // If new snippet is an extension of the last, replace last
+                  if (snippet.startsWith(lastText) && lastText.length > 0) {
+                    const updated = [...prev];
+                    updated[updated.length - 1] = {
+                      ...updated[updated.length - 1],
+                      text: snippet,
+                    };
+                    lastSnippetRef.current = snippet;
+                    return updated;
+                  }
+
+                  // If new snippet is shorter and contained in last, ignore
+                  if (lastText.startsWith(snippet)) {
+                    return prev;
+                  }
+
+                  // Otherwise, treat as a new message bubble
+                  const newMsg = {
+                    id: `${Date.now()}-${prev.length}`,
+                    text: snippet,
+                  };
+                  lastSnippetRef.current = snippet;
+                  return [...prev, newMsg];
+                });
+              }
+            })
+            .catch(err => {
+              console.error("Error identifying speaker:", err);
               setCurrentSpeaker(null);
-            }
-          })
-          .catch(err => {
-            console.error("Error identifying speaker:", err);
-            setCurrentSpeaker(null);
-          });
+            });
+
         }
       };
 
@@ -441,6 +489,22 @@ const App = () => {
                   <div className="flex items-center gap-3">
                     <span className="text-slate-400">Listening...</span>
                     <span className="text-slate-500">(No speech detected)</span>
+                  </div>
+                )}
+
+                {liveMessages.length > 0 && (
+                  <div className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3 max-h-40 overflow-y-auto">
+                    <div className="space-y-2">
+                      {liveMessages.map((msg) => (
+                        <div key={msg.id} className="flex">
+                          <div className="bg-slate-800/80 rounded-2xl px-3 py-2 max-w-full">
+                            <p className="text-sm text-slate-100 leading-snug">
+                              {msg.text}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

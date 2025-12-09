@@ -339,7 +339,7 @@ def evaluate_phonemes(reference_phoneme_sequences, hypothesis_phoneme_sequences)
     return {"per": per}
 
 
-def evaluate_diarization(reference_segments, hypothesis_segments):
+def evaluate_diarization(reference_segments, hypothesis_segments, total_duration=None):
     """
     Compute Diarization Error Rate (DER) between reference and hypothesis.
 
@@ -348,6 +348,9 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
             Gold-standard segments with start, end, and speaker keys.
         hypothesis_segments : list of dict
             Predicted segments with start, end, and speaker keys.
+        total_duration : float, optional
+            Total audio duration. If provided, UEM will be entire audio.
+            If None, UEM will be only reference segment regions.
 
     Returns:
         Dictionary containing:
@@ -361,10 +364,13 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
     reference = segments_to_annotation(reference_segments)
     hypothesis = segments_to_annotation(hypothesis_segments)
 
-    uem = Timeline(uri="audio")
-    for seg in reference_segments:
-        uem.add(Segment(seg['start'], seg['end']))
-    uem = uem.support()  # Merge overlapping segments
+    if total_duration is not None:
+        uem = Timeline([Segment(0, total_duration)], uri="audio")
+    else:
+        uem = Timeline(uri="audio")
+        for seg in reference_segments:
+            uem.add(Segment(seg['start'], seg['end']))
+        uem = uem.support() 
 
     metric = DiarizationErrorRate()
     # Compute overall DER with UEM (returns a single value between 0 and 1)

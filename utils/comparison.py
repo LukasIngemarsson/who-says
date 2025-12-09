@@ -8,7 +8,7 @@ from typing import List, Dict, Tuple
 import torch
 import numpy as np
 from loguru import logger
-from scipy.optimize import linear_sum_assignment
+from tqdm import tqdm
 
 from pipeline.speaker_segmentation.VAD.pyannote_vad import PyannoteVAD
 from pipeline.speaker_segmentation.SCD import SCD
@@ -121,45 +121,6 @@ def change_points_to_segments(
     return segments
 
 
-def compute_temporal_overlap(
-    segments1: List[Dict],
-    label1: any,
-    segments2: List[Dict],
-    label2: any
-) -> float:
-    """
-    Compute temporal overlap between segments with specific labels.
-
-    Parameters
-    ----------
-    segments1 : List[Dict]
-        First list of segments
-    label1 : any
-        Label to filter from segments1
-    segments2 : List[Dict]
-        Second list of segments
-    label2 : any
-        Label to filter from segments2
-
-    Returns
-    -------
-    float
-        Total temporal overlap in seconds
-    """
-    segs1 = [s for s in segments1 if s['speaker'] == label1]
-    segs2 = [s for s in segments2 if s['speaker'] == label2]
-
-    total_overlap = 0.0
-    for s1 in segs1:
-        for s2 in segs2:
-            overlap_start = max(s1['start'], s2['start'])
-            overlap_end = min(s1['end'], s2['end'])
-            if overlap_start < overlap_end:
-                total_overlap += (overlap_end - overlap_start)
-
-    return total_overlap
-
-
 def handle_dbscan_noise(labels: torch.Tensor) -> torch.Tensor:
     """
     Handle DBSCAN noise labels (-1) by reassigning to new cluster.
@@ -179,62 +140,6 @@ def handle_dbscan_noise(labels: torch.Tensor) -> torch.Tensor:
         noise_mask = labels == -1
         labels[noise_mask] = max_label + 1
     return labels
-
-
-def map_clusters_to_speakers(
-    pred_segments: List[Dict],
-    ref_segments: List[Dict]
-) -> List[Dict]:
-    """
-    Map cluster IDs to speaker labels using Hungarian algorithm.
-
-    Uses optimal assignment to minimize speaker confusion by maximizing
-    temporal overlap between predicted clusters and reference speakers.
-
-    Parameters
-    ----------
-    pred_segments : List[Dict]
-        Predicted segments with cluster IDs as speaker labels
-    ref_segments : List[Dict]
-        Reference segments with ground truth speaker labels
-
-    Returns
-    -------
-    List[Dict]
-        Predicted segments with cluster IDs mapped to speaker labels
-    """
-    unique_clusters = sorted(set(seg['speaker'] for seg in pred_segments))
-    unique_speakers = sorted(set(seg['speaker'] for seg in ref_segments))
-
-    n_clusters = len(unique_clusters)
-    n_speakers = len(unique_speakers)
-
-    cost_matrix = np.zeros((n_clusters, n_speakers))
-
-    for i, cluster_id in enumerate(unique_clusters):
-        for j, speaker_id in enumerate(unique_speakers):
-            overlap = compute_temporal_overlap(
-                pred_segments, cluster_id,
-                ref_segments, speaker_id
-            )
-            cost_matrix[i, j] = -overlap
-
-    row_ind, col_ind = linear_sum_assignment(cost_matrix)
-
-    cluster_to_speaker = {}
-    for cluster_idx, speaker_idx in zip(row_ind, col_ind):
-        cluster_to_speaker[unique_clusters[cluster_idx]] = unique_speakers[speaker_idx]
-
-    mapped_segments = []
-    for seg in pred_segments:
-        mapped_seg = seg.copy()
-        mapped_seg['speaker'] = cluster_to_speaker.get(
-            seg['speaker'],
-            f"UNKNOWN_{seg['speaker']}"
-        )
-        mapped_segments.append(mapped_seg)
-
-    return mapped_segments
 
 
 def compare_vad_models(
@@ -457,11 +362,6 @@ def compare_sc_models(
                     duration
                 )
 
-                mapped_segments = map_clusters_to_speakers(
-                    pred_segments,
-                    annotation_data['segments']
-                )
-
                 n_unique_labels = len(set(labels.tolist()))
                 if n_unique_labels < 2 or n_unique_labels >= embeddings.shape[0]:
                     logger.warning(f"      Cannot compute silhouette: {n_unique_labels} unique labels for {embeddings.shape[0]} samples")
@@ -471,7 +371,8 @@ def compare_sc_models(
 
                 der_metrics = evaluate_diarization(
                     annotation_data['segments'],
-                    mapped_segments
+                    pred_segments,
+                    total_duration=duration
                 )
 
                 key = f'{emb_name}_{clus_name}'

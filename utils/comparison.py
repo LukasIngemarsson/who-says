@@ -8,7 +8,7 @@ from typing import List, Dict, Tuple
 import torch
 import numpy as np
 from loguru import logger
-from scipy.optimize import linear_sum_assignment
+from tqdm import tqdm
 
 from pipeline.speaker_segmentation.VAD.pyannote_vad import PyannoteVAD
 from pipeline.speaker_segmentation.SCD import SCD
@@ -121,45 +121,6 @@ def change_points_to_segments(
     return segments
 
 
-def compute_temporal_overlap(
-    segments1: List[Dict],
-    label1: any,
-    segments2: List[Dict],
-    label2: any
-) -> float:
-    """
-    Compute temporal overlap between segments with specific labels.
-
-    Parameters
-    ----------
-    segments1 : List[Dict]
-        First list of segments
-    label1 : any
-        Label to filter from segments1
-    segments2 : List[Dict]
-        Second list of segments
-    label2 : any
-        Label to filter from segments2
-
-    Returns
-    -------
-    float
-        Total temporal overlap in seconds
-    """
-    segs1 = [s for s in segments1 if s['speaker'] == label1]
-    segs2 = [s for s in segments2 if s['speaker'] == label2]
-
-    total_overlap = 0.0
-    for s1 in segs1:
-        for s2 in segs2:
-            overlap_start = max(s1['start'], s2['start'])
-            overlap_end = min(s1['end'], s2['end'])
-            if overlap_start < overlap_end:
-                total_overlap += (overlap_end - overlap_start)
-
-    return total_overlap
-
-
 def handle_dbscan_noise(labels: torch.Tensor) -> torch.Tensor:
     """
     Handle DBSCAN noise labels (-1) by reassigning to new cluster.
@@ -179,62 +140,6 @@ def handle_dbscan_noise(labels: torch.Tensor) -> torch.Tensor:
         noise_mask = labels == -1
         labels[noise_mask] = max_label + 1
     return labels
-
-
-def map_clusters_to_speakers(
-    pred_segments: List[Dict],
-    ref_segments: List[Dict]
-) -> List[Dict]:
-    """
-    Map cluster IDs to speaker labels using Hungarian algorithm.
-
-    Uses optimal assignment to minimize speaker confusion by maximizing
-    temporal overlap between predicted clusters and reference speakers.
-
-    Parameters
-    ----------
-    pred_segments : List[Dict]
-        Predicted segments with cluster IDs as speaker labels
-    ref_segments : List[Dict]
-        Reference segments with ground truth speaker labels
-
-    Returns
-    -------
-    List[Dict]
-        Predicted segments with cluster IDs mapped to speaker labels
-    """
-    unique_clusters = sorted(set(seg['speaker'] for seg in pred_segments))
-    unique_speakers = sorted(set(seg['speaker'] for seg in ref_segments))
-
-    n_clusters = len(unique_clusters)
-    n_speakers = len(unique_speakers)
-
-    cost_matrix = np.zeros((n_clusters, n_speakers))
-
-    for i, cluster_id in enumerate(unique_clusters):
-        for j, speaker_id in enumerate(unique_speakers):
-            overlap = compute_temporal_overlap(
-                pred_segments, cluster_id,
-                ref_segments, speaker_id
-            )
-            cost_matrix[i, j] = -overlap
-
-    row_ind, col_ind = linear_sum_assignment(cost_matrix)
-
-    cluster_to_speaker = {}
-    for cluster_idx, speaker_idx in zip(row_ind, col_ind):
-        cluster_to_speaker[unique_clusters[cluster_idx]] = unique_speakers[speaker_idx]
-
-    mapped_segments = []
-    for seg in pred_segments:
-        mapped_seg = seg.copy()
-        mapped_seg['speaker'] = cluster_to_speaker.get(
-            seg['speaker'],
-            f"UNKNOWN_{seg['speaker']}"
-        )
-        mapped_segments.append(mapped_seg)
-
-    return mapped_segments
 
 
 def compare_vad_models(
@@ -457,11 +362,6 @@ def compare_sc_models(
                     duration
                 )
 
-                mapped_segments = map_clusters_to_speakers(
-                    pred_segments,
-                    annotation_data['segments']
-                )
-
                 n_unique_labels = len(set(labels.tolist()))
                 if n_unique_labels < 2 or n_unique_labels >= embeddings.shape[0]:
                     logger.warning(f"      Cannot compute silhouette: {n_unique_labels} unique labels for {embeddings.shape[0]} samples")
@@ -471,7 +371,8 @@ def compare_sc_models(
 
                 der_metrics = evaluate_diarization(
                     annotation_data['segments'],
-                    mapped_segments
+                    pred_segments,
+                    total_duration=duration
                 )
 
                 key = f'{emb_name}_{clus_name}'
@@ -651,3 +552,162 @@ def aggregate_asr_results(models: Dict) -> Dict:
         }
 
     return models
+
+
+def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
+    """
+    Compare end-to-end diarization pipelines.
+
+    Evaluates complete pipeline output using DER and timing metrics.
+
+    Args:
+        file_pairs: List of (audio_path, annotation_path, file_id) tuples
+
+    Returns:
+        Dict mapping pipeline names to results:
+        {
+            'pipeline_name': {
+                'has_transcription': bool,
+                'results': [
+                    {
+                        'file_id': str,
+                        'audio_file': str,
+                        'duration': float,
+                        'n_speakers_pred': int,
+                        'n_speakers_ref': int,
+                        'der_metrics': {...},
+                        'wer_metrics': {...} or None,
+                        'timing': float
+                    }
+                ]
+            }
+        }
+    """
+    from pipeline.pyannote_full_pipeline import PyannoteFullPipeline
+    from main import WhoSays
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    pipelines = {
+        'who-says': {
+            'instance': WhoSays(),
+            'has_transcription': True
+        },
+        'pyannote-3.1': {
+            'instance': PyannoteFullPipeline(device=device),
+            'has_transcription': False
+        }
+    }
+
+    for name in pipelines:
+        pipelines[name]['results'] = []
+
+    for audio_file, annotation_file, file_id in tqdm(file_pairs, desc="Processing files"):
+        logger.info(f"\nProcessing: {file_id}")
+
+        annotation_data = load_annotation_file(annotation_file)
+        waveform, sr = load_audio_from_file(audio_file, sr=SR)
+        duration = waveform.shape[-1] / sr
+
+        ref_segments = annotation_data['segments']
+        ref_transcriptions = annotation_data.get('transcriptions')
+        n_speakers_ref = len(set(seg['speaker'] for seg in ref_segments))
+
+        for pipeline_name, pipeline_data in pipelines.items():
+            pipeline = pipeline_data['instance']
+            has_transcription = pipeline_data['has_transcription']
+
+            logger.info(f"  Running {pipeline_name}...")
+
+            try:
+                start_time = time.time()
+
+                if pipeline_name == 'who-says':
+                    result = pipeline(str(audio_file), num_speakers=n_speakers_ref, include_timing=False)
+                else:
+                    result = pipeline.process(audio_file)
+
+                inference_time = time.time() - start_time
+
+                pred_segments = result['segments']
+                n_speakers_pred = len(set(seg['speaker'] for seg in pred_segments))
+
+                der_metrics = evaluate_diarization(
+                    reference_segments=ref_segments,
+                    hypothesis_segments=pred_segments,
+                    total_duration=duration
+                )
+
+                wer_metrics = None
+                if has_transcription and ref_transcriptions:
+                    pred_transcriptions = [seg['text'] for seg in pred_segments]
+                    wer_metrics = evaluate_asr(ref_transcriptions, pred_transcriptions)
+
+                pipeline_data['results'].append({
+                    'file_id': file_id,
+                    'audio_file': str(audio_file),
+                    'duration': duration,
+                    'n_speakers_pred': n_speakers_pred,
+                    'n_speakers_ref': n_speakers_ref,
+                    'der_metrics': der_metrics,
+                    'wer_metrics': wer_metrics,
+                    'timing': inference_time
+                })
+
+                logger.info(f"    DER: {der_metrics['der']:.2f}%")
+                if wer_metrics:
+                    logger.info(f"    WER: {wer_metrics['wer']:.2f}%")
+                logger.info(f"    Time: {inference_time:.2f}s")
+
+            except Exception as e:
+                logger.error(f"    Error with {pipeline_name}: {e}")
+                continue
+
+    return pipelines
+
+
+def aggregate_e2e_results(pipelines: Dict) -> Dict:
+    """
+    Aggregate end-to-end pipeline results.
+
+    Computes mean and std for DER components and timing.
+
+    Args:
+        pipelines: Dict from compare_e2e_pipelines()
+
+    Returns:
+        Updated dict with 'aggregated' key for each pipeline
+    """
+    for pipeline_name, pipeline_data in pipelines.items():
+        results = pipeline_data['results']
+
+        if not results:
+            logger.warning(f"No results for {pipeline_name}, skipping aggregation")
+            continue
+
+        ders = [r['der_metrics']['der'] for r in results]
+        misses = [r['der_metrics']['miss'] for r in results]
+        false_alarms = [r['der_metrics']['false_alarm'] for r in results]
+        confusions = [r['der_metrics']['confusion'] for r in results]
+        timings = [r['timing'] for r in results]
+
+        aggregated = {
+            'der': {'mean': float(np.mean(ders)), 'std': float(np.std(ders))},
+            'miss': {'mean': float(np.mean(misses)), 'std': float(np.std(misses))},
+            'false_alarm': {'mean': float(np.mean(false_alarms)), 'std': float(np.std(false_alarms))},
+            'confusion': {'mean': float(np.mean(confusions)), 'std': float(np.std(confusions))},
+            'timing': {
+                'mean': float(np.mean(timings)),
+                'std': float(np.std(timings)),
+                'total': float(np.sum(timings))
+            }
+        }
+
+        if pipeline_data['has_transcription'] and results[0]['wer_metrics']:
+            wers = [r['wer_metrics']['wer'] for r in results if r['wer_metrics']]
+            if wers:
+                aggregated['wer'] = {'mean': float(np.mean(wers)), 'std': float(np.std(wers))}
+
+        pipeline_data['aggregated'] = aggregated
+
+    return pipelines

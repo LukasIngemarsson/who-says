@@ -81,6 +81,14 @@ python compare.py --component asr \
     --language english
 ```
 
+**E2E (End-to-End) Comparison** (Complete pipeline comparison):
+```bash
+python compare.py --component e2e \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
 #### Single file comparison
 **VAD:**
 ```bash

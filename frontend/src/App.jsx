@@ -47,6 +47,7 @@ const App = () => {
   const lastProcessTimeRef = useRef(0);
   const lastSnippetRef = useRef("");
   const speakerHistoryRef = useRef([]);
+  const liveMessagesRef = useRef(null);
 
   const fetchKnownSpeakers = async () => {
     try {
@@ -61,6 +62,13 @@ const App = () => {
   useEffect(() => {
     fetchKnownSpeakers();
   }, [speakerRefreshTrigger]);
+
+  // Always keep the live messages scrolled to the bottom while recording
+  useEffect(() => {
+    if (liveMessagesRef.current) {
+      liveMessagesRef.current.scrollTop = liveMessagesRef.current.scrollHeight;
+    }
+  }, [liveMessages]);
 
   const decodeAudioForVisualization = async (arrayBuffer) => {
     const audioContext = new (window.AudioContext ||
@@ -236,7 +244,7 @@ const App = () => {
 
               // Live, incremental transcription coming from the same endpoint
               if (typeof data.transcript === "string") {
-                const snippet = data.transcript.trim();
+                let snippet = data.transcript.trim();
                 if (!snippet) return;
 
                 setLiveMessages(prev => {
@@ -274,59 +282,96 @@ const App = () => {
                     detectedSpeaker ||
                     "Unknown";
 
-                  // If identical to last, ignore
-                  if (snippet === lastText && transcriptSpeaker === lastSpeaker) {
+                  const updated = [...prev];
+
+                  // If there is no previous message, just add the first bubble.
+                  if (!lastMsg) {
+                    const firstMsg = {
+                      id: `${Date.now()}-0`,
+                      text: snippet,
+                      speaker: transcriptSpeaker,
+                    };
                     lastSnippetRef.current = snippet;
-                    return prev;
+                    return [firstMsg];
                   }
 
-                  // If new snippet is an extension of the last, replace last
-                  if (snippet.startsWith(lastText) && lastText.length > 0 && transcriptSpeaker === lastSpeaker) {
-                    const updated = [...prev];
+                  // Detect a change based on the *raw* detected speaker, since
+                  // transcriptSpeaker can lag due to majority voting.
+                  const newRawSpeaker =
+                    detectedSpeaker && detectedSpeaker !== "Unknown"
+                      ? detectedSpeaker
+                      : transcriptSpeaker;
+                  const speakerChanged =
+                    lastSpeaker && newRawSpeaker && newRawSpeaker !== lastSpeaker;
+
+                  // If the same person is still speaking, append new words to the
+                  // existing bubble instead of replacing it. We try to find an
+                  // overlap between the end of the previous text and the start
+                  // of the new snippet so we don't double‑append words, but we
+                  // never shrink or delete what was already shown.
+                  if (!speakerChanged && transcriptSpeaker === lastSpeaker) {
+                    if (snippet === lastText) {
+                      lastSnippetRef.current = snippet;
+                      return prev;
+                    }
+
+                    const prevWords = lastText.split(/\s+/).filter(Boolean);
+                    const newWords = snippet.split(/\s+/).filter(Boolean);
+
+                    let overlap = 0;
+                    const maxOverlap = Math.min(prevWords.length, newWords.length);
+                    for (let k = maxOverlap; k > 0; k--) {
+                      const prevSuffix = prevWords.slice(prevWords.length - k).join(" ");
+                      const newPrefix = newWords.slice(0, k).join(" ");
+                      if (prevSuffix === newPrefix) {
+                        overlap = k;
+                        break;
+                      }
+                    }
+
+                    const deltaWords = overlap > 0 ? newWords.slice(overlap) : newWords;
+                    const delta = deltaWords.join(" ").trim();
+
+                    if (!delta) {
+                      lastSnippetRef.current = snippet;
+                      return prev;
+                    }
+
+                    const appended = lastText ? `${lastText} ${delta}` : delta;
                     updated[updated.length - 1] = {
-                      ...updated[updated.length - 1],
-                      text: snippet,
+                      ...lastMsg,
+                      text: appended,
                     };
                     lastSnippetRef.current = snippet;
                     return updated;
                   }
 
-                  // If new snippet is shorter and contained in last, ignore
-                  if (lastText.startsWith(snippet) && transcriptSpeaker === lastSpeaker) {
-                    return prev;
-                  }
-
-                  // Otherwise, treat as a new message bubble
+                  // Speaker changed (or we don't have a clear previous speaker): start a new bubble
                   const newMsg = {
-                    id: `${Date.now()}-${prev.length}`,
+                    id: `${Date.now()}-${updated.length}`,
                     text: snippet,
-                    speaker: transcriptSpeaker,
+                    speaker: newRawSpeaker || transcriptSpeaker || "Unknown",
                   };
                   lastSnippetRef.current = snippet;
-                  return [...prev, newMsg];
+                  return [...updated, newMsg];
                 });
               }
 
-              // Final, per-speaker turn transcript sent by the backend when it
-              // detects that a turn has ended (based on CURRENT_SPEAKER changes).
-              if (typeof data.turn_transcript === "string" && data.turn_transcript.trim()) {
-                const turnText = data.turn_transcript.trim();
-                const turnSpeaker =
-                  data.turn_speaker ||
-                  data.speaker ||
-                  "Unknown";
-
-                setLiveMessages(prev => [
-                  ...prev,
-                  {
-                    id: `turn-${Date.now()}-${prev.length}`,
-                    text: turnText,
-                    speaker: turnSpeaker,
-                    isFinal: true,
-                    turnStart: data.turn_start ?? null,
-                    turnEnd: data.turn_end ?? null,
-                  },
-                ]);
+              // Background, more stable per-speaker segments from SCD+ASR.
+              if (Array.isArray(data.turn_segments) && data.turn_segments.length > 0) {
+                setLiveMessages(prev => {
+                  const updated = [...prev];
+                  for (const seg of data.turn_segments) {
+                    const text = (seg.text || "").trim();
+                    if (!text) continue;
+                    updated.push({
+                      id: `seg-${seg.start}-${seg.end}-${updated.length}`,
+                      text,
+                      speaker: seg.speaker || "Unknown",
+                    });
+                  }
+                  return updated;
+                });
               }
 
             })
@@ -560,7 +605,10 @@ const App = () => {
                 )}
 
                 {liveMessages.length > 0 && (
-                  <div className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3 max-h-40 overflow-y-auto">
+                  <div
+                    ref={liveMessagesRef}
+                    className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3 max-h-80 overflow-y-auto"
+                  >
                     <div className="space-y-3">
                       {liveMessages.map((msg) => (
                         <div key={msg.id} className="flex flex-col items-start gap-1">

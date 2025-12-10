@@ -55,7 +55,9 @@ SESSION_STATE = {}           # kept in case you want to use later
 #   session_id -> {
 #       "buffer": Tensor,
 #       "cursor": int,
-#       "last_asr_time": float,
+#       "last_asr_time": float,   # last time we ran light-weight tail ASR
+#       "last_scd_sample": int,   # how many samples we've finalized via SCD/ASR
+#       "last_scd_time": float,   # last time we ran heavy SCD+ASR
 #   }
 SESSION_ASR_STATE = {}
 
@@ -116,6 +118,144 @@ def make_serializable(obj):
     if isinstance(obj, list):
         return [make_serializable(i) for i in obj]
     return obj
+
+
+def run_background_scd_asr(session_id: str, sr: int) -> list[dict]:
+    """
+    Periodically run SCD + ASR on the NEW tail of the per-session buffer
+    to produce more reliable, per-speaker turn segments.
+
+    Returns a list of segments of the form:
+      {
+        "start": float,   # seconds (in full-buffer time)
+        "end": float,
+        "speaker": str,
+        "text": str,
+      }
+
+    This is designed to be called frequently but will internally
+    throttle itself to avoid heavy compute on every chunk.
+    """
+    if not PIPELINE_AVAILABLE:
+        return []
+
+    state = SESSION_ASR_STATE.get(session_id)
+    if not state:
+        return []
+
+    buffer = state.get("buffer")
+    if buffer is None or buffer.numel() == 0:
+        return []
+
+    now = time.time()
+    last_scd_time = float(state.get("last_scd_time", 0.0))
+    MIN_INTERVAL = 5.0  # seconds between SCD+ASR runs
+    if now - last_scd_time < MIN_INTERVAL:
+        return []
+
+    last_scd_sample = int(state.get("last_scd_sample", 0))
+    total_samples = int(buffer.shape[0])
+
+    # Require a minimum tail length before doing heavy SCD+ASR
+    MIN_TAIL_SECONDS = 5.0
+    if total_samples - last_scd_sample < int(MIN_TAIL_SECONDS * sr):
+        return []
+
+    tail = buffer[last_scd_sample:]
+    tail_offset_s = last_scd_sample / float(sr)
+
+    # 1) Run SCD on the tail
+    try:
+        # PyannoteSCD expects waveform and sample_rate
+        change_points = pipeline.scd(tail, sample_rate=sr)  # list of seconds (relative to tail)
+    except Exception as e:
+        logger.error(f"SCD error for session {session_id!r}: {e}")
+        return []
+
+    if not change_points:
+        # No clear change points in this tail; still advance markers to avoid
+        # reprocessing the same audio forever.
+        state["last_scd_sample"] = total_samples
+        state["last_scd_time"] = now
+        return []
+
+    # 2) Convert change points into contiguous segments within the tail
+    segments = []
+    prev = 0.0
+    tail_dur = tail.numel() / float(sr)
+    MIN_SEG_DUR = 0.75  # seconds
+
+    for cp in change_points:
+        if cp - prev >= MIN_SEG_DUR:
+            segments.append({"start": tail_offset_s + prev, "end": tail_offset_s + cp})
+        prev = cp
+
+    # Include the final segment up to the end of the tail
+    if tail_dur - prev >= MIN_SEG_DUR:
+        segments.append({"start": tail_offset_s + prev, "end": tail_offset_s + tail_dur})
+
+    if not segments:
+        state["last_scd_sample"] = total_samples
+        state["last_scd_time"] = now
+        return []
+
+    # 3) Run ASR on these segments (more robust than live tail ASR)
+    try:
+        transcriptions = pipeline.asr.transcribe_segments(
+            buffer,
+            segments,
+            return_timestamps=True,
+        )
+    except Exception as e:
+        logger.error(f"ASR segments error for session {session_id!r}: {e}")
+        return []
+
+    results: list[dict] = []
+
+    # 4) For each segment, compute a small embedding and map to known speakers
+    for seg, hyp in zip(segments, transcriptions or []):
+        text = (hyp.get("text") or "").strip()
+        if not text:
+            continue
+
+        s = max(0, int(seg["start"] * sr))
+        e = min(int(seg["end"] * sr), total_samples)
+        if e <= s:
+            continue
+
+        audio_seg = buffer[s:e]
+
+        try:
+            emb = pipeline.embedder.embed(audio_seg, sr)
+            while emb.dim() > 1:
+                emb = emb.squeeze(0)
+            emb = F.normalize(emb, p=2, dim=0)
+        except Exception as e:
+            logger.error(f"Embedding error for session {session_id!r}: {e}")
+            continue
+
+        best_speaker = None
+        best_score = -1.0
+        if KNOWN_SPEAKERS:
+            for name, ref_cpu in KNOWN_SPEAKERS.items():
+                ref = F.normalize(ref_cpu.to(emb.device), p=2, dim=0)
+                score = torch.dot(emb, ref).item()
+                if score > best_score:
+                    best_score = score
+                    best_speaker = name
+
+        results.append({
+            "start": float(seg["start"]),
+            "end": float(seg["end"]),
+            "speaker": best_speaker or "Unknown",
+            "text": text,
+        })
+
+    # 5) Update SCD markers
+    state["last_scd_sample"] = total_samples
+    state["last_scd_time"] = now
+
+    return results
 
 def get_live_snippet_for_session(session_id: str, sr: int) -> str:
     """
@@ -209,81 +349,10 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
 
 def finalize_current_turn(session_id: str, end_sample: int, sr: int) -> dict:
     """
-    Slice the current speaker's turn from the per-session ASR buffer,
-    run ASR on just that slice, and return a small dict:
-
-      {
-        "turn_speaker": <name>,
-        "turn_transcript": <text>,
-        "turn_start": <seconds>,
-        "turn_end": <seconds>,
-        "turn_duration": <seconds>,
-      }
-
-    If there is no active turn, or ASR returns no text, this returns {}.
+    Deprecated: per-turn, turn-level transcripts are disabled in live mode.
+    Kept as a cheap no-op so any stale callers don't break.
     """
-    state = SESSION_ASR_STATE.get(session_id)
-    if not state:
-        return {}
-
-    buffer = state.get("buffer")
-    start_sample = state.get("current_turn_start_sample")
-    turn_speaker = state.get("current_turn_speaker")
-
-    if (
-        buffer is None
-        or buffer.numel() == 0
-        or turn_speaker is None
-        or start_sample is None
-        or end_sample is None
-        or end_sample <= start_sample
-    ):
-        return {}
-
-    try:
-        start_idx = max(int(start_sample), 0)
-        end_idx = min(int(end_sample), len(buffer))
-
-        if end_idx <= start_idx:
-            return {}
-
-        turn_audio = buffer[start_idx:end_idx]
-
-        # Run ASR on this single turn (no timestamps needed)
-        result = pipeline.asr.transcribe(
-            turn_audio,
-            return_timestamps=False,
-        )
-
-        if isinstance(result, dict):
-            text = (result.get("text") or "").strip()
-        else:
-            text = str(result or "").strip()
-
-        if not text:
-            return {}
-
-        start_time = start_idx / float(sr)
-        end_time = end_idx / float(sr)
-
-        # Reset current turn so the next speech starts a new one
-        state["current_turn_speaker"] = None
-        state["current_turn_start_sample"] = None
-
-        # Also move the ASR cursor forward so live snippets don't re-transcribe
-        state["cursor"] = max(int(end_idx), int(state.get("cursor", 0)))
-
-        return {
-            "turn_speaker": turn_speaker,
-            "turn_transcript": text,
-            "turn_start": start_time,
-            "turn_end": end_time,
-            "turn_duration": end_time - start_time,
-        }
-
-    except Exception as e:
-        logger.error(f"Error while finalizing turn for session {session_id!r}: {e}")
-        return {}
+    return {}
 def convert_to_wav(input_path):
     """Convert any input audio to 16kHz mono WAV using ffmpeg."""
     try:
@@ -548,14 +617,11 @@ def identify_speaker():
                 "buffer": torch.zeros(0, device=device),
                 "cursor": 0,
                 "last_asr_time": 0.0,
-                # Turn-tracking state for per-speaker transcripts
-                "current_turn_speaker": None,
-                "current_turn_start_sample": None,
+                "last_scd_sample": 0,
+                "last_scd_time": 0.0,
             }
         asr_state = SESSION_ASR_STATE[session_id]
-        prev_total_samples = int(asr_state["buffer"].shape[0])
         asr_state["buffer"] = torch.cat([asr_state["buffer"], waveform.detach()])
-        total_samples = int(asr_state["buffer"].shape[0])
 
         # 2. Initialize buffers on correct device
         if ROLLING_BUFFER is None:
@@ -578,7 +644,6 @@ def identify_speaker():
 
         # 4. Run VAD on rolling 1s window (for speaker detection)
         speech_segments = pipeline.vad(vad_input)
-
 
         if not speech_segments:
             # No speech in this window; keep previous speaker if any
@@ -658,8 +723,8 @@ def identify_speaker():
         now = time.time()
 
         # Tuning thresholds
-        MIN_CONFIDENCE = 0.25       # minimum similarity to accept/update speaker
-        MARGIN_THRESHOLD = 0.08    # best must beat second-best by at least this much
+        MIN_CONFIDENCE = 0.15       # minimum similarity to accept/update speaker
+        MARGIN_THRESHOLD = 0.02    # best must beat second-best by at least this much
 
         margin = best_score - second_best_score if second_best_score > -1.0 else best_score
 
@@ -696,41 +761,22 @@ def identify_speaker():
                 CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                 LAST_SWITCH_TIME = now
 
-        # --- Turn-tracking for per-speaker transcripts ---
-        turn_metadata: dict = {}
-        active_turn_speaker = asr_state.get("current_turn_speaker")
-
-        # Helper to start a new turn at the beginning of this chunk
-        def _start_new_turn(speaker_name: str):
-            asr_state["current_turn_speaker"] = speaker_name
-            asr_state["current_turn_start_sample"] = prev_total_samples
-
-        # If there was an active turn and the (possibly updated) CURRENT_SPEAKER
-        # is now different or None, close that turn at the start of this chunk.
-        if active_turn_speaker is not None and CURRENT_SPEAKER != active_turn_speaker:
-            turn_metadata = finalize_current_turn(
-                session_id=session_id,
-                end_sample=prev_total_samples,
-                sr=sr,
-            )
-
-        # Start a new turn if we have a non-None current speaker and no active turn
-        # (either initial speech or right after closing a previous turn).
-        if CURRENT_SPEAKER is not None and asr_state.get("current_turn_speaker") is None:
-            _start_new_turn(CURRENT_SPEAKER)
-
         # Final response: include latest live snippet (tail-only ASR)
         ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
         live_snippet = get_live_snippet_for_session(session_id, sr)
 
-        response = {
+        # Additionally, run background SCD+ASR on the tail of the buffer to
+        # produce more stable per-speaker segments. This is throttled internally.
+        turn_segments = run_background_scd_asr(session_id, sr)
+
+        response: dict[str, Any] = {
             "speaker": CURRENT_SPEAKER,
             "has_speech": True,
             "confidence": ui_conf,
             "transcript": live_snippet,
         }
-        if turn_metadata:
-            response.update(turn_metadata)
+        if turn_segments:
+            response["turn_segments"] = make_serializable(turn_segments)
 
         return jsonify(response)
 

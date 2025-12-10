@@ -121,7 +121,7 @@ class ASRConfig(BaseConfig):
     language: str = "en"
 
     # Simple profile selector: "speed" | "balanced" | "accuracy"
-    profile: str = "balanced"
+    profile: str = "accuracy"
 
     # Decoding / search parameters (used mainly by Faster-Whisper)
     beam_size: int = 3

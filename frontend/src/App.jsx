@@ -46,6 +46,7 @@ const App = () => {
   const audioBufferAccumulatorRef = useRef([]);
   const lastProcessTimeRef = useRef(0);
   const lastSnippetRef = useRef("");
+  const speakerHistoryRef = useRef([]);
 
   const fetchKnownSpeakers = async () => {
     try {
@@ -216,13 +217,24 @@ const App = () => {
             .then(data => {
               console.log("Speaker identification response:", data);
 
+              // --- Update fast "who is speaking now" indicator ---
               if (data.has_speech) {
                 setCurrentSpeaker(data.speaker || "Unknown");
               } else {
                 setCurrentSpeaker(null);
               }
 
-              // Live transcription coming from the same endpoint
+              // --- Maintain a short history of detected speakers for labeling transcripts ---
+              const detectedSpeaker = data.speaker || "Unknown";
+              {
+                const history = speakerHistoryRef.current.slice();
+                history.push(detectedSpeaker);
+                // Keep last ~20 detections (a few seconds of context)
+                if (history.length > 10) history.shift();
+                speakerHistoryRef.current = history;
+              }
+
+              // Live, incremental transcription coming from the same endpoint
               if (typeof data.transcript === "string") {
                 const snippet = data.transcript.trim();
                 if (!snippet) return;
@@ -230,15 +242,46 @@ const App = () => {
                 setLiveMessages(prev => {
                   const lastMsg = prev[prev.length - 1];
                   const lastText = lastMsg?.text || "";
+                  const lastSpeaker = lastMsg?.speaker || "";
+
+                  // Choose a robust speaker label for this snippet:
+                  // - Prefer an explicit transcript_speaker from the backend (if provided)
+                  // - Otherwise, use the majority speaker over the recent history
+                  // - Fall back to the last bubble's speaker, then to the raw detected speaker
+                  let majoritySpeaker = lastSpeaker;
+                  if (!data.transcript_speaker) {
+                    const counts = {};
+                    for (const s of speakerHistoryRef.current) {
+                      if (!s) continue;
+                      counts[s] = (counts[s] || 0) + 1;
+                    }
+                    let best = null;
+                    let bestCount = 0;
+                    for (const [s, c] of Object.entries(counts)) {
+                      if (c > bestCount) {
+                        best = s;
+                        bestCount = c;
+                      }
+                    }
+                    if (best) {
+                      majoritySpeaker = best;
+                    }
+                  }
+
+                  const transcriptSpeaker =
+                    data.transcript_speaker ||
+                    majoritySpeaker ||
+                    detectedSpeaker ||
+                    "Unknown";
 
                   // If identical to last, ignore
-                  if (snippet === lastText) {
+                  if (snippet === lastText && transcriptSpeaker === lastSpeaker) {
                     lastSnippetRef.current = snippet;
                     return prev;
                   }
 
                   // If new snippet is an extension of the last, replace last
-                  if (snippet.startsWith(lastText) && lastText.length > 0) {
+                  if (snippet.startsWith(lastText) && lastText.length > 0 && transcriptSpeaker === lastSpeaker) {
                     const updated = [...prev];
                     updated[updated.length - 1] = {
                       ...updated[updated.length - 1],
@@ -249,7 +292,7 @@ const App = () => {
                   }
 
                   // If new snippet is shorter and contained in last, ignore
-                  if (lastText.startsWith(snippet)) {
+                  if (lastText.startsWith(snippet) && transcriptSpeaker === lastSpeaker) {
                     return prev;
                   }
 
@@ -257,11 +300,35 @@ const App = () => {
                   const newMsg = {
                     id: `${Date.now()}-${prev.length}`,
                     text: snippet,
+                    speaker: transcriptSpeaker,
                   };
                   lastSnippetRef.current = snippet;
                   return [...prev, newMsg];
                 });
               }
+
+              // Final, per-speaker turn transcript sent by the backend when it
+              // detects that a turn has ended (based on CURRENT_SPEAKER changes).
+              if (typeof data.turn_transcript === "string" && data.turn_transcript.trim()) {
+                const turnText = data.turn_transcript.trim();
+                const turnSpeaker =
+                  data.turn_speaker ||
+                  data.speaker ||
+                  "Unknown";
+
+                setLiveMessages(prev => [
+                  ...prev,
+                  {
+                    id: `turn-${Date.now()}-${prev.length}`,
+                    text: turnText,
+                    speaker: turnSpeaker,
+                    isFinal: true,
+                    turnStart: data.turn_start ?? null,
+                    turnEnd: data.turn_end ?? null,
+                  },
+                ]);
+              }
+
             })
             .catch(err => {
               console.error("Error identifying speaker:", err);
@@ -494,9 +561,12 @@ const App = () => {
 
                 {liveMessages.length > 0 && (
                   <div className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3 max-h-40 overflow-y-auto">
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {liveMessages.map((msg) => (
-                        <div key={msg.id} className="flex">
+                        <div key={msg.id} className="flex flex-col items-start gap-1">
+                          <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase">
+                            {msg.speaker || "Unknown"}
+                          </span>
                           <div className="bg-slate-800/80 rounded-2xl px-3 py-2 max-w-full">
                             <p className="text-sm text-slate-100 leading-snug">
                               {msg.text}

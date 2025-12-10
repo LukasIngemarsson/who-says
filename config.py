@@ -101,11 +101,83 @@ class VADConfig:
 # -----------------------------
 @dataclass
 class ASRConfig(BaseConfig):
+    """
+    Configuration for the ASR backend.
+
+    In addition to model / device selection, this also holds
+    decoding parameters that can be grouped into simple
+    "profiles" for convenience:
+
+    - "speed":    lower latency, slightly lower quality
+    - "balanced": trade-off between speed and accuracy (default)
+    - "accuracy": higher quality, more compute
+    """
+
+    # Backend selection
     asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "medium" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
+    model: str = "tiny"  # e.g. "large-v3-turbo", "KBLab/kb-whisper-large"
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    compute_type: str = "int8" # "float32"
+    compute_type: str = "int8"  # e.g. "float32"
     language: str = "en"
+
+    # Simple profile selector: "speed" | "balanced" | "accuracy"
+    profile: str = "balanced"
+
+    # Decoding / search parameters (used mainly by Faster-Whisper)
+    beam_size: int = 3
+    best_of: int = 3
+    patience: float = 0.0
+    temperature: float = 0.0
+    temperature_increment_on_fallback: float = 0.2
+    compression_ratio_threshold: float = 2.4
+    log_prob_threshold: float = -1.0
+    no_speech_threshold: float = 0.8
+    task: str = "transcribe"
+    without_timestamps: bool = False
+    chunk_length: int = 15
+    word_timestamps: bool = True
+
+    def apply_profile_defaults(self) -> None:
+        """
+        Adjust decoding parameters according to the selected profile.
+
+        This is intentionally simple – values can be tweaked as needed.
+        """
+        profile = (self.profile or "balanced").lower()
+
+        if profile == "speed":
+            # Favour latency: small model, shallow search, fewer timestamps
+            self.beam_size = 1
+            self.best_of = 1
+            self.temperature = 0.0
+            self.patience = 1.0
+            self.chunk_length = 10
+            self.word_timestamps = False
+            self.compression_ratio_threshold = 2.4
+            self.log_prob_threshold = -1.0
+            self.no_speech_threshold = 0.9
+        elif profile == "accuracy":
+            # Heavier search for better quality
+            self.beam_size = 5
+            self.best_of = 5
+            self.temperature = 0.0
+            self.patience = 1.0
+            self.chunk_length = 30
+            self.word_timestamps = True
+            self.compression_ratio_threshold = 2.4
+            self.log_prob_threshold = -1.0
+            self.no_speech_threshold = 0.6
+        else:
+            # Balanced defaults
+            self.beam_size = 3
+            self.best_of = 3
+            self.temperature = 0.0
+            self.patience = 0.2
+            self.chunk_length = 20
+            self.word_timestamps = True
+            self.compression_ratio_threshold = 2.4
+            self.log_prob_threshold = -1.0
+            self.no_speech_threshold = 0.75
     
 # -----------------------------
 # Phoneme

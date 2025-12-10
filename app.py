@@ -38,7 +38,7 @@ app = Flask(__name__, static_folder=static_folder_path, static_url_path='')
 # -------------------------------------------------
 if PIPELINE_AVAILABLE:
     logger.info("Loading WhoSays pipeline... This may take a moment.")
-    pipeline = WhoSays() 
+    pipeline = WhoSays()
     logger.info("Pipeline loaded successfully. Server is ready.")
 else:
     pipeline = None
@@ -46,14 +46,17 @@ else:
 # -------------------------------------------------
 # Global state
 # -------------------------------------------------
-# Speaker identification buffers
-MAX_ASR_BUFFER_SECONDS = 30.0  # keep at most 60s per session
 ROLLING_BUFFER = None        # 1-second rolling raw audio (torch.Tensor on pipeline device)
 SPEECH_BUFFER = None         # rolling speech-only buffer (up to ~2s)
 KNOWN_SPEAKERS = {}          # name -> normalized embedding (1D tensor on CPU)
 
 SESSION_STATE = {}           # kept in case you want to use later
-# Live ASR per session: session_id -> {"buffer": Tensor, "cursor": int}
+# Live ASR per session:
+#   session_id -> {
+#       "buffer": Tensor,
+#       "cursor": int,
+#       "last_asr_time": float,
+#   }
 SESSION_ASR_STATE = {}
 
 EMBEDDINGS_DIR = Path(__file__).parent / "embeddings"
@@ -62,7 +65,7 @@ EMBEDDINGS_DIR.mkdir(exist_ok=True)
 CURRENT_SPEAKER = None
 CURRENT_CONFIDENCE = 0.0
 LAST_SWITCH_TIME = 0.0
-SWITCH_COOLDOWN = 0.8  # seconds
+SWITCH_COOLDOWN = 0.3  # seconds
 
 # Similarity → confidence scaling (for UI)
 SIM_CONF_FLOOR = 0.05  # expected "different speaker" region
@@ -129,9 +132,16 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
     if buffer is None or buffer.numel() == 0 or cursor >= len(buffer):
         return ""
 
+    # Throttle heavy ASR calls – only once every 30s per session
+    now = time.time()
+    last_asr_time = float(state.get("last_asr_time", 0.0))
+    MIN_ASR_INTERVAL = 0.0  # seconds
+    if now - last_asr_time < MIN_ASR_INTERVAL:
+        return ""
+
     # Require a minimum amount of new audio before attempting ASR
     # (more context → fewer hallucinations)
-    MIN_NEW_SAMPLES = int(2.5 * sr)  # ~1.5s of audio
+    MIN_NEW_SAMPLES = int(1.5 * sr)  # ~1.5s of audio
     if len(buffer) - cursor < MIN_NEW_SAMPLES:
         return ""
 
@@ -150,7 +160,7 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
 
     # Require at least some real speech duration in the tail
     total_speech_tail = sum(max(0.0, seg["end"] - seg["start"]) for seg in speech_segments_tail)
-    if total_speech_tail < 1.0:  # < 0.5s of detected speech → too flimsy for ASR
+    if total_speech_tail < 0.5:  # < 0.5s of detected speech → too flimsy for ASR
         return ""
 
     # Offset segments to full-buffer timeline
@@ -160,30 +170,24 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
         seg_end = seg["end"] + tail_start_time
         new_segments.append({"start": seg_start, "end": seg_end})
 
-    # ASR on full buffer, but only for the new segments
+    # ASR on the tail only (live captioning does not require per-segment timestamps)
     try:
-        transcriptions = pipeline.asr.transcribe_segments(
-            buffer,
-            new_segments,
+        asr_result = pipeline.asr.transcribe(
+            tail,
             return_timestamps=False,
         )
     except Exception as e:
         logger.error(f"ASR error in get_live_snippet_for_session({session_id}): {e}")
         return ""
 
-    texts = []
-    for seg in transcriptions or []:
-        txt = (seg.get("text") or "").strip()
-        if txt:
-            texts.append(txt)
+    snippet = (asr_result.get("text") or "").strip() if isinstance(asr_result, dict) else str(asr_result or "").strip()
 
-    # Advance cursor to the end of the last processed segment
-    last_end_time = new_segments[-1]["end"]
-    state["cursor"] = min(int(last_end_time * sr), len(buffer))
-
-    snippet = " ".join(texts).strip() if texts else ""
     if not snippet:
         return ""
+
+    # Advance cursor to the end of the processed tail
+    state["cursor"] = len(buffer)
+
 
     # Heuristic: drop very common closing hallucinations on short/noisy tails
     lowered = snippet.lower()
@@ -198,188 +202,88 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
         logger.info(f"Dropping likely hallucinated closing snippet for session {session_id!r}: {snippet!r}")
         return ""
 
+    # Only mark ASR time if we actually produced text
+    state["last_asr_time"] = now
     return snippet
 
 
-def decode_live_audio_from_request():
+def finalize_current_turn(session_id: str, end_sample: int, sr: int) -> dict:
     """
-    Decode base64-encoded float32 PCM audio from the current Flask request.
+    Slice the current speaker's turn from the per-session ASR buffer,
+    run ASR on just that slice, and return a small dict:
 
-    Returns:
-        waveform (Tensor on device), sr (int), device (str), session_id (str)
+      {
+        "turn_speaker": <name>,
+        "turn_transcript": <text>,
+        "turn_start": <seconds>,
+        "turn_end": <seconds>,
+        "turn_duration": <seconds>,
+      }
+
+    If there is no active turn, or ASR returns no text, this returns {}.
     """
-    if "audio_data" not in request.form:
-        return None, None, None, None
+    state = SESSION_ASR_STATE.get(session_id)
+    if not state:
+        return {}
 
-    audio_data_b64 = request.form.get("audio_data")
-    sample_rate = int(request.form.get("sample_rate", 16000))
-    session_id = request.form.get("session_id", "default")
+    buffer = state.get("buffer")
+    start_sample = state.get("current_turn_start_sample")
+    turn_speaker = state.get("current_turn_speaker")
+
+    if (
+        buffer is None
+        or buffer.numel() == 0
+        or turn_speaker is None
+        or start_sample is None
+        or end_sample is None
+        or end_sample <= start_sample
+    ):
+        return {}
 
     try:
-        audio_bytes = base64.b64decode(audio_data_b64)
-        audio_array = np.frombuffer(audio_bytes, dtype=np.float32)
+        start_idx = max(int(start_sample), 0)
+        end_idx = min(int(end_sample), len(buffer))
 
-        # Start on CPU for potential resampling
-        waveform = torch.from_numpy(audio_array).float()
-        if waveform.dim() > 1:
-            waveform = waveform.mean(dim=0)
+        if end_idx <= start_idx:
+            return {}
 
-        sr = sample_rate
+        turn_audio = buffer[start_idx:end_idx]
 
-        # Resample to pipeline sample rate if needed
-        target_sr = pipeline.config.sr
-        if sr != target_sr:
-            waveform_2d = waveform.unsqueeze(0)  # (1, n_samples)
-            waveform_2d = match_frequency(waveform_2d, sr, sr=target_sr)
-            waveform = waveform_2d.squeeze(0)
-            sr = target_sr
+        # Run ASR on this single turn (no timestamps needed)
+        result = pipeline.asr.transcribe(
+            turn_audio,
+            return_timestamps=False,
+        )
 
-        device = pipeline.config.device
-        waveform = waveform.to(device)
+        if isinstance(result, dict):
+            text = (result.get("text") or "").strip()
+        else:
+            text = str(result or "").strip()
 
-        return waveform, sr, device, session_id
+        if not text:
+            return {}
 
-    except Exception as e:
-        logger.error(f"Error decoding audio: {e}")
-        return None, None, None, None
+        start_time = start_idx / float(sr)
+        end_time = end_idx / float(sr)
 
+        # Reset current turn so the next speech starts a new one
+        state["current_turn_speaker"] = None
+        state["current_turn_start_sample"] = None
 
-def update_session_asr_state(session_id: str, waveform: torch.Tensor, device: str):
-    """
-    Append the latest waveform chunk into the per-session ASR buffer,
-    and trim to a max duration.
-    """
-    sr = pipeline.config.sr  # assuming your pipeline has this
+        # Also move the ASR cursor forward so live snippets don't re-transcribe
+        state["cursor"] = max(int(end_idx), int(state.get("cursor", 0)))
 
-    if session_id not in SESSION_ASR_STATE:
-        SESSION_ASR_STATE[session_id] = {
-            "buffer": torch.zeros(0, device=device),
-            "cursor": 0,
+        return {
+            "turn_speaker": turn_speaker,
+            "turn_transcript": text,
+            "turn_start": start_time,
+            "turn_end": end_time,
+            "turn_duration": end_time - start_time,
         }
 
-    state = SESSION_ASR_STATE[session_id]
-    buf = state["buffer"]
-
-    # Append new audio
-    buf = torch.cat([buf, waveform.detach()])
-
-    # Trim old audio if buffer exceeds MAX_ASR_BUFFER_SECONDS
-    max_samples = int(MAX_ASR_BUFFER_SECONDS * sr)
-    if len(buf) > max_samples:
-        # We keep the last `max_samples` samples,
-        # and adjust cursor accordingly.
-        overflow = len(buf) - max_samples
-        buf = buf[-max_samples:]
-
-        # cursor is in "old" coordinates; shift it left by overflow,
-        # but not below 0.
-        state["cursor"] = max(0, state["cursor"] - overflow)
-
-    state["buffer"] = buf
-
-def ensure_speaker_buffers_initialized(sr: int, device: str):
-    """
-    Lazily initialize the rolling and speech buffers for speaker ID.
-    """
-    global ROLLING_BUFFER, SPEECH_BUFFER
-    if ROLLING_BUFFER is None:
-        ROLLING_BUFFER = torch.zeros(sr, device=device)
-    if SPEECH_BUFFER is None:
-        SPEECH_BUFFER = torch.zeros(0, device=device)
-
-
-def update_rolling_window(waveform: torch.Tensor, sr: int) -> torch.Tensor:
-    """
-    Update the 1-second rolling window used for VAD and return the window.
-    """
-    global ROLLING_BUFFER
-    chunk = waveform
-
-    if len(chunk) >= sr:
-        ROLLING_BUFFER = chunk[-sr:]
-    else:
-        needed = sr - len(chunk)
-        ROLLING_BUFFER = torch.cat([ROLLING_BUFFER[-needed:], chunk])
-
-    return ROLLING_BUFFER.clone()
-
-
-def extend_speech_buffer_with_segments(
-    speech_segments: list[dict],
-    vad_input: torch.Tensor,
-    sr: int,
-    device: str,
-):
-    """
-    Use VAD segments from the rolling window to extend the longer-term speech buffer.
-    """
-    global SPEECH_BUFFER
-
-    speech_portions = []
-    for seg in speech_segments:
-        start_sample = int(seg["start"] * sr)
-        end_sample = int(seg["end"] * sr)
-        seg_audio = vad_input[start_sample:end_sample]
-        if len(seg_audio) > 0:
-            speech_portions.append(seg_audio)
-
-    new_speech = torch.cat(speech_portions) if speech_portions else torch.zeros(0, device=device)
-    SPEECH_BUFFER = torch.cat([SPEECH_BUFFER, new_speech])
-
-    max_speech_samples = int(2.0 * sr)  # up to 2 seconds of speech
-    if len(SPEECH_BUFFER) > max_speech_samples:
-        SPEECH_BUFFER = SPEECH_BUFFER[-max_speech_samples:]
-
-
-def compute_speaker_embedding(sr: int) -> torch.Tensor | None:
-    """
-    Compute a normalized speaker embedding from the speech buffer if we have
-    enough speech.
-    """
-    global SPEECH_BUFFER
-
-    min_speech_samples = int(1.0 * sr)  # at least 1s of speech
-    if len(SPEECH_BUFFER) < min_speech_samples:
-        return None
-
-    embedding = pipeline.embedder.embed(SPEECH_BUFFER, sr)
-    while embedding.dim() > 1:
-        embedding = embedding.squeeze(0)
-
-    embedding = F.normalize(embedding, p=2, dim=0)
-    logger.info("Computed normalized embedding from speech buffer.")
-    return embedding
-
-
-def find_best_speaker_match(embedding: torch.Tensor, device: str):
-    """
-    Compare the given embedding to all known speakers and return:
-        (best_speaker_name, best_score, second_best_score)
-    """
-    best_speaker = None
-    best_score = -1.0
-    second_best_score = -1.0
-
-    if KNOWN_SPEAKERS:
-        for name, ref_emb_cpu in KNOWN_SPEAKERS.items():
-            ref_emb = ref_emb_cpu.to(device)
-            ref_emb = F.normalize(ref_emb, p=2, dim=0)
-
-            score = torch.dot(embedding, ref_emb).item()
-            logger.debug(f"{name}: similarity={score:.4f}")
-
-            if score > best_score:
-                second_best_score = best_score
-                best_score = score
-                best_speaker = name
-            elif score > second_best_score:
-                second_best_score = score
-
-    logger.info(
-        f"Best match: {best_speaker} ({best_score:.4f}), "
-        f"second_best={second_best_score:.4f}"
-    )
-    return best_speaker, best_score, second_best_score
+    except Exception as e:
+        logger.error(f"Error while finalizing turn for session {session_id!r}: {e}")
+        return {}
 def convert_to_wav(input_path):
     """Convert any input audio to 16kHz mono WAV using ffmpeg."""
     try:
@@ -603,25 +507,78 @@ def identify_speaker():
         return jsonify({"error": "Pipeline not available"}), 503
 
     try:
-        # 1. Decode incoming audio chunk
-        waveform, sr, device, session_id = decode_live_audio_from_request()
-        if waveform is None:
+        # 1. Read raw PCM base64 audio
+        if 'audio_data' not in request.form:
+            return jsonify({"error": "No audio_data provided"}), 400
+
+        audio_data_b64 = request.form.get('audio_data')
+        sample_rate = int(request.form.get('sample_rate', 16000))
+        session_id = request.form.get('session_id', 'default')
+
+        try:
+            audio_bytes = base64.b64decode(audio_data_b64)
+            audio_array = np.frombuffer(audio_bytes, dtype=np.float32)
+
+            # Start on CPU for potential resampling
+            waveform = torch.from_numpy(audio_array).float()
+            if waveform.dim() > 1:
+                waveform = waveform.mean(dim=0)
+
+            sr = sample_rate
+
+            # Resample to pipeline sample rate if needed
+            target_sr = pipeline.config.sr
+            if sr != target_sr:
+                waveform_2d = waveform.unsqueeze(0)  # (1, n_samples)
+                waveform_2d = match_frequency(waveform_2d, sr, sr=target_sr)
+                waveform = waveform_2d.squeeze(0)
+                sr = target_sr
+
+            device = pipeline.config.device
+            waveform = waveform.to(device)
+
+        except Exception as e:
+            logger.error(f"Error decoding audio: {e}")
             return jsonify({"error": "Invalid audio data"}), 400
 
-        logger.info(f"Received {len(waveform)} samples, {len(waveform)/sr:.3f}s")
+        
+        # Update per-session ASR buffer (kept separate from VAD/speaker buffers)
+        if session_id not in SESSION_ASR_STATE:
+            SESSION_ASR_STATE[session_id] = {
+                "buffer": torch.zeros(0, device=device),
+                "cursor": 0,
+                "last_asr_time": 0.0,
+                # Turn-tracking state for per-speaker transcripts
+                "current_turn_speaker": None,
+                "current_turn_start_sample": None,
+            }
+        asr_state = SESSION_ASR_STATE[session_id]
+        prev_total_samples = int(asr_state["buffer"].shape[0])
+        asr_state["buffer"] = torch.cat([asr_state["buffer"], waveform.detach()])
+        total_samples = int(asr_state["buffer"].shape[0])
 
-        # 2. Update per-session ASR state (independent of speaker buffers)
-        update_session_asr_state(session_id, waveform, device)
+        # 2. Initialize buffers on correct device
+        if ROLLING_BUFFER is None:
+            ROLLING_BUFFER = torch.zeros(sr, device=device)
+        if SPEECH_BUFFER is None:
+            SPEECH_BUFFER = torch.zeros(0, device=device)
 
-        # 3. Initialize speaker buffers for this device/sample rate
-        ensure_speaker_buffers_initialized(sr, device)
+        # 3. Update 1-second rolling audio buffer
+        chunk = waveform
 
-        # 4. Update 1-second rolling window and run VAD for speaker detection
-        vad_input = update_rolling_window(waveform, sr)
-        logger.info(f"VAD input window: {len(vad_input)} samples ({len(vad_input)/sr:.2f}s)")
+        if len(chunk) >= sr:
+            ROLLING_BUFFER = chunk[-sr:]
+        else:
+            needed = sr - len(chunk)
+            ROLLING_BUFFER = torch.cat([ROLLING_BUFFER[-needed:], chunk])
 
+        vad_input = ROLLING_BUFFER.clone()
+
+
+
+        # 4. Run VAD on rolling 1s window (for speaker detection)
         speech_segments = pipeline.vad(vad_input)
-        logger.info(f"VAD found {len(speech_segments)} segments")
+
 
         if not speech_segments:
             # No speech in this window; keep previous speaker if any
@@ -633,13 +590,27 @@ def identify_speaker():
                 "transcript": "",
             })
 
-        # 5. Extend long-term speech buffer with current speech-only segments
-        extend_speech_buffer_with_segments(speech_segments, vad_input, sr, device)
-        logger.info(f"Speech buffer: {len(SPEECH_BUFFER)} samples ({len(SPEECH_BUFFER)/sr:.2f}s speech)")
+        # 5. Build rolling speech buffer (up to 2s) for speaker embedding
+        speech_portions = []
+        for seg in speech_segments:
+            start_sample = int(seg['start'] * sr)
+            end_sample = int(seg['end'] * sr)
+            seg_audio = vad_input[start_sample:end_sample]
+            if len(seg_audio) > 0:
+                speech_portions.append(seg_audio)
 
-        # 6. Compute speaker embedding if we have enough speech
-        embedding = compute_speaker_embedding(sr)
-        if embedding is None:
+        new_speech = torch.cat(speech_portions) if speech_portions else torch.zeros(0, device=device)
+
+        SPEECH_BUFFER = torch.cat([SPEECH_BUFFER, new_speech])
+
+        MAX_SPEECH_SAMPLES = int(2.0 * sr)  # up to 2 seconds of speech
+        if len(SPEECH_BUFFER) > MAX_SPEECH_SAMPLES:
+            SPEECH_BUFFER = SPEECH_BUFFER[-MAX_SPEECH_SAMPLES:]
+
+  
+        # 6. Require minimum speech before embedding
+        MIN_SPEECH_SAMPLES = int(0.5 * sr)  # at least 1s of speech
+        if len(SPEECH_BUFFER) < MIN_SPEECH_SAMPLES:
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
             live_snippet = get_live_snippet_for_session(session_id, sr)
             return jsonify({
@@ -650,12 +621,45 @@ def identify_speaker():
                 "transcript": live_snippet,
             })
 
-        # 7. Compare embedding with known speakers
-        best_speaker, best_score, second_best_score = find_best_speaker_match(embedding, device)
+        # 7. Compute embedding from speech buffer
+        embedding = pipeline.embedder.embed(SPEECH_BUFFER, sr)
+        while embedding.dim() > 1:
+            embedding = embedding.squeeze(0)
 
+        # Normalize current embedding
+        embedding = F.normalize(embedding, p=2, dim=0)
+
+
+        # 8. Compare with known speakers (track 2 best)
+        best_speaker = None
+        best_score = -1.0
+        second_best_score = -1.0
+
+        if KNOWN_SPEAKERS:
+            for name, ref_emb_cpu in KNOWN_SPEAKERS.items():
+                # Move ref emb to device
+                ref_emb = ref_emb_cpu.to(device)
+                # ref_emb is already normalized on load; but re-normalize for safety
+                ref_emb = F.normalize(ref_emb, p=2, dim=0)
+
+                # Cosine similarity between two unit vectors
+                score = torch.dot(embedding, ref_emb).item()
+
+                logger.debug(f"{name}: similarity={score:.4f}")
+
+                if score > best_score:
+                    second_best_score = best_score
+                    best_score = score
+                    best_speaker = name
+                elif score > second_best_score:
+                    second_best_score = score
+
+ 
         now = time.time()
-        MIN_CONFIDENCE = 0.20       # minimum similarity to accept/update speaker
-        MARGIN_THRESHOLD = 0.05     # best must beat second-best by at least this much
+
+        # Tuning thresholds
+        MIN_CONFIDENCE = 0.25       # minimum similarity to accept/update speaker
+        MARGIN_THRESHOLD = 0.08    # best must beat second-best by at least this much
 
         margin = best_score - second_best_score if second_best_score > -1.0 else best_score
 
@@ -672,14 +676,15 @@ def identify_speaker():
                 "transcript": live_snippet,
             })
 
-        # 8. Update stable speaker with cooldown / EMA logic
+        # First speaker
+        previous_speaker = CURRENT_SPEAKER
         if CURRENT_SPEAKER is None:
             CURRENT_SPEAKER = best_speaker
             CURRENT_CONFIDENCE = best_score
             LAST_SWITCH_TIME = now
         else:
+            # Different speaker? apply cooldown
             if best_speaker != CURRENT_SPEAKER:
-                # Different speaker? apply cooldown
                 if now - LAST_SWITCH_TIME >= SWITCH_COOLDOWN:
                     CURRENT_SPEAKER = best_speaker
                     CURRENT_CONFIDENCE = best_score
@@ -691,16 +696,43 @@ def identify_speaker():
                 CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                 LAST_SWITCH_TIME = now
 
-        # 9. Return speaker + live snippet from the new tail only
+        # --- Turn-tracking for per-speaker transcripts ---
+        turn_metadata: dict = {}
+        active_turn_speaker = asr_state.get("current_turn_speaker")
+
+        # Helper to start a new turn at the beginning of this chunk
+        def _start_new_turn(speaker_name: str):
+            asr_state["current_turn_speaker"] = speaker_name
+            asr_state["current_turn_start_sample"] = prev_total_samples
+
+        # If there was an active turn and the (possibly updated) CURRENT_SPEAKER
+        # is now different or None, close that turn at the start of this chunk.
+        if active_turn_speaker is not None and CURRENT_SPEAKER != active_turn_speaker:
+            turn_metadata = finalize_current_turn(
+                session_id=session_id,
+                end_sample=prev_total_samples,
+                sr=sr,
+            )
+
+        # Start a new turn if we have a non-None current speaker and no active turn
+        # (either initial speech or right after closing a previous turn).
+        if CURRENT_SPEAKER is not None and asr_state.get("current_turn_speaker") is None:
+            _start_new_turn(CURRENT_SPEAKER)
+
+        # Final response: include latest live snippet (tail-only ASR)
         ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
         live_snippet = get_live_snippet_for_session(session_id, sr)
 
-        return jsonify({
+        response = {
             "speaker": CURRENT_SPEAKER,
             "has_speech": True,
             "confidence": ui_conf,
             "transcript": live_snippet,
-        })
+        }
+        if turn_metadata:
+            response.update(turn_metadata)
+
+        return jsonify(response)
 
     except Exception as e:
         logger.error(f"Error in identify_speaker: {e}")

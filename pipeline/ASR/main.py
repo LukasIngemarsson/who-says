@@ -20,7 +20,19 @@ class ASR(object):
         compute_type: str | None = None,
         language: str | None = None,
         return_timestamps: bool = True,
-        word_timestamps: bool = True
+        word_timestamps: bool = True,
+        beam_size: int = 1,
+        best_of: int = 1,
+        patience: float = 0.0,
+        temperature: float = 0.0,
+        temperature_increment_on_fallback: float = 0.2,
+        compression_ratio_threshold: float = 2.4,
+        log_prob_threshold: float = -1.0,
+        no_speech_threshold: float = 0.8,
+        task: str = "transcribe",
+        without_timestamps: bool = True,
+        chunk_length: int = 15,
+        profile: str | None = None,
     ):
         """
         Initialize ASR pipeline with configurable model and parameters.
@@ -46,6 +58,22 @@ class ASR(object):
         self.language = language
         self.return_timestamps = return_timestamps
         self.word_timestamps = word_timestamps
+        self.beam_size = beam_size
+        self.best_of = best_of
+        self.patience = patience
+        self.temperature = temperature
+        self.temperature_increment_on_fallback = temperature_increment_on_fallback
+        self.compression_ratio_threshold = compression_ratio_threshold
+        self.log_prob_threshold = log_prob_threshold
+        self.no_speech_threshold = no_speech_threshold
+        self.task = task
+        self.without_timestamps = without_timestamps
+        self.chunk_length = chunk_length
+        # Optional profile name (speed / balanced / accuracy), currently
+        # applied in config before initialization but accepted here so that
+        # ASR(**ASRConfig.to_dict()) works without errors.
+        self.profile = profile
+
 
         # Set default model based on ASR type if not provided
         if model is None:
@@ -99,47 +127,110 @@ class ASR(object):
         Args:
             audio: Audio tensor to transcribe
             **kwargs: Additional arguments to pass to the transcribe method.
-                     Will override instance defaults if provided.
+                    Will override instance defaults if provided.
 
         Returns:
             Dictionary with transcription results
         """
-        # Merge instance defaults with provided kwargs
+        # Base kwargs shared by both Whisper + Faster-Whisper
         transcribe_kwargs = {
-            'return_timestamps': kwargs.get('return_timestamps', self.return_timestamps),
-            'language': kwargs.get('language', self.language)
+            "return_timestamps": kwargs.get("return_timestamps", self.return_timestamps),
+            "language": kwargs.get("language", self.language),
         }
 
-        # Add word_timestamps for Faster-Whisper
+        # Extra decoding controls only for Faster-Whisper
         if self.asr_type == TypeASR.FASTER_WHISPER:
-            transcribe_kwargs['word_timestamps'] = kwargs.get('word_timestamps', self.word_timestamps)
+            transcribe_kwargs.update({
+                "beam_size": kwargs.get("beam_size", self.beam_size),
+                "best_of": kwargs.get("best_of", self.best_of),
+                "patience": kwargs.get("patience", self.patience),
+                "temperature": kwargs.get("temperature", self.temperature),
+                "compression_ratio_threshold": kwargs.get(
+                    "compression_ratio_threshold",
+                    self.compression_ratio_threshold,
+                ),
+                "log_prob_threshold": kwargs.get(
+                    "log_prob_threshold",
+                    self.log_prob_threshold,
+                ),
+                "no_speech_threshold": kwargs.get(
+                    "no_speech_threshold",
+                    self.no_speech_threshold,
+                ),
+                "task": kwargs.get("task", self.task),
+                "without_timestamps": kwargs.get(
+                    "without_timestamps",
+                    self.without_timestamps,
+                ),
+                "chunk_length": kwargs.get("chunk_length", self.chunk_length),
+            })
+
+            # word-level timestamps only make sense for Faster-Whisper
+            transcribe_kwargs["word_timestamps"] = kwargs.get(
+                "word_timestamps",
+                self.word_timestamps,
+            )
 
         return self.asr_pipeline.transcribe(audio, **transcribe_kwargs)
 
-    def transcribe_segments(self, audio: torch.Tensor, speech_segments: list[dict[str, float]], **kwargs):
-        """
-        Transcribe only speech segments from audio detected by VAD.
 
-        Args:
-            audio: Full audio tensor
-            speech_segments: List of speech segments from VAD
-            **kwargs: Additional arguments to pass to transcribe_segments.
-                     Will override instance defaults if provided.
-
-        Returns:
-            List of dictionaries with transcription results for each segment
+    def transcribe_segments(
+        self,
+        audio: torch.Tensor,
+        speech_segments: list[dict[str, float]],
+        **kwargs,
+    ):
         """
-        # Merge instance defaults with provided kwargs
+        Transcribe only speech segments detected by VAD.
+        NOTE: Faster-Whisper's transcribe_segments DOES NOT accept decoding params.
+        """
+
+        # Only pass universal parameters + decoding profile (where supported)
         transcribe_kwargs = {
-            'return_timestamps': kwargs.get('return_timestamps', self.return_timestamps),
-            'language': kwargs.get('language', self.language)
+            "return_timestamps": kwargs.get("return_timestamps", self.return_timestamps),
+            "language": kwargs.get("language", self.language),
         }
 
-        # Add word_timestamps for Faster-Whisper
+        # word timestamps are supported ONLY by Faster-Whisper,
+        # but DO NOT require decoding args
         if self.asr_type == TypeASR.FASTER_WHISPER:
-            transcribe_kwargs['word_timestamps'] = kwargs.get('word_timestamps', self.word_timestamps)
+            transcribe_kwargs["word_timestamps"] = kwargs.get(
+                "word_timestamps",
+                self.word_timestamps,
+            )
+            # Attach decoding controls so FasterWhisperASR.transcribe_segments()
+            # can forward them into its per-segment transcribe() calls.
+            transcribe_kwargs.update({
+                "beam_size": kwargs.get("beam_size", self.beam_size),
+                "best_of": kwargs.get("best_of", self.best_of),
+                "patience": kwargs.get("patience", self.patience),
+                "temperature": kwargs.get("temperature", self.temperature),
+                "compression_ratio_threshold": kwargs.get(
+                    "compression_ratio_threshold",
+                    self.compression_ratio_threshold,
+                ),
+                "log_prob_threshold": kwargs.get(
+                    "log_prob_threshold",
+                    self.log_prob_threshold,
+                ),
+                "no_speech_threshold": kwargs.get(
+                    "no_speech_threshold",
+                    self.no_speech_threshold,
+                ),
+                "task": kwargs.get("task", self.task),
+                "without_timestamps": kwargs.get(
+                    "without_timestamps",
+                    self.without_timestamps,
+                ),
+                "chunk_length": kwargs.get("chunk_length", self.chunk_length),
+            })
 
-        return self.asr_pipeline.transcribe_segments(audio, speech_segments, **transcribe_kwargs)
+        return self.asr_pipeline.transcribe_segments(
+            audio,
+            speech_segments,
+            **transcribe_kwargs,
+        )
+
 
     def __call__(self, audio: torch.Tensor, **kwargs):
         """

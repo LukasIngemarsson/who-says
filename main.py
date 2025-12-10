@@ -24,19 +24,23 @@ load_dotenv(".env")
 class WhoSays(object):
     def __init__(self, config=Config()):
         self.config = config
-        
+
         logger.info(f"Using device: {self.config.device}")
-        
+
+        # Apply any ASR decoding profile overrides (speed / balanced / accuracy)
+        try:
+            self.config.asr.apply_profile_defaults()
+        except Exception as e:
+            logger.warning(f"Failed to apply ASR profile defaults: {e}")
+
         #self.sod = SO(self.config.so)
-        self.scd = SCD(**self.config.scd.pyannote.to_dict())
-        
+        #self.scd = SCD(**self.config.scd.pyannote.to_dict())
+
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = ASR(**self.config.asr.to_dict())
-        self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
+        #self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
 
         self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
-        self.clustering = SklearnClustering(**self.config.clustering.kmeans.to_dict()) 
-        self.recognition = SpeechBrainSpeakerRecognition(**self.config.recognition.speechbrain.to_dict())
 
     def get_reference_embedding(self, audio_file: str):
         """

@@ -38,7 +38,7 @@ app = Flask(__name__, static_folder=static_folder_path, static_url_path='')
 # -------------------------------------------------
 if PIPELINE_AVAILABLE:
     logger.info("Loading WhoSays pipeline... This may take a moment.")
-    pipeline = WhoSays()
+    pipeline = WhoSays() 
     logger.info("Pipeline loaded successfully. Server is ready.")
 else:
     pipeline = None
@@ -47,6 +47,7 @@ else:
 # Global state
 # -------------------------------------------------
 # Speaker identification buffers
+MAX_ASR_BUFFER_SECONDS = 30.0  # keep at most 60s per session
 ROLLING_BUFFER = None        # 1-second rolling raw audio (torch.Tensor on pipeline device)
 SPEECH_BUFFER = None         # rolling speech-only buffer (up to ~2s)
 KNOWN_SPEAKERS = {}          # name -> normalized embedding (1D tensor on CPU)
@@ -130,7 +131,7 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
 
     # Require a minimum amount of new audio before attempting ASR
     # (more context → fewer hallucinations)
-    MIN_NEW_SAMPLES = int(1.5 * sr)  # ~1.5s of audio
+    MIN_NEW_SAMPLES = int(2.5 * sr)  # ~1.5s of audio
     if len(buffer) - cursor < MIN_NEW_SAMPLES:
         return ""
 
@@ -149,7 +150,7 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
 
     # Require at least some real speech duration in the tail
     total_speech_tail = sum(max(0.0, seg["end"] - seg["start"]) for seg in speech_segments_tail)
-    if total_speech_tail < 0.5:  # < 0.5s of detected speech → too flimsy for ASR
+    if total_speech_tail < 1.0:  # < 0.5s of detected speech → too flimsy for ASR
         return ""
 
     # Offset segments to full-buffer timeline
@@ -198,6 +199,187 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> str:
         return ""
 
     return snippet
+
+
+def decode_live_audio_from_request():
+    """
+    Decode base64-encoded float32 PCM audio from the current Flask request.
+
+    Returns:
+        waveform (Tensor on device), sr (int), device (str), session_id (str)
+    """
+    if "audio_data" not in request.form:
+        return None, None, None, None
+
+    audio_data_b64 = request.form.get("audio_data")
+    sample_rate = int(request.form.get("sample_rate", 16000))
+    session_id = request.form.get("session_id", "default")
+
+    try:
+        audio_bytes = base64.b64decode(audio_data_b64)
+        audio_array = np.frombuffer(audio_bytes, dtype=np.float32)
+
+        # Start on CPU for potential resampling
+        waveform = torch.from_numpy(audio_array).float()
+        if waveform.dim() > 1:
+            waveform = waveform.mean(dim=0)
+
+        sr = sample_rate
+
+        # Resample to pipeline sample rate if needed
+        target_sr = pipeline.config.sr
+        if sr != target_sr:
+            waveform_2d = waveform.unsqueeze(0)  # (1, n_samples)
+            waveform_2d = match_frequency(waveform_2d, sr, sr=target_sr)
+            waveform = waveform_2d.squeeze(0)
+            sr = target_sr
+
+        device = pipeline.config.device
+        waveform = waveform.to(device)
+
+        return waveform, sr, device, session_id
+
+    except Exception as e:
+        logger.error(f"Error decoding audio: {e}")
+        return None, None, None, None
+
+
+def update_session_asr_state(session_id: str, waveform: torch.Tensor, device: str):
+    """
+    Append the latest waveform chunk into the per-session ASR buffer,
+    and trim to a max duration.
+    """
+    sr = pipeline.config.sr  # assuming your pipeline has this
+
+    if session_id not in SESSION_ASR_STATE:
+        SESSION_ASR_STATE[session_id] = {
+            "buffer": torch.zeros(0, device=device),
+            "cursor": 0,
+        }
+
+    state = SESSION_ASR_STATE[session_id]
+    buf = state["buffer"]
+
+    # Append new audio
+    buf = torch.cat([buf, waveform.detach()])
+
+    # Trim old audio if buffer exceeds MAX_ASR_BUFFER_SECONDS
+    max_samples = int(MAX_ASR_BUFFER_SECONDS * sr)
+    if len(buf) > max_samples:
+        # We keep the last `max_samples` samples,
+        # and adjust cursor accordingly.
+        overflow = len(buf) - max_samples
+        buf = buf[-max_samples:]
+
+        # cursor is in "old" coordinates; shift it left by overflow,
+        # but not below 0.
+        state["cursor"] = max(0, state["cursor"] - overflow)
+
+    state["buffer"] = buf
+
+def ensure_speaker_buffers_initialized(sr: int, device: str):
+    """
+    Lazily initialize the rolling and speech buffers for speaker ID.
+    """
+    global ROLLING_BUFFER, SPEECH_BUFFER
+    if ROLLING_BUFFER is None:
+        ROLLING_BUFFER = torch.zeros(sr, device=device)
+    if SPEECH_BUFFER is None:
+        SPEECH_BUFFER = torch.zeros(0, device=device)
+
+
+def update_rolling_window(waveform: torch.Tensor, sr: int) -> torch.Tensor:
+    """
+    Update the 1-second rolling window used for VAD and return the window.
+    """
+    global ROLLING_BUFFER
+    chunk = waveform
+
+    if len(chunk) >= sr:
+        ROLLING_BUFFER = chunk[-sr:]
+    else:
+        needed = sr - len(chunk)
+        ROLLING_BUFFER = torch.cat([ROLLING_BUFFER[-needed:], chunk])
+
+    return ROLLING_BUFFER.clone()
+
+
+def extend_speech_buffer_with_segments(
+    speech_segments: list[dict],
+    vad_input: torch.Tensor,
+    sr: int,
+    device: str,
+):
+    """
+    Use VAD segments from the rolling window to extend the longer-term speech buffer.
+    """
+    global SPEECH_BUFFER
+
+    speech_portions = []
+    for seg in speech_segments:
+        start_sample = int(seg["start"] * sr)
+        end_sample = int(seg["end"] * sr)
+        seg_audio = vad_input[start_sample:end_sample]
+        if len(seg_audio) > 0:
+            speech_portions.append(seg_audio)
+
+    new_speech = torch.cat(speech_portions) if speech_portions else torch.zeros(0, device=device)
+    SPEECH_BUFFER = torch.cat([SPEECH_BUFFER, new_speech])
+
+    max_speech_samples = int(2.0 * sr)  # up to 2 seconds of speech
+    if len(SPEECH_BUFFER) > max_speech_samples:
+        SPEECH_BUFFER = SPEECH_BUFFER[-max_speech_samples:]
+
+
+def compute_speaker_embedding(sr: int) -> torch.Tensor | None:
+    """
+    Compute a normalized speaker embedding from the speech buffer if we have
+    enough speech.
+    """
+    global SPEECH_BUFFER
+
+    min_speech_samples = int(1.0 * sr)  # at least 1s of speech
+    if len(SPEECH_BUFFER) < min_speech_samples:
+        return None
+
+    embedding = pipeline.embedder.embed(SPEECH_BUFFER, sr)
+    while embedding.dim() > 1:
+        embedding = embedding.squeeze(0)
+
+    embedding = F.normalize(embedding, p=2, dim=0)
+    logger.info("Computed normalized embedding from speech buffer.")
+    return embedding
+
+
+def find_best_speaker_match(embedding: torch.Tensor, device: str):
+    """
+    Compare the given embedding to all known speakers and return:
+        (best_speaker_name, best_score, second_best_score)
+    """
+    best_speaker = None
+    best_score = -1.0
+    second_best_score = -1.0
+
+    if KNOWN_SPEAKERS:
+        for name, ref_emb_cpu in KNOWN_SPEAKERS.items():
+            ref_emb = ref_emb_cpu.to(device)
+            ref_emb = F.normalize(ref_emb, p=2, dim=0)
+
+            score = torch.dot(embedding, ref_emb).item()
+            logger.debug(f"{name}: similarity={score:.4f}")
+
+            if score > best_score:
+                second_best_score = best_score
+                best_score = score
+                best_speaker = name
+            elif score > second_best_score:
+                second_best_score = score
+
+    logger.info(
+        f"Best match: {best_speaker} ({best_score:.4f}), "
+        f"second_best={second_best_score:.4f}"
+    )
+    return best_speaker, best_score, second_best_score
 def convert_to_wav(input_path):
     """Convert any input audio to 16kHz mono WAV using ffmpeg."""
     try:
@@ -421,71 +603,23 @@ def identify_speaker():
         return jsonify({"error": "Pipeline not available"}), 503
 
     try:
-        # 1. Read raw PCM base64 audio
-        if 'audio_data' not in request.form:
-            return jsonify({"error": "No audio_data provided"}), 400
-
-        audio_data_b64 = request.form.get('audio_data')
-        sample_rate = int(request.form.get('sample_rate', 16000))
-        session_id = request.form.get('session_id', 'default')
-
-        try:
-            audio_bytes = base64.b64decode(audio_data_b64)
-            audio_array = np.frombuffer(audio_bytes, dtype=np.float32)
-
-            # Start on CPU for potential resampling
-            waveform = torch.from_numpy(audio_array).float()
-            if waveform.dim() > 1:
-                waveform = waveform.mean(dim=0)
-
-            sr = sample_rate
-
-            # Resample to pipeline sample rate if needed
-            target_sr = pipeline.config.sr
-            if sr != target_sr:
-                waveform_2d = waveform.unsqueeze(0)  # (1, n_samples)
-                waveform_2d = match_frequency(waveform_2d, sr, sr=target_sr)
-                waveform = waveform_2d.squeeze(0)
-                sr = target_sr
-
-            device = pipeline.config.device
-            waveform = waveform.to(device)
-
-        except Exception as e:
-            logger.error(f"Error decoding audio: {e}")
+        # 1. Decode incoming audio chunk
+        waveform, sr, device, session_id = decode_live_audio_from_request()
+        if waveform is None:
             return jsonify({"error": "Invalid audio data"}), 400
 
         logger.info(f"Received {len(waveform)} samples, {len(waveform)/sr:.3f}s")
 
-        # Update per-session ASR buffer (kept separate from VAD/speaker buffers)
-        if session_id not in SESSION_ASR_STATE:
-            SESSION_ASR_STATE[session_id] = {
-                "buffer": torch.zeros(0, device=device),
-                "cursor": 0,
-            }
-        asr_state = SESSION_ASR_STATE[session_id]
-        asr_state["buffer"] = torch.cat([asr_state["buffer"], waveform.detach()])
+        # 2. Update per-session ASR state (independent of speaker buffers)
+        update_session_asr_state(session_id, waveform, device)
 
-        # 2. Initialize buffers on correct device
-        if ROLLING_BUFFER is None:
-            ROLLING_BUFFER = torch.zeros(sr, device=device)
-        if SPEECH_BUFFER is None:
-            SPEECH_BUFFER = torch.zeros(0, device=device)
+        # 3. Initialize speaker buffers for this device/sample rate
+        ensure_speaker_buffers_initialized(sr, device)
 
-        # 3. Update 1-second rolling audio buffer
-        chunk = waveform
-
-        if len(chunk) >= sr:
-            ROLLING_BUFFER = chunk[-sr:]
-        else:
-            needed = sr - len(chunk)
-            ROLLING_BUFFER = torch.cat([ROLLING_BUFFER[-needed:], chunk])
-
-        vad_input = ROLLING_BUFFER.clone()
-
+        # 4. Update 1-second rolling window and run VAD for speaker detection
+        vad_input = update_rolling_window(waveform, sr)
         logger.info(f"VAD input window: {len(vad_input)} samples ({len(vad_input)/sr:.2f}s)")
 
-        # 4. Run VAD on rolling 1s window (for speaker detection)
         speech_segments = pipeline.vad(vad_input)
         logger.info(f"VAD found {len(speech_segments)} segments")
 
@@ -499,28 +633,13 @@ def identify_speaker():
                 "transcript": "",
             })
 
-        # 5. Build rolling speech buffer (up to 2s) for speaker embedding
-        speech_portions = []
-        for seg in speech_segments:
-            start_sample = int(seg['start'] * sr)
-            end_sample = int(seg['end'] * sr)
-            seg_audio = vad_input[start_sample:end_sample]
-            if len(seg_audio) > 0:
-                speech_portions.append(seg_audio)
-
-        new_speech = torch.cat(speech_portions) if speech_portions else torch.zeros(0, device=device)
-
-        SPEECH_BUFFER = torch.cat([SPEECH_BUFFER, new_speech])
-
-        MAX_SPEECH_SAMPLES = int(2.0 * sr)  # up to 2 seconds of speech
-        if len(SPEECH_BUFFER) > MAX_SPEECH_SAMPLES:
-            SPEECH_BUFFER = SPEECH_BUFFER[-MAX_SPEECH_SAMPLES:]
-
+        # 5. Extend long-term speech buffer with current speech-only segments
+        extend_speech_buffer_with_segments(speech_segments, vad_input, sr, device)
         logger.info(f"Speech buffer: {len(SPEECH_BUFFER)} samples ({len(SPEECH_BUFFER)/sr:.2f}s speech)")
 
-        # 6. Require minimum speech before embedding
-        MIN_SPEECH_SAMPLES = int(1.0 * sr)  # at least 1s of speech
-        if len(SPEECH_BUFFER) < MIN_SPEECH_SAMPLES:
+        # 6. Compute speaker embedding if we have enough speech
+        embedding = compute_speaker_embedding(sr)
+        if embedding is None:
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
             live_snippet = get_live_snippet_for_session(session_id, sr)
             return jsonify({
@@ -531,46 +650,10 @@ def identify_speaker():
                 "transcript": live_snippet,
             })
 
-        # 7. Compute embedding from speech buffer
-        embedding = pipeline.embedder.embed(SPEECH_BUFFER, sr)
-        while embedding.dim() > 1:
-            embedding = embedding.squeeze(0)
-
-        # Normalize current embedding
-        embedding = F.normalize(embedding, p=2, dim=0)
-
-        logger.info("Computed normalized embedding from speech buffer.")
-
-        # 8. Compare with known speakers (track 2 best)
-        best_speaker = None
-        best_score = -1.0
-        second_best_score = -1.0
-
-        if KNOWN_SPEAKERS:
-            for name, ref_emb_cpu in KNOWN_SPEAKERS.items():
-                # Move ref emb to device
-                ref_emb = ref_emb_cpu.to(device)
-                # ref_emb is already normalized on load; but re-normalize for safety
-                ref_emb = F.normalize(ref_emb, p=2, dim=0)
-
-                # Cosine similarity between two unit vectors
-                score = torch.dot(embedding, ref_emb).item()
-
-                logger.debug(f"{name}: similarity={score:.4f}")
-
-                if score > best_score:
-                    second_best_score = best_score
-                    best_score = score
-                    best_speaker = name
-                elif score > second_best_score:
-                    second_best_score = score
-
-        logger.info(f"Best match: {best_speaker} ({best_score:.4f}), "
-                    f"second_best={second_best_score:.4f}")
+        # 7. Compare embedding with known speakers
+        best_speaker, best_score, second_best_score = find_best_speaker_match(embedding, device)
 
         now = time.time()
-
-        # Tuning thresholds
         MIN_CONFIDENCE = 0.20       # minimum similarity to accept/update speaker
         MARGIN_THRESHOLD = 0.05     # best must beat second-best by at least this much
 
@@ -589,14 +672,14 @@ def identify_speaker():
                 "transcript": live_snippet,
             })
 
-        # First speaker
+        # 8. Update stable speaker with cooldown / EMA logic
         if CURRENT_SPEAKER is None:
             CURRENT_SPEAKER = best_speaker
             CURRENT_CONFIDENCE = best_score
             LAST_SWITCH_TIME = now
         else:
-            # Different speaker? apply cooldown
             if best_speaker != CURRENT_SPEAKER:
+                # Different speaker? apply cooldown
                 if now - LAST_SWITCH_TIME >= SWITCH_COOLDOWN:
                     CURRENT_SPEAKER = best_speaker
                     CURRENT_CONFIDENCE = best_score
@@ -608,7 +691,7 @@ def identify_speaker():
                 CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                 LAST_SWITCH_TIME = now
 
-        # Final response: include latest live snippet (tail-only ASR)
+        # 9. Return speaker + live snippet from the new tail only
         ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
         live_snippet = get_live_snippet_for_session(session_id, sr)
 

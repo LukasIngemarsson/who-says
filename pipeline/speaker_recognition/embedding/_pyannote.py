@@ -40,9 +40,9 @@ class PyAnnoteEmbedding:
         """
         load_dotenv("./.env")
         # .env is in root and not ignored
-        token = os.getenv("HF_TOKEN_PYANNOTE_EMBEDDING")
+        token = os.getenv("HF_TOKEN_PYANNOTE_EMBEDDING") or os.getenv("HF_TOKEN")
         if token is None:
-            raise ValueError("Missing HF_TOKEN_PYANNOTE_EMBEDDING in environment variables.")
+            raise ValueError("Missing HF_TOKEN_PYANNOTE_EMBEDDING or HF_TOKEN in environment variables.")
         
         self.model = Model.from_pretrained(model, use_auth_token=token)
         self.inference = Inference(self.model, window="whole", batch_size=batch_size)

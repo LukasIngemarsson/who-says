@@ -4,9 +4,11 @@ from torch.cuda import is_available as is_cuda_available
 from torch import device as torch_device
 
 from pipeline.speaker_segmentation.SCD._pyannote import PyannoteSCD
+from pipeline.speaker_segmentation.SCD._nemo import NemoSCD
 
 class TypeSCD(Enum):
     PYANNOTE = "pyannote"
+    NEMO = "nemo"
 
 class SCD(object):
     def __init__(
@@ -16,7 +18,8 @@ class SCD(object):
         model: str = "pyannote/segmentation-3.0",
         onset: float = 0.5,
         offset: float = 0.5,
-        min_duration: float = 0.0
+        min_duration: float = 0.0,
+        min_prominence: float = 0.1
     ):
         # store configuration for the pipeline
         self.device = device
@@ -24,6 +27,7 @@ class SCD(object):
         self.onset = onset
         self.offset = offset
         self.min_duration = min_duration
+        self.min_prominence = min_prominence
 
         # initialize pipeline (uses the setter)
         self.scd_pipeline = scd_type
@@ -43,6 +47,13 @@ class SCD(object):
                     model_name=self.model,
                     onset=self.onset,
                     offset=self.offset,
+                    min_duration=self.min_duration,
+                    min_prominence=self.min_prominence,
+                )
+            case TypeSCD.NEMO:
+                logger.info(f"Initializing SCD with type: {scd_type.value}")
+                self._scd_pipeline = NemoSCD(
+                    device=torch_device(self.device),
                     min_duration=self.min_duration,
                 )
             case _:

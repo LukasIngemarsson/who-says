@@ -13,6 +13,7 @@ torch.serialization.add_safe_globals([
     Resolution,
 ])
 import numpy as np
+from scipy.signal import find_peaks
 from typing import Optional, List
 from pyannote.audio import Model
 
@@ -31,6 +32,7 @@ class PyannoteSCD(object):
         onset: float = 0.5,
         offset: float = 0.5,
         min_duration: float = 0.0,
+        min_prominence: float = 0.1,
         device: Optional[torch.device] = None
     ):
         """
@@ -39,11 +41,13 @@ class PyannoteSCD(object):
         model_name : str
             HuggingFace model ID
         onset : float
-            Onset threshold for change point detection
+            Onset threshold for change point detection (unused with find_peaks, kept for compatibility)
         offset : float
-            Offset threshold (hysteresis)
+            Offset threshold (unused with find_peaks, kept for compatibility)
         min_duration : float
             Minimum duration between change points in seconds
+        min_prominence : float
+            Minimum prominence for peak detection (how much a peak stands out)
         device : torch.device
             Device to run inference on
         """
@@ -62,6 +66,7 @@ class PyannoteSCD(object):
         self.onset = onset
         self.offset = offset
         self.min_duration = min_duration
+        self.min_prominence = min_prominence
 
     def _extract_change_scores(self, scores: torch.Tensor) -> torch.Tensor:
         """
@@ -106,46 +111,26 @@ class PyannoteSCD(object):
         """
         Detect speaker change points as peaks in the change score signal.
 
+        Uses scipy's find_peaks with prominence-based detection to find
+        local maxima that stand out from their surroundings.
+
         Returns
         -------
         change_points : List[float]
             List of change point timestamps in seconds
         """
-        change_points = []
-        active = False
-        peak_idx = 0
-        peak_score = 0.0
+        # Calculate minimum distance between peaks in frames
+        min_distance = max(1, int(self.min_duration / frame_duration)) if self.min_duration > 0 else 1
 
-        for i, score in enumerate(scores):
-            if active:
-                if score > peak_score:
-                    # Update peak
-                    peak_idx = i
-                    peak_score = score
+        # Find peaks using prominence (how much a peak stands out from surrounding signal)
+        peak_indices, properties = find_peaks(
+            scores,
+            prominence=self.min_prominence,
+            distance=min_distance
+        )
 
-                if score < self.offset:
-                    # End of peak region - record the peak
-                    change_points.append(peak_idx * frame_duration)
-                    active = False
-                    peak_score = 0.0
-            else:
-                if score >= self.onset:
-                    # Start of peak region
-                    peak_idx = i
-                    peak_score = score
-                    active = True
-
-        # Handle final peak
-        if active:
-            change_points.append(peak_idx * frame_duration)
-
-        # Filter out change points that are too close together
-        if len(change_points) > 1 and self.min_duration > 0:
-            filtered = [change_points[0]]
-            for cp in change_points[1:]:
-                if cp - filtered[-1] >= self.min_duration:
-                    filtered.append(cp)
-            change_points = filtered
+        # Convert frame indices to timestamps
+        change_points = [idx * frame_duration for idx in peak_indices]
 
         return change_points
 

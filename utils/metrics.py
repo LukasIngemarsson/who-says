@@ -389,6 +389,68 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
     }
 
 
+def si_sdr(reference: np.ndarray, estimated: np.ndarray) -> float:
+    """
+    Compute Scale-Invariant Signal-to-Distortion Ratio (SI-SDR).
+
+    SI-SDR is a standard metric for evaluating source separation quality.
+    Higher values indicate better separation (measured in dB).
+
+    Parameters
+    ----------
+    reference : np.ndarray
+        Reference (clean) signal, shape (num_samples,)
+    estimated : np.ndarray
+        Estimated (separated) signal, shape (num_samples,)
+
+    Returns
+    -------
+    float
+        SI-SDR value in dB. Higher is better.
+
+    References
+    ----------
+    Le Roux et al., "SDR - Half-Baked or Well Done?", ICASSP 2019
+    """
+    # Ensure 1D arrays
+    reference = np.asarray(reference).flatten()
+    estimated = np.asarray(estimated).flatten()
+
+    # Ensure same length
+    min_len = min(len(reference), len(estimated))
+    reference = reference[:min_len]
+    estimated = estimated[:min_len]
+
+    # Remove mean (zero-mean signals)
+    reference = reference - np.mean(reference)
+    estimated = estimated - np.mean(estimated)
+
+    # Compute scaling factor: <s', s> / <s, s>
+    dot_product = np.dot(reference, estimated)
+    ref_energy = np.dot(reference, reference)
+
+    if ref_energy < 1e-8:
+        return float('-inf')
+
+    # Target signal (scaled reference)
+    scaling = dot_product / ref_energy
+    s_target = scaling * reference
+
+    # Noise/error signal
+    e_noise = estimated - s_target
+
+    # SI-SDR = 10 * log10(||s_target||^2 / ||e_noise||^2)
+    target_energy = np.dot(s_target, s_target)
+    noise_energy = np.dot(e_noise, e_noise)
+
+    if noise_energy < 1e-8:
+        return float('inf')
+
+    si_sdr_value = 10 * np.log10(target_energy / noise_energy)
+
+    return float(si_sdr_value)
+
+
 def evaluate_clustering(embeddings: np.ndarray, labels: np.ndarray) -> dict:
     """
     Compute clustering quality using silhouette score (unsupervised).

@@ -1,8 +1,21 @@
 import torch
 from dataclasses import dataclass, asdict, field
+from enum import Enum
 from utils.constants import SR
 from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
 from pipeline.ASR import TypeASR
+
+
+class TypeClustering(Enum):
+    KMEANS = "kmeans"
+    AGGLOMERATIVE = "agglomerative"
+    DBSCAN = "dbscan"
+
+
+class TypeEmbedding(Enum):
+    PYANNOTE = "pyannote"
+    SPEECHBRAIN = "speechbrain"
+    WAV2VEC2 = "wav2vec2"
 
 
 # -----------------------------
@@ -57,6 +70,7 @@ class SCDPyannoteConfig(BaseConfig):
     onset: float = 0.5
     offset: float = 0.5
     min_duration: float = 0.0
+    min_prominence: float = 0.2
 
 
 @dataclass
@@ -135,9 +149,27 @@ class EmbeddingSpeechbrainConfig(BaseConfig):
 
 
 @dataclass
+class EmbeddingWav2Vec2Config(BaseConfig):
+    model: str = "facebook/wav2vec2-base"
+
+
+@dataclass
 class EmbeddingConfig:
+    embedding_type: TypeEmbedding = TypeEmbedding.SPEECHBRAIN
     pyannote: EmbeddingPyannoteConfig = field(default_factory=EmbeddingPyannoteConfig)
     speechbrain: EmbeddingSpeechbrainConfig = field(default_factory=EmbeddingSpeechbrainConfig)
+    wav2vec2: EmbeddingWav2Vec2Config = field(default_factory=EmbeddingWav2Vec2Config)
+
+    def get_config(self):
+        """Get the config for the selected embedding type."""
+        if self.embedding_type == TypeEmbedding.PYANNOTE:
+            return self.pyannote
+        elif self.embedding_type == TypeEmbedding.SPEECHBRAIN:
+            return self.speechbrain
+        elif self.embedding_type == TypeEmbedding.WAV2VEC2:
+            return self.wav2vec2
+        else:
+            raise ValueError(f"Unknown embedding type: {self.embedding_type}")
 
 
 # -----------------------------
@@ -179,16 +211,28 @@ class AgglomerativeConfig(BaseClusteringConfig):
 @dataclass
 class DBSCANConfig(BaseClusteringConfig):
     algorithm: str = "dbscan"
-    eps: float = 0.5
-    min_samples: int = 5
-    metric: str = "euclidean"
+    eps: float = 0.3
+    min_samples: int = 2
+    metric: str = "cosine"
 
 
 @dataclass
 class ClusteringConfig:
+    clustering_type: TypeClustering = TypeClustering.KMEANS
     kmeans: KMeansConfig = field(default_factory=KMeansConfig)
     agglomerative: AgglomerativeConfig = field(default_factory=AgglomerativeConfig)
     dbscan: DBSCANConfig = field(default_factory=DBSCANConfig)
+
+    def get_config(self):
+        """Get the config for the selected clustering type."""
+        if self.clustering_type == TypeClustering.KMEANS:
+            return self.kmeans
+        elif self.clustering_type == TypeClustering.AGGLOMERATIVE:
+            return self.agglomerative
+        elif self.clustering_type == TypeClustering.DBSCAN:
+            return self.dbscan
+        else:
+            raise ValueError(f"Unknown clustering type: {self.clustering_type}")
 
 
 # -----------------------------

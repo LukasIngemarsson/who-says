@@ -80,12 +80,20 @@ class PyannoteSOS(object):
 
         # Convert to dictionary of individual speaker waveforms
         separated_waveforms = {}
-        num_sources = torch.tensor(separated).shape[1]
 
-        for i in range(num_sources):
-            # Extract each speaker's waveform and move to CPU
-            speaker_waveform = separated[0, i, :].cpu()
-            separated_waveforms[i] = speaker_waveform
+        # Handle different output formats from the model
+        if isinstance(separated, torch.Tensor):
+            # Shape: (batch, num_sources, num_samples)
+            num_sources = separated.shape[1]
+            for i in range(num_sources):
+                speaker_waveform = separated[0, i, :].cpu()
+                separated_waveforms[i] = speaker_waveform
+        elif isinstance(separated, (list, tuple)):
+            # Some models return a list/tuple of tensors
+            for i, source in enumerate(separated):
+                if isinstance(source, torch.Tensor):
+                    speaker_waveform = source.squeeze().cpu()
+                    separated_waveforms[i] = speaker_waveform
 
         return separated_waveforms
 

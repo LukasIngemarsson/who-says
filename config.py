@@ -121,7 +121,7 @@ class SCDNemoConfig(BaseConfig):
 
 @dataclass
 class SCDConfig:
-    scd_type: TypeSCD = TypeSCD.NEMO
+    scd_type: TypeSCD = TypeSCD.PYANNOTE
     pyannote: SCDPyannoteConfig = field(default_factory=SCDPyannoteConfig)
     nemo: SCDNemoConfig = field(default_factory=SCDNemoConfig)
 

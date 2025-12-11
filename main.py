@@ -231,6 +231,7 @@ class WhoSays(object):
         audio_file: str,
         num_speakers: int = 2,
         include_timing: bool = False,
+        return_diarization_time: bool = False,
         known_speakers: dict | None = None
     ):
         """
@@ -240,6 +241,8 @@ class WhoSays(object):
             audio_file: Path to audio file
             num_speakers: Expected number of speakers
             include_timing: Whether to include timing metrics for each model run
+            return_diarization_time: Whether to compute and return diarization-only time
+                                    (excludes ASR/phoneme for fair comparison with diarization-only pipelines)
 
         Returns:
             dict: Structured diarization results containing:
@@ -247,9 +250,10 @@ class WhoSays(object):
                 - speakers: List of speaker segments with IDs and timestamps
                 - segments: Detailed segment information with speaker assignments
                 - timing: (optional) Timing information for each pipeline step
+                - diarization_time: (optional) Diarization-only time if return_diarization_time=True
         """
         with torch.no_grad():
-            timing = {} if include_timing else None
+            timing = {} if (include_timing or return_diarization_time) else None
 
             logger.info(f"Loading audio from {audio_file}")
             if include_timing:
@@ -306,36 +310,38 @@ class WhoSays(object):
 
             # Step 2: Automatic Speech Recognition
             logger.info("Transcribing speech segments...")
-            if include_timing:
+            if include_timing or return_diarization_time:
                 start_time = time.time()
             transcriptions = self.asr.transcribe_segments(
                 waveform,
                 speech_segments,
                 return_timestamps=True
             )
+            if include_timing or return_diarization_time:
+                timing['asr'] = time.time() - start_time
 
             # Step 3: Phoneme Conversion
             logger.info("Converting transcriptions to phonemes...")
-            if include_timing:
+            if include_timing or return_diarization_time:
                 start_time = time.time()
             transcriptions = self.phoneme(transcriptions)
-            if include_timing:
+            if include_timing or return_diarization_time:
                 timing['phoneme'] = time.time() - start_time
             logger.info(f"Added phonemes to {len(transcriptions)} segments")
 
 
             # Step 5: Speaker Change Detection
             logger.info("Detecting speaker change points...")
-            if include_timing:
+            if include_timing or return_diarization_time:
                 start_time = time.time()
             change_points = self.scd(waveform)
-            if include_timing:
+            if include_timing or return_diarization_time:
                 timing['scd'] = time.time() - start_time
             logger.info(f"Found {len(change_points)} speaker change points")
 
             # Step 6: Speaker Embedding (main segments + separated overlap audio)
             logger.info("Extracting speaker embeddings...")
-            if include_timing:
+            if include_timing or return_diarization_time:
                 start_time = time.time()
 
             # Embed main segments
@@ -376,7 +382,7 @@ class WhoSays(object):
             else:
                 all_embeddings = segment_embeddings
 
-            if include_timing:
+            if include_timing or return_diarization_time:
                 timing['embedding'] = time.time() - start_time
             logger.info(f"Extracted embeddings for {n_main_segments} main segments + {len(overlap_embeddings_list)} overlap speakers")
 
@@ -387,10 +393,10 @@ class WhoSays(object):
                 num_speakers = n_all_segments
 
             logger.info(f"Clustering all segments into {num_speakers} clusters...")
-            if include_timing:
+            if include_timing or return_diarization_time:
                 start_time = time.time()
             all_clusters = self.clustering.cluster_segments(all_embeddings, n_clusters=num_speakers)
-            if include_timing:
+            if include_timing or return_diarization_time:
                 timing['clustering'] = time.time() - start_time
 
             # Split clusters back into main segments and overlap speakers
@@ -409,7 +415,7 @@ class WhoSays(object):
             processed_overlaps = []
             if separated_regions:
                 logger.info("Processing separated overlap regions...")
-                if include_timing:
+                if include_timing or return_diarization_time:
                     start_time = time.time()
                 processed_overlaps = self._process_overlap_regions(
                     separated_regions=separated_regions,
@@ -421,13 +427,13 @@ class WhoSays(object):
                     sr=sr,
                     min_confidence=self.config.so.min_overlap_confidence
                 )
-                if include_timing:
+                if include_timing or return_diarization_time:
                     timing['overlap_processing'] = time.time() - start_time
                 logger.info(f"Processed {len(processed_overlaps)} overlap regions")
 
         # Step 9: Merge results into structured output
         logger.info("Merging results...")
-        if include_timing:
+        if include_timing or return_diarization_time:
             start_time = time.time()
         result = self._format_output(
             change_points=change_points,
@@ -439,7 +445,7 @@ class WhoSays(object):
             waveform_duration=waveform.shape[-1] / sr,
             vad_segments=speech_segments
         )
-        if include_timing:
+        if include_timing or return_diarization_time:
             timing['formatting'] = time.time() - start_time
 
         # Add timing to result if requested
@@ -448,6 +454,15 @@ class WhoSays(object):
             total_time = sum(timing.values())
             result['total_time'] = total_time
             logger.info(f"Total pipeline time: {total_time:.2f}s")
+
+        if return_diarization_time:
+            diarization_components = [
+                'audio_loading', 'vad', 'overlap_detection',
+                'scd', 'embedding', 'clustering', 'formatting'
+            ]
+            diarization_time = sum(timing.get(k, 0) for k in diarization_components)
+            result['diarization_time'] = diarization_time
+            logger.info(f"Diarization-only time: {diarization_time:.2f}s (excludes ASR: {timing.get('asr', 0):.2f}s, phoneme: {timing.get('phoneme', 0):.2f}s, overlap_processing: {timing.get('overlap_processing', 0):.2f}s)")
 
         result['embeddings'] = segment_embeddings.cpu().numpy()
         result['cluster_labels'] = segment_clusters.cpu().numpy()

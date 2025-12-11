@@ -623,11 +623,16 @@ def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
                 start_time = time.time()
 
                 if pipeline_name == 'who-says':
-                    result = pipeline(str(audio_file), num_speakers=n_speakers_ref, include_timing=False)
+                    result = pipeline(
+                        str(audio_file),
+                        num_speakers=n_speakers_ref,
+                        include_timing=True,
+                        return_diarization_time=True
+                    )
+                    inference_time = result.get('diarization_time', time.time() - start_time)
                 else:
                     result = pipeline.process(audio_file)
-
-                inference_time = time.time() - start_time
+                    inference_time = time.time() - start_time
 
                 pred_segments = result['segments']
                 n_speakers_pred = len(set(seg['speaker'] for seg in pred_segments))

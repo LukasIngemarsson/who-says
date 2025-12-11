@@ -490,12 +490,12 @@ def plot_e2e_timing(
     ax.grid(axis='y', alpha=0.3)
 
     total_duration_min = dataset_info['total_duration_seconds'] / 60
-    title = f"End-to-End Pipeline Comparison - Inference Time\n"
+    title = f"End-to-End Pipeline Comparison - Diarization Timing\n"
     title += f"Language: {dataset_info['language'].title()} | "
     title += f"Files: {dataset_info['num_files']} | "
     title += f"Duration: {total_duration_min:.1f} min\n"
     title += f"Hardware: {system_info['gpu']} ({system_info['vram']})"
-    ax.set_title(title, fontsize=11, pad=20)
+    ax.set_title(title, fontsize=10, pad=20)
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=300, bbox_inches='tight')

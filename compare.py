@@ -281,7 +281,8 @@ def main():
             "dataset": dataset_info,
             "evaluation_settings": {
                 "collar": 0.25,
-                "skip_overlap": False
+                "skip_overlap": False,
+                "timing_note": "WhoSays reports diarization-only time (excluding ASR) for fair comparison diarization-only pipelines"
             },
             "pipelines": {
                 name: {
@@ -309,6 +310,9 @@ def main():
         print("\n" + "="*60)
         print("END-TO-END PIPELINE COMPARISON SUMMARY")
         print("="*60)
+        print("\nNOTE: Timing measures diarization only (VAD, SCD, embedding, clustering).")
+        print("      ASR transcription excluded from WhoSays timing for fair comparison.\n")
+        print("-"*60)
         for name, data in pipelines.items():
             if 'aggregated' not in data:
                 continue

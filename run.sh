@@ -3,8 +3,10 @@
 COMMAND=${1:-""}
 IMAGE=test
 IMAGE_PATH=images/$IMAGE
-IMAGE_NAME="$IMAGE:$USER"
-CONTAINER_NAME="dev-$USER-$IMAGE"
+# Use USERNAME on Windows, USER on Linux/Mac
+CURRENT_USER=${USER:-$USERNAME}
+IMAGE_NAME="$IMAGE:$CURRENT_USER"
+CONTAINER_NAME="dev-$CURRENT_USER-$IMAGE"
 
 if [[ "$COMMAND" = "help" || "$COMMAND" = "-h" || "$COMMAND" = "--help" || "$COMMAND" = "" ]]; then
     echo "Usage: $0 COMMAND [OPTION...]"
@@ -21,14 +23,14 @@ if [[ "$COMMAND" = "build" ]]; then
 fi
 
 if [[ "$COMMAND" = "start" ]]; then
-    docker run -it \
+    MSYS_NO_PATHCONV=1 docker run -it \
       --rm \
       --gpus all \
       --name $CONTAINER_NAME \
-      --volume=/tmp/.X11-unix/:/tmp/.X11-unix/\
-      --volume=$(pwd):/home/$USER \
-      --workdir="/home/$USER" \
-      --env HOME="/home/$USER" \
+      --volume=/tmp/.X11-unix/:/tmp/.X11-unix/ \
+      --volume="$(pwd):/home/$CURRENT_USER" \
+      --workdir="/home/$CURRENT_USER" \
+      --env HOME="/home/$CURRENT_USER" \
       --env DISPLAY=$DISPLAY \
       $IMAGE_NAME
     exit 0

@@ -50,6 +50,58 @@ class NemoSCD:
         speaker = parts[2]
         return (start, end, speaker)
 
+    def _call_diarize(self, audio_path: str):
+        """
+        Call the diarize method with API compatibility handling.
+        NeMo API varies across versions.
+        """
+        import json
+
+        errors = []
+
+        # Try all known API patterns - NeMo 2.x uses audio= parameter
+        patterns = [
+            ("audio=path", lambda: self.model.diarize(audio=audio_path, batch_size=1)),
+            ("audio=[path]", lambda: self.model.diarize(audio=[audio_path], batch_size=1)),
+            ("positional path", lambda: self.model.diarize(audio_path, batch_size=1)),
+            ("positional [path]", lambda: self.model.diarize([audio_path], batch_size=1)),
+            ("paths2audio_files", lambda: self.model.diarize(paths2audio_files=[audio_path], batch_size=1)),
+        ]
+
+        for name, attempt in patterns:
+            try:
+                print(f"[NemoSCD] Trying pattern: {name}")
+                result = attempt()
+                print(f"[NemoSCD] Success with pattern: {name}")
+                return result
+            except TypeError as e:
+                errors.append(f"{name}: TypeError - {e}")
+            except Exception as e:
+                errors.append(f"{name}: {type(e).__name__} - {e}")
+
+        # Try manifest-based approach as last resort
+        try:
+            print("[NemoSCD] Trying manifest file approach")
+            manifest_path = audio_path.replace('.wav', '_manifest.json')
+            with open(manifest_path, 'w') as f:
+                # NeMo manifest format - one JSON object per line
+                f.write(json.dumps({"audio_filepath": audio_path, "duration": 1000.0}) + "\n")
+            try:
+                result = self.model.diarize(manifest_filepath=manifest_path, batch_size=1)
+                print("[NemoSCD] Success with manifest approach")
+                return result
+            finally:
+                if os.path.exists(manifest_path):
+                    os.unlink(manifest_path)
+        except Exception as e:
+            errors.append(f"manifest: {type(e).__name__} - {e}")
+
+        # If none work, raise a clear error
+        raise RuntimeError(
+            f"Could not find compatible diarize() API.\n"
+            f"Tried patterns:\n" + "\n".join(f"  - {err}" for err in errors)
+        )
+
     def _extract_change_points_from_segments(
         self,
         segments: List,
@@ -140,12 +192,9 @@ class NemoSCD:
             sf.write(temp_path, waveform_np, sample_rate)
 
         try:
-            # Run diarization
+            # Run diarization - NeMo API varies by version
             with torch.no_grad():
-                predicted_segments = self.model.diarize(
-                    audio=temp_path,
-                    batch_size=1
-                )
+                predicted_segments = self._call_diarize(temp_path)
 
             # predicted_segments is a list (one per audio file) of lists of tuples
             # Each tuple is (start, end, speaker_id)
@@ -206,12 +255,9 @@ class NemoSCD:
             sf.write(temp_path, waveform_np, sample_rate)
 
         try:
-            # Run diarization
+            # Run diarization - NeMo API varies by version
             with torch.no_grad():
-                predicted_segments = self.model.diarize(
-                    audio=temp_path,
-                    batch_size=1
-                )
+                predicted_segments = self._call_diarize(temp_path)
 
             # predicted_segments is a list (one per audio file) of lists of segment strings
             segments = []

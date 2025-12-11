@@ -146,7 +146,7 @@ class PyannoteSOD(object):
 
         # Run inference
         with torch.no_grad():
-            waveform = waveform.to(self.device)
+            waveform = waveform.to(self.device).contiguous()
             scores = self.model(waveform)
             overlap_scores = self._extract_overlap_scores(scores)
             overlap_scores = overlap_scores.squeeze().cpu().numpy()

@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict, field
 from enum import Enum
 from utils.constants import SR
 from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
+from pipeline.speaker_segmentation.SCD.main import TypeSCD
 from pipeline.ASR import TypeASR
 
 
@@ -10,6 +11,7 @@ class TypeClustering(Enum):
     KMEANS = "kmeans"
     AGGLOMERATIVE = "agglomerative"
     DBSCAN = "dbscan"
+    COSINE_SIMILARITY = "cosine_similarity"
 
 
 class TypeEmbedding(Enum):
@@ -50,15 +52,54 @@ class SODetectionPyannoteConfig(BaseConfig):
 
 
 @dataclass
+class SODetectionNemoConfig(BaseConfig):
+    detection_type: TypeSOD = TypeSOD.NEMO
+    model_name: str = "nvidia/diar_sortformer_4spk-v1"
+    onset: float = 0.5
+    offset: float = 0.5
+    min_duration: float = 0.0
+    max_chunk_duration: float = 30.0  # Process in 30-second chunks to avoid GPU OOM
+
+
+@dataclass
 class SOSeparationPyannoteConfig(BaseConfig):
     separation_type: TypeSOS = TypeSOS.PYANNOTE
     model_name: str = "pyannote/separation-ami-1.0"
 
 
 @dataclass
+class SOSeparationSpeechBrainConfig(BaseConfig):
+    separation_type: TypeSOS = TypeSOS.SPEECHBRAIN
+    model_name: str = "speechbrain/sepformer-wsj02mix"
+
+
+@dataclass
 class SOConfig:
+    detection_type: TypeSOD = TypeSOD.NEMO
+    separation_type: TypeSOS = TypeSOS.SPEECHBRAIN
+    min_overlap_confidence: float = 0.7  # Minimum confidence to match separated speaker to cluster
     detection_pyannote: SODetectionPyannoteConfig = field(default_factory=SODetectionPyannoteConfig)
+    detection_nemo: SODetectionNemoConfig = field(default_factory=SODetectionNemoConfig)
     separation_pyannote: SOSeparationPyannoteConfig = field(default_factory=SOSeparationPyannoteConfig)
+    separation_speechbrain: SOSeparationSpeechBrainConfig = field(default_factory=SOSeparationSpeechBrainConfig)
+
+    def get_detection_config(self):
+        """Get the config for the selected detection type."""
+        if self.detection_type == TypeSOD.PYANNOTE:
+            return self.detection_pyannote
+        elif self.detection_type == TypeSOD.NEMO:
+            return self.detection_nemo
+        else:
+            raise ValueError(f"Unknown detection type: {self.detection_type}")
+
+    def get_separation_config(self):
+        """Get the config for the selected separation type."""
+        if self.separation_type == TypeSOS.PYANNOTE:
+            return self.separation_pyannote
+        elif self.separation_type == TypeSOS.SPEECHBRAIN:
+            return self.separation_speechbrain
+        else:
+            raise ValueError(f"Unknown separation type: {self.separation_type}")
 
 
 # -----------------------------
@@ -74,8 +115,24 @@ class SCDPyannoteConfig(BaseConfig):
 
 
 @dataclass
+class SCDNemoConfig(BaseConfig):
+    min_duration: float = 0.0
+
+
+@dataclass
 class SCDConfig:
+    scd_type: TypeSCD = TypeSCD.NEMO
     pyannote: SCDPyannoteConfig = field(default_factory=SCDPyannoteConfig)
+    nemo: SCDNemoConfig = field(default_factory=SCDNemoConfig)
+
+    def get_config(self):
+        """Get the config for the selected SCD type."""
+        if self.scd_type == TypeSCD.PYANNOTE:
+            return self.pyannote
+        elif self.scd_type == TypeSCD.NEMO:
+            return self.nemo
+        else:
+            raise ValueError(f"Unknown SCD type: {self.scd_type}")
 
 
 # -----------------------------
@@ -116,9 +173,9 @@ class VADConfig:
 @dataclass
 class ASRConfig(BaseConfig):
     asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "medium" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
+    model: str = "small" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    compute_type: str = "int8" # "float32"
+    compute_type: str = "float16"  # int8 can cause cuBLAS issues with alignment
     language: str = "en"
     
 # -----------------------------
@@ -217,11 +274,18 @@ class DBSCANConfig(BaseClusteringConfig):
 
 
 @dataclass
+class CosineSimilarityConfig(BaseClusteringConfig):
+    algorithm: str = "cosine_similarity"
+    threshold: float = 0.7  # Minimum similarity to assign to a known speaker
+
+
+@dataclass
 class ClusteringConfig:
     clustering_type: TypeClustering = TypeClustering.KMEANS
     kmeans: KMeansConfig = field(default_factory=KMeansConfig)
     agglomerative: AgglomerativeConfig = field(default_factory=AgglomerativeConfig)
     dbscan: DBSCANConfig = field(default_factory=DBSCANConfig)
+    cosine_similarity: CosineSimilarityConfig = field(default_factory=CosineSimilarityConfig)
 
     def get_config(self):
         """Get the config for the selected clustering type."""
@@ -231,6 +295,8 @@ class ClusteringConfig:
             return self.agglomerative
         elif self.clustering_type == TypeClustering.DBSCAN:
             return self.dbscan
+        elif self.clustering_type == TypeClustering.COSINE_SIMILARITY:
+            return self.cosine_similarity
         else:
             raise ValueError(f"Unknown clustering type: {self.clustering_type}")
 

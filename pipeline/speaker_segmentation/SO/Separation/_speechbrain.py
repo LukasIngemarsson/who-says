@@ -2,7 +2,7 @@
 Speaker separation using SpeechBrain SepFormer model.
 """
 import torch
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 
 class SpeechBrainSOS:
@@ -70,6 +70,8 @@ class SpeechBrainSOS:
 
         # SepFormer expects 8kHz audio - resample if needed
         if sample_rate != 8000:
+            # Ensure waveform is on CPU and contiguous for resampling
+            waveform = waveform.cpu().contiguous()
             resampler = torchaudio.transforms.Resample(
                 orig_freq=sample_rate,
                 new_freq=8000
@@ -109,3 +111,43 @@ class SpeechBrainSOS:
                 separated_waveforms[0] = separated[0].cpu()
 
         return separated_waveforms
+
+    def separate_regions(
+        self,
+        waveform: torch.Tensor,
+        sample_rate: int,
+        overlap_segments: List[tuple]
+    ) -> Dict[tuple, Dict[int, torch.Tensor]]:
+        """
+        Separate speakers only in overlapping regions.
+
+        Parameters
+        ----------
+        waveform : torch.Tensor
+            Full audio waveform
+        sample_rate : int
+            Sample rate of the audio
+        overlap_segments : list[tuple[float, float]]
+            List of (start, end) time segments in seconds where overlap occurs
+
+        Returns
+        -------
+        separated_regions : Dict[tuple[float, float], Dict[int, torch.Tensor]]
+            Dictionary mapping each overlap segment to separated speaker waveforms
+        """
+        separated_regions = {}
+
+        for start_time, end_time in overlap_segments:
+            # Convert time to samples
+            start_sample = int(start_time * sample_rate)
+            end_sample = int(end_time * sample_rate)
+
+            # Extract segment - ensure it's contiguous and a fresh copy
+            segment = waveform[..., start_sample:end_sample].clone().contiguous()
+
+            # Separate speakers in this segment
+            separated = self(segment, sample_rate)
+
+            separated_regions[(start_time, end_time)] = separated
+
+        return separated_regions

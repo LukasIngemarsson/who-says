@@ -72,7 +72,7 @@ class PyannoteSOS(object):
 
         # Run separation inference
         with torch.no_grad():
-            waveform = waveform.to(self.device)
+            waveform = waveform.to(self.device).contiguous()
 
             # The separation model outputs separated sources
             # Shape: (batch, num_sources, num_samples)
@@ -127,11 +127,11 @@ class PyannoteSOS(object):
             start_sample = int(start_time * sample_rate)
             end_sample = int(end_time * sample_rate)
 
-            # Extract segment
-            segment = waveform[..., start_sample:end_sample]
+            # Extract segment - ensure it's contiguous and a fresh copy
+            segment = waveform[..., start_sample:end_sample].clone().contiguous()
 
             # Separate speakers in this segment
-            separated = self(segment, sample_rate)
+            separated = self(segment)
 
             separated_regions[(start_time, end_time)] = separated
 

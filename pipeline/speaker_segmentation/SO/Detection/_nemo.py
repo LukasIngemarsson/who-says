@@ -1,6 +1,7 @@
 """
 Speaker overlap detection using NeMo Sortformer model.
 """
+import os
 import torch
 import numpy as np
 from typing import Optional, List, Tuple
@@ -17,7 +18,7 @@ class NemoSOD:
 
     def __init__(
         self,
-        model_name: str = "nvidia/diar_sortformer_4spk-v1",
+        model_path: Optional[str] = None,
         onset: float = 0.5,
         offset: float = 0.5,
         min_duration: float = 0.0,
@@ -28,8 +29,9 @@ class NemoSOD:
         """
         Parameters
         ----------
-        model_name : str
-            NeMo model name or path
+        model_path : str, optional
+            Path to local .nemo file OR HuggingFace model ID.
+            If None, defaults to "nvidia/diar_sortformer_4spk-v1".
         onset : float
             Onset threshold for speaker activity detection
         offset : float
@@ -49,7 +51,17 @@ class NemoSOD:
 
         from nemo.collections.asr.models import SortformerEncLabelModel
 
-        self.model = SortformerEncLabelModel.from_pretrained(model_name)
+        # Load model - local file or HuggingFace
+        if model_path is None:
+            model_path = "nvidia/diar_sortformer_4spk-v1"
+
+        if model_path.endswith(".nemo") and os.path.isfile(model_path):
+            # Load from local .nemo file
+            self.model = SortformerEncLabelModel.restore_from(model_path, map_location=self.device)
+        else:
+            # Load from HuggingFace (downloads and caches locally)
+            self.model = SortformerEncLabelModel.from_pretrained(model_path, map_location=self.device)
+
         self.model = self.model.to(self.device)
         self.model.eval()
 

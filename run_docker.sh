@@ -56,13 +56,15 @@ echo "Using GPU args: '$GPU_ARGS'"
 
 # Create and start new container
 if [ -f .env ]; then
-  docker run -d --name "$CONTAINER_NAME" -p 8000:8000 \
+  docker run -d --name "$CONTAINER_NAME" \
+    -p 8000:8000 \
     $GPU_ARGS \
     -v "$(pwd)/.env:/app/.env" \
     -v "$(pwd)/embeddings:/app/embeddings" \
     "$IMAGE_NAME"
 else
-  docker run -d --name "$CONTAINER_NAME" -p 8000:8000 \
+  docker run -d --name "$CONTAINER_NAME" \
+    -p 8000:8000 \
     $GPU_ARGS \
     -v "$(pwd)/embeddings:/app/embeddings" \
     "$IMAGE_NAME"

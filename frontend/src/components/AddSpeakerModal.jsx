@@ -107,10 +107,15 @@ const AddSpeakerModal = ({ isOpen, onClose }) => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">
+            <label
+              htmlFor="add-speaker-name"
+              className="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider"
+            >
               Speaker Name
             </label>
             <input
+              id="add-speaker-name"
+              name="add-speaker-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}

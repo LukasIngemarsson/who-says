@@ -151,10 +151,15 @@ const SpeakerIdentificationModal = ({ isOpen, onClose, audioData, speakerInfo, k
 
           {isNewSpeaker === true && (
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider">
+              <label
+                htmlFor="new-speaker-name"
+                className="block text-xs font-medium text-slate-400 mb-1 uppercase tracking-wider"
+              >
                 Speaker Name
               </label>
               <input
+                id="new-speaker-name"
+                name="new-speaker-name"
                 type="text"
                 value={newSpeakerName}
                 onChange={(e) => setNewSpeakerName(e.target.value)}

@@ -34,7 +34,7 @@ class WhoSays(object):
             logger.warning(f"Failed to apply ASR profile defaults: {e}")
 
         #self.sod = SO(self.config.so)
-        self.scd = SCD(**self.config.scd.pyannote.to_dict())
+        #self.scd = SCD(**self.config.scd.pyannote.to_dict())
 
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = ASR(**self.config.asr.to_dict())

@@ -54,8 +54,8 @@ class SOConfig:
 @dataclass
 class SCDPyannoteConfig(BaseConfig):
     model: str = "pyannote/segmentation-3.0"
-    onset: float = 0.5
-    offset: float = 0.5
+    onset: float = 0.65   # tighter onset to reduce false starts
+    offset: float = 0.55  # allow slightly longer speech before cutoff
     min_duration: float = 0.0
 
 
@@ -73,12 +73,12 @@ class VADSileroConfig(BaseConfig):
     model_repo: str = "snakers4/silero-vad"
     model_name: str = "silero_vad"
     sample_rate: int = SR
-    threshold: float = 0.5
-    min_speech_duration_ms: int = 250
+    threshold: float = 0.55
+    min_speech_duration_ms: int = 150
     max_speech_duration_s: float = float('inf')
-    min_silence_duration_ms: int = 100
+    min_silence_duration_ms: int = 150
     window_size_samples: int = 512
-    speech_pad_ms: int = 30
+    speech_pad_ms: int = 40
     return_seconds: bool = True
 
 
@@ -114,27 +114,37 @@ class ASRConfig(BaseConfig):
     """
 
     # Backend selection
-    asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "tiny"  # e.g. "large-v3-turbo", "KBLab/kb-whisper-large"
+    asr_type: TypeASR = TypeASR.WHISPERCPP
+    model: str = "tiny.en"  # e.g. "large-v3-turbo", "KBLab/kb-whisper-large"
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
     compute_type: str = "int8"  # e.g. "float32"
     language: str = "en"
 
     # Simple profile selector: "speed" | "balanced" | "accuracy"
-    profile: str = "accuracy"
+    profile: str = "speed"
 
     # Decoding / search parameters (used mainly by Faster-Whisper)
-    beam_size: int = 3
-    best_of: int = 3
-    patience: float = 0.0
+    beam_size: int = 1
+    best_of: int = 1
+    patience: float = 1.0
     temperature: float = 0.0
-    temperature_increment_on_fallback: float = 0.2
+    temperature_increment_on_fallback: float = 0.0
     compression_ratio_threshold: float = 2.4
-    log_prob_threshold: float = -1.0
-    no_speech_threshold: float = 0.8
+    log_prob_threshold: float = -1.2
+    no_speech_threshold: float = 0.45
     task: str = "transcribe"
     without_timestamps: bool = False
     chunk_length: int = 15
+    # Context handling
+    # - condition_on_previous_text: standard Whisper/Faster-Whisper flag.
+    #   If False, each decode ignores prior text history.
+    # - no_context: convenience flag; when True, we force
+    #   condition_on_previous_text = False.
+    no_context: bool = True
+    condition_on_previous_text: bool = False
+    # Stronger anti-repetition controls; standard in many Whisper setups
+    repetition_penalty: float = 1.15
+    no_repeat_ngram_size: int = 3
     word_timestamps: bool = True
 
     def apply_profile_defaults(self) -> None:
@@ -147,17 +157,23 @@ class ASRConfig(BaseConfig):
 
         if profile == "speed":
             # Favour latency: small model, shallow search, fewer timestamps
-            self.beam_size = 1
-            self.best_of = 1
-            self.temperature = 0.0
-            self.patience = 1.0
-            self.chunk_length = 10
-            self.word_timestamps = False
-            self.compression_ratio_threshold = 2.4
-            self.log_prob_threshold = -1.0
-            self.no_speech_threshold = 0.9
+            self.beam_size = 1                 # fastest, good for streaming
+            self.best_of = 1                   # no extra candidates needed for tiny.en
+            self.temperature = 0.0             # fully deterministic → fewer weird loops
+            self.patience = 1.0                # unused for greedy / beam_size=1, set to 0
+            self.chunk_length = 15             # a bit more context than 10s helps stability
+            self.word_timestamps = True        # keep – needed for alignment
+
+            # --- anti-hallucination / anti-repeat ---
+            self.compression_ratio_threshold = 2.4   # drop super-compressed (garbage) outputs
+            self.log_prob_threshold = -1.2           # stricter than -1.0 → fewer low-conf repeats
+            self.no_speech_threshold = 0.45          # don't treat everything as speech
+            self.repetition_penalty = 1.15           # softer than 1.3, good for tiny.en
+            self.no_repeat_ngram_size = 3  
+            # For speed, you can optionally disable conditioning on previous
+            # text by setting no_context=True in your config file.
         elif profile == "accuracy":
-            # Heavier search for better quality
+            # Heavier search for better quality, with stricter no-speech gating
             self.beam_size = 5
             self.best_of = 5
             self.temperature = 0.0
@@ -166,18 +182,22 @@ class ASRConfig(BaseConfig):
             self.word_timestamps = True
             self.compression_ratio_threshold = 2.4
             self.log_prob_threshold = -1.0
-            self.no_speech_threshold = 0.6
+            self.no_speech_threshold = 0.85
+            self.repetition_penalty = 1.3
+            self.no_repeat_ngram_size = 4
         else:
             # Balanced defaults
-            self.beam_size = 3
-            self.best_of = 3
+            self.beam_size = 2
+            self.best_of = 2
             self.temperature = 0.0
-            self.patience = 0.2
+            self.patience = 1.0
             self.chunk_length = 20
             self.word_timestamps = True
             self.compression_ratio_threshold = 2.4
             self.log_prob_threshold = -1.0
             self.no_speech_threshold = 0.75
+            self.repetition_penalty = 1.2
+            self.no_repeat_ngram_size = 3
     
 # -----------------------------
 # Phoneme

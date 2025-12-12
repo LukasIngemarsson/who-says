@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, SlidersHorizontal } from "lucide-react";
 
 import Header from "./components/Header.jsx";
 import ActionCard from "./components/ActionCard.jsx";
@@ -10,6 +10,24 @@ import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
 import KnownSpeakers from "./components/KnownSpeakers.jsx";
 import SpeakerIdentificationModal from "./components/SpeakerIdentificationModal.jsx";
 
+// -------------------------------------------------------------------
+// TUNING + TESTING HELPERS
+// -------------------------------------------------------------------
+
+// How many words to allow in a single live bubble before starting a
+// new one. Try values between 12 and 24.
+const MAX_WORDS_PER_BUBBLE = 18; // examples: 12, 18, 24
+
+// Sentences/phrases to speak when testing repetitions & missing words.
+// Re-run these after changing backend tuning (ASR min-new-sec, VAD, etc.).
+const TEST_PHRASES = [
+  "Now, interesting. Interesting. Are you working?",
+  "Why aren't you working now? That's super interesting.",
+  "Okay, okay, okay, let's try this again.",
+  "Are you doing that? Are you there? Are you working?",
+  "This is so weird. This is really, really weird.",
+];
+
 const App = () => {
   const [mode, setMode] = useState("upload");
   const [audioUrl, setAudioUrl] = useState(null);
@@ -19,10 +37,19 @@ const App = () => {
   const [duration, setDuration] = useState(0);
   const [segments, setSegments] = useState([]);
   const [fullTranscriptionResult, setFullTranscriptionResult] = useState(null);
+  const [testRunJson, setTestRunJson] = useState(null);
+  const [testJsonExpanded, setTestJsonExpanded] = useState(false);
+  const [testJsonCopied, setTestJsonCopied] = useState(false);
+  const [testRunning, setTestRunning] = useState(false);
+  const [testChunkSec, setTestChunkSec] = useState(1.0);
+  const [testSleepMs, setTestSleepMs] = useState(0);
   const [processing, setProcessing] = useState(false);
   const [numSpeakers, setNumSpeakers] = useState(2);
   const [errorMsg, setErrorMsg] = useState("");
   const [liveMessages, setLiveMessages] = useState([]);
+  const [tuning, setTuning] = useState(null);
+  const [tuningSaving, setTuningSaving] = useState(false);
+  const [tuningError, setTuningError] = useState("");
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -34,9 +61,12 @@ const App = () => {
   const [pendingAudioData, setPendingAudioData] = useState(null);
   const [pendingSpeakerInfo, setPendingSpeakerInfo] = useState(null);
   const [knownSpeakersList, setKnownSpeakersList] = useState([]);
+  const [asrBackend, setAsrBackend] = useState(null);
   const sessionIdRef = useRef(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   const audioRef = useRef(null);
+  const wsRef = useRef(null);
+  const wsReadyRef = useRef(false);
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
@@ -54,6 +84,7 @@ const App = () => {
       const response = await fetch("/status");
       const data = await response.json();
       setKnownSpeakersList(data.known_speakers || []);
+      setAsrBackend(data.asr_backend || null);
     } catch (error) {
       console.error("Failed to fetch speakers:", error);
     }
@@ -62,6 +93,21 @@ const App = () => {
   useEffect(() => {
     fetchKnownSpeakers();
   }, [speakerRefreshTrigger]);
+
+  // Fetch initial tuning snapshot for the debug panel
+  useEffect(() => {
+    const loadTuning = async () => {
+      try {
+        const res = await fetch("/tuning");
+        if (!res.ok) return;
+        const data = await res.json();
+        setTuning(data);
+      } catch (e) {
+        console.warn("Failed to load tuning snapshot:", e);
+      }
+    };
+    loadTuning();
+  }, []);
 
   // Always keep the live messages scrolled to the bottom while recording
   useEffect(() => {
@@ -101,43 +147,15 @@ const App = () => {
     if (!file) return;
 
     handleReset();
-    setProcessing(true);
-    setErrorMsg("");
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("num_speakers", numSpeakers);
+    // Offline /process has been removed. Live-only app.
+    setProcessing(false);
+    setErrorMsg("Offline processing is disabled. Use Live recording or the testsound runner.");
 
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
 
     const fileBufferForWaveform = await file.arrayBuffer();
     await decodeAudioForVisualization(fileBufferForWaveform);
-
-    try {
-      const response = await fetch("/process", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Processing failed");
-      }
-
-      if (data.segments) {
-        setSegments(data.segments);
-        setFullTranscriptionResult(data);
-      } else {
-        console.warn("No segments found in response", data);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setErrorMsg(error.message);
-    } finally {
-      setProcessing(false);
-    }
   };
 
   const handleDownloadJson = () => {
@@ -151,6 +169,235 @@ const App = () => {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+  };
+
+  const handleDownloadTestJson = () => {
+    if (!testRunJson) return;
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(testRunJson, null, 2));
+    const downloadAnchorNode = document.createElement("a");
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute(
+      "download",
+      `testsound_run_${testRunJson?.meta?.session_id || "session"}.json`,
+    );
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const handleCopyTestJson = async () => {
+    if (!testRunJson) return;
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(testRunJson, null, 2));
+      setTestJsonCopied(true);
+      setTimeout(() => setTestJsonCopied(false), 1200);
+    } catch (e) {
+      console.error("Failed to copy JSON:", e);
+      // fallback: still expand so user can manual copy
+      setTestJsonExpanded(true);
+    }
+  };
+
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const decodeWavToFloat32_16k = async (arrayBuffer) => {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
+    const srcRate = decoded.sampleRate;
+    const srcData = decoded.getChannelData(0);
+
+    if (srcRate === 16000) {
+      return new Float32Array(srcData);
+    }
+
+    // Resample using OfflineAudioContext
+    const durationSec = decoded.duration;
+    const targetLength = Math.max(1, Math.round(durationSec * 16000));
+    const offline = new OfflineAudioContext(1, targetLength, 16000);
+    const buffer = offline.createBuffer(1, srcData.length, srcRate);
+    buffer.copyToChannel(srcData, 0);
+    const source = offline.createBufferSource();
+    source.buffer = buffer;
+    source.connect(offline.destination);
+    source.start();
+    const rendered = await offline.startRendering();
+    return new Float32Array(rendered.getChannelData(0));
+  };
+
+  const float32ToBase64 = (float32) => {
+    const bytes = new Uint8Array(float32.buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    return btoa(binary);
+  };
+
+  const runTestSound = async () => {
+    if (testRunning) return;
+    setErrorMsg("");
+    setTestRunning(true);
+    setTestJsonExpanded(false);
+    setLiveMessages([]);
+    setCurrentSpeaker(null);
+
+    const sessionId = `testsound_${Date.now()}`;
+    sessionIdRef.current = sessionId;
+
+    try {
+      const tuningSnap = await fetch("/tuning").then((r) => r.json()).catch(() => null);
+      const wavBuf = await fetch("/testaudio/thetestsound.wav").then((r) => {
+        if (!r.ok) throw new Error("Could not fetch testsound from server");
+        return r.arrayBuffer();
+      });
+
+      const audio16k = await decodeWavToFloat32_16k(wavBuf);
+      const chunkSamples = Math.max(256, Math.round(testChunkSec * 16000));
+
+      const responses = [];
+      for (let i = 0; i < audio16k.length; i += chunkSamples) {
+        const chunk = audio16k.slice(i, Math.min(i + chunkSamples, audio16k.length));
+        const base64Audio = float32ToBase64(chunk);
+
+        // eslint-disable-next-line no-await-in-loop
+        const data = await fetch("/identify_speaker", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            audio_data: base64Audio,
+            sample_rate: "16000",
+            session_id: sessionId,
+          }),
+        }).then((r) => r.json());
+
+        responses.push({
+          t_client: Date.now(),
+          chunk_index: Math.floor(i / chunkSamples),
+          chunk_samples: chunk.length,
+          ...data,
+        });
+
+        // Reuse existing live message rendering path
+        const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
+          ? data.transcript_segments
+          : (typeof data.transcript === "string" && data.transcript.trim()
+              ? [{ speaker: data.speaker, text: data.transcript.trim() }]
+              : []);
+        for (const seg of segments) {
+          const snippet = (seg.text || "").trim();
+          if (!snippet) continue;
+          const segSpeaker = seg.speaker || data.transcript_speaker || data.speaker;
+          setLiveMessages((prev) => [...prev, { id: `${Date.now()}_${Math.random()}`, speaker: segSpeaker, text: snippet }]);
+        }
+
+        if (testSleepMs > 0) {
+          // eslint-disable-next-line no-await-in-loop
+          await sleep(testSleepMs);
+        }
+      }
+
+      setTestRunJson({
+        meta: {
+          session_id: sessionId,
+          chunk_sec: testChunkSec,
+          sleep_ms: testSleepMs,
+          created_at: new Date().toISOString(),
+        },
+        tuning: tuningSnap,
+        responses,
+      });
+      setTestJsonExpanded(true);
+    } catch (e) {
+      console.error(e);
+      setErrorMsg(e?.message || "Failed to run testsound");
+    } finally {
+      setTestRunning(false);
+    }
+  };
+
+  const handleTuningFieldChange = (section, field, parser = (v) => v) => (e) => {
+    // Normalise decimal separator so locales using "," still work.
+    const raw = e.target.value;
+    const normalised =
+      typeof raw === "string" ? raw.replace(",", ".") : raw;
+    const value = parser(normalised);
+    setTuning((prev) => ({
+      ...(prev || {}),
+      [section]: {
+        ...(prev?.[section] || {}),
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleApplyTuning = async () => {
+    if (!tuning) return;
+    setTuningSaving(true);
+    setTuningError("");
+    try {
+      const payload = {
+        // streaming (whisper.cpp-first)
+        asr_min_new_sec: tuning.streaming?.asr_min_new_sec,
+        min_speech_sec: tuning.streaming?.min_speech_sec,
+        min_asr_interval_sec: tuning.streaming?.min_asr_interval_sec,
+        max_asr_buffer_sec: tuning.streaming?.max_asr_buffer_sec,
+          wcpp_context_sec: tuning.streaming?.wcpp_context_sec,
+        cross_tail_dup_pad_sec: tuning.streaming?.cross_tail_dup_pad_sec,
+        use_initial_prompt: tuning.streaming?.use_initial_prompt,
+        asr_prompt_max_chars: tuning.streaming?.asr_prompt_max_chars,
+        // ASR
+        beam_size: tuning.asr?.beam_size,
+        best_of: tuning.asr?.best_of,
+        // VAD
+        vad_threshold: tuning.vad?.threshold,
+        vad_min_speech_ms: tuning.vad?.min_speech_duration_ms,
+        vad_min_silence_ms: tuning.vad?.min_silence_duration_ms,
+        vad_speech_pad_ms: tuning.vad?.speech_pad_ms,
+      };
+
+      const res = await fetch("/tuning", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Failed to apply tuning");
+      }
+      const updated = await res.json();
+      setTuning(updated);
+    } catch (e) {
+      console.error("Failed to apply tuning:", e);
+      setTuningError(e.message || "Failed to apply tuning");
+    } finally {
+      setTuningSaving(false);
+    }
+  };
+
+  const applyPreset = async (presetName) => {
+    setTuningSaving(true);
+    setTuningError("");
+    try {
+      const res = await fetch("/tuning", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preset: presetName }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Failed to apply preset '${presetName}'`);
+      }
+      const updated = await res.json();
+      // backend responds {message, settings}; fetch snapshot so UI reflects all values
+      const snap = await fetch("/tuning").then((r) => r.json());
+      setTuning(snap);
+      console.log(updated?.message || `Applied preset ${presetName}`);
+    } catch (e) {
+      console.error(e);
+      setTuningError(e.message || "Failed to apply preset");
+    } finally {
+      setTuningSaving(false);
+    }
   };
 
   const startRecording = async () => {
@@ -180,28 +427,21 @@ const App = () => {
       const source = audioContext.createMediaStreamSource(stream);
       const processor = audioContext.createScriptProcessor(4096, 1, 1);
       processorRef.current = processor;
-      
-      // --- ADD THIS ABOVE onaudioprocess ---
-      let bufferAccumulator = [];  // <-- put this right before processor.onaudioprocess
-      // -------------------------------------
 
+      // Accumulate samples and call /identify_speaker regularly
+      let bufferAccumulator = [];
 
-      // --- REPLACE your entire onaudioprocess with this ---
       processor.onaudioprocess = (e) => {
         const inputData = e.inputBuffer.getChannelData(0);
-
-        // append samples (browser may give 2048 even if you requested 4096)
         bufferAccumulator.push(...inputData);
 
-        // once we have >= 4096 samples (~256ms), send exactly that
-        const TARGET_SIZE = 4096;
+        // Faster-Whisper can handle ~256ms frames; whisper.cpp (CLI wrapper) needs longer chunks.
+        const TARGET_SIZE = asrBackend === "whispercpp" ? 16000 : 4096;
 
         while (bufferAccumulator.length >= TARGET_SIZE) {
-
           const slice = bufferAccumulator.slice(0, TARGET_SIZE);
           bufferAccumulator = bufferAccumulator.slice(TARGET_SIZE);
 
-          // Convert Float32Array → Uint8Array → Base64
           const floatArray = new Float32Array(slice);
           const audioBytes = new Uint8Array(floatArray.buffer);
 
@@ -211,7 +451,6 @@ const App = () => {
           }
           const base64Audio = btoa(binary);
 
-          // Always send request for speaker identification (and live transcript)
           fetch("/identify_speaker", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -225,166 +464,98 @@ const App = () => {
             .then(data => {
               console.log("Speaker identification response:", data);
 
-              // --- Update fast "who is speaking now" indicator ---
               if (data.has_speech) {
                 setCurrentSpeaker(data.speaker || "Unknown");
               } else {
                 setCurrentSpeaker(null);
               }
 
-              // --- Maintain a short history of detected speakers for labeling transcripts ---
-              const detectedSpeaker = data.speaker || "Unknown";
-              {
-                const history = speakerHistoryRef.current.slice();
-                history.push(detectedSpeaker);
-                // Keep last ~20 detections (a few seconds of context)
-                if (history.length > 10) history.shift();
-                speakerHistoryRef.current = history;
-              }
+              const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
+                ? data.transcript_segments
+                : (typeof data.transcript === "string" && data.transcript.trim()
+                    ? [{ speaker: data.speaker, text: data.transcript.trim() }]
+                    : []);
 
-              // Live, incremental transcription coming from the same endpoint
-              if (typeof data.transcript === "string") {
-                let snippet = data.transcript.trim();
-                if (!snippet) return;
+              for (const seg of segments) {
+                const snippet = (seg.text || "").trim();
+                if (!snippet) continue;
+
+                const segSpeaker = seg.speaker || data.transcript_speaker || data.speaker;
 
                 setLiveMessages(prev => {
-                  const lastMsg = prev[prev.length - 1];
-                  const lastText = lastMsg?.text || "";
-                  const lastSpeaker = lastMsg?.speaker || "";
-
-                  // Choose a robust speaker label for this snippet:
-                  // - Prefer an explicit transcript_speaker from the backend (if provided)
-                  // - Otherwise, use the majority speaker over the recent history
-                  // - Fall back to the last bubble's speaker, then to the raw detected speaker
-                  let majoritySpeaker = lastSpeaker;
-                  if (!data.transcript_speaker) {
-                    const counts = {};
-                    for (const s of speakerHistoryRef.current) {
-                      if (!s) continue;
-                      counts[s] = (counts[s] || 0) + 1;
-                    }
-                    let best = null;
-                    let bestCount = 0;
-                    for (const [s, c] of Object.entries(counts)) {
-                      if (c > bestCount) {
-                        best = s;
-                        bestCount = c;
-                      }
-                    }
-                    if (best) {
-                      majoritySpeaker = best;
-                    }
-                  }
-
                   const transcriptSpeaker =
+                    segSpeaker ||
                     data.transcript_speaker ||
-                    majoritySpeaker ||
-                    detectedSpeaker ||
                     "Unknown";
 
                   const updated = [...prev];
+                  const lastMsg = updated[updated.length - 1];
 
-                  // If there is no previous message, just add the first bubble.
-                  if (!lastMsg) {
-                    const firstMsg = {
-                      id: `${Date.now()}-0`,
-                      text: snippet,
-                      speaker: transcriptSpeaker,
-                    };
-                    lastSnippetRef.current = snippet;
-                    return [firstMsg];
-                  }
-
-                  // Detect a change based on the *raw* detected speaker, since
-                  // transcriptSpeaker can lag due to majority voting.
-                  const newRawSpeaker =
-                    detectedSpeaker && detectedSpeaker !== "Unknown"
-                      ? detectedSpeaker
-                      : transcriptSpeaker;
-                  const speakerChanged =
-                    lastSpeaker && newRawSpeaker && newRawSpeaker !== lastSpeaker;
-
-                  // If the same person is still speaking, append new words to the
-                  // existing bubble instead of replacing it. We try to find an
-                  // overlap between the end of the previous text and the start
-                  // of the new snippet so we don't double‑append words, but we
-                  // never shrink or delete what was already shown.
-                  if (!speakerChanged && transcriptSpeaker === lastSpeaker) {
-                    if (snippet === lastText) {
-                      lastSnippetRef.current = snippet;
-                      return prev;
-                    }
-
-                    const prevWords = lastText.split(/\s+/).filter(Boolean);
-                    const newWords = snippet.split(/\s+/).filter(Boolean);
-
-                    let overlap = 0;
-                    const maxOverlap = Math.min(prevWords.length, newWords.length);
-                    for (let k = maxOverlap; k > 0; k--) {
-                      const prevSuffix = prevWords.slice(prevWords.length - k).join(" ");
-                      const newPrefix = newWords.slice(0, k).join(" ");
-                      if (prevSuffix === newPrefix) {
-                        overlap = k;
-                        break;
-                      }
-                    }
-
-                    const deltaWords = overlap > 0 ? newWords.slice(overlap) : newWords;
-                    const delta = deltaWords.join(" ").trim();
-
-                    if (!delta) {
-                      lastSnippetRef.current = snippet;
-                      return prev;
-                    }
-
-                    const appended = lastText ? `${lastText} ${delta}` : delta;
-                    updated[updated.length - 1] = {
-                      ...lastMsg,
-                      text: appended,
-                    };
-                    lastSnippetRef.current = snippet;
+                  const snippetWords = snippet.split(/\s+/).filter(Boolean);
+                  if (snippetWords.length === 0) {
                     return updated;
                   }
 
-                  // Speaker changed (or we don't have a clear previous speaker): start a new bubble
-                  const newMsg = {
-                    id: `${Date.now()}-${updated.length}`,
-                    text: snippet,
-                    speaker: newRawSpeaker || transcriptSpeaker || "Unknown",
-                  };
-                  lastSnippetRef.current = snippet;
-                  return [...updated, newMsg];
-                });
-              }
+                  // If we have a last bubble for the same speaker, try to
+                  // append words to it up to MAX_WORDS_PER_BUBBLE.
+                  if (lastMsg && lastMsg.speaker === transcriptSpeaker) {
+                    const lastWords = (lastMsg.text || "").split(/\s+/).filter(Boolean);
+                    const remaining = MAX_WORDS_PER_BUBBLE - lastWords.length;
 
-              // Background, more stable per-speaker segments from SCD+ASR.
-              if (Array.isArray(data.turn_segments) && data.turn_segments.length > 0) {
-                setLiveMessages(prev => {
-                  const updated = [...prev];
-                  for (const seg of data.turn_segments) {
-                    const text = (seg.text || "").trim();
-                    if (!text) continue;
+                    if (remaining > 0) {
+                      const toAppend = snippetWords.slice(0, remaining);
+                      const rest = snippetWords.slice(remaining);
+
+                      const newText = lastWords.length
+                        ? `${lastMsg.text} ${toAppend.join(" ")}`
+                        : toAppend.join(" ");
+
+                      updated[updated.length - 1] = {
+                        ...lastMsg,
+                        text: newText,
+                      };
+
+                      // If there are leftover words beyond the limit,
+                      // start a new bubble for them (and they may split
+                      // across multiple bubbles if very long).
+                      let remainingWords = rest;
+                      while (remainingWords.length > 0) {
+                        const chunk = remainingWords.slice(0, MAX_WORDS_PER_BUBBLE);
+                        remainingWords = remainingWords.slice(MAX_WORDS_PER_BUBBLE);
+                        updated.push({
+                          id: `${Date.now()}-${updated.length}`,
+                          text: chunk.join(" "),
+                          speaker: transcriptSpeaker,
+                        });
+                      }
+
+                      return updated;
+                    }
+                  }
+
+                  // Otherwise, start one or more new bubbles for this snippet
+                  let remainingWords = snippetWords;
+                  while (remainingWords.length > 0) {
+                    const chunk = remainingWords.slice(0, MAX_WORDS_PER_BUBBLE);
+                    remainingWords = remainingWords.slice(MAX_WORDS_PER_BUBBLE);
                     updated.push({
-                      id: `seg-${seg.start}-${seg.end}-${updated.length}`,
-                      text,
-                      speaker: seg.speaker || "Unknown",
+                      id: `${Date.now()}-${updated.length}`,
+                      text: chunk.join(" "),
+                      speaker: transcriptSpeaker,
                     });
                   }
+
                   return updated;
                 });
               }
-
             })
             .catch(err => {
               console.error("Error identifying speaker:", err);
               setCurrentSpeaker(null);
             });
-
         }
       };
 
-      
-      
       source.connect(processor);
       processor.connect(audioContext.destination);
 
@@ -396,7 +567,7 @@ const App = () => {
         } else if (MediaRecorder.isTypeSupported("audio/ogg;codecs=opus")) {
           mimeType = "audio/ogg;codecs=opus";
         } else {
-          mimeType = ""; // Use browser default
+          mimeType = "";
         }
       }
 
@@ -418,7 +589,6 @@ const App = () => {
 
       recorder.onstop = async () => {
         try {
-          // Determine blob type from mimeType
           const blobType = mimeType || "audio/webm";
           const blob = new Blob(chunksRef.current, { type: blobType });
           const file = new File([blob], `recording.${blobType.includes('ogg') ? 'ogg' : 'webm'}`, { 
@@ -430,7 +600,6 @@ const App = () => {
           console.error("Error processing recording:", error);
           setErrorMsg("Failed to process recording: " + error.message);
         } finally {
-          // Clean up stream
           if (streamRef.current) {
             streamRef.current.getTracks().forEach((track) => {
               track.stop();
@@ -440,16 +609,14 @@ const App = () => {
         }
       };
 
-      // Start recording with timeslice to collect data periodically
-      recorder.start(1000); // Collect data every second
+      recorder.start(1000);
       setIsRecording(true);
       handleReset();
       setRecordingTime(0);
-      setCurrentSpeaker(null); // Reset current speaker
+      setCurrentSpeaker(null);
       setErrorMsg("");
-      // Generate new session ID for next recording
       sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
+
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
       }, 1000);
@@ -471,17 +638,16 @@ const App = () => {
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       try {
-        // Disconnect audio processor
         if (processorRef.current) {
           processorRef.current.disconnect();
           processorRef.current = null;
         }
-        
+
         if (mediaRecorderRef.current.state !== "inactive") {
           mediaRecorderRef.current.stop();
         }
         setIsRecording(false);
-        
+
         if (recordingTimerRef.current) {
           clearInterval(recordingTimerRef.current);
           recordingTimerRef.current = null;
@@ -566,6 +732,204 @@ const App = () => {
 
         <KnownSpeakers refreshTrigger={speakerRefreshTrigger} />
 
+        {/* Tuning panel for live experimentation */}
+        {tuning && (
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={16} className="text-slate-400" />
+                <h3 className="text-sm font-semibold text-slate-100">
+                  Tuning (advanced)
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => applyPreset("thetestsound_script")}
+                  disabled={tuningSaving}
+                  className="text-xs px-3 py-1 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium"
+                  title="Apply a preset tuned for thetestsound script"
+                >
+                  TestSound preset
+                </button>
+                <button
+                  onClick={handleApplyTuning}
+                  disabled={tuningSaving}
+                  className="text-xs px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium"
+                >
+                  {tuningSaving ? "Applying..." : "Apply"}
+                </button>
+              </div>
+            </div>
+
+            {tuningError && (
+              <div className="text-xs text-red-400 flex items-center gap-1">
+                <AlertCircle size={12} /> {tuningError}
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+              {/* Streaming */}
+              <div className="space-y-1">
+                <div className="font-semibold text-slate-200">Streaming</div>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Min new sec</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.asr_min_new_sec ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "asr_min_new_sec", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Min speech sec</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.min_speech_sec ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "min_speech_sec", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Cross-tail pad (s)</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.cross_tail_dup_pad_sec ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "cross_tail_dup_pad_sec", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Min ASR interval (s)</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.min_asr_interval_sec ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "min_asr_interval_sec", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Max ASR buffer (s)</span>
+                  <input
+                    type="number"
+                    step="0.5"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.max_asr_buffer_sec ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "max_asr_buffer_sec", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Context (s)</span>
+                  <input
+                    type="number"
+                    step="0.25"
+                    min="0"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.wcpp_context_sec ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "wcpp_context_sec", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Use initial prompt</span>
+                  <input
+                    type="checkbox"
+                    className="accent-indigo-500"
+                    checked={!!tuning.streaming?.use_initial_prompt}
+                    onChange={(e) =>
+                      setTuning((prev) => ({
+                        ...(prev || {}),
+                        streaming: {
+                          ...(prev?.streaming || {}),
+                          use_initial_prompt: e.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Prompt max chars</span>
+                  <input
+                    type="number"
+                    step="20"
+                    min="0"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.streaming?.asr_prompt_max_chars ?? ""}
+                    onChange={handleTuningFieldChange("streaming", "asr_prompt_max_chars", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+              </div>
+
+              {/* ASR */}
+              <div className="space-y-1">
+                <div className="font-semibold text-slate-200">ASR</div>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Beam size</span>
+                  <input
+                    type="number"
+                    className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.asr?.beam_size ?? ""}
+                    onChange={handleTuningFieldChange("asr", "beam_size", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Best of</span>
+                  <input
+                    type="number"
+                    className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.asr?.best_of ?? ""}
+                    onChange={handleTuningFieldChange("asr", "best_of", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+              </div>
+
+              {/* VAD */}
+              <div className="space-y-1">
+                <div className="font-semibold text-slate-200">VAD</div>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Threshold</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.vad?.threshold ?? ""}
+                    onChange={handleTuningFieldChange("vad", "threshold", (v) => parseFloat(v || "0"))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Min speech (ms)</span>
+                  <input
+                    type="number"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.vad?.min_speech_duration_ms ?? ""}
+                    onChange={handleTuningFieldChange("vad", "min_speech_duration_ms", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Min silence (ms)</span>
+                  <input
+                    type="number"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.vad?.min_silence_duration_ms ?? ""}
+                    onChange={handleTuningFieldChange("vad", "min_silence_duration_ms", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Speech pad (ms)</span>
+                  <input
+                    type="number"
+                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning.vad?.speech_pad_ms ?? ""}
+                    onChange={handleTuningFieldChange("vad", "speech_pad_ms", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ActionCard
             mode={mode}
@@ -604,6 +968,21 @@ const App = () => {
                   </div>
                 )}
 
+                {/* Test script to read while tuning */}
+                <div className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3">
+                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+                    Test phrases for tuning
+                  </h4>
+                  <ul className="space-y-1 text-sm text-slate-300">
+                    {TEST_PHRASES.map((p, idx) => (
+                      <li key={idx} className="flex gap-2">
+                        <span className="text-slate-500">{idx + 1}.</span>
+                        <span>{p}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
                 {liveMessages.length > 0 && (
                   <div
                     ref={liveMessagesRef}
@@ -612,9 +991,11 @@ const App = () => {
                     <div className="space-y-3">
                       {liveMessages.map((msg) => (
                         <div key={msg.id} className="flex flex-col items-start gap-1">
-                          <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase">
-                            {msg.speaker || "Unknown"}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase">
+                              {msg.speaker || "Unknown"}
+                            </span>
+                          </div>
                           <div className="bg-slate-800/80 rounded-2xl px-3 py-2 max-w-full">
                             <p className="text-sm text-slate-100 leading-snug">
                               {msg.text}
@@ -650,6 +1031,84 @@ const App = () => {
           processing={processing}
           onSeek={handleSeek}
         />
+
+        {/* Debug tools */}
+        <div className="mt-4 bg-slate-900/40 border border-slate-800/60 rounded-lg p-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <div className="text-slate-200 font-semibold">Debug: testsound runner</div>
+              <div className="text-xs text-slate-400">
+                Streams `thetestsound.wav` through `/identify_speaker` and lets you download the raw JSON.
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-2 text-sm text-slate-300">
+                <span>Chunk (s)</span>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="0.2"
+                  className="w-20 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right"
+                  value={testChunkSec}
+                  onChange={(e) => setTestChunkSec(parseFloat((e.target.value || "1").replace(",", ".")) || 1.0)}
+                  disabled={testRunning}
+                />
+              </label>
+              <label className="flex items-center gap-2 text-sm text-slate-300">
+                <span>Sleep (ms)</span>
+                <input
+                  type="number"
+                  step="10"
+                  min="0"
+                  className="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right"
+                  value={testSleepMs}
+                  onChange={(e) => setTestSleepMs(parseInt(e.target.value || "0", 10) || 0)}
+                  disabled={testRunning}
+                />
+              </label>
+              <button
+                onClick={runTestSound}
+                disabled={testRunning || isRecording}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold"
+              >
+                {testRunning ? "Running…" : "Run testsound"}
+              </button>
+              <button
+                onClick={handleDownloadTestJson}
+                disabled={!testRunJson}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded-lg text-sm font-semibold border border-slate-700"
+              >
+                Download test JSON
+              </button>
+              <button
+                onClick={handleCopyTestJson}
+                disabled={!testRunJson}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded-lg text-sm font-semibold border border-slate-700"
+                title="Copy full testsound JSON to clipboard"
+              >
+                {testJsonCopied ? "Copied" : "Copy JSON"}
+              </button>
+              <button
+                onClick={() => setTestJsonExpanded((v) => !v)}
+                disabled={!testRunJson}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded-lg text-sm font-semibold border border-slate-700"
+              >
+                {testJsonExpanded ? "Hide JSON" : "Show JSON"}
+              </button>
+            </div>
+          </div>
+
+          {testRunJson && testJsonExpanded && (
+            <div className="mt-3">
+              <div className="text-xs text-slate-400 mb-2">
+                Raw JSON (responses + tuning snapshot):
+              </div>
+              <pre className="text-xs bg-slate-950/70 border border-slate-800 rounded-lg p-3 max-h-80 overflow-auto text-slate-100">
+                {JSON.stringify(testRunJson, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
 
         <PlayerControls
           isPlaying={isPlaying}

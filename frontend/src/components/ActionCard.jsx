@@ -44,6 +44,8 @@ const ActionCard = ({
           <Users size={14} className="text-slate-400" />
           <span className="text-xs text-slate-400 font-medium">Speakers:</span>
           <input
+            id="num-speakers"
+            name="num-speakers"
             type="number"
             min="1"
             max="10"
@@ -62,6 +64,8 @@ const ActionCard = ({
           </div>
           <div className="relative group">
             <input
+              id="audio-file"
+              name="audio-file"
               type="file"
               accept="audio/*"
               onChange={handleFileUpload}

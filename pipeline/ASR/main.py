@@ -5,10 +5,12 @@ import torch
 
 from pipeline.ASR.whisper import WhisperASR
 from pipeline.ASR.faster_whisper import FasterWhisperASR
+from pipeline.ASR.whispercpp import WhisperCppASR
 
 class TypeASR(Enum):
     WHISPER = "whisper"
     FASTER_WHISPER = "faster_whisper"
+    WHISPERCPP = "whispercpp"
 
 class ASR(object):
     def __init__(
@@ -32,6 +34,10 @@ class ASR(object):
         task: str = "transcribe",
         without_timestamps: bool = True,
         chunk_length: int = 15,
+        repetition_penalty: float = 1.0,
+        no_repeat_ngram_size: int = 0,
+        condition_on_previous_text: bool = True,
+        no_context: bool = False,
         profile: str | None = None,
     ):
         """
@@ -69,6 +75,13 @@ class ASR(object):
         self.task = task
         self.without_timestamps = without_timestamps
         self.chunk_length = chunk_length
+        # Anti-repetition controls forwarded to Faster-Whisper
+        self.repetition_penalty = repetition_penalty
+        self.no_repeat_ngram_size = no_repeat_ngram_size
+        # Context handling
+        # If no_context is True, force condition_on_previous_text=False.
+        self.no_context = no_context
+        self.condition_on_previous_text = False if no_context else condition_on_previous_text
         # Optional profile name (speed / balanced / accuracy), currently
         # applied in config before initialization but accepted here so that
         # ASR(**ASRConfig.to_dict()) works without errors.
@@ -81,6 +94,8 @@ class ASR(object):
                 model = "openai/whisper-large-v3-turbo"
             elif asr_type == TypeASR.FASTER_WHISPER:
                 model = "large-v3-turbo"
+            elif asr_type == TypeASR.WHISPERCPP:
+                model = "tiny.en"
         self.model = model
 
         # Set default dtype/compute_type based on device if not provided
@@ -117,6 +132,14 @@ class ASR(object):
                     device=self.device,
                     compute_type=self.compute_type
                 )
+            case TypeASR.WHISPERCPP:
+                logger.info(f"Initializing ASR with type: {asr_type.value}")
+                logger.info(f"Model: {self.model}, Device: {self.device}")
+                self._asr_pipeline = WhisperCppASR(
+                    model=self.model,
+                    device=self.device,
+                    language=self.language,
+                )
             case _:
                 raise ValueError(f"Invalid ASR Type {asr_type}")
 
@@ -140,6 +163,11 @@ class ASR(object):
 
         # Extra decoding controls only for Faster-Whisper
         if self.asr_type == TypeASR.FASTER_WHISPER:
+            # Cross-call prompting for simulated streaming.
+            # Faster-Whisper supports `initial_prompt` to bias decoding.
+            if "initial_prompt" in kwargs:
+                transcribe_kwargs["initial_prompt"] = kwargs.get("initial_prompt")
+
             transcribe_kwargs.update({
                 "beam_size": kwargs.get("beam_size", self.beam_size),
                 "best_of": kwargs.get("best_of", self.best_of),
@@ -163,6 +191,19 @@ class ASR(object):
                     self.without_timestamps,
                 ),
                 "chunk_length": kwargs.get("chunk_length", self.chunk_length),
+                "repetition_penalty": kwargs.get(
+                    "repetition_penalty",
+                    getattr(self, "repetition_penalty", 1.0),
+                ),
+                "no_repeat_ngram_size": kwargs.get(
+                    "no_repeat_ngram_size",
+                    getattr(self, "no_repeat_ngram_size", 0),
+                ),
+                # Context handling: pass through to Faster-Whisper
+                "condition_on_previous_text": kwargs.get(
+                    "condition_on_previous_text",
+                    getattr(self, "condition_on_previous_text", True),
+                ),
             })
 
             # word-level timestamps only make sense for Faster-Whisper

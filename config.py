@@ -144,21 +144,12 @@ class VADSileroConfig(BaseConfig):
     model_repo: str = "snakers4/silero-vad"
     model_name: str = "silero_vad"
     sample_rate: int = SR
-<<<<<<< Updated upstream
-    threshold: float = 0.55
-    min_speech_duration_ms: int = 150
-=======
-    threshold: float = 0.35  # Lower = more sensitive, catches more speech
-    min_speech_duration_ms: int = 100  # Allow shorter utterances
->>>>>>> Stashed changes
+    threshold: float = 0.5
+    min_speech_duration_ms: int = 250
     max_speech_duration_s: float = float('inf')
     min_silence_duration_ms: int = 150
     window_size_samples: int = 512
-<<<<<<< Updated upstream
-    speech_pad_ms: int = 40
-=======
-    speech_pad_ms: int = 150  # More padding to capture speech edges
->>>>>>> Stashed changes
+    speech_pad_ms: int = 30
     return_seconds: bool = True
 
 

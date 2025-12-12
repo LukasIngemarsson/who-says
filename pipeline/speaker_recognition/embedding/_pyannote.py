@@ -3,8 +3,24 @@ from utils import match_frequency
 
 import os
 from dotenv import load_dotenv
-from pyannote.audio import Model, Inference
 import torch
+
+# Fix for PyTorch 2.6+ weights_only default change
+import torch.serialization
+try:
+    import pytorch_lightning.callbacks.early_stopping
+    import pytorch_lightning.callbacks.model_checkpoint
+    from omegaconf import ListConfig, DictConfig
+    torch.serialization.add_safe_globals([
+        pytorch_lightning.callbacks.early_stopping.EarlyStopping,
+        pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint,
+        ListConfig,
+        DictConfig,
+    ])
+except (ImportError, AttributeError):
+    pass
+
+from pyannote.audio import Model, Inference
 
 from utils import load_audio_from_file
 
@@ -23,7 +39,7 @@ class PyAnnoteEmbedding:
         Embed each segment between speaker change points and return stacked embeddings.
     """
 
-    def __init__(self, model: str = "pyannote/embedding", batch_size: int = 1) -> None:
+    def __init__(self, model: str = "pyannote/embedding", batch_size: int = 1, device: str = None, **kwargs) -> None:
         """
         Initialize PyAnnoteEmbedding with a pretrained pyannote model.
 
@@ -45,7 +61,7 @@ class PyAnnoteEmbedding:
             raise ValueError("Missing HF_TOKEN_PYANNOTE_EMBEDDING or HF_TOKEN in environment variables.")
         
         self.model = Model.from_pretrained(model, use_auth_token=token)
-        self.inference = Inference(self.model, window="whole", batch_size=batch_size)
+        self.inference = Inference(self.model, window=(1.5,0.25), batch_size=batch_size)
 
     def embed(self, audio: torch.Tensor, frequency: int) -> torch.Tensor:
         """
@@ -95,33 +111,55 @@ class PyAnnoteEmbedding:
         return self.embed(audio, frequency)
 
 
-    def embed_segments(self, audio: torch.Tensor, frequency: int, change_points: list[float]) -> torch.Tensor:
+    def embed_segments(self, audio: torch.Tensor, frequency: int, change_points: list[float],
+                       return_indices: bool = False) -> torch.Tensor | tuple[torch.Tensor, list[int]]:
         """
-        embed each segment between speaker change points from an audio tensor.
+        Embed each segment between speaker change points from an audio tensor.
 
-        parameters
+        Parameters
         ----------
         audio : torch.Tensor
-            loaded audio Tensor.
+            Loaded audio Tensor.
         frequency : int
-            sample rate of the audio.
+            Sample rate of the audio.
         change_points : list of float
-            timestamps (in seconds) where speaker changes occur.
+            Timestamps (in seconds) where speaker changes occur.
+        return_indices : bool
+            If True, also return list of segment indices that were embedded.
 
-        returns
+        Returns
         -------
-        torch.Tensor
-            tensor of shape (num_segments, embedding_dim)
+        torch.Tensor or tuple
+            If return_indices=False: Embeddings tensor (shape: [n_embedded, embedding_dim])
+            If return_indices=True: (embeddings, segment_indices) where segment_indices
+                lists which original segments (0-indexed) were embedded.
         """
         points = [0.0] + change_points + [audio.shape[-1] / frequency]
         embeddings = []
+        embedded_indices = []
+
+        # Minimum segment duration in seconds
+        min_duration = 0.5  # 500ms minimum
+        min_samples = int(min_duration * frequency)
+
         for i in range(len(points) - 1):
             start = int(points[i] * frequency)
             end = int(points[i+1] * frequency)
+
+            # Skip segments that are too short
+            if end - start < min_samples:
+                continue
+
             segment = audio[..., start:end]
             emb = self.embed(segment, frequency)
             embeddings.append(emb.squeeze(0))
-        return torch.stack(embeddings)
+            embedded_indices.append(i)
+
+        result_embeddings = torch.stack(embeddings) if embeddings else torch.empty(0, 512)  # pyannote embedding dim
+
+        if return_indices:
+            return result_embeddings, embedded_indices
+        return result_embeddings
 
 
 if __name__ == "__main__":

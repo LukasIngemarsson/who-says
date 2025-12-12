@@ -6,6 +6,7 @@ import torch
 import numpy as np
 from typing import Optional, List, Tuple
 from loguru import logger
+from nemo.collections.asr.models import SortformerEncLabelModel
 
 
 class NemoSOD:
@@ -48,8 +49,6 @@ class NemoSOD:
         self.offset = offset
         self.min_duration = min_duration
         self.max_chunk_duration = max_chunk_duration
-
-        from nemo.collections.asr.models import SortformerEncLabelModel
 
         # Load model - local file or HuggingFace
         if model_path is None:

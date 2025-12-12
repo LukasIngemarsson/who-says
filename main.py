@@ -1,3 +1,12 @@
+# Fix for PyTorch 2.6+ weights_only default change - must run before any model loading
+# Monkey-patch torch.load to force weights_only=False for pyannote compatibility
+import torch
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs['weights_only'] = False  # Force False, override any explicit True
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
+
 from loguru import logger
 import argparse
 from pathlib import Path
@@ -24,7 +33,7 @@ load_dotenv(".env")
 class WhoSays(object):
     def __init__(self, config=Config()):
         self.config = config
-        
+
         logger.info(f"Using device: {self.config.device}")
         
         self.sod = SO(self.config.so)
@@ -32,9 +41,19 @@ class WhoSays(object):
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = ASR(**self.config.asr.to_dict())
-        self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
+        #self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
 
-        self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
+        # Initialize embedding based on config type
+        from config import TypeEmbedding
+        from pipeline.speaker_recognition.embedding._pyannote import PyAnnoteEmbedding
+        from pipeline.speaker_recognition.embedding.wav2vec2 import Wav2Vec2Embedding
+
+        if self.config.embedding.embedding_type == TypeEmbedding.PYANNOTE:
+            self.embedder = PyAnnoteEmbedding(**self.config.embedding.pyannote.to_dict())
+        elif self.config.embedding.embedding_type == TypeEmbedding.WAV2VEC2:
+            self.embedder = Wav2Vec2Embedding(**self.config.embedding.wav2vec2.to_dict())
+        else:
+            self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
 
         # Initialize clustering based on config type
         from config import TypeClustering
@@ -70,7 +89,7 @@ class WhoSays(object):
         # Return the first (and only) embedding vector
         return emb[0]
 
-    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.5):
+    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.4):
         """
         Compare cluster centroids to known speaker embeddings.
         Returns a dictionary mapping Cluster ID (int) -> Name (str).
@@ -344,8 +363,10 @@ class WhoSays(object):
             if include_timing or return_diarization_time:
                 start_time = time.time()
 
-            # Embed main segments
-            segment_embeddings = self.embedder.embed_segments(waveform, sr, change_points)
+            # Embed main segments - get indices of which segments were actually embedded
+            segment_embeddings, embedded_segment_indices = self.embedder.embed_segments(
+                waveform, sr, change_points, return_indices=True
+            )
             n_main_segments = segment_embeddings.shape[0]
 
             # Embed separated overlap speakers and track their metadata
@@ -438,6 +459,7 @@ class WhoSays(object):
         result = self._format_output(
             change_points=change_points,
             clusters=segment_clusters,
+            embedded_segment_indices=embedded_segment_indices,
             cluster_names=cluster_names,
             transcriptions=transcriptions,
             overlap_segments=overlap_segments,
@@ -474,6 +496,7 @@ class WhoSays(object):
         self,
         change_points: list[float],
         clusters: list[int],
+        embedded_segment_indices: list[int],
         cluster_names: dict,
         transcriptions: list[dict],
         overlap_segments: list[tuple[float, float]],
@@ -486,7 +509,9 @@ class WhoSays(object):
 
         Args:
             change_points: Speaker change timestamps
-            clusters: Cluster IDs for each segment
+            clusters: Cluster IDs for each embedded segment
+            embedded_segment_indices: Indices of segments that were embedded (some short
+                segments may have been skipped)
             transcriptions: Transcription results with timestamps
             overlap_segments: List of (start, end) tuples where speaker overlap occurs
             processed_overlaps: Processed overlap data with transcriptions and speaker IDs
@@ -495,21 +520,64 @@ class WhoSays(object):
         Returns:
             dict: Structured output with speaker segments and transcriptions
         """
+        # Create mapping from segment index to cluster ID
+        # Only embedded segments have cluster assignments
+        segment_to_cluster = {}
+        for emb_idx, seg_idx in enumerate(embedded_segment_indices):
+            if emb_idx < len(clusters):
+                segment_to_cluster[seg_idx] = int(clusters[emb_idx])
+
         # Create speaker segments from change points and clusters
-        speaker_segments = []
+        # First, create raw segments from change points
+        raw_segments = []
         segment_times = [0.0] + change_points + [waveform_duration]
 
         for i in range(len(segment_times) - 1):
-            c_id = int(clusters[i]) if i < len(clusters) else -1
+            # Use the segment_to_cluster mapping to get correct cluster ID
+            c_id = segment_to_cluster.get(i, -1)
             speaker_name = cluster_names.get(c_id, "UNKNOWN")
 
-            speaker_segments.append({
+            raw_segments.append({
                 'start': segment_times[i],
                 'end': segment_times[i + 1],
                 'speaker': speaker_name,
                 'cluster_id': c_id,
-                'duration': segment_times[i + 1] - segment_times[i]
             })
+
+        # Intersect speaker segments with VAD to only output speech regions
+        # This is critical for reducing false alarms
+        speaker_segments = []
+        for raw_seg in raw_segments:
+            for vad_seg in vad_segments:
+                # Compute intersection
+                intersect_start = max(raw_seg['start'], vad_seg['start'])
+                intersect_end = min(raw_seg['end'], vad_seg['end'])
+
+                if intersect_start < intersect_end:
+                    # There's an overlap - create a segment for this speech region
+                    speaker_segments.append({
+                        'start': intersect_start,
+                        'end': intersect_end,
+                        'speaker': raw_seg['speaker'],
+                        'cluster_id': raw_seg['cluster_id'],
+                        'duration': intersect_end - intersect_start
+                    })
+
+        # Add overlap speakers to speaker_segments
+        # This is critical for proper DER evaluation - overlap regions have multiple speakers
+        for ovlp in processed_overlaps:
+            ovlp_start = ovlp['start']
+            ovlp_end = ovlp['end']
+            for spk_data in ovlp.get('speakers', []):
+                if spk_data.get('speaker') and spk_data['speaker'] != 'UNKNOWN':
+                    speaker_segments.append({
+                        'start': ovlp_start,
+                        'end': ovlp_end,
+                        'speaker': spk_data['speaker'],
+                        'cluster_id': spk_data.get('cluster_id', -1),
+                        'duration': ovlp_end - ovlp_start,
+                        'is_overlap': True
+                    })
 
         # Index processed overlaps by time for quick lookup
         overlap_lookup = {}
@@ -679,4 +747,3 @@ if __name__ == "__main__":
         print(json.dumps(make_serializable(result), indent=2, ensure_ascii=False))
 
     logger.info("Done!")
-

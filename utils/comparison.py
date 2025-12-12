@@ -154,7 +154,6 @@ def compare_vad_models(
         Dictionary with results for both models
     """
     from pipeline.speaker_segmentation.VAD.silero import SileroVAD
-
     silero_vad = SileroVAD()
     pyannote_vad = PyannoteVAD()
 

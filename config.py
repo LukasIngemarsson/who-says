@@ -77,7 +77,7 @@ class SOSeparationSpeechBrainConfig(BaseConfig):
 class SOConfig:
     detection_type: TypeSOD = TypeSOD.NEMO
     separation_type: TypeSOS = TypeSOS.SPEECHBRAIN
-    min_overlap_confidence: float = 0.7  # Minimum confidence to match separated speaker to cluster
+    min_overlap_confidence: float = 0.5  # Minimum confidence to match separated speaker to cluster (lowered to include more overlaps)
     detection_pyannote: SODetectionPyannoteConfig = field(default_factory=SODetectionPyannoteConfig)
     detection_nemo: SODetectionNemoConfig = field(default_factory=SODetectionNemoConfig)
     separation_pyannote: SOSeparationPyannoteConfig = field(default_factory=SOSeparationPyannoteConfig)
@@ -108,8 +108,8 @@ class SOConfig:
 @dataclass
 class SCDPyannoteConfig(BaseConfig):
     model: str = "pyannote/segmentation-3.0"
-    onset: float = 0.5
-    offset: float = 0.5
+    onset: float = 0.65   # tighter onset to reduce false starts
+    offset: float = 0.55  # allow slightly longer speech before cutoff
     min_duration: float = 0.0
     min_prominence: float = 0.2
 
@@ -121,7 +121,7 @@ class SCDNemoConfig(BaseConfig):
 
 @dataclass
 class SCDConfig:
-    scd_type: TypeSCD = TypeSCD.PYANNOTE
+    scd_type: TypeSCD = TypeSCD.NEMO
     pyannote: SCDPyannoteConfig = field(default_factory=SCDPyannoteConfig)
     nemo: SCDNemoConfig = field(default_factory=SCDNemoConfig)
 
@@ -144,12 +144,21 @@ class VADSileroConfig(BaseConfig):
     model_repo: str = "snakers4/silero-vad"
     model_name: str = "silero_vad"
     sample_rate: int = SR
-    threshold: float = 0.5
-    min_speech_duration_ms: int = 250
+<<<<<<< Updated upstream
+    threshold: float = 0.55
+    min_speech_duration_ms: int = 150
+=======
+    threshold: float = 0.35  # Lower = more sensitive, catches more speech
+    min_speech_duration_ms: int = 100  # Allow shorter utterances
+>>>>>>> Stashed changes
     max_speech_duration_s: float = float('inf')
-    min_silence_duration_ms: int = 100
+    min_silence_duration_ms: int = 150
     window_size_samples: int = 512
-    speech_pad_ms: int = 30
+<<<<<<< Updated upstream
+    speech_pad_ms: int = 40
+=======
+    speech_pad_ms: int = 150  # More padding to capture speech edges
+>>>>>>> Stashed changes
     return_seconds: bool = True
 
 
@@ -177,6 +186,85 @@ class ASRConfig(BaseConfig):
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
     compute_type: str = "float16"  # int8 can cause cuBLAS issues with alignment
     language: str = "en"
+
+    # Simple profile selector: "speed" | "balanced" | "accuracy"
+    profile: str = "speed"
+
+    # Decoding / search parameters (used mainly by Faster-Whisper)
+    beam_size: int = 1
+    best_of: int = 1
+    patience: float = 1.0
+    temperature: float = 0.0
+    temperature_increment_on_fallback: float = 0.0
+    compression_ratio_threshold: float = 2.4
+    log_prob_threshold: float = -1.2
+    no_speech_threshold: float = 0.45
+    task: str = "transcribe"
+    without_timestamps: bool = False
+    chunk_length: int = 15
+    # Context handling
+    # - condition_on_previous_text: standard Whisper/Faster-Whisper flag.
+    #   If False, each decode ignores prior text history.
+    # - no_context: convenience flag; when True, we force
+    #   condition_on_previous_text = False.
+    no_context: bool = True
+    condition_on_previous_text: bool = False
+    # Stronger anti-repetition controls; standard in many Whisper setups
+    repetition_penalty: float = 1.15
+    no_repeat_ngram_size: int = 3
+    word_timestamps: bool = True
+
+    def apply_profile_defaults(self) -> None:
+        """
+        Adjust decoding parameters according to the selected profile.
+
+        This is intentionally simple – values can be tweaked as needed.
+        """
+        profile = (self.profile or "balanced").lower()
+
+        if profile == "speed":
+            # Favour latency: small model, shallow search, fewer timestamps
+            self.beam_size = 1                 # fastest, good for streaming
+            self.best_of = 1                   # no extra candidates needed for tiny.en
+            self.temperature = 0.0             # fully deterministic → fewer weird loops
+            self.patience = 1.0                # unused for greedy / beam_size=1, set to 0
+            self.chunk_length = 15             # a bit more context than 10s helps stability
+            self.word_timestamps = True        # keep – needed for alignment
+
+            # --- anti-hallucination / anti-repeat ---
+            self.compression_ratio_threshold = 2.4   # drop super-compressed (garbage) outputs
+            self.log_prob_threshold = -1.2           # stricter than -1.0 → fewer low-conf repeats
+            self.no_speech_threshold = 0.45          # don't treat everything as speech
+            self.repetition_penalty = 1.15           # softer than 1.3, good for tiny.en
+            self.no_repeat_ngram_size = 3  
+            # For speed, you can optionally disable conditioning on previous
+            # text by setting no_context=True in your config file.
+        elif profile == "accuracy":
+            # Heavier search for better quality, with stricter no-speech gating
+            self.beam_size = 5
+            self.best_of = 5
+            self.temperature = 0.0
+            self.patience = 1.0
+            self.chunk_length = 30
+            self.word_timestamps = True
+            self.compression_ratio_threshold = 2.4
+            self.log_prob_threshold = -1.0
+            self.no_speech_threshold = 0.85
+            self.repetition_penalty = 1.3
+            self.no_repeat_ngram_size = 4
+        else:
+            # Balanced defaults
+            self.beam_size = 2
+            self.best_of = 2
+            self.temperature = 0.0
+            self.patience = 1.0
+            self.chunk_length = 20
+            self.word_timestamps = True
+            self.compression_ratio_threshold = 2.4
+            self.log_prob_threshold = -1.0
+            self.no_speech_threshold = 0.75
+            self.repetition_penalty = 1.2
+            self.no_repeat_ngram_size = 3
     
 # -----------------------------
 # Phoneme
@@ -212,7 +300,7 @@ class EmbeddingWav2Vec2Config(BaseConfig):
 
 @dataclass
 class EmbeddingConfig:
-    embedding_type: TypeEmbedding = TypeEmbedding.SPEECHBRAIN
+    embedding_type: TypeEmbedding = TypeEmbedding.PYANNOTE
     pyannote: EmbeddingPyannoteConfig = field(default_factory=EmbeddingPyannoteConfig)
     speechbrain: EmbeddingSpeechbrainConfig = field(default_factory=EmbeddingSpeechbrainConfig)
     wav2vec2: EmbeddingWav2Vec2Config = field(default_factory=EmbeddingWav2Vec2Config)
@@ -276,12 +364,15 @@ class DBSCANConfig(BaseClusteringConfig):
 @dataclass
 class CosineSimilarityConfig(BaseClusteringConfig):
     algorithm: str = "cosine_similarity"
-    threshold: float = 0.7  # Minimum similarity to assign to a known speaker
+    threshold: float = 0.6  # Minimum similarity to assign to a known speaker (lowered for better recall)
+    normalize: bool = True  # L2 normalize embeddings before clustering (critical for cosine sim)
+    use_spectral_init: bool = True  # Use agglomerative clustering for global optimization
+    refinement_passes: int = 3  # Number of refinement passes after initial clustering
 
 
 @dataclass
 class ClusteringConfig:
-    clustering_type: TypeClustering = TypeClustering.KMEANS
+    clustering_type: TypeClustering = TypeClustering.COSINE_SIMILARITY
     kmeans: KMeansConfig = field(default_factory=KMeansConfig)
     agglomerative: AgglomerativeConfig = field(default_factory=AgglomerativeConfig)
     dbscan: DBSCANConfig = field(default_factory=DBSCANConfig)

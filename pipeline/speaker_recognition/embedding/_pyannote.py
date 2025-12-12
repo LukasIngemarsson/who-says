@@ -1,4 +1,4 @@
-from utils.constants import TENSOR_DTYPE
+from utils.constants import TENSOR_DTYPE, SR
 from utils import match_frequency
 
 import os
@@ -61,7 +61,8 @@ class PyAnnoteEmbedding:
             raise ValueError("Missing HF_TOKEN_PYANNOTE_EMBEDDING or HF_TOKEN in environment variables.")
         
         self.model = Model.from_pretrained(model, use_auth_token=token)
-        self.inference = Inference(self.model, window=(1.5,0.25), batch_size=batch_size)
+        # pyannote 3.x: duration in seconds, step as ratio of duration
+        self.inference = Inference(self.model, window="sliding", duration=1.5, step=0.25/1.5, batch_size=batch_size)
 
     def embed(self, audio: torch.Tensor, frequency: int) -> torch.Tensor:
         """
@@ -83,15 +84,17 @@ class PyAnnoteEmbedding:
         ValueError
             If audio tensor has unexpected shape.
         """
-        audio = match_frequency(audio, frequency)
+        audio = match_frequency(audio, frequency)  # Resamples to SR (16000)
 
         if audio.ndim == 1:
             audio = audio.unsqueeze(0)  # (1, num_samples)
         elif audio.ndim > 2:
             raise ValueError(f"Unexpected audio shape: {audio.shape}")
-        
-        embedding = self.inference({"waveform": audio, "sample_rate": frequency})
-        return torch.tensor(embedding, dtype=TENSOR_DTYPE)
+
+        embedding = self.inference({"waveform": audio, "sample_rate": SR})  # Use target SR after resampling
+        # SlidingWindowFeature has shape (n_frames, embedding_dim), aggregate by mean
+        embedding_data = embedding.data.mean(axis=0)  # shape: (512,)
+        return torch.tensor(embedding_data, dtype=TENSOR_DTYPE, device=audio.device)
 
     def embed_from_file(self, file_path: str) -> torch.Tensor:
         """

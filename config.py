@@ -173,7 +173,7 @@ class VADConfig:
 @dataclass
 class ASRConfig(BaseConfig):
     asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "small" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
+    model: str = "large-v3-turbo" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
     compute_type: str = "float16"  # int8 can cause cuBLAS issues with alignment
     language: str = "en"
@@ -355,7 +355,7 @@ class DBSCANConfig(BaseClusteringConfig):
 @dataclass
 class CosineSimilarityConfig(BaseClusteringConfig):
     algorithm: str = "cosine_similarity"
-    threshold: float = 0.6  # Minimum similarity to assign to a known speaker (lowered for better recall)
+    threshold: float = 0.0  # Minimum similarity to assign to a known speaker (lowered for better recall)
     normalize: bool = True  # L2 normalize embeddings before clustering (critical for cosine sim)
     use_spectral_init: bool = True  # Use agglomerative clustering for global optimization
     refinement_passes: int = 3  # Number of refinement passes after initial clustering
@@ -363,7 +363,7 @@ class CosineSimilarityConfig(BaseClusteringConfig):
 
 @dataclass
 class ClusteringConfig:
-    clustering_type: TypeClustering = TypeClustering.COSINE_SIMILARITY
+    clustering_type: TypeClustering = TypeClustering.KMEANS
     kmeans: KMeansConfig = field(default_factory=KMeansConfig)
     agglomerative: AgglomerativeConfig = field(default_factory=AgglomerativeConfig)
     dbscan: DBSCANConfig = field(default_factory=DBSCANConfig)

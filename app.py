@@ -5,6 +5,8 @@ import subprocess
 import base64
 import re
 import string
+import json
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Optional
 
@@ -76,6 +78,41 @@ EMBEDDINGS_DIR = Path(__file__).parent / "embeddings"
 EMBEDDINGS_DIR.mkdir(exist_ok=True)
 KNOWN_SPEAKERS: Dict[str, torch.Tensor] = {}  # name -> 1D normed embedding (CPU)
 
+# -------------------------------------------------
+# Speaker Overlap Detection (SOD) State
+# -------------------------------------------------
+
+# Per-session overlap detection buffer:
+#   session_id -> {
+#       "buffer": Tensor on pipeline device (1D),
+#       "buffer_start_time": float,  # Absolute time when buffer started
+#       "last_detection_time": float,
+#   }
+SESSION_OVERLAP_STATE: Dict[str, Dict[str, Any]] = {}
+
+# Per-session overlap timeline (detected overlaps):
+#   session_id -> [
+#       {
+#           "start": float,      # Absolute wall-clock time
+#           "end": float,
+#           "speakers": List[str],  # Speakers involved (from diarization)
+#           "duration": float,
+#           "confidence": float,    # Detection confidence if available
+#       },
+#       ...
+#   ]
+SESSION_OVERLAP_TIMELINE: Dict[str, List[Dict[str, Any]]] = {}
+
+# Global SOD detector instance (lazy-loaded)
+SOD_DETECTOR: Optional[Any] = None
+SOD_DETECTOR_LOCK = threading.Lock()
+
+# Overlap detection configuration
+OVERLAP_BUFFER_SEC: float = 3.0           # How much audio to buffer before detection
+OVERLAP_DETECTION_INTERVAL_SEC: float = 2.0  # Minimum interval between detections
+OVERLAP_MIN_DURATION_SEC: float = 0.1     # Minimum overlap duration to report
+OVERLAP_DETECTION_ENABLED: bool = True    # Global toggle
+
 # Streaming config (whisper.cpp-first)
 #
 # NOTE: Frontend chunk size can vary depending on backend. For all gating logic
@@ -99,96 +136,60 @@ MIN_SPEECH_SEC = 0.25
 CURRENT_SPEAKER: Optional[str] = None
 CURRENT_CONFIDENCE: float = 0.0
 LAST_SWITCH_TIME: float = 0.0
-SWITCH_COOLDOWN: float = 0.05   # seconds
+SWITCH_COOLDOWN: float = 1.0   # seconds - prevent rapid speaker flickering
 
 SIM_CONF_FLOOR = 0.05
 SIM_CONF_CEIL = 0.50
 
 # -------------------------------------------------
-# Tuning presets
+# Tuning presets (loaded from JSON file)
 # -------------------------------------------------
-TUNING_PRESETS: Dict[str, Dict[str, Any]] = {
-    "default": {
-        # Streaming
-        "asr_min_new_sec": 0.50,
-        "cross_tail_dup_pad_sec": 0.03,
-        "min_asr_interval_sec": 0.45,
-        "max_asr_buffer_sec": 12.0,
-        "wcpp_context_sec": 2.0,
-        "use_initial_prompt": True,
-        "asr_prompt_max_chars": 240,
+TUNING_PRESETS_FILE = Path(__file__).parent / "tuning_presets.json"
+TUNING_PRESETS: Dict[str, Dict[str, Any]] = {}
+TUNING_PRESETS_LAST_MODIFIED: float = 0.0
 
-        # ASR (whisper.cpp CLI wrapper supports these)
-        "beam_size": 1,
-        "best_of": 1,
 
-        # VAD (used both for diarization VAD and whisper.cpp --vad)
-        "vad_threshold": 0.55,
-        "vad_min_speech_ms": 150,
-        "vad_min_silence_ms": 150,
-        "vad_speech_pad_ms": 40,
-    },
+def load_tuning_presets(force_reload: bool = False) -> Dict[str, Dict[str, Any]]:
+    """
+    Load tuning presets from JSON file.
+    Automatically reloads if file has been modified.
+    """
+    global TUNING_PRESETS, TUNING_PRESETS_LAST_MODIFIED
 
-    "clean_speech": {
-        "asr_min_new_sec": 0.50,
-        "cross_tail_dup_pad_sec": 0.02,
-        "min_asr_interval_sec": 0.40,
-        "max_asr_buffer_sec": 12.0,
-        "wcpp_context_sec": 2.0,
-        "use_initial_prompt": True,
-        "asr_prompt_max_chars": 240,
+    if not TUNING_PRESETS_FILE.exists():
+        logger.warning(f"Tuning presets file not found: {TUNING_PRESETS_FILE}")
+        return TUNING_PRESETS
 
-        "beam_size": 1,
-        "best_of": 1,
+    try:
+        file_mtime = TUNING_PRESETS_FILE.stat().st_mtime
+        if not force_reload and TUNING_PRESETS and file_mtime <= TUNING_PRESETS_LAST_MODIFIED:
+            return TUNING_PRESETS
 
-        "vad_threshold": 0.50,
-        "vad_min_speech_ms": 120,
-        "vad_min_silence_ms": 120,
-        "vad_speech_pad_ms": 30,
-    },
+        with open(TUNING_PRESETS_FILE, "r") as f:
+            data = json.load(f)
 
-    "noisy_room": {
-        "asr_min_new_sec": 0.75,
-        "cross_tail_dup_pad_sec": 0.04,
-        "min_asr_interval_sec": 0.55,
-        "max_asr_buffer_sec": 12.0,
-        "wcpp_context_sec": 2.5,
-        "use_initial_prompt": True,
-        "asr_prompt_max_chars": 240,
+        # Filter out metadata keys (those starting with _)
+        presets = {
+            k: {pk: pv for pk, pv in v.items() if not pk.startswith("_")}
+            for k, v in data.items()
+            if not k.startswith("_") and isinstance(v, dict)
+        }
 
-        "beam_size": 1,
-        "best_of": 1,
+        TUNING_PRESETS = presets
+        TUNING_PRESETS_LAST_MODIFIED = file_mtime
+        logger.info(f"Loaded {len(presets)} tuning presets from {TUNING_PRESETS_FILE}")
+        return TUNING_PRESETS
 
-        "vad_threshold": 0.60,
-        "vad_min_speech_ms": 200,
-        "vad_min_silence_ms": 220,
-        "vad_speech_pad_ms": 50,
-    },
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in tuning presets file: {e}")
+        return TUNING_PRESETS
+    except Exception as e:
+        logger.error(f"Error loading tuning presets: {e}")
+        return TUNING_PRESETS
 
-    # Preset optimized for the built-in `thetestsound.wav` script:
-    # - keep prompt enabled
-    # - slightly slower cadence + larger new-audio window for stability
-    "thetestsound_script": {
-        # Streaming
-        "asr_min_new_sec": 0.60,
-        "min_asr_interval_sec": 0.45,
-        "max_asr_buffer_sec": 12.0,
-        "cross_tail_dup_pad_sec": 0.03,
-        "wcpp_context_sec": 2.5,
-        "use_initial_prompt": True,
-        "asr_prompt_max_chars": 240,
 
-        # ASR
-        "beam_size": 3,
-        "best_of": 3,
-
-        # VAD
-        "vad_threshold": 0.55,
-        "vad_min_speech_ms": 150,
-        "vad_min_silence_ms": 150,
-        "vad_speech_pad_ms": 40,
-    },
-}
+# Load presets at startup
+load_tuning_presets()
 
 # -------------------------------------------------
 # Helpers
@@ -272,7 +273,6 @@ def load_embeddings() -> None:
         logger.info(f"Loaded {len(KNOWN_SPEAKERS)} embeddings from {EMBEDDINGS_DIR}")
     except Exception as e:
         logger.error(f"Failed to load embeddings: {e}")
-
 
 def make_serializable(obj: Any) -> Any:
     if isinstance(obj, np.ndarray):
@@ -362,6 +362,12 @@ def _current_tuning_snapshot() -> Dict[str, Any]:
         },
         "asr": asr_cfg,
         "vad": vad_cfg,
+        "overlap": {
+            "enabled": OVERLAP_DETECTION_ENABLED,
+            "buffer_sec": OVERLAP_BUFFER_SEC,
+            "detection_interval_sec": OVERLAP_DETECTION_INTERVAL_SEC,
+            "min_duration_sec": OVERLAP_MIN_DURATION_SEC,
+        },
     }
 
 # -------------------------------------------------
@@ -435,6 +441,168 @@ def _assign_words_to_speakers(
         )
 
     return text, transcript_segments
+
+# -------------------------------------------------
+# Speaker Overlap Detection Helpers
+# -------------------------------------------------
+def _get_sod_detector() -> Optional[Any]:
+    """
+    Lazy-initialize the Speaker Overlap Detector.
+    Uses PyannoteSOD (lighter weight for streaming).
+    """
+    global SOD_DETECTOR
+
+    if SOD_DETECTOR is not None:
+        return SOD_DETECTOR
+
+    if not PIPELINE_AVAILABLE or pipeline is None:
+        return None
+
+    with SOD_DETECTOR_LOCK:
+        # Double-check after acquiring lock
+        if SOD_DETECTOR is not None:
+            return SOD_DETECTOR
+
+        try:
+            device = pipeline.config.device
+
+            from pipeline.speaker_segmentation.SO.Detection import PyannoteSOD
+            SOD_DETECTOR = PyannoteSOD(
+                onset=0.5,
+                offset=0.5,
+                min_duration=OVERLAP_MIN_DURATION_SEC,
+                device=device,
+            )
+
+            logger.info("Initialized PyannoteSOD detector for overlap detection")
+        except Exception as e:
+            logger.error(f"Failed to initialize SOD detector: {e}")
+            SOD_DETECTOR = None
+
+    return SOD_DETECTOR
+
+
+def _get_speakers_in_range(
+    session_id: str,
+    start_time: float,
+    end_time: float,
+) -> List[str]:
+    """
+    Get list of speakers who were active in the given time range.
+    Uses SESSION_SPEAKER_TIMELINE.
+    """
+    timeline = SESSION_SPEAKER_TIMELINE.get(session_id, [])
+    speakers = set()
+
+    for seg in timeline:
+        seg_start = float(seg.get("start", 0.0))
+        seg_end = float(seg.get("end", seg_start))
+
+        # Check for overlap
+        if seg_start < end_time and seg_end > start_time:
+            speaker = seg.get("speaker")
+            if speaker:
+                speakers.add(speaker)
+
+    return list(speakers)
+
+
+def _get_recent_overlaps(
+    session_id: str,
+    since_time: float,
+) -> List[Dict[str, Any]]:
+    """
+    Get overlaps detected since the given time.
+    """
+    timeline = SESSION_OVERLAP_TIMELINE.get(session_id, [])
+    return [o for o in timeline if o["start"] >= since_time]
+
+
+def _process_overlap_detection(
+    session_id: str,
+    sr: int,
+    current_time: float,
+) -> Optional[List[Dict[str, Any]]]:
+    """
+    Check if enough audio has accumulated for overlap detection.
+    If so, run detection and return any new overlap segments.
+
+    Returns:
+        List of overlap segments detected, or None if detection not run.
+    """
+    if not OVERLAP_DETECTION_ENABLED:
+        return None
+
+    state = SESSION_OVERLAP_STATE.get(session_id)
+    if state is None:
+        return None
+
+    buffer = state["buffer"]
+    buffer_start_time = state["buffer_start_time"]
+    last_detection = state.get("last_detection_time", 0.0)
+
+    # Check if we have enough audio and time has passed
+    buffer_duration = buffer.shape[0] / float(sr)
+    time_since_last = current_time - last_detection
+
+    if buffer_duration < OVERLAP_BUFFER_SEC:
+        return None
+
+    if time_since_last < OVERLAP_DETECTION_INTERVAL_SEC:
+        return None
+
+    # Get SOD detector
+    detector = _get_sod_detector()
+    if detector is None:
+        return None
+
+    # Run detection
+    try:
+        with torch.inference_mode():
+            overlap_segments = detector(buffer, sr)
+    except Exception as e:
+        logger.error(f"SOD detection error: {e}")
+        return None
+
+    # Update state
+    state["last_detection_time"] = current_time
+
+    # Convert relative timestamps to absolute
+    detected_overlaps = []
+    for (start_rel, end_rel) in overlap_segments:
+        start_abs = buffer_start_time + start_rel
+        end_abs = buffer_start_time + end_rel
+
+        # Identify speakers involved using speaker timeline
+        speakers = _get_speakers_in_range(session_id, start_abs, end_abs)
+
+        overlap_info = {
+            "start": start_abs,
+            "end": end_abs,
+            "duration": end_rel - start_rel,
+            "speakers": speakers,
+            "confidence": 1.0,
+        }
+        detected_overlaps.append(overlap_info)
+
+    # Add to session timeline
+    timeline = SESSION_OVERLAP_TIMELINE.setdefault(session_id, [])
+    timeline.extend(detected_overlaps)
+
+    # Keep only recent overlaps (last 30 seconds)
+    cutoff = current_time - 30.0
+    SESSION_OVERLAP_TIMELINE[session_id] = [
+        o for o in timeline if o["end"] >= cutoff
+    ]
+
+    # Slide buffer forward (keep last 1 second for continuity)
+    keep_samples = int(1.0 * sr)
+    if buffer.shape[0] > keep_samples:
+        new_start = buffer.shape[0] - keep_samples
+        state["buffer"] = buffer[new_start:]
+        state["buffer_start_time"] = buffer_start_time + (new_start / float(sr))
+
+    return detected_overlaps if detected_overlaps else None
 
 # -------------------------------------------------
 # Incremental ASR with micro-tail
@@ -677,9 +845,17 @@ def tuning():
     global MIN_ASR_INTERVAL_SEC, MAX_ASR_BUFFER_SEC
     global WCPP_CONTEXT_SEC
     global USE_INITIAL_PROMPT, ASR_PROMPT_MAX_CHARS
+    global OVERLAP_DETECTION_ENABLED, OVERLAP_BUFFER_SEC
+    global OVERLAP_DETECTION_INTERVAL_SEC, OVERLAP_MIN_DURATION_SEC
+    global SOD_DETECTOR
+
+    # Hot-reload presets if file changed
+    load_tuning_presets()
 
     if request.method == "GET":
-        return jsonify(_current_tuning_snapshot())
+        snapshot = _current_tuning_snapshot()
+        snapshot["available_presets"] = list(TUNING_PRESETS.keys())
+        return jsonify(snapshot)
 
     data = request.get_json(silent=True) or {}
 
@@ -687,7 +863,10 @@ def tuning():
     if "preset" in data:
         preset_name = data["preset"]
         if preset_name not in TUNING_PRESETS:
-            return jsonify({"error": f"Unknown preset '{preset_name}'"}), 400
+            return jsonify({
+                "error": f"Unknown preset '{preset_name}'",
+                "available_presets": list(TUNING_PRESETS.keys())
+            }), 400
         preset = TUNING_PRESETS[preset_name]
 
         if "asr_min_new_sec" in preset:
@@ -727,6 +906,17 @@ def tuning():
                 if "vad_speech_pad_ms" in preset:
                     vad.speech_pad_ms = int(preset["vad_speech_pad_ms"])
 
+        # Overlap detection settings from preset
+        if "overlap_detection_enabled" in preset:
+            OVERLAP_DETECTION_ENABLED = bool(preset["overlap_detection_enabled"])
+        if "overlap_buffer_sec" in preset:
+            OVERLAP_BUFFER_SEC = max(1.0, min(10.0, float(preset["overlap_buffer_sec"])))
+        if "overlap_detection_interval_sec" in preset:
+            OVERLAP_DETECTION_INTERVAL_SEC = max(0.5, min(10.0, float(preset["overlap_detection_interval_sec"])))
+        if "overlap_min_duration_sec" in preset:
+            OVERLAP_MIN_DURATION_SEC = max(0.0, min(1.0, float(preset["overlap_min_duration_sec"])))
+            SOD_DETECTOR = None  # Reset to pick up new min_duration
+
         return jsonify({"message": f"Applied preset '{preset_name}'", "settings": preset})
 
     # Manual tuning
@@ -747,6 +937,16 @@ def tuning():
             MIN_SPEECH_SEC = max(0.05, float(data["min_speech_sec"]))
         if "cross_tail_dup_pad_sec" in data:
             CROSS_TAIL_DUP_PAD_SEC = max(0.0, float(data["cross_tail_dup_pad_sec"]))
+        # Overlap detection manual tuning
+        if "overlap_detection_enabled" in data:
+            OVERLAP_DETECTION_ENABLED = bool(data["overlap_detection_enabled"])
+        if "overlap_buffer_sec" in data:
+            OVERLAP_BUFFER_SEC = max(1.0, min(10.0, float(data["overlap_buffer_sec"])))
+        if "overlap_detection_interval_sec" in data:
+            OVERLAP_DETECTION_INTERVAL_SEC = max(0.5, min(10.0, float(data["overlap_detection_interval_sec"])))
+        if "overlap_min_duration_sec" in data:
+            OVERLAP_MIN_DURATION_SEC = max(0.0, min(1.0, float(data["overlap_min_duration_sec"])))
+            SOD_DETECTOR = None  # Reset to pick up new min_duration
     except (TypeError, ValueError):
         return jsonify({"error": "Invalid streaming tuning values"}), 400
 
@@ -777,6 +977,33 @@ def tuning():
                 return jsonify({"error": "Invalid VAD tuning values"}), 400
 
     return jsonify(_current_tuning_snapshot())
+
+# -------------------------------------------------
+# /tuning/presets - List and reload presets
+# -------------------------------------------------
+@app.route("/tuning/presets", methods=["GET"])
+def tuning_presets_list():
+    """List all available tuning presets."""
+    load_tuning_presets()  # Hot-reload
+    return jsonify({
+        "presets": list(TUNING_PRESETS.keys()),
+        "file": str(TUNING_PRESETS_FILE),
+        "details": {
+            name: {k: v for k, v in preset.items()}
+            for name, preset in TUNING_PRESETS.items()
+        }
+    })
+
+
+@app.route("/tuning/reload", methods=["POST"])
+def tuning_presets_reload():
+    """Force reload tuning presets from JSON file."""
+    load_tuning_presets(force_reload=True)
+    return jsonify({
+        "message": "Tuning presets reloaded",
+        "presets": list(TUNING_PRESETS.keys()),
+        "file": str(TUNING_PRESETS_FILE)
+    })
 
 # -------------------------------------------------
 # /upload_embeddings - enroll speakers
@@ -832,7 +1059,8 @@ def upload_embeddings():
             })
 
         except Exception as e:
-            logger.error(f"Error during upload_embeddings: {e}")
+            import traceback
+            logger.error(f"Error during upload_embeddings: {e}\n{traceback.format_exc()}")
             return jsonify({"error": f"Processing failed: {str(e)}"}), 500
 
         finally:
@@ -868,9 +1096,15 @@ def identify_speaker():
             audio_bytes = base64.b64decode(audio_data_b64)
             audio_array = np.frombuffer(audio_bytes, dtype=np.float32)
 
-            waveform = torch.from_numpy(audio_array).float().squeeze()
-            if waveform.dim() > 1:
-                waveform = waveform.mean(dim=0)
+            waveform = torch.from_numpy(audio_array).float()
+            # Ensure waveform is 1D (mono)
+            while waveform.dim() > 1:
+                if waveform.shape[0] <= 2:  # Likely channels dimension
+                    waveform = waveform.mean(dim=0)
+                else:
+                    waveform = waveform.squeeze(0)
+            if waveform.dim() == 0:
+                waveform = waveform.unsqueeze(0)
 
             sr = sample_rate
             target_sr = pipeline.config.sr
@@ -882,6 +1116,12 @@ def identify_speaker():
 
             device = pipeline.config.device
             waveform = waveform.to(device)
+
+            # Final check: ensure waveform is 1D
+            if waveform.dim() != 1:
+                logger.warning(f"Unexpected waveform shape after processing: {waveform.shape}")
+                while waveform.dim() > 1:
+                    waveform = waveform.squeeze(0)
 
         except Exception as e:
             logger.error(f"Error decoding audio: {e}")
@@ -900,7 +1140,12 @@ def identify_speaker():
                 "prompt": "",
             }
         asr_state = SESSION_ASR_STATE[session_id]
-        asr_state["buffer"] = torch.cat([asr_state["buffer"], waveform.detach()])
+        # Ensure waveform is 1D for ASR buffer
+        waveform_for_asr = waveform.detach()
+        while waveform_for_asr.dim() > 1:
+            waveform_for_asr = waveform_for_asr.squeeze(0)
+        if waveform_for_asr.dim() == 1:
+            asr_state["buffer"] = torch.cat([asr_state["buffer"], waveform_for_asr])
 
         # Cap ASR buffer (seconds) and keep an absolute time offset so
         # timestamps remain monotonic even when we trim old samples.
@@ -910,6 +1155,40 @@ def identify_speaker():
             asr_state["cursor"] = max(0, asr_state["cursor"] - overflow)
             asr_state["t0"] = float(asr_state.get("t0", 0.0)) + (overflow / float(sr))
             asr_state["buffer"] = asr_state["buffer"][-MAX_ASR_BUFFER:]
+
+        # --- Overlap detection buffer per session ---
+        if OVERLAP_DETECTION_ENABLED:
+            try:
+                if session_id not in SESSION_OVERLAP_STATE:
+                    SESSION_OVERLAP_STATE[session_id] = {
+                        "buffer": torch.zeros(0, device=device),
+                        "buffer_start_time": time.time(),
+                        "last_detection_time": 0.0,
+                    }
+
+                overlap_state = SESSION_OVERLAP_STATE[session_id]
+                # Ensure waveform is 1D before concatenating
+                waveform_1d = waveform.detach().clone()
+                while waveform_1d.dim() > 1:
+                    waveform_1d = waveform_1d.squeeze(0)
+                if waveform_1d.dim() == 0:
+                    waveform_1d = waveform_1d.unsqueeze(0)
+
+                # Verify it's 1D before concatenating
+                if waveform_1d.dim() == 1:
+                    overlap_state["buffer"] = torch.cat([
+                        overlap_state["buffer"],
+                        waveform_1d
+                    ])
+
+                    # Cap overlap buffer (keep max ~5 seconds to limit memory)
+                    MAX_OVERLAP_BUFFER = int(sr * 5.0)
+                    if overlap_state["buffer"].shape[0] > MAX_OVERLAP_BUFFER:
+                        overflow = overlap_state["buffer"].shape[0] - MAX_OVERLAP_BUFFER
+                        overlap_state["buffer"] = overlap_state["buffer"][-MAX_OVERLAP_BUFFER:]
+                        overlap_state["buffer_start_time"] += overflow / float(sr)
+            except Exception as e:
+                logger.warning(f"Overlap buffer update failed: {e}")
 
         # --- Global rolling buffer (1s) + speech buffer (2.5s) ---
         if ROLLING_BUFFER is None:
@@ -967,12 +1246,33 @@ def identify_speaker():
             for seg in transcript_segments:
                 seg["text"] = squash_adjacent_short_repeats(seg.get("text") or "")
 
+            # Overlap detection even when no speech segments
+            overlap_detected = False
+            overlap_speakers_list: List[str] = []
+            overlap_segments_list: List[Dict[str, Any]] = []
+            if OVERLAP_DETECTION_ENABLED:
+                try:
+                    now_ovlp = time.time()
+                    new_overlaps = _process_overlap_detection(session_id, sr, now_ovlp)
+                    if new_overlaps:
+                        overlap_detected = True
+                        all_spk: set = set()
+                        for ovlp in new_overlaps:
+                            all_spk.update(ovlp.get("speakers", []))
+                        overlap_speakers_list = list(all_spk)
+                        overlap_segments_list = new_overlaps
+                except Exception as e:
+                    logger.warning(f"Overlap detection failed: {e}")
+
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
             resp = {
                 "speaker": CURRENT_SPEAKER,
                 "has_speech": bool(live_text),
                 "confidence": ui_conf,
                 "transcript": live_text,
+                "overlap_detected": overlap_detected,
+                "overlap_speakers": overlap_speakers_list,
+                "overlap_segments": overlap_segments_list,
             }
             if transcript_segments:
                 resp["transcript_segments"] = transcript_segments
@@ -1011,6 +1311,9 @@ def identify_speaker():
                 "confidence": ui_conf,
                 "message": "Collecting more speech...",
                 "transcript": live_text,
+                "overlap_detected": False,
+                "overlap_speakers": [],
+                "overlap_segments": [],
             })
 
         # Compute embedding
@@ -1028,15 +1331,18 @@ def identify_speaker():
             for name, ref_cpu in KNOWN_SPEAKERS.items():
                 ref = F.normalize(ref_cpu.to(device), p=2, dim=0)
                 score = torch.dot(emb, ref).item()
+                logger.debug(f"Speaker {name}: score={score:.3f}")
                 if score > best_score:
                     second_best = best_score
                     best_score = score
                     best_speaker = name
                 elif score > second_best:
                     second_best = score
+        else:
+            logger.debug("No known speakers enrolled - cannot identify")
 
         now = time.time()
-        MIN_CONFIDENCE = 0.30
+        MIN_CONFIDENCE = 0.15
         MARGIN_THRESHOLD = 0.05
 
         margin = best_score - second_best if second_best > -1.0 else best_score
@@ -1044,6 +1350,9 @@ def identify_speaker():
         confident_speaker: Optional[str] = None
         if best_speaker is not None and best_score >= MIN_CONFIDENCE and margin >= MARGIN_THRESHOLD:
             confident_speaker = best_speaker
+            logger.debug(f"Identified: {confident_speaker} (score={best_score:.3f}, margin={margin:.3f})")
+        elif best_speaker is not None:
+            logger.debug(f"Low confidence: {best_speaker} (score={best_score:.3f}, margin={margin:.3f}, min_conf={MIN_CONFIDENCE}, min_margin={MARGIN_THRESHOLD})")
 
         if confident_speaker is not None:
             if CURRENT_SPEAKER is None:
@@ -1089,11 +1398,36 @@ def identify_speaker():
         for seg in transcript_segments:
             seg["text"] = squash_adjacent_short_repeats(seg.get("text") or "")
 
+        # --- Overlap detection (batch processing) ---
+        overlap_detected = False
+        overlap_speakers: List[str] = []
+        overlap_segments: List[Dict[str, Any]] = []
+
+        if OVERLAP_DETECTION_ENABLED:
+            try:
+                now_ovlp = time.time()
+                new_overlaps = _process_overlap_detection(session_id, sr, now_ovlp)
+                logger.debug(f"Overlap detection result: {new_overlaps}")
+
+                if new_overlaps:
+                    overlap_detected = True
+                    # Collect unique speakers from all new overlaps
+                    all_speakers: set = set()
+                    for ovlp in new_overlaps:
+                        all_speakers.update(ovlp.get("speakers", []))
+                    overlap_speakers = list(all_speakers)
+                    overlap_segments = new_overlaps
+            except Exception as e:
+                logger.warning(f"Overlap detection failed: {e}")
+
         resp: Dict[str, Any] = {
             "speaker": CURRENT_SPEAKER or "Unknown",
             "has_speech": bool(live_text),
             "confidence": ui_conf,
             "transcript": live_text,
+            "overlap_detected": overlap_detected,
+            "overlap_speakers": overlap_speakers,
+            "overlap_segments": overlap_segments,
         }
         if transcript_segments:
             resp["transcript_segments"] = transcript_segments
@@ -1114,10 +1448,100 @@ def correct_speaker():
     }), 400
 
 # -------------------------------------------------
+# /overlap_status - Get overlap detection status
+# -------------------------------------------------
+@app.route("/overlap_status", methods=["GET"])
+def overlap_status():
+    """Get current overlap detection status and recent overlaps."""
+    session_id = request.args.get("session_id", "default")
+    since = float(request.args.get("since", 0.0))
+
+    recent_overlaps = _get_recent_overlaps(session_id, since)
+
+    return jsonify({
+        "enabled": OVERLAP_DETECTION_ENABLED,
+        "buffer_sec": OVERLAP_BUFFER_SEC,
+        "detection_interval_sec": OVERLAP_DETECTION_INTERVAL_SEC,
+        "min_duration_sec": OVERLAP_MIN_DURATION_SEC,
+        "recent_overlaps": recent_overlaps,
+        "total_overlaps": len(SESSION_OVERLAP_TIMELINE.get(session_id, [])),
+    })
+
+# -------------------------------------------------
+# /overlap_config - Configure overlap detection
+# -------------------------------------------------
+@app.route("/overlap_config", methods=["GET", "POST"])
+def overlap_config():
+    """Get or set overlap detection configuration."""
+    global OVERLAP_DETECTION_ENABLED, OVERLAP_BUFFER_SEC
+    global OVERLAP_DETECTION_INTERVAL_SEC, OVERLAP_MIN_DURATION_SEC
+    global SOD_DETECTOR
+
+    if request.method == "GET":
+        return jsonify({
+            "enabled": OVERLAP_DETECTION_ENABLED,
+            "buffer_sec": OVERLAP_BUFFER_SEC,
+            "detection_interval_sec": OVERLAP_DETECTION_INTERVAL_SEC,
+            "min_duration_sec": OVERLAP_MIN_DURATION_SEC,
+        })
+
+    data = request.get_json(silent=True) or {}
+
+    if "enabled" in data:
+        OVERLAP_DETECTION_ENABLED = bool(data["enabled"])
+
+    if "buffer_sec" in data:
+        OVERLAP_BUFFER_SEC = max(1.0, min(10.0, float(data["buffer_sec"])))
+
+    if "detection_interval_sec" in data:
+        OVERLAP_DETECTION_INTERVAL_SEC = max(0.5, min(10.0, float(data["detection_interval_sec"])))
+
+    if "min_duration_sec" in data:
+        OVERLAP_MIN_DURATION_SEC = max(0.0, min(1.0, float(data["min_duration_sec"])))
+        # Reset detector to pick up new min_duration
+        SOD_DETECTOR = None
+
+    return jsonify({
+        "message": "Configuration updated",
+        "enabled": OVERLAP_DETECTION_ENABLED,
+        "buffer_sec": OVERLAP_BUFFER_SEC,
+        "detection_interval_sec": OVERLAP_DETECTION_INTERVAL_SEC,
+        "min_duration_sec": OVERLAP_MIN_DURATION_SEC,
+    })
+
+# -------------------------------------------------
+# /reset_session - Reset session state
+# -------------------------------------------------
+@app.route("/reset_session", methods=["POST"])
+def reset_session():
+    """Reset all state for a session."""
+    global ROLLING_BUFFER, SPEECH_BUFFER
+    global CURRENT_SPEAKER, CURRENT_CONFIDENCE, LAST_SWITCH_TIME
+
+    session_id = request.form.get("session_id", "default")
+
+    # Clear per-session state
+    SESSION_ASR_STATE.pop(session_id, None)
+    SESSION_SPEAKER_TIMELINE.pop(session_id, None)
+    SESSION_OVERLAP_STATE.pop(session_id, None)
+    SESSION_OVERLAP_TIMELINE.pop(session_id, None)
+
+    # Optionally reset global state if requested
+    if request.form.get("reset_global") == "1":
+        ROLLING_BUFFER = None
+        SPEECH_BUFFER = None
+        CURRENT_SPEAKER = None
+        CURRENT_CONFIDENCE = 0.0
+        LAST_SWITCH_TIME = 0.0
+
+    return jsonify({"message": f"Session {session_id} reset"})
+
+# -------------------------------------------------
 # Startup
 # -------------------------------------------------
 if PIPELINE_AVAILABLE:
     load_embeddings()
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # threaded=False prevents concurrent request issues with PyTorch models
+    app.run(debug=True, host="0.0.0.0", port=5000, threaded=False)

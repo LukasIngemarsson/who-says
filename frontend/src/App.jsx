@@ -54,6 +54,8 @@ const App = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [currentSpeaker, setCurrentSpeaker] = useState(null); // Current speaker during recording
+  const [overlapDetected, setOverlapDetected] = useState(false); // Overlap detection state
+  const [overlapSpeakers, setOverlapSpeakers] = useState([]); // Speakers in overlap
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
   const [speakerRefreshTrigger, setSpeakerRefreshTrigger] = useState(0);
@@ -78,6 +80,9 @@ const App = () => {
   const lastSnippetRef = useRef("");
   const speakerHistoryRef = useRef([]);
   const liveMessagesRef = useRef(null);
+  const speakerClearTimeoutRef = useRef(null);
+  const lastSpeechTimeRef = useRef(0); // Track when we last detected speech
+  const SPEAKER_DISPLAY_PERSIST_MS = 5000; // Keep speaker name visible for 5 seconds after speech stops (longer than chunk interval)
 
   const fetchKnownSpeakers = async () => {
     try {
@@ -403,6 +408,7 @@ const App = () => {
   const startRecording = async () => {
     try {
       // Request microphone access
+      
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -419,14 +425,28 @@ const App = () => {
       lastSnippetRef.current = "";
 
       // Set up Web Audio API for raw audio capture
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: 16000
-      });
+      // Don't force sampleRate - let it match the microphone's native rate
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioContextRef.current = audioContext;
-      
+
+      const nativeSampleRate = audioContext.sampleRate;
+      console.log(`AudioContext sample rate: ${nativeSampleRate}Hz`);
+
       const source = audioContext.createMediaStreamSource(stream);
       const processor = audioContext.createScriptProcessor(4096, 1, 1);
       processorRef.current = processor;
+
+      // Resample from native rate to 16kHz
+      const resampleTo16k = (inputSamples, fromRate) => {
+        if (fromRate === 16000) return inputSamples;
+        const ratio = fromRate / 16000;
+        const outputLength = Math.floor(inputSamples.length / ratio);
+        const output = new Float32Array(outputLength);
+        for (let i = 0; i < outputLength; i++) {
+          output[i] = inputSamples[Math.floor(i * ratio)];
+        }
+        return output;
+      };
 
       // Accumulate samples and call /identify_speaker regularly
       let bufferAccumulator = [];
@@ -435,15 +455,18 @@ const App = () => {
         const inputData = e.inputBuffer.getChannelData(0);
         bufferAccumulator.push(...inputData);
 
-        // Faster-Whisper can handle ~256ms frames; whisper.cpp (CLI wrapper) needs longer chunks.
-        const TARGET_SIZE = asrBackend === "whispercpp" ? 16000 : 4096;
+        // Calculate target size at native sample rate that corresponds to desired 16kHz chunk
+        // Larger chunks = more stable speaker detection, less flickering
+        const TARGET_16K_SIZE = 48000; // 3 seconds at 16kHz for all backends
+        const TARGET_SIZE = Math.ceil(TARGET_16K_SIZE * (nativeSampleRate / 16000));
 
         while (bufferAccumulator.length >= TARGET_SIZE) {
           const slice = bufferAccumulator.slice(0, TARGET_SIZE);
           bufferAccumulator = bufferAccumulator.slice(TARGET_SIZE);
 
-          const floatArray = new Float32Array(slice);
-          const audioBytes = new Uint8Array(floatArray.buffer);
+          // Resample to 16kHz before sending
+          const resampled = resampleTo16k(new Float32Array(slice), nativeSampleRate);
+          const audioBytes = new Uint8Array(resampled.buffer);
 
           let binary = '';
           for (let i = 0; i < audioBytes.length; i++) {
@@ -465,9 +488,35 @@ const App = () => {
               console.log("Speaker identification response:", data);
 
               if (data.has_speech) {
+                // Clear any pending timeout since we have active speech
+                if (speakerClearTimeoutRef.current) {
+                  clearTimeout(speakerClearTimeoutRef.current);
+                  speakerClearTimeoutRef.current = null;
+                }
+                lastSpeechTimeRef.current = Date.now();
                 setCurrentSpeaker(data.speaker || "Unknown");
               } else {
-                setCurrentSpeaker(null);
+                // Delay clearing speaker name to keep it visible longer
+                if (!speakerClearTimeoutRef.current) {
+                  speakerClearTimeoutRef.current = setTimeout(() => {
+                    // Double-check that enough time has passed since last speech
+                    // This handles race conditions with out-of-order responses
+                    const elapsed = Date.now() - lastSpeechTimeRef.current;
+                    if (elapsed >= SPEAKER_DISPLAY_PERSIST_MS) {
+                      setCurrentSpeaker(null);
+                    }
+                    speakerClearTimeoutRef.current = null;
+                  }, SPEAKER_DISPLAY_PERSIST_MS);
+                }
+              }
+
+              // Handle overlap detection
+              if (data.overlap_detected) {
+                setOverlapDetected(true);
+                setOverlapSpeakers(data.overlap_speakers || []);
+              } else {
+                setOverlapDetected(false);
+                setOverlapSpeakers([]);
               }
 
               const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
@@ -551,7 +600,7 @@ const App = () => {
             })
             .catch(err => {
               console.error("Error identifying speaker:", err);
-              setCurrentSpeaker(null);
+              // Don't clear speaker on error - let the timeout handle it
             });
         }
       };
@@ -613,6 +662,11 @@ const App = () => {
       setIsRecording(true);
       handleReset();
       setRecordingTime(0);
+      // Clear any pending speaker timeout and reset speaker
+      if (speakerClearTimeoutRef.current) {
+        clearTimeout(speakerClearTimeoutRef.current);
+        speakerClearTimeoutRef.current = null;
+      }
       setCurrentSpeaker(null);
       setErrorMsg("");
       sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -647,6 +701,8 @@ const App = () => {
           mediaRecorderRef.current.stop();
         }
         setIsRecording(false);
+        setOverlapDetected(false);
+        setOverlapSpeakers([]);
 
         if (recordingTimerRef.current) {
           clearInterval(recordingTimerRef.current);
@@ -965,6 +1021,21 @@ const App = () => {
                   <div className="flex items-center gap-3">
                     <span className="text-slate-400">Listening...</span>
                     <span className="text-slate-500">(No speech detected)</span>
+                  </div>
+                )}
+
+                {/* Overlap Detection Indicator */}
+                {overlapDetected && (
+                  <div className="mt-3 p-3 bg-orange-500/20 border border-orange-500/40 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                      <span className="text-orange-400 font-semibold text-sm">Speaker Overlap Detected</span>
+                    </div>
+                    {overlapSpeakers.length > 0 && (
+                      <div className="mt-1 text-xs text-orange-300">
+                        Overlapping speakers: {overlapSpeakers.join(", ")}
+                      </div>
+                    )}
                   </div>
                 )}
 

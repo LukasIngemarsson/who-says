@@ -17,15 +17,16 @@ class NemoSCD:
 
     def __init__(
         self,
-        model_name: str = "nvidia/diar_sortformer_4spk-v1",
+        model_path: Optional[str] = None,
         device: Optional[torch.device] = None,
         min_duration: float = 0.0,
     ):
         """
         Parameters
         ----------
-        model_name : str
-            HuggingFace model ID for NeMo Sortformer
+        model_path : str, optional
+            Path to local .nemo file OR HuggingFace model ID.
+            If None, defaults to "nvidia/diar_sortformer_4spk-v1".
         device : torch.device
             Device to run inference on
         min_duration : float
@@ -37,8 +38,17 @@ class NemoSCD:
         # Import NeMo here to avoid import errors if not installed
         from nemo.collections.asr.models import SortformerEncLabelModel
 
-        # Load model from HuggingFace
-        self.model = SortformerEncLabelModel.from_pretrained(model_name)
+        # Load model - local file or HuggingFace
+        if model_path is None:
+            model_path = "nvidia/diar_sortformer_4spk-v1"
+
+        if model_path.endswith(".nemo") and os.path.isfile(model_path):
+            # Load from local .nemo file
+            self.model = SortformerEncLabelModel.restore_from(model_path, map_location=self.device)
+        else:
+            # Load from HuggingFace (downloads and caches locally)
+            self.model = SortformerEncLabelModel.from_pretrained(model_path, map_location=self.device)
+
         self.model = self.model.to(self.device)
         self.model.eval()
 

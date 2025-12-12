@@ -18,7 +18,20 @@ from .comparison import (
     aggregate_results,
     aggregate_sc_results,
     aggregate_asr_results,
-    aggregate_e2e_results
+    aggregate_e2e_results,
+    compare_scd_models,
+    aggregate_scd_results,
+    compare_sod_models,
+    aggregate_sod_results,
+    compare_sos_models,
+    aggregate_sos_results,
+    compare_speaker_id_models,
+    aggregate_speaker_id_results,
+    compare_embedding_visualization,
+    aggregate_embedding_viz_results,
+    compare_embedding_models,
+    aggregate_embedding_results,
+    compare_cluster_viz
 )
 from .plot import (
     plot_metrics,
@@ -26,11 +39,14 @@ from .plot import (
     plot_sc_timing,
     plot_sc_silhouette,
     plot_sc_der,
+    plot_sc_clustering_metrics,
     plot_asr_wer,
     plot_asr_timing,
     plot_e2e_der,
     plot_e2e_wer,
-    plot_e2e_timing
+    plot_e2e_timing,
+    plot_embedding_comparison,
+    plot_cluster_umap
 )
 
 __all__ = [
@@ -54,14 +70,30 @@ __all__ = [
     "aggregate_sc_results",
     "aggregate_asr_results",
     "aggregate_e2e_results",
+    "compare_scd_models",
+    "aggregate_scd_results",
+    "compare_sod_models",
+    "aggregate_sod_results",
+    "compare_sos_models",
+    "aggregate_sos_results",
+    "compare_speaker_id_models",
+    "aggregate_speaker_id_results",
+    "compare_embedding_visualization",
+    "aggregate_embedding_viz_results",
+    "compare_embedding_models",
+    "aggregate_embedding_results",
     "plot_metrics",
     "plot_timing",
     "plot_sc_timing",
     "plot_sc_silhouette",
     "plot_sc_der",
+    "plot_sc_clustering_metrics",
     "plot_asr_wer",
     "plot_asr_timing",
     "plot_e2e_der",
     "plot_e2e_wer",
-    "plot_e2e_timing"
+    "plot_e2e_timing",
+    "plot_embedding_comparison",
+    "plot_cluster_umap",
+    "compare_cluster_viz"
 ]

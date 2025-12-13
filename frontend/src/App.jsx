@@ -9,6 +9,7 @@ import SpeakerLegend from "./components/SpeakerLegend.jsx";
 import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
 import KnownSpeakers from "./components/KnownSpeakers.jsx";
 import SpeakerIdentificationModal from "./components/SpeakerIdentificationModal.jsx";
+import { useSpeakerDisplay } from "./utils/useSpeakerDisplay.js";
 
 // -------------------------------------------------------------------
 // TUNING + TESTING HELPERS
@@ -17,6 +18,10 @@ import SpeakerIdentificationModal from "./components/SpeakerIdentificationModal.
 // How many words to allow in a single live bubble before starting a
 // new one. Try values between 12 and 24.
 const MAX_WORDS_PER_BUBBLE = 18; // examples: 12, 18, 24
+
+// UI-only: how long to keep showing the last speaker after speech stops.
+// This is intentionally decoupled from speaker detection logic.
+const CURRENT_SPEAKER_DISPLAY_HOLD_MS = 100;
 
 // Sentences/phrases to speak when testing repetitions & missing words.
 // Re-run these after changing backend tuning (ASR min-new-sec, VAD, etc.).
@@ -56,6 +61,14 @@ const App = () => {
   const [currentSpeaker, setCurrentSpeaker] = useState(null); // Current speaker during recording
   const [overlapDetected, setOverlapDetected] = useState(false); // Overlap detection state
   const [overlapSpeakers, setOverlapSpeakers] = useState([]); // Speakers in overlap
+  const [detectedSpeaker, setDetectedSpeaker] = useState(null);
+  const [hasSpeech, setHasSpeech] = useState(false);
+  // Speaker display state (UI-only hold/TTL)
+  const displayedSpeaker = useSpeakerDisplay({
+    speaker: detectedSpeaker,
+    hasSpeech,
+    holdMs: CURRENT_SPEAKER_DISPLAY_HOLD_MS,
+  });
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
   const [speakerRefreshTrigger, setSpeakerRefreshTrigger] = useState(0);
@@ -244,7 +257,8 @@ const App = () => {
     setTestRunning(true);
     setTestJsonExpanded(false);
     setLiveMessages([]);
-    setCurrentSpeaker(null);
+    setDetectedSpeaker(null);
+    setHasSpeech(false);
 
     const sessionId = `testsound_${Date.now()}`;
     sessionIdRef.current = sessionId;
@@ -485,7 +499,6 @@ const App = () => {
           })
             .then(r => r.json())
             .then(data => {
-              console.log("Speaker identification response:", data);
 
               if (data.has_speech) {
                 // Clear any pending timeout since we have active speech
@@ -518,6 +531,8 @@ const App = () => {
                 setOverlapDetected(false);
                 setOverlapSpeakers([]);
               }
+              setDetectedSpeaker(data.speaker ?? null);
+              setHasSpeech(Boolean(data.has_speech));
 
               const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
                 ? data.transcript_segments
@@ -600,7 +615,8 @@ const App = () => {
             })
             .catch(err => {
               console.error("Error identifying speaker:", err);
-              // Don't clear speaker on error - let the timeout handle it
+              setHasSpeech(false);
+
             });
         }
       };
@@ -662,12 +678,14 @@ const App = () => {
       setIsRecording(true);
       handleReset();
       setRecordingTime(0);
-      // Clear any pending speaker timeout and reset speaker
       if (speakerClearTimeoutRef.current) {
         clearTimeout(speakerClearTimeoutRef.current);
         speakerClearTimeoutRef.current = null;
       }
       setCurrentSpeaker(null);
+      setDetectedSpeaker(null);
+      setHasSpeech(false);
+
       setErrorMsg("");
       sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
@@ -1006,16 +1024,16 @@ const App = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-slate-100 mb-2">Live Recording</h3>
-                {currentSpeaker ? (
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-400">Current Speaker:</span>
-                    <span className="text-2xl font-bold text-blue-400">{currentSpeaker}</span>
-                  </div>
-                ) : currentSpeaker === "Unknown" ? (
+                {displayedSpeaker === "Unknown" ? (
                   <div className="flex items-center gap-3">
                     <span className="text-slate-400">Speech detected:</span>
                     <span className="text-xl font-semibold text-yellow-400">Unknown Speaker</span>
                     <span className="text-slate-500 text-sm">(Not enrolled)</span>
+                  </div>
+                ) : displayedSpeaker ? (
+                  <div className="flex items-center gap-3">
+                    <span className="text-slate-400">Current Speaker:</span>
+                    <span className="text-2xl font-bold text-blue-400">{displayedSpeaker}</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">

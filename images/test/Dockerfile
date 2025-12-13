@@ -26,6 +26,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 
 COPY . .
 
+RUN pip install --no-cache-dir torch==2.7.0 torchaudio==2.7.0
+
 COPY --from=build-step /build/dist ./client
 
 ENV FLASK_STATIC_FOLDER=/app/client

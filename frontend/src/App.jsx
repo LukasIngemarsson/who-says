@@ -9,8 +9,10 @@ import SpeakerLegend from "./components/SpeakerLegend.jsx";
 import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
 import KnownSpeakers from "./components/KnownSpeakers.jsx";
 import SpeakerIdentificationModal from "./components/SpeakerIdentificationModal.jsx";
-import { useSpeakerDisplay } from "./utils/useSpeakerDisplay.js";
-import { useOverlapDisplay } from "./utils/useOverlapDisplay.js";
+import DemoMode from "./components/DemoMode.jsx";
+import LiveRecordingDisplay from "./components/LiveRecordingDisplay.jsx";
+import { useTranscriptAccumulator } from "./utils/useTranscriptAccumulator.js";
+import { useSpeakerDetection } from "./utils/useSpeakerDetection.js";
 
 // -------------------------------------------------------------------
 // TUNING + TESTING HELPERS
@@ -26,16 +28,6 @@ const CURRENT_SPEAKER_DISPLAY_HOLD_MS = 1500;
 
 // UI-only: how long to keep showing overlap indicator after overlap ends.
 const OVERLAP_DISPLAY_HOLD_MS = 2000;
-
-// Sentences/phrases to speak when testing repetitions & missing words.
-// Re-run these after changing backend tuning (ASR min-new-sec, VAD, etc.).
-const TEST_PHRASES = [
-  "Now, interesting. Interesting. Are you working?",
-  "Why aren't you working now? That's super interesting.",
-  "Okay, okay, okay, let's try this again.",
-  "Are you doing that? Are you there? Are you working?",
-  "This is so weird. This is really, really weird.",
-];
 
 const App = () => {
   const [mode, setMode] = useState("upload");
@@ -55,7 +47,6 @@ const App = () => {
   const [processing, setProcessing] = useState(false);
   const [numSpeakers, setNumSpeakers] = useState(2);
   const [errorMsg, setErrorMsg] = useState("");
-  const [liveMessages, setLiveMessages] = useState([]);
   const [tuning, setTuning] = useState(null);
   const [tuningSaving, setTuningSaving] = useState(false);
   const [tuningError, setTuningError] = useState("");
@@ -63,25 +54,20 @@ const App = () => {
   const [presetDetails, setPresetDetails] = useState({});
   const [selectedPreset, setSelectedPreset] = useState("default");
 
+  // Demo mode active state (controlled by DemoMode component)
+  const [isDemoMode, setIsDemoMode] = useState(false);
+
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [currentSpeaker, setCurrentSpeaker] = useState(null); // Current speaker during recording
-  const [overlapDetected, setOverlapDetected] = useState(false); // Overlap detection state
-  const [overlapSpeakers, setOverlapSpeakers] = useState([]); // Speakers in overlap
-  const [detectedSpeaker, setDetectedSpeaker] = useState(null);
-  const [hasSpeech, setHasSpeech] = useState(false);
-  // Speaker display state (UI-only hold/TTL)
-  const displayedSpeaker = useSpeakerDisplay({
-    speaker: detectedSpeaker,
-    hasSpeech,
-    holdMs: CURRENT_SPEAKER_DISPLAY_HOLD_MS,
+
+  // Use shared hooks for speaker detection and transcript accumulation
+  const speakerDetection = useSpeakerDetection({
+    speakerHoldMs: CURRENT_SPEAKER_DISPLAY_HOLD_MS,
+    overlapHoldMs: OVERLAP_DISPLAY_HOLD_MS,
   });
 
-  // Overlap display state (UI-only hold/TTL)
-  const { displayedOverlap, displayedSpeakers } = useOverlapDisplay({
-    overlapDetected,
-    overlapSpeakers,
-    holdMs: OVERLAP_DISPLAY_HOLD_MS,
+  const transcriptAccumulator = useTranscriptAccumulator({
+    maxWordsPerBubble: MAX_WORDS_PER_BUBBLE,
   });
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
@@ -94,22 +80,12 @@ const App = () => {
   const sessionIdRef = useRef(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   const audioRef = useRef(null);
-  const wsRef = useRef(null);
-  const wsReadyRef = useRef(false);
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
   const recordingTimerRef = useRef(null);
   const audioContextRef = useRef(null);
   const processorRef = useRef(null);
-  const audioBufferAccumulatorRef = useRef([]);
-  const lastProcessTimeRef = useRef(0);
-  const lastSnippetRef = useRef("");
-  const speakerHistoryRef = useRef([]);
-  const liveMessagesRef = useRef(null);
-  const speakerClearTimeoutRef = useRef(null);
-  const lastSpeechTimeRef = useRef(0); // Track when we last detected speech
-  const SPEAKER_DISPLAY_PERSIST_MS = 1000; // Keep speaker name visible for 5 seconds after speech stops (longer than chunk interval)
 
   const fetchKnownSpeakers = async () => {
     try {
@@ -162,12 +138,6 @@ const App = () => {
     loadPresets();
   }, []);
 
-  // Always keep the live messages scrolled to the bottom while recording
-  useEffect(() => {
-    if (liveMessagesRef.current) {
-      liveMessagesRef.current.scrollTop = liveMessagesRef.current.scrollHeight;
-    }
-  }, [liveMessages]);
 
   const decodeAudioForVisualization = async (arrayBuffer) => {
     const audioContext = new (window.AudioContext ||
@@ -191,8 +161,8 @@ const App = () => {
     setFullTranscriptionResult(null);
     setDuration(0);
     setErrorMsg("");
-    setLiveMessages([]);
-    lastSnippetRef.current = "";
+    transcriptAccumulator.clear();
+    speakerDetection.reset();
   };
 
   const handleFileUpload = async (e) => {
@@ -255,32 +225,76 @@ const App = () => {
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const decodeWavToFloat32_16k = async (arrayBuffer) => {
+  // Normalize audio to have consistent levels (peak normalization to 0.9)
+  const normalizeAudio = (samples) => {
+    let maxAbs = 0;
+    for (let i = 0; i < samples.length; i++) {
+      const abs = Math.abs(samples[i]);
+      if (abs > maxAbs) maxAbs = abs;
+    }
+    if (maxAbs < 0.001) {
+      // Audio is essentially silent
+      return samples;
+    }
+    const scale = 0.9 / maxAbs;
+    const normalized = new Float32Array(samples.length);
+    for (let i = 0; i < samples.length; i++) {
+      normalized[i] = samples[i] * scale;
+    }
+    return normalized;
+  };
+
+  const decodeWavToFloat32_16k = async (arrayBuffer, shouldNormalize = true) => {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
     const srcRate = decoded.sampleRate;
-    const srcData = decoded.getChannelData(0);
+    let srcData = decoded.getChannelData(0);
 
-    if (srcRate === 16000) {
-      return new Float32Array(srcData);
+    // If stereo or multi-channel, mix down to mono
+    if (decoded.numberOfChannels > 1) {
+      const mono = new Float32Array(decoded.length);
+      for (let ch = 0; ch < decoded.numberOfChannels; ch++) {
+        const channelData = decoded.getChannelData(ch);
+        for (let i = 0; i < decoded.length; i++) {
+          mono[i] += channelData[i] / decoded.numberOfChannels;
+        }
+      }
+      srcData = mono;
     }
 
-    // Resample using OfflineAudioContext
-    const durationSec = decoded.duration;
-    const targetLength = Math.max(1, Math.round(durationSec * 16000));
-    const offline = new OfflineAudioContext(1, targetLength, 16000);
-    const buffer = offline.createBuffer(1, srcData.length, srcRate);
-    buffer.copyToChannel(srcData, 0);
-    const source = offline.createBufferSource();
-    source.buffer = buffer;
-    source.connect(offline.destination);
-    source.start();
-    const rendered = await offline.startRendering();
-    return new Float32Array(rendered.getChannelData(0));
+    let output;
+    if (srcRate === 16000) {
+      output = new Float32Array(srcData);
+    } else {
+      // Resample using OfflineAudioContext
+      const durationSec = decoded.duration;
+      const targetLength = Math.max(1, Math.round(durationSec * 16000));
+      const offline = new OfflineAudioContext(1, targetLength, 16000);
+      const buffer = offline.createBuffer(1, srcData.length, srcRate);
+      buffer.copyToChannel(srcData, 0);
+      const source = offline.createBufferSource();
+      source.buffer = buffer;
+      source.connect(offline.destination);
+      source.start();
+      const rendered = await offline.startRendering();
+      output = new Float32Array(rendered.getChannelData(0));
+    }
+
+    // Normalize audio levels for better recognition
+    if (shouldNormalize) {
+      output = normalizeAudio(output);
+    }
+
+    console.log(`Audio decoded: ${(output.length / 16000).toFixed(1)}s, ${srcRate}Hz -> 16kHz, normalized=${shouldNormalize}`);
+    return output;
   };
 
   const float32ToBase64 = (float32) => {
-    const bytes = new Uint8Array(float32.buffer);
+    // IMPORTANT: When a Float32Array is sliced, .buffer still points to the original
+    // full buffer. We need to create a new ArrayBuffer with just this slice's data.
+    const float32Copy = new Float32Array(float32.length);
+    float32Copy.set(float32);
+    const bytes = new Uint8Array(float32Copy.buffer);
     let binary = "";
     for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
     return btoa(binary);
@@ -291,14 +305,23 @@ const App = () => {
     setErrorMsg("");
     setTestRunning(true);
     setTestJsonExpanded(false);
-    setLiveMessages([]);
-    setDetectedSpeaker(null);
-    setHasSpeech(false);
+    transcriptAccumulator.clear();
+    speakerDetection.reset();
 
     const sessionId = `testsound_${Date.now()}`;
     sessionIdRef.current = sessionId;
 
     try {
+      // Reset backend session state before starting test
+      await fetch("/reset_session", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          session_id: sessionId,
+          reset_global: "1",
+        }),
+      }).catch(err => console.warn("Failed to reset session:", err));
+
       const tuningSnap = await fetch("/tuning").then((r) => r.json()).catch(() => null);
       const wavBuf = await fetch("/testaudio/thetestsound.wav").then((r) => {
         if (!r.ok) throw new Error("Could not fetch testsound from server");
@@ -331,7 +354,7 @@ const App = () => {
           ...data,
         });
 
-        // Reuse existing live message rendering path
+        // Use appendSimple for testsound (simpler rendering)
         const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
           ? data.transcript_segments
           : (typeof data.transcript === "string" && data.transcript.trim()
@@ -341,7 +364,7 @@ const App = () => {
           const snippet = (seg.text || "").trim();
           if (!snippet) continue;
           const segSpeaker = seg.speaker || data.transcript_speaker || data.speaker;
-          setLiveMessages((prev) => [...prev, { id: `${Date.now()}_${Math.random()}`, speaker: segSpeaker, text: snippet }]);
+          transcriptAccumulator.appendSimple(segSpeaker, snippet);
         }
 
         if (testSleepMs > 0) {
@@ -468,24 +491,21 @@ const App = () => {
   const startRecording = async () => {
     try {
       // Request microphone access
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ 
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           sampleRate: 16000
-        } 
+        }
       });
-      
+
       streamRef.current = stream;
       chunksRef.current = [];
-      audioBufferAccumulatorRef.current = [];
-      lastProcessTimeRef.current = Date.now();
-      setLiveMessages([]);
-      lastSnippetRef.current = "";
+      transcriptAccumulator.clear();
+      speakerDetection.reset();
 
       // Set up Web Audio API for raw audio capture
-      // Don't force sampleRate - let it match the microphone's native rate
+      // Note: ScriptProcessorNode is deprecated but AudioWorklet requires more setup
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioContextRef.current = audioContext;
 
@@ -545,124 +565,12 @@ const App = () => {
           })
             .then(r => r.json())
             .then(data => {
-
-              if (data.has_speech) {
-                // Clear any pending timeout since we have active speech
-                if (speakerClearTimeoutRef.current) {
-                  clearTimeout(speakerClearTimeoutRef.current);
-                  speakerClearTimeoutRef.current = null;
-                }
-                lastSpeechTimeRef.current = Date.now();
-                setCurrentSpeaker(data.speaker || "Unknown");
-              } else {
-                // Delay clearing speaker name to keep it visible longer
-                if (!speakerClearTimeoutRef.current) {
-                  speakerClearTimeoutRef.current = setTimeout(() => {
-                    // Double-check that enough time has passed since last speech
-                    // This handles race conditions with out-of-order responses
-                    const elapsed = Date.now() - lastSpeechTimeRef.current;
-                    if (elapsed >= SPEAKER_DISPLAY_PERSIST_MS) {
-                      setCurrentSpeaker(null);
-                    }
-                    speakerClearTimeoutRef.current = null;
-                  }, SPEAKER_DISPLAY_PERSIST_MS);
-                }
-              }
-
-              // Handle overlap detection
-              if (data.overlap_detected) {
-                setOverlapDetected(true);
-                setOverlapSpeakers(data.overlap_speakers || []);
-              } else {
-                setOverlapDetected(false);
-                setOverlapSpeakers([]);
-              }
-              setDetectedSpeaker(data.speaker ?? null);
-              setHasSpeech(Boolean(data.has_speech));
-
-              const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
-                ? data.transcript_segments
-                : (typeof data.transcript === "string" && data.transcript.trim()
-                    ? [{ speaker: data.speaker, text: data.transcript.trim() }]
-                    : []);
-
-              for (const seg of segments) {
-                const snippet = (seg.text || "").trim();
-                if (!snippet) continue;
-
-                const segSpeaker = seg.speaker || data.transcript_speaker || data.speaker;
-
-                setLiveMessages(prev => {
-                  const transcriptSpeaker =
-                    segSpeaker ||
-                    data.transcript_speaker ||
-                    "Unknown";
-
-                  const updated = [...prev];
-                  const lastMsg = updated[updated.length - 1];
-
-                  const snippetWords = snippet.split(/\s+/).filter(Boolean);
-                  if (snippetWords.length === 0) {
-                    return updated;
-                  }
-
-                  // If we have a last bubble for the same speaker, try to
-                  // append words to it up to MAX_WORDS_PER_BUBBLE.
-                  if (lastMsg && lastMsg.speaker === transcriptSpeaker) {
-                    const lastWords = (lastMsg.text || "").split(/\s+/).filter(Boolean);
-                    const remaining = MAX_WORDS_PER_BUBBLE - lastWords.length;
-
-                    if (remaining > 0) {
-                      const toAppend = snippetWords.slice(0, remaining);
-                      const rest = snippetWords.slice(remaining);
-
-                      const newText = lastWords.length
-                        ? `${lastMsg.text} ${toAppend.join(" ")}`
-                        : toAppend.join(" ");
-
-                      updated[updated.length - 1] = {
-                        ...lastMsg,
-                        text: newText,
-                      };
-
-                      // If there are leftover words beyond the limit,
-                      // start a new bubble for them (and they may split
-                      // across multiple bubbles if very long).
-                      let remainingWords = rest;
-                      while (remainingWords.length > 0) {
-                        const chunk = remainingWords.slice(0, MAX_WORDS_PER_BUBBLE);
-                        remainingWords = remainingWords.slice(MAX_WORDS_PER_BUBBLE);
-                        updated.push({
-                          id: `${Date.now()}-${updated.length}`,
-                          text: chunk.join(" "),
-                          speaker: transcriptSpeaker,
-                        });
-                      }
-
-                      return updated;
-                    }
-                  }
-
-                  // Otherwise, start one or more new bubbles for this snippet
-                  let remainingWords = snippetWords;
-                  while (remainingWords.length > 0) {
-                    const chunk = remainingWords.slice(0, MAX_WORDS_PER_BUBBLE);
-                    remainingWords = remainingWords.slice(MAX_WORDS_PER_BUBBLE);
-                    updated.push({
-                      id: `${Date.now()}-${updated.length}`,
-                      text: chunk.join(" "),
-                      speaker: transcriptSpeaker,
-                    });
-                  }
-
-                  return updated;
-                });
-              }
+              // Use shared hooks for speaker detection and transcript accumulation
+              speakerDetection.processResponse(data);
+              transcriptAccumulator.appendFromResponse(data);
             })
             .catch(err => {
               console.error("Error identifying speaker:", err);
-              setHasSpeech(false);
-
             });
         }
       };
@@ -702,8 +610,8 @@ const App = () => {
         try {
           const blobType = mimeType || "audio/webm";
           const blob = new Blob(chunksRef.current, { type: blobType });
-          const file = new File([blob], `recording.${blobType.includes('ogg') ? 'ogg' : 'webm'}`, { 
-            type: blobType 
+          const file = new File([blob], `recording.${blobType.includes('ogg') ? 'ogg' : 'webm'}`, {
+            type: blobType
           });
           const fakeEvent = { target: { files: [file] } };
           await handleFileUpload(fakeEvent);
@@ -724,16 +632,20 @@ const App = () => {
       setIsRecording(true);
       handleReset();
       setRecordingTime(0);
-      if (speakerClearTimeoutRef.current) {
-        clearTimeout(speakerClearTimeoutRef.current);
-        speakerClearTimeoutRef.current = null;
-      }
-      setCurrentSpeaker(null);
-      setDetectedSpeaker(null);
-      setHasSpeech(false);
+      speakerDetection.reset();
 
       setErrorMsg("");
-      sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+
+      // Reset backend session state before starting recording
+      fetch("/reset_session", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          session_id: sessionIdRef.current,
+          reset_global: "1",
+        }),
+      }).catch(err => console.warn("Failed to reset session:", err));
 
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
@@ -765,8 +677,7 @@ const App = () => {
           mediaRecorderRef.current.stop();
         }
         setIsRecording(false);
-        setOverlapDetected(false);
-        setOverlapSpeakers([]);
+        speakerDetection.reset();
 
         if (recordingTimerRef.current) {
           clearInterval(recordingTimerRef.current);
@@ -1149,94 +1060,20 @@ const App = () => {
             numSpeakers={numSpeakers}
             setNumSpeakers={setNumSpeakers}
             isProcessing={processing}
+            isDemoMode={isDemoMode}
           />
         </div>
 
         {/* Current speaker indicator during recording */}
-        {isRecording && (
-          <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold text-slate-100 mb-2">Live Recording</h3>
-                {displayedSpeaker === "Unknown" ? (
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-400">Speech detected:</span>
-                    <span className="text-xl font-semibold text-yellow-400">Unknown Speaker</span>
-                    <span className="text-slate-500 text-sm">(Not enrolled)</span>
-                  </div>
-                ) : displayedSpeaker ? (
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-400">Current Speaker:</span>
-                    <span className="text-2xl font-bold text-blue-400">{displayedSpeaker}</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <span className="text-slate-400">Listening...</span>
-                    <span className="text-slate-500">(No speech detected)</span>
-                  </div>
-                )}
-
-                {/* Overlap Detection Indicator */}
-                {overlapDetected && (
-                  <div className="mt-3 p-3 bg-orange-500/20 border border-orange-500/40 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                      <span className="text-orange-400 font-semibold text-sm">Speaker Overlap Detected</span>
-                    </div>
-                    {overlapSpeakers.length > 0 && (
-                      <div className="mt-1 text-xs text-orange-300">
-                        Overlapping speakers: {overlapSpeakers.join(", ")}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Test script to read while tuning */}
-                <div className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3">
-                  <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
-                    Test phrases for tuning
-                  </h4>
-                  <ul className="space-y-1 text-sm text-slate-300">
-                    {TEST_PHRASES.map((p, idx) => (
-                      <li key={idx} className="flex gap-2">
-                        <span className="text-slate-500">{idx + 1}.</span>
-                        <span>{p}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {liveMessages.length > 0 && (
-                  <div
-                    ref={liveMessagesRef}
-                    className="mt-4 bg-slate-950/70 border border-slate-800 rounded-lg p-3 max-h-80 overflow-y-auto"
-                  >
-                    <div className="space-y-3">
-                      {liveMessages.map((msg) => (
-                        <div key={msg.id} className="flex flex-col items-start gap-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase">
-                              {msg.speaker || "Unknown"}
-                            </span>
-                          </div>
-                          <div className="bg-slate-800/80 rounded-2xl px-3 py-2 max-w-full">
-                            <p className="text-sm text-slate-100 leading-snug">
-                              {msg.text}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-slate-400">{recordingTime}s</span>
-              </div>
-            </div>
-          </div>
-        )}
+        <LiveRecordingDisplay
+          isRecording={isRecording}
+          recordingTime={recordingTime}
+          displayedSpeaker={speakerDetection.displayedSpeaker}
+          displayedOverlap={speakerDetection.displayedOverlap}
+          displayedSpeakers={speakerDetection.displayedSpeakers}
+          hasSpeech={speakerDetection.hasSpeech}
+          messages={transcriptAccumulator.messages}
+        />
 
         {errorMsg && (
           <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 flex items-center gap-2">
@@ -1253,6 +1090,15 @@ const App = () => {
           isRecording={isRecording}
           processing={processing}
           onSeek={handleSeek}
+        />
+
+        {/* Demo Mode: Stream uploaded audio as live recording */}
+        <DemoMode
+          disabled={isRecording || testRunning}
+          sessionIdRef={sessionIdRef}
+          onError={setErrorMsg}
+          onDemoStateChange={setIsDemoMode}
+          maxWordsPerBubble={MAX_WORDS_PER_BUBBLE}
         />
 
         {/* Debug tools */}
@@ -1291,10 +1137,10 @@ const App = () => {
               </label>
               <button
                 onClick={runTestSound}
-                disabled={testRunning || isRecording}
+                disabled={testRunning || isRecording || isDemoMode}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold"
               >
-                {testRunning ? "Running…" : "Run testsound"}
+                {testRunning ? "Running…" : isDemoMode ? "Demo running…" : "Run testsound"}
               </button>
               <button
                 onClick={handleDownloadTestJson}

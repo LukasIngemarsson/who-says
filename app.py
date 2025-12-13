@@ -13,6 +13,16 @@ from typing import Any, Dict, List, Tuple, Optional
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from loguru import logger
 from dotenv import load_dotenv
+
+# Configure file logging
+os.makedirs("logs", exist_ok=True)
+logger.add(
+    "logs/app.log",
+    rotation="10 MB",
+    retention="7 days",
+    level="DEBUG",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}",
+)
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -108,8 +118,8 @@ SOD_DETECTOR: Optional[Any] = None
 SOD_DETECTOR_LOCK = threading.Lock()
 
 # Overlap detection configuration
-OVERLAP_BUFFER_SEC: float = 0.8           # How much audio to buffer before detection
-OVERLAP_DETECTION_INTERVAL_SEC: float = 2.0  # Minimum interval between detections
+OVERLAP_BUFFER_SEC: float = 0.6           # How much audio to buffer before detection
+OVERLAP_DETECTION_INTERVAL_SEC: float = 1.0  # Minimum interval between detections
 OVERLAP_MIN_DURATION_SEC: float = 0.1     # Minimum overlap duration to report
 OVERLAP_DETECTION_ENABLED: bool = True    # Global toggle
 
@@ -130,7 +140,10 @@ ASR_PROMPT_MAX_CHARS = 240
 USE_INITIAL_PROMPT = True
 
 # Diarization: how much speech to accumulate for embedding
-MIN_SPEECH_SEC = 0.8  # require 0.8s of speech before identifying speaker
+# Lower = finer speaker timeline granularity (better word attribution)
+# Higher = more stable speaker detection (more audio context)
+MIN_SPEECH_SEC = 0.5  # require 0.5s of speech before identifying speaker
+SPEAKER_WARMUP_SEC = 2.0  # require more audio at start before first identification
 
 # Diarization state
 CURRENT_SPEAKER: Optional[str] = None
@@ -142,7 +155,7 @@ SWITCH_COOLDOWN: float = 1.0   # seconds - prevent rapid speaker flickering
 PREV_NO_SPEECH_DETECTED: bool = False
 
 SIM_CONF_FLOOR = 0.05
-SIM_CONF_CEIL = 0.50
+SIM_CONF_CEIL = 0.35
 
 # -------------------------------------------------
 # Tuning presets (loaded from JSON file)
@@ -459,6 +472,7 @@ def _get_sod_detector() -> Optional[Any]:
         return SOD_DETECTOR
 
     if not PIPELINE_AVAILABLE or pipeline is None:
+        logger.warning("SOD detector skipped: pipeline not available")
         return None
 
     with SOD_DETECTOR_LOCK:
@@ -468,6 +482,7 @@ def _get_sod_detector() -> Optional[Any]:
 
         try:
             device = pipeline.config.device
+            logger.info(f"Initializing PyannoteSOD detector on device: {device}")
 
             from pipeline.speaker_segmentation.SO.Detection import PyannoteSOD
             SOD_DETECTOR = PyannoteSOD(
@@ -477,9 +492,14 @@ def _get_sod_detector() -> Optional[Any]:
                 device=device,
             )
 
-            logger.info("Initialized PyannoteSOD detector for overlap detection")
+            logger.info("Initialized PyannoteSOD detector for overlap detection successfully")
+        except ImportError as e:
+            logger.error(f"Failed to import PyannoteSOD - module not found: {e}")
+            SOD_DETECTOR = None
         except Exception as e:
             logger.error(f"Failed to initialize SOD detector: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             SOD_DETECTOR = None
 
     return SOD_DETECTOR
@@ -489,20 +509,27 @@ def _get_speakers_in_range(
     session_id: str,
     start_time: float,
     end_time: float,
+    lookback_sec: float = 2.0,
 ) -> List[str]:
     """
     Get list of speakers who were active in the given time range.
     Uses SESSION_SPEAKER_TIMELINE.
+
+    Since the timeline only tracks one speaker at a time, we also look back
+    a few seconds to find recent speakers who might be involved in an overlap.
     """
     timeline = SESSION_SPEAKER_TIMELINE.get(session_id, [])
     speakers = set()
+
+    # Extend the search window to catch recent speakers
+    extended_start = start_time - lookback_sec
 
     for seg in timeline:
         seg_start = float(seg.get("start", 0.0))
         seg_end = float(seg.get("end", seg_start))
 
-        # Check for overlap
-        if seg_start < end_time and seg_end > start_time:
+        # Check for overlap with extended window
+        if seg_start < end_time and seg_end > extended_start:
             speaker = seg.get("speaker")
             if speaker:
                 speakers.add(speaker)
@@ -534,10 +561,12 @@ def _process_overlap_detection(
         List of overlap segments detected, or None if detection not run.
     """
     if not OVERLAP_DETECTION_ENABLED:
+        logger.debug("Overlap detection disabled")
         return None
 
     state = SESSION_OVERLAP_STATE.get(session_id)
     if state is None:
+        logger.debug(f"No overlap state for session {session_id}")
         return None
 
     buffer = state["buffer"]
@@ -549,22 +578,30 @@ def _process_overlap_detection(
     time_since_last = current_time - last_detection
 
     if buffer_duration < OVERLAP_BUFFER_SEC:
+        logger.debug(f"Overlap buffer too short: {buffer_duration:.2f}s < {OVERLAP_BUFFER_SEC}s")
         return None
 
     if time_since_last < OVERLAP_DETECTION_INTERVAL_SEC:
+        logger.debug(f"Too soon since last detection: {time_since_last:.2f}s < {OVERLAP_DETECTION_INTERVAL_SEC}s")
         return None
+
+    logger.info(f"Running overlap detection: buffer={buffer_duration:.2f}s, time_since_last={time_since_last:.2f}s")
 
     # Get SOD detector
     detector = _get_sod_detector()
     if detector is None:
+        logger.warning("SOD detector not available - skipping overlap detection")
         return None
 
     # Run detection
     try:
         with torch.inference_mode():
             overlap_segments = detector(buffer, sr)
+        logger.info(f"SOD detection returned {len(overlap_segments)} overlap segments")
     except Exception as e:
         logger.error(f"SOD detection error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return None
 
     # Update state
@@ -576,8 +613,16 @@ def _process_overlap_detection(
         start_abs = buffer_start_time + start_rel
         end_abs = buffer_start_time + end_rel
 
-        # Identify speakers involved using speaker timeline
+        # Identify speakers involved using speaker timeline (with lookback)
         speakers = _get_speakers_in_range(session_id, start_abs, end_abs)
+
+        # SOD detected overlap means 2+ voices - if we only found 1 speaker,
+        # add a placeholder for the unknown speaker
+        if len(speakers) < 2:
+            if CURRENT_SPEAKER and CURRENT_SPEAKER not in speakers:
+                speakers.append(CURRENT_SPEAKER)
+            if len(speakers) < 2:
+                speakers.append("Unknown speaker")
 
         overlap_info = {
             "start": start_abs,
@@ -1146,8 +1191,24 @@ def identify_speaker():
                 "last_word_end": float("-inf"),
                 "last_snippet": "",
                 "prompt": "",
+                "session_start_time": time.time(),  # Track when session started for warmup
             }
         asr_state = SESSION_ASR_STATE[session_id]
+
+        # Helper: get speaker label respecting warmup period
+        def get_speaker_label_for_response():
+            """Return speaker label, using None during warmup to avoid 'Unknown'."""
+            session_start = asr_state.get("session_start_time", 0.0)
+            elapsed = time.time() - session_start
+            in_warmup = elapsed < SPEAKER_WARMUP_SEC
+            logger.info(f"[warmup] elapsed={elapsed:.2f}s, warmup_threshold={SPEAKER_WARMUP_SEC}s, in_warmup={in_warmup}, CURRENT_SPEAKER={CURRENT_SPEAKER}")
+            if CURRENT_SPEAKER is not None:
+                return CURRENT_SPEAKER
+            elif in_warmup:
+                return None  # Don't show "Unknown" during warmup
+            else:
+                return "Unknown"
+
         # Ensure waveform is 1D for ASR buffer
         waveform_for_asr = waveform.detach()
         while waveform_for_asr.dim() > 1:
@@ -1252,7 +1313,7 @@ def identify_speaker():
                 live_text = snippet_obj.get("text") if isinstance(snippet_obj, dict) else (snippet_obj or "")
                 ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
                 resp = {
-                    "speaker": CURRENT_SPEAKER,
+                    "speaker": get_speaker_label_for_response(),
                     "has_speech": bool(live_text),
                     "confidence": ui_conf,
                     "transcript": live_text,
@@ -1272,7 +1333,7 @@ def identify_speaker():
             live_text, transcript_segments = _assign_words_to_speakers(
                 session_id,
                 snippet_obj,
-                CURRENT_SPEAKER or "Unknown",
+                get_speaker_label_for_response() or "",
             )
             live_text = squash_adjacent_short_repeats(live_text)
             for seg in transcript_segments:
@@ -1287,18 +1348,21 @@ def identify_speaker():
                     now_ovlp = time.time()
                     new_overlaps = _process_overlap_detection(session_id, sr, now_ovlp)
                     if new_overlaps:
-                        overlap_detected = True
                         all_spk: set = set()
                         for ovlp in new_overlaps:
                             all_spk.update(ovlp.get("speakers", []))
                         overlap_speakers_list = list(all_spk)
                         overlap_segments_list = new_overlaps
+                        # SOD detected overlap - report it even if we can't identify both speakers
+                        # (speaker timeline only tracks one speaker at a time)
+                        overlap_detected = True
+                        logger.info(f"Overlap detected: {len(new_overlaps)} segments, speakers: {overlap_speakers_list}")
                 except Exception as e:
                     logger.warning(f"Overlap detection failed: {e}")
 
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
             resp = {
-                "speaker": CURRENT_SPEAKER,
+                "speaker": get_speaker_label_for_response(),
                 "has_speech": bool(live_text),
                 "confidence": ui_conf,
                 "transcript": live_text,
@@ -1331,7 +1395,7 @@ def identify_speaker():
 
         SPEECH_BUFFER = torch.cat([SPEECH_BUFFER, new_speech])
 
-        MAX_SPEECH_SAMPLES = int(0.8 * sr)
+        MAX_SPEECH_SAMPLES = int(MIN_SPEECH_SEC * sr)
         if SPEECH_BUFFER.shape[0] > MAX_SPEECH_SAMPLES * 1.5:
             SPEECH_BUFFER = SPEECH_BUFFER[-MAX_SPEECH_SAMPLES:]
 
@@ -1345,7 +1409,7 @@ def identify_speaker():
             snippet_obj = get_live_snippet_for_session(session_id, sr)
             live_text = snippet_obj.get("text") if isinstance(snippet_obj, dict) else (snippet_obj or "")
             return jsonify({
-                "speaker": CURRENT_SPEAKER,
+                "speaker": get_speaker_label_for_response(),
                 "has_speech": True,
                 "confidence": ui_conf,
                 "message": "Collecting more speech...",
@@ -1381,8 +1445,8 @@ def identify_speaker():
             logger.debug("No known speakers enrolled - cannot identify")
 
         now = time.time()
-        MIN_CONFIDENCE = 0.10
-        MARGIN_THRESHOLD = 0.03
+        MIN_CONFIDENCE = 0.21
+        MARGIN_THRESHOLD = 0.09
 
         margin = best_score - second_best if second_best > -1.0 else best_score
 
@@ -1405,9 +1469,17 @@ def identify_speaker():
                         CURRENT_CONFIDENCE = best_score
                         LAST_SWITCH_TIME = now
                 else:
-                    ALPHA = 0.1  # low alpha = more stable, less jittery
+                    ALPHA = 0.3  # higher alpha = faster response to actual matches
                     CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                     LAST_SWITCH_TIME = now
+        else:
+            # Speech detected but no confident match - show as unknown
+            # Only clear after cooldown to avoid flickering
+            if CURRENT_SPEAKER is not None and now - LAST_SWITCH_TIME >= SWITCH_COOLDOWN:
+                logger.info(f"[identify_speaker] Clearing speaker (low confidence: {best_score:.3f})")
+                CURRENT_SPEAKER = None
+                CURRENT_CONFIDENCE = 0.0
+                LAST_SWITCH_TIME = now
 
         # Speaker timeline
         timeline = SESSION_SPEAKER_TIMELINE.setdefault(session_id, [])
@@ -1426,11 +1498,14 @@ def identify_speaker():
 
         ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
 
+        # Get speaker label (respects warmup period)
+        current_speaker_label = get_speaker_label_for_response()
+
         snippet_obj = get_live_snippet_for_session(session_id, sr)
         live_text, transcript_segments = _assign_words_to_speakers(
             session_id,
             snippet_obj,
-            CURRENT_SPEAKER or "Unknown",
+            current_speaker_label or "",  # Use empty string to avoid None issues in function
         )
 
         live_text = squash_adjacent_short_repeats(live_text)
@@ -1446,21 +1521,24 @@ def identify_speaker():
             try:
                 now_ovlp = time.time()
                 new_overlaps = _process_overlap_detection(session_id, sr, now_ovlp)
-                logger.debug(f"Overlap detection result: {new_overlaps}")
 
                 if new_overlaps:
-                    overlap_detected = True
                     # Collect unique speakers from all new overlaps
                     all_speakers: set = set()
                     for ovlp in new_overlaps:
                         all_speakers.update(ovlp.get("speakers", []))
                     overlap_speakers = list(all_speakers)
                     overlap_segments = new_overlaps
+                    # SOD detected overlap - report it even if we can't identify both speakers
+                    # (speaker timeline only tracks one speaker at a time)
+                    overlap_detected = True
+                    logger.info(f"Overlap detected: {len(new_overlaps)} segments, speakers: {overlap_speakers}")
             except Exception as e:
                 logger.warning(f"Overlap detection failed: {e}")
 
+        # Use current_speaker_label already calculated above (respects warmup period)
         resp: Dict[str, Any] = {
-            "speaker": CURRENT_SPEAKER or "Unknown",
+            "speaker": current_speaker_label,  # None during warmup, "Unknown" after
             "has_speech": bool(live_text),
             "confidence": ui_conf,
             "transcript": live_text,

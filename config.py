@@ -77,7 +77,7 @@ class SOSeparationSpeechBrainConfig(BaseConfig):
 class SOConfig:
     detection_type: TypeSOD = TypeSOD.NEMO
     separation_type: TypeSOS = TypeSOS.SPEECHBRAIN
-    min_overlap_confidence: float = 0.5  # Minimum confidence to match separated speaker to cluster (lowered to include more overlaps)
+    min_overlap_confidence: float = 0.35  # Minimum confidence to match separated speaker to cluster (lowered to include more overlaps)
     detection_pyannote: SODetectionPyannoteConfig = field(default_factory=SODetectionPyannoteConfig)
     detection_nemo: SODetectionNemoConfig = field(default_factory=SODetectionNemoConfig)
     separation_pyannote: SOSeparationPyannoteConfig = field(default_factory=SOSeparationPyannoteConfig)

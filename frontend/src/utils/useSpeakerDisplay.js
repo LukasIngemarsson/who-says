@@ -3,43 +3,45 @@ import { useEffect, useRef, useState } from "react";
 /**
  * Decouples speaker detection from UI display duration.
  *
- * - When `hasSpeech` is true, we display `speaker` immediately and remember the timestamp.
- * - When `hasSpeech` becomes false, we keep showing the last speaker for `holdMs`.
- *   Repeated "no speech" updates do NOT extend the hold.
+ * - When `hasSpeech` is true, we display `speaker` immediately (no delay).
+ * - When `hasSpeech` becomes false, we keep showing the last speaker for `holdMs`
+ *   before showing "no speech detected". The hold only applies to the transition
+ *   from speech to silence, NOT to speaker switches.
  */
 export function useSpeakerDisplay({ speaker, hasSpeech, holdMs = 1500 }) {
   const [displayedSpeaker, setDisplayedSpeaker] = useState(null);
-  const lastSpeechAtRef = useRef(0);
+  const lastSpeakerRef = useRef(null);
   const timeoutRef = useRef(null);
 
   useEffect(() => {
+    // Always clear any pending timeout when inputs change
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
 
     if (hasSpeech) {
-      lastSpeechAtRef.current = Date.now();
-      setDisplayedSpeaker(speaker ?? "Unknown");
+      // Speech detected - show current speaker IMMEDIATELY (no hold delay)
+      // Note: speaker can be null during warmup, preserve that to avoid showing "Unknown"
+      if (speaker !== null) {
+        lastSpeakerRef.current = speaker;
+      }
+      setDisplayedSpeaker(speaker);
       return;
     }
 
-    const last = lastSpeechAtRef.current;
-    if (!last) {
+    // No speech detected - apply hold before showing "no speech"
+    // Only apply hold if we had a previous speaker to hold
+    if (lastSpeakerRef.current === null) {
       setDisplayedSpeaker(null);
       return;
     }
 
-    const remaining = Math.max(0, (holdMs ?? 0) - (Date.now() - last));
-    if (remaining === 0) {
-      setDisplayedSpeaker(null);
-      return;
-    }
-
+    // Keep showing the last speaker, then clear after holdMs
     timeoutRef.current = setTimeout(() => {
       setDisplayedSpeaker(null);
       timeoutRef.current = null;
-    }, remaining);
+    }, holdMs);
 
     return () => {
       if (timeoutRef.current) {

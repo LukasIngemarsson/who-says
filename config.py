@@ -173,9 +173,9 @@ class VADConfig:
 @dataclass
 class ASRConfig(BaseConfig):
     asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "large-v3-turbo" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
+    model: str = "large-v3" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    compute_type: str = "float16"  # int8 can cause cuBLAS issues with alignment
+    compute_type: str = "float32"  # int8 can cause cuBLAS issues with alignment
     language: str = "en"
 
     # Simple profile selector: "speed" | "balanced" | "accuracy"

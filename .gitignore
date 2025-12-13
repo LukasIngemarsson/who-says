@@ -18,3 +18,7 @@ venv
 pretrained_models/
 .venv/
 *.pt
+
+node-*
+
+.npm

@@ -10,6 +10,7 @@ import AddSpeakerModal from "./components/AddSpeakerModal.jsx";
 import KnownSpeakers from "./components/KnownSpeakers.jsx";
 import SpeakerIdentificationModal from "./components/SpeakerIdentificationModal.jsx";
 import { useSpeakerDisplay } from "./utils/useSpeakerDisplay.js";
+import { useOverlapDisplay } from "./utils/useOverlapDisplay.js";
 
 // -------------------------------------------------------------------
 // TUNING + TESTING HELPERS
@@ -21,7 +22,10 @@ const MAX_WORDS_PER_BUBBLE = 18; // examples: 12, 18, 24
 
 // UI-only: how long to keep showing the last speaker after speech stops.
 // This is intentionally decoupled from speaker detection logic.
-const CURRENT_SPEAKER_DISPLAY_HOLD_MS = 100;
+const CURRENT_SPEAKER_DISPLAY_HOLD_MS = 1500;
+
+// UI-only: how long to keep showing overlap indicator after overlap ends.
+const OVERLAP_DISPLAY_HOLD_MS = 2000;
 
 // Sentences/phrases to speak when testing repetitions & missing words.
 // Re-run these after changing backend tuning (ASR min-new-sec, VAD, etc.).
@@ -55,6 +59,9 @@ const App = () => {
   const [tuning, setTuning] = useState(null);
   const [tuningSaving, setTuningSaving] = useState(false);
   const [tuningError, setTuningError] = useState("");
+  const [availablePresets, setAvailablePresets] = useState([]);
+  const [presetDetails, setPresetDetails] = useState({});
+  const [selectedPreset, setSelectedPreset] = useState("default");
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -68,6 +75,13 @@ const App = () => {
     speaker: detectedSpeaker,
     hasSpeech,
     holdMs: CURRENT_SPEAKER_DISPLAY_HOLD_MS,
+  });
+
+  // Overlap display state (UI-only hold/TTL)
+  const { displayedOverlap, displayedSpeakers } = useOverlapDisplay({
+    overlapDetected,
+    overlapSpeakers,
+    holdMs: OVERLAP_DISPLAY_HOLD_MS,
   });
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
@@ -95,7 +109,7 @@ const App = () => {
   const liveMessagesRef = useRef(null);
   const speakerClearTimeoutRef = useRef(null);
   const lastSpeechTimeRef = useRef(0); // Track when we last detected speech
-  const SPEAKER_DISPLAY_PERSIST_MS = 5000; // Keep speaker name visible for 5 seconds after speech stops (longer than chunk interval)
+  const SPEAKER_DISPLAY_PERSIST_MS = 1000; // Keep speaker name visible for 5 seconds after speech stops (longer than chunk interval)
 
   const fetchKnownSpeakers = async () => {
     try {
@@ -112,7 +126,7 @@ const App = () => {
     fetchKnownSpeakers();
   }, [speakerRefreshTrigger]);
 
-  // Fetch initial tuning snapshot for the debug panel
+  // Fetch initial tuning snapshot and available presets
   useEffect(() => {
     const loadTuning = async () => {
       try {
@@ -120,11 +134,32 @@ const App = () => {
         if (!res.ok) return;
         const data = await res.json();
         setTuning(data);
+        if (data.available_presets) {
+          setAvailablePresets(data.available_presets);
+        }
       } catch (e) {
         console.warn("Failed to load tuning snapshot:", e);
       }
     };
+
+    const loadPresets = async () => {
+      try {
+        const res = await fetch("/tuning/presets");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.presets) {
+          setAvailablePresets(data.presets);
+        }
+        if (data.details) {
+          setPresetDetails(data.details);
+        }
+      } catch (e) {
+        console.warn("Failed to load presets:", e);
+      }
+    };
+
     loadTuning();
+    loadPresets();
   }, []);
 
   // Always keep the live messages scrolled to the bottom while recording
@@ -360,7 +395,7 @@ const App = () => {
         min_speech_sec: tuning.streaming?.min_speech_sec,
         min_asr_interval_sec: tuning.streaming?.min_asr_interval_sec,
         max_asr_buffer_sec: tuning.streaming?.max_asr_buffer_sec,
-          wcpp_context_sec: tuning.streaming?.wcpp_context_sec,
+        wcpp_context_sec: tuning.streaming?.wcpp_context_sec,
         cross_tail_dup_pad_sec: tuning.streaming?.cross_tail_dup_pad_sec,
         use_initial_prompt: tuning.streaming?.use_initial_prompt,
         asr_prompt_max_chars: tuning.streaming?.asr_prompt_max_chars,
@@ -372,6 +407,11 @@ const App = () => {
         vad_min_speech_ms: tuning.vad?.min_speech_duration_ms,
         vad_min_silence_ms: tuning.vad?.min_silence_duration_ms,
         vad_speech_pad_ms: tuning.vad?.speech_pad_ms,
+        // Overlap detection
+        overlap_detection_enabled: tuning.overlap?.enabled,
+        overlap_buffer_sec: tuning.overlap?.buffer_sec,
+        overlap_detection_interval_sec: tuning.overlap?.detection_interval_sec,
+        overlap_min_duration_sec: tuning.overlap?.min_duration_sec,
       };
 
       const res = await fetch("/tuning", {
@@ -410,6 +450,7 @@ const App = () => {
       // backend responds {message, settings}; fetch snapshot so UI reflects all values
       const snap = await fetch("/tuning").then((r) => r.json());
       setTuning(snap);
+      setSelectedPreset(presetName);
       console.log(updated?.message || `Applied preset ${presetName}`);
     } catch (e) {
       console.error(e);
@@ -417,6 +458,11 @@ const App = () => {
     } finally {
       setTuningSaving(false);
     }
+  };
+
+  const handlePresetChange = (e) => {
+    const presetName = e.target.value;
+    setSelectedPreset(presetName);
   };
 
   const startRecording = async () => {
@@ -471,7 +517,7 @@ const App = () => {
 
         // Calculate target size at native sample rate that corresponds to desired 16kHz chunk
         // Larger chunks = more stable speaker detection, less flickering
-        const TARGET_16K_SIZE = 48000; // 3 seconds at 16kHz for all backends
+        const TARGET_16K_SIZE = 8000; // 0.5 seconds at 16kHz
         const TARGET_SIZE = Math.ceil(TARGET_16K_SIZE * (nativeSampleRate / 16000));
 
         while (bufferAccumulator.length >= TARGET_SIZE) {
@@ -806,31 +852,44 @@ const App = () => {
 
         <KnownSpeakers refreshTrigger={speakerRefreshTrigger} />
 
-        {/* Tuning panel for live experimentation */}
-        {tuning && (
+        {/* Tuning panel for live experimentation - driven by presets from tuning_presets.json */}
+        {(tuning || availablePresets.length > 0) && (
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal size={16} className="text-slate-400" />
                 <h3 className="text-sm font-semibold text-slate-100">
                   Tuning (advanced)
                 </h3>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Preset selector dropdown */}
+                <select
+                  value={selectedPreset}
+                  onChange={handlePresetChange}
+                  className="text-xs px-2 py-1 rounded bg-slate-950 border border-slate-700 text-slate-200"
+                >
+                  {availablePresets.map((preset) => (
+                    <option key={preset} value={preset}>
+                      {preset.replace(/_/g, " ")}
+                    </option>
+                  ))}
+                </select>
                 <button
-                  onClick={() => applyPreset("thetestsound_script")}
+                  onClick={() => applyPreset(selectedPreset)}
                   disabled={tuningSaving}
                   className="text-xs px-3 py-1 rounded-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium"
-                  title="Apply a preset tuned for thetestsound script"
+                  title={`Apply "${selectedPreset}" preset`}
                 >
-                  TestSound preset
+                  {tuningSaving ? "Applying..." : "Apply Preset"}
                 </button>
                 <button
                   onClick={handleApplyTuning}
                   disabled={tuningSaving}
                   className="text-xs px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium"
+                  title="Apply custom values (edited below)"
                 >
-                  {tuningSaving ? "Applying..." : "Apply"}
+                  Apply Custom
                 </button>
               </div>
             </div>
@@ -838,6 +897,13 @@ const App = () => {
             {tuningError && (
               <div className="text-xs text-red-400 flex items-center gap-1">
                 <AlertCircle size={12} /> {tuningError}
+              </div>
+            )}
+
+            {/* Show preset description if available */}
+            {presetDetails[selectedPreset]?._comment && (
+              <div className="text-xs text-slate-400 italic">
+                {presetDetails[selectedPreset]._comment}
               </div>
             )}
 
@@ -851,27 +917,17 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.asr_min_new_sec ?? ""}
+                    value={tuning?.streaming?.asr_min_new_sec ?? presetDetails[selectedPreset]?.asr_min_new_sec ?? ""}
                     onChange={handleTuningFieldChange("streaming", "asr_min_new_sec", (v) => parseFloat(v || "0"))}
-                  />
-                </label>
-                <label className="flex items-center justify-between gap-2">
-                  <span>Min speech sec</span>
-                  <input
-                    type="number"
-                    step="0.05"
-                    className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.min_speech_sec ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "min_speech_sec", (v) => parseFloat(v || "0"))}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
                   <span>Cross-tail pad (s)</span>
                   <input
                     type="number"
-                    step="0.05"
+                    step="0.01"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.cross_tail_dup_pad_sec ?? ""}
+                    value={tuning?.streaming?.cross_tail_dup_pad_sec ?? presetDetails[selectedPreset]?.cross_tail_dup_pad_sec ?? ""}
                     onChange={handleTuningFieldChange("streaming", "cross_tail_dup_pad_sec", (v) => parseFloat(v || "0"))}
                   />
                 </label>
@@ -881,7 +937,7 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.min_asr_interval_sec ?? ""}
+                    value={tuning?.streaming?.min_asr_interval_sec ?? presetDetails[selectedPreset]?.min_asr_interval_sec ?? ""}
                     onChange={handleTuningFieldChange("streaming", "min_asr_interval_sec", (v) => parseFloat(v || "0"))}
                   />
                 </label>
@@ -891,7 +947,7 @@ const App = () => {
                     type="number"
                     step="0.5"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.max_asr_buffer_sec ?? ""}
+                    value={tuning?.streaming?.max_asr_buffer_sec ?? presetDetails[selectedPreset]?.max_asr_buffer_sec ?? ""}
                     onChange={handleTuningFieldChange("streaming", "max_asr_buffer_sec", (v) => parseFloat(v || "0"))}
                   />
                 </label>
@@ -902,7 +958,7 @@ const App = () => {
                     step="0.25"
                     min="0"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.wcpp_context_sec ?? ""}
+                    value={tuning?.streaming?.wcpp_context_sec ?? presetDetails[selectedPreset]?.wcpp_context_sec ?? ""}
                     onChange={handleTuningFieldChange("streaming", "wcpp_context_sec", (v) => parseFloat(v || "0"))}
                   />
                 </label>
@@ -911,7 +967,7 @@ const App = () => {
                   <input
                     type="checkbox"
                     className="accent-indigo-500"
-                    checked={!!tuning.streaming?.use_initial_prompt}
+                    checked={tuning?.streaming?.use_initial_prompt ?? presetDetails[selectedPreset]?.use_initial_prompt ?? true}
                     onChange={(e) =>
                       setTuning((prev) => ({
                         ...(prev || {}),
@@ -930,7 +986,7 @@ const App = () => {
                     step="20"
                     min="0"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.streaming?.asr_prompt_max_chars ?? ""}
+                    value={tuning?.streaming?.asr_prompt_max_chars ?? presetDetails[selectedPreset]?.asr_prompt_max_chars ?? ""}
                     onChange={handleTuningFieldChange("streaming", "asr_prompt_max_chars", (v) => parseInt(v || "0", 10))}
                   />
                 </label>
@@ -944,7 +1000,7 @@ const App = () => {
                   <input
                     type="number"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.asr?.beam_size ?? ""}
+                    value={tuning?.asr?.beam_size ?? presetDetails[selectedPreset]?.beam_size ?? ""}
                     onChange={handleTuningFieldChange("asr", "beam_size", (v) => parseInt(v || "0", 10))}
                   />
                 </label>
@@ -953,7 +1009,7 @@ const App = () => {
                   <input
                     type="number"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.asr?.best_of ?? ""}
+                    value={tuning?.asr?.best_of ?? presetDetails[selectedPreset]?.best_of ?? ""}
                     onChange={handleTuningFieldChange("asr", "best_of", (v) => parseInt(v || "0", 10))}
                   />
                 </label>
@@ -968,7 +1024,7 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.vad?.threshold ?? ""}
+                    value={tuning?.vad?.threshold ?? presetDetails[selectedPreset]?.vad_threshold ?? ""}
                     onChange={handleTuningFieldChange("vad", "threshold", (v) => parseFloat(v || "0"))}
                   />
                 </label>
@@ -977,7 +1033,7 @@ const App = () => {
                   <input
                     type="number"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.vad?.min_speech_duration_ms ?? ""}
+                    value={tuning?.vad?.min_speech_duration_ms ?? presetDetails[selectedPreset]?.vad_min_speech_ms ?? ""}
                     onChange={handleTuningFieldChange("vad", "min_speech_duration_ms", (v) => parseInt(v || "0", 10))}
                   />
                 </label>
@@ -986,7 +1042,7 @@ const App = () => {
                   <input
                     type="number"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.vad?.min_silence_duration_ms ?? ""}
+                    value={tuning?.vad?.min_silence_duration_ms ?? presetDetails[selectedPreset]?.vad_min_silence_ms ?? ""}
                     onChange={handleTuningFieldChange("vad", "min_silence_duration_ms", (v) => parseInt(v || "0", 10))}
                   />
                 </label>
@@ -995,8 +1051,86 @@ const App = () => {
                   <input
                     type="number"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning.vad?.speech_pad_ms ?? ""}
+                    value={tuning?.vad?.speech_pad_ms ?? presetDetails[selectedPreset]?.vad_speech_pad_ms ?? ""}
                     onChange={handleTuningFieldChange("vad", "speech_pad_ms", (v) => parseInt(v || "0", 10))}
+                  />
+                </label>
+              </div>
+            </div>
+
+            {/* Overlap Detection Settings */}
+            <div className="border-t border-slate-800 pt-3 mt-3">
+              <div className="font-semibold text-slate-200 text-xs mb-2">Overlap Detection</div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-300">
+                <label className="flex items-center justify-between gap-2">
+                  <span>Enabled</span>
+                  <input
+                    type="checkbox"
+                    className="accent-indigo-500"
+                    checked={tuning?.overlap?.enabled ?? presetDetails[selectedPreset]?.overlap_detection_enabled ?? true}
+                    onChange={(e) =>
+                      setTuning((prev) => ({
+                        ...(prev || {}),
+                        overlap: {
+                          ...(prev?.overlap || {}),
+                          enabled: e.target.checked,
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Buffer (s)</span>
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning?.overlap?.buffer_sec ?? presetDetails[selectedPreset]?.overlap_buffer_sec ?? ""}
+                    onChange={(e) =>
+                      setTuning((prev) => ({
+                        ...(prev || {}),
+                        overlap: {
+                          ...(prev?.overlap || {}),
+                          buffer_sec: parseFloat(e.target.value || "0"),
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Interval (s)</span>
+                  <input
+                    type="number"
+                    step="0.5"
+                    className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning?.overlap?.detection_interval_sec ?? presetDetails[selectedPreset]?.overlap_detection_interval_sec ?? ""}
+                    onChange={(e) =>
+                      setTuning((prev) => ({
+                        ...(prev || {}),
+                        overlap: {
+                          ...(prev?.overlap || {}),
+                          detection_interval_sec: parseFloat(e.target.value || "0"),
+                        },
+                      }))
+                    }
+                  />
+                </label>
+                <label className="flex items-center justify-between gap-2">
+                  <span>Min dur (s)</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
+                    value={tuning?.overlap?.min_duration_sec ?? presetDetails[selectedPreset]?.overlap_min_duration_sec ?? ""}
+                    onChange={(e) =>
+                      setTuning((prev) => ({
+                        ...(prev || {}),
+                        overlap: {
+                          ...(prev?.overlap || {}),
+                          min_duration_sec: parseFloat(e.target.value || "0"),
+                        },
+                      }))
+                    }
                   />
                 </label>
               </div>

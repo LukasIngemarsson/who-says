@@ -108,7 +108,7 @@ SOD_DETECTOR: Optional[Any] = None
 SOD_DETECTOR_LOCK = threading.Lock()
 
 # Overlap detection configuration
-OVERLAP_BUFFER_SEC: float = 3.0           # How much audio to buffer before detection
+OVERLAP_BUFFER_SEC: float = 0.8           # How much audio to buffer before detection
 OVERLAP_DETECTION_INTERVAL_SEC: float = 2.0  # Minimum interval between detections
 OVERLAP_MIN_DURATION_SEC: float = 0.1     # Minimum overlap duration to report
 OVERLAP_DETECTION_ENABLED: bool = True    # Global toggle
@@ -117,8 +117,8 @@ OVERLAP_DETECTION_ENABLED: bool = True    # Global toggle
 #
 # NOTE: Frontend chunk size can vary depending on backend. For all gating logic
 # we use *seconds* rather than "frames" to avoid mismatches.
-ASR_MIN_NEW_SEC = 0.50          # minimum new audio (seconds) before ASR
-MIN_ASR_INTERVAL_SEC = 0.45     # throttle ASR calls (seconds)
+ASR_MIN_NEW_SEC = 0.40          # minimum new audio (seconds) before ASR
+MIN_ASR_INTERVAL_SEC = 0.50     # throttle ASR calls (seconds) - should be >= ASR_MIN_NEW_SEC
 MAX_ASR_BUFFER_SEC = 12.0       # cap per-session ASR buffer (seconds)
 WCPP_CONTEXT_SEC = 2.0          # decode this much audio before cursor for stability
 
@@ -130,13 +130,16 @@ ASR_PROMPT_MAX_CHARS = 240
 USE_INITIAL_PROMPT = True
 
 # Diarization: how much speech to accumulate for embedding
-MIN_SPEECH_SEC = 0.25
+MIN_SPEECH_SEC = 0.8  # require 0.8s of speech before identifying speaker
 
 # Diarization state
 CURRENT_SPEAKER: Optional[str] = None
 CURRENT_CONFIDENCE: float = 0.0
 LAST_SWITCH_TIME: float = 0.0
 SWITCH_COOLDOWN: float = 1.0   # seconds - prevent rapid speaker flickering
+
+# No-speech verification: require two consecutive frames with no speech before confirming
+PREV_NO_SPEECH_DETECTED: bool = False
 
 SIM_CONF_FLOOR = 0.05
 SIM_CONF_CEIL = 0.50
@@ -1080,6 +1083,7 @@ def upload_embeddings():
 def identify_speaker():
     global ROLLING_BUFFER, SPEECH_BUFFER
     global CURRENT_SPEAKER, CURRENT_CONFIDENCE, LAST_SWITCH_TIME
+    global PREV_NO_SPEECH_DETECTED
 
     if not PIPELINE_AVAILABLE:
         return jsonify({"error": "Pipeline not available"}), 503
@@ -1089,7 +1093,7 @@ def identify_speaker():
             return jsonify({"error": "No audio_data provided"}), 400
 
         audio_data_b64 = request.form.get("audio_data")
-        sample_rate = int(request.form.get("sample_rate", 16000))
+        sample_rate = int(request.form.get("sample_rate"))
         session_id = request.form.get("session_id", "default")
 
         try:
@@ -1122,6 +1126,10 @@ def identify_speaker():
                 logger.warning(f"Unexpected waveform shape after processing: {waveform.shape}")
                 while waveform.dim() > 1:
                     waveform = waveform.squeeze(0)
+
+            # Log incoming audio duration
+            incoming_sec = waveform.shape[0] / float(sr)
+            logger.info(f"[identify_speaker] Incoming audio: {incoming_sec:.2f}s ({waveform.shape[0]} samples @ {sr}Hz)")
 
         except Exception as e:
             logger.error(f"Error decoding audio: {e}")
@@ -1234,6 +1242,30 @@ def identify_speaker():
             }
 
         if not speech_segments:
+            # No speech detected - verify with next frame before confirming
+            if not PREV_NO_SPEECH_DETECTED:
+                # First frame with no speech: set flag and wait for next frame to verify
+                PREV_NO_SPEECH_DETECTED = True
+                logger.info("[identify_speaker] No speech detected, waiting for next frame to verify")
+                # Return current state without updating - next frame will confirm
+                snippet_obj = get_live_snippet_for_session(session_id, sr)
+                live_text = snippet_obj.get("text") if isinstance(snippet_obj, dict) else (snippet_obj or "")
+                ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
+                resp = {
+                    "speaker": CURRENT_SPEAKER,
+                    "has_speech": bool(live_text),
+                    "confidence": ui_conf,
+                    "transcript": live_text,
+                    "overlap_detected": False,
+                    "overlap_speakers": [],
+                    "overlap_segments": [],
+                }
+                if debug_payload is not None:
+                    resp["debug"] = debug_payload
+                return jsonify(resp)
+
+            # Second consecutive frame with no speech - confirmed no speech
+            logger.info("[identify_speaker] No speech confirmed (two consecutive frames)")
             # If diarization-VAD misses speech, do NOT skip ASR.
             # Let the ASR-side VAD decide, so we don't drop words.
             snippet_obj = get_live_snippet_for_session(session_id, sr)
@@ -1280,6 +1312,9 @@ def identify_speaker():
                 resp["debug"] = debug_payload
             return jsonify(resp)
 
+        # Speech detected - reset the no-speech verification flag
+        PREV_NO_SPEECH_DETECTED = False
+
         # Build speech buffer
         speech_portions: List[torch.Tensor] = []
         for seg in speech_segments:
@@ -1296,11 +1331,15 @@ def identify_speaker():
 
         SPEECH_BUFFER = torch.cat([SPEECH_BUFFER, new_speech])
 
-        MAX_SPEECH_SAMPLES = int(2.5 * sr)
+        MAX_SPEECH_SAMPLES = int(0.8 * sr)
         if SPEECH_BUFFER.shape[0] > MAX_SPEECH_SAMPLES * 1.5:
             SPEECH_BUFFER = SPEECH_BUFFER[-MAX_SPEECH_SAMPLES:]
 
-        MIN_SPEECH_SAMPLES = int(max(1.0, float(MIN_SPEECH_SEC)) * float(sr))
+        MIN_SPEECH_SAMPLES = int(max(0.3, float(MIN_SPEECH_SEC)) * float(sr))
+        speech_buf_sec = SPEECH_BUFFER.shape[0] / float(sr)
+        asr_buf_sec = asr_state["buffer"].shape[0] / float(sr)
+        logger.info(f"[identify_speaker] Speech buffer: {speech_buf_sec:.2f}s, ASR buffer: {asr_buf_sec:.2f}s, min required: {MIN_SPEECH_SEC}s")
+
         if SPEECH_BUFFER.shape[0] < MIN_SPEECH_SAMPLES:
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
             snippet_obj = get_live_snippet_for_session(session_id, sr)
@@ -1342,8 +1381,8 @@ def identify_speaker():
             logger.debug("No known speakers enrolled - cannot identify")
 
         now = time.time()
-        MIN_CONFIDENCE = 0.15
-        MARGIN_THRESHOLD = 0.05
+        MIN_CONFIDENCE = 0.10
+        MARGIN_THRESHOLD = 0.03
 
         margin = best_score - second_best if second_best > -1.0 else best_score
 
@@ -1366,7 +1405,7 @@ def identify_speaker():
                         CURRENT_CONFIDENCE = best_score
                         LAST_SWITCH_TIME = now
                 else:
-                    ALPHA = 0.3
+                    ALPHA = 0.1  # low alpha = more stable, less jittery
                     CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                     LAST_SWITCH_TIME = now
 

@@ -16,3 +16,4 @@ faster-whisper
 flask==3.1.1
 flask-cors
 gunicorn==23.0.0
+nemo_toolkit[asr]

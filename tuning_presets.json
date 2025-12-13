@@ -1,0 +1,154 @@
+{
+  "_description": "Tuning presets for WhoSays live speaker diarization. Edit this file to customize settings.",
+  "_usage": "Select a preset via POST /tuning with {\"preset\": \"preset_name\"} or modify individual values.",
+
+  "default": {
+    "_comment": "Balanced settings for general use",
+
+    "asr_min_new_sec": 0.50,
+    "cross_tail_dup_pad_sec": 0.03,
+    "min_asr_interval_sec": 0.45,
+    "max_asr_buffer_sec": 12.0,
+    "wcpp_context_sec": 2.0,
+    "use_initial_prompt": true,
+    "asr_prompt_max_chars": 240,
+
+    "beam_size": 1,
+    "best_of": 1,
+
+    "vad_threshold": 0.55,
+    "vad_min_speech_ms": 150,
+    "vad_min_silence_ms": 150,
+    "vad_speech_pad_ms": 40,
+
+    "overlap_detection_enabled": true,
+    "overlap_buffer_sec": 0.8,
+    "overlap_detection_interval_sec": 2.0,
+    "overlap_min_duration_sec": 0.1
+  },
+
+  "clean_speech": {
+    "_comment": "Optimized for clean audio with minimal background noise",
+
+    "asr_min_new_sec": 0.50,
+    "cross_tail_dup_pad_sec": 0.02,
+    "min_asr_interval_sec": 0.40,
+    "max_asr_buffer_sec": 12.0,
+    "wcpp_context_sec": 2.0,
+    "use_initial_prompt": true,
+    "asr_prompt_max_chars": 240,
+
+    "beam_size": 1,
+    "best_of": 1,
+
+    "vad_threshold": 0.50,
+    "vad_min_speech_ms": 120,
+    "vad_min_silence_ms": 120,
+    "vad_speech_pad_ms": 30,
+
+    "overlap_detection_enabled": true,
+    "overlap_buffer_sec": 2.5,
+    "overlap_detection_interval_sec": 1.5,
+    "overlap_min_duration_sec": 0.08
+  },
+
+  "noisy_room": {
+    "_comment": "More conservative settings for noisy environments",
+
+    "asr_min_new_sec": 0.75,
+    "cross_tail_dup_pad_sec": 0.04,
+    "min_asr_interval_sec": 0.55,
+    "max_asr_buffer_sec": 12.0,
+    "wcpp_context_sec": 2.5,
+    "use_initial_prompt": true,
+    "asr_prompt_max_chars": 240,
+
+    "beam_size": 1,
+    "best_of": 1,
+
+    "vad_threshold": 0.60,
+    "vad_min_speech_ms": 200,
+    "vad_min_silence_ms": 220,
+    "vad_speech_pad_ms": 50,
+
+    "overlap_detection_enabled": true,
+    "overlap_buffer_sec": 3.5,
+    "overlap_detection_interval_sec": 2.5,
+    "overlap_min_duration_sec": 0.15
+  },
+
+  "thetestsound_script": {
+    "_comment": "Preset optimized for the built-in thetestsound.wav test file",
+
+    "asr_min_new_sec": 0.60,
+    "min_asr_interval_sec": 0.45,
+    "max_asr_buffer_sec": 12.0,
+    "cross_tail_dup_pad_sec": 0.03,
+    "wcpp_context_sec": 2.5,
+    "use_initial_prompt": true,
+    "asr_prompt_max_chars": 240,
+
+    "beam_size": 3,
+    "best_of": 3,
+
+    "vad_threshold": 0.55,
+    "vad_min_speech_ms": 150,
+    "vad_min_silence_ms": 150,
+    "vad_speech_pad_ms": 40,
+
+    "overlap_detection_enabled": true,
+    "overlap_buffer_sec": 0.8,
+    "overlap_detection_interval_sec": 2.0,
+    "overlap_min_duration_sec": 0.1
+  },
+
+  "low_latency": {
+    "_comment": "Minimize latency at the cost of some accuracy",
+
+    "asr_min_new_sec": 0.30,
+    "cross_tail_dup_pad_sec": 0.02,
+    "min_asr_interval_sec": 0.25,
+    "max_asr_buffer_sec": 8.0,
+    "wcpp_context_sec": 1.5,
+    "use_initial_prompt": true,
+    "asr_prompt_max_chars": 180,
+
+    "beam_size": 1,
+    "best_of": 1,
+
+    "vad_threshold": 0.50,
+    "vad_min_speech_ms": 100,
+    "vad_min_silence_ms": 100,
+    "vad_speech_pad_ms": 30,
+
+    "overlap_detection_enabled": true,
+    "overlap_buffer_sec": 2.0,
+    "overlap_detection_interval_sec": 1.0,
+    "overlap_min_duration_sec": 0.08
+  },
+
+  "high_accuracy": {
+    "_comment": "Prioritize accuracy over latency",
+
+    "asr_min_new_sec": 0.80,
+    "cross_tail_dup_pad_sec": 0.04,
+    "min_asr_interval_sec": 0.60,
+    "max_asr_buffer_sec": 15.0,
+    "wcpp_context_sec": 3.0,
+    "use_initial_prompt": true,
+    "asr_prompt_max_chars": 300,
+
+    "beam_size": 5,
+    "best_of": 5,
+
+    "vad_threshold": 0.55,
+    "vad_min_speech_ms": 180,
+    "vad_min_silence_ms": 180,
+    "vad_speech_pad_ms": 50,
+
+    "overlap_detection_enabled": true,
+    "overlap_buffer_sec": 4.0,
+    "overlap_detection_interval_sec": 2.5,
+    "overlap_min_duration_sec": 0.12
+  }
+}

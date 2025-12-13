@@ -10,7 +10,7 @@ class FasterWhisperASR:
         self,
         model: str = "large-v3-turbo",
         device: str = "cuda",
-        compute_type: str = "float16"
+        compute_type: str = "float32"
     ) -> None:
         """
         Initialize Faster-Whisper ASR model.

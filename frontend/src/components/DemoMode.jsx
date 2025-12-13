@@ -16,7 +16,7 @@ const DemoMode = ({
   // Demo state
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [demoFile, setDemoFile] = useState(null);
-  const [demoChunkSec, setDemoChunkSec] = useState(0.5);
+  const [demoChunkSec, setDemoChunkSec] = useState(1.0);  // Larger chunks for better speaker ID
   const [demoRealtime, setDemoRealtime] = useState(true);
   const [demoPlayAudio, setDemoPlayAudio] = useState(true);
   const [demoProgress, setDemoProgress] = useState(0);
@@ -207,6 +207,7 @@ const DemoMode = ({
           .catch((err) => console.warn("Audio playback failed:", err));
       }
 
+      let chunkIndex = 0;
       for (let i = 0; i < audio16k.length; i += chunkSamples) {
         if (demoAbortRef.current?.signal.aborted) break;
 
@@ -240,8 +241,17 @@ const DemoMode = ({
         // Process speaker detection
         processResponse(data);
 
-        // Append transcript
-        appendFromResponse(data);
+        // Skip first chunk's transcript (often contains noise/warmup audio)
+        // but still send it for speaker identification warmup
+        if (chunkIndex > 0) {
+          // Pass current overlap speakers from data (since React state is async)
+          const overlapSpeakers = (data.overlap_speakers || []).filter(s => s && s !== "Unknown");
+          const overlapSpeakerStr = data.overlap_detected && overlapSpeakers.length > 1
+            ? overlapSpeakers.join(", ")
+            : null;
+          appendFromResponse(data, { overlapSpeakers: overlapSpeakerStr });
+        }
+        chunkIndex++;
 
         // Sync with real-time if enabled
         if (demoRealtime) {
@@ -295,10 +305,6 @@ const DemoMode = ({
               <h3 className="text-lg font-semibold text-slate-100">
                 Demo Mode
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Upload an audio file and stream it as if it were live microphone
-                input
-              </p>
             </div>
             {isDemoMode && (
               <div className="flex items-center gap-2 text-sm text-slate-300">
@@ -310,26 +316,20 @@ const DemoMode = ({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-2">
-              <span className="text-sm text-slate-300">Audio file:</span>
-              <input
-                type="file"
-                accept="audio/*"
-                onChange={handleFileChange}
-                disabled={isDemoMode || disabled}
-                className="text-sm text-slate-300 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 disabled:opacity-50"
-              />
-            </label>
-            {demoFile && (
-              <span
-                className="text-xs text-slate-400 truncate max-w-48"
-                title={demoFile.name}
-              >
-                {demoFile.name}
-              </span>
-            )}
-          </div>
+          {!demoFile && (
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="flex items-center gap-2">
+                <span className="text-sm text-slate-300">Audio file:</span>
+                <input
+                  type="file"
+                  accept="audio/*"
+                  onChange={handleFileChange}
+                  disabled={isDemoMode || disabled}
+                  className="text-sm text-slate-300 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700 disabled:opacity-50"
+                />
+              </label>
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center gap-4">
             <label className="flex items-center gap-2 text-sm text-slate-300">
@@ -402,64 +402,70 @@ const DemoMode = ({
         </div>
       </div>
 
-      {/* Demo Mode Live Display */}
-      {isDemoMode && (
-        <div className="bg-slate-900 border border-green-700/50 rounded-lg p-6">
+      {/* Demo Mode Live Display - Show while running OR when there are messages */}
+      {(isDemoMode || messages.length > 0) && (
+        <div className={`bg-slate-900 border rounded-lg p-6 ${isDemoMode ? "border-green-700/50" : "border-slate-700"}`}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-slate-100 mb-2 flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded-full">
-                  DEMO
+                <span className={`px-2 py-0.5 text-xs rounded-full ${
+                  isDemoMode ? "bg-green-600/20 text-green-400" : "bg-slate-600/20 text-slate-400"
+                }`}>
+                  {isDemoMode ? "DEMO" : "COMPLETE"}
                 </span>
-                Streaming: {demoFile?.name}
+                {isDemoMode ? `Streaming: ${demoFile?.name}` : `Demo: ${demoFile?.name}`}
               </h3>
 
-              {/* Speaker display */}
-              {displayedSpeaker === "Unknown" ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-400">Speech detected:</span>
-                  <span className="text-xl font-semibold text-yellow-400">
-                    Unknown Speaker
-                  </span>
-                  <span className="text-slate-500 text-sm">(Not enrolled)</span>
-                </div>
-              ) : displayedSpeaker ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-400">Current Speaker:</span>
-                  <span className="text-2xl font-bold text-blue-400">
-                    {displayedSpeaker}
-                  </span>
-                </div>
-              ) : hasSpeech ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-400">Identifying speaker...</span>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-400">Processing audio...</span>
-                  <span className="text-slate-500">(No speech detected)</span>
-                </div>
-              )}
-
-              {/* Overlap indicator */}
-              {displayedOverlap && (
-                <div className="mt-3 p-3 bg-orange-500/20 border border-orange-500/40 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
-                    <span className="text-orange-400 font-semibold text-sm">
-                      Speaker Overlap Detected
-                    </span>
-                  </div>
-                  {displayedSpeakers.length > 0 && (
-                    <div className="mt-1 text-xs text-orange-300">
-                      Overlapping speakers: {displayedSpeakers.join(", ")}
+              {/* Speaker display - only show while running */}
+              {isDemoMode && (
+                <>
+                  {displayedSpeaker === "Unknown" ? (
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-400">Speech detected:</span>
+                      <span className="text-xl font-semibold text-yellow-400">
+                        Unknown Speaker
+                      </span>
+                      <span className="text-slate-500 text-sm">(Not enrolled)</span>
+                    </div>
+                  ) : displayedSpeaker ? (
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-400">Current Speaker:</span>
+                      <span className="text-2xl font-bold text-blue-400">
+                        {displayedSpeaker}
+                      </span>
+                    </div>
+                  ) : hasSpeech ? (
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-400">Identifying speaker...</span>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      <span className="text-slate-400">Processing audio...</span>
+                      <span className="text-slate-500">(No speech detected)</span>
                     </div>
                   )}
-                </div>
+
+                  {/* Overlap indicator */}
+                  {displayedOverlap && (
+                    <div className="mt-3 p-3 bg-orange-500/20 border border-orange-500/40 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span className="text-orange-400 font-semibold text-sm">
+                          Speaker Overlap Detected
+                        </span>
+                      </div>
+                      {displayedSpeakers.length > 0 && (
+                        <div className="mt-1 text-xs text-orange-300">
+                          Overlapping speakers: {displayedSpeakers.join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
 
-              {/* Live transcript messages */}
+              {/* Transcript messages */}
               {messages.length > 0 && (
                 <div
                   ref={messagesRef}
@@ -472,11 +478,15 @@ const DemoMode = ({
                         className="flex flex-col items-start gap-1"
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase">
-                            {msg.speaker || "Identifying..."}
+                          <span className={`text-xs font-semibold tracking-wide uppercase ${
+                            msg.isSeparated ? "text-orange-400" : "text-slate-400"
+                          }`}>
+                            {msg.isSeparated ? `Overlapped: ${msg.speaker}` : (msg.speaker || "Identifying...")}
                           </span>
                         </div>
-                        <div className="bg-slate-800/80 rounded-2xl px-3 py-2 max-w-full">
+                        <div className={`rounded-2xl px-3 py-2 max-w-full ${
+                          msg.isSeparated ? "bg-orange-900/30 border border-orange-700/40" : "bg-slate-800/80"
+                        }`}>
                           <p className="text-sm text-slate-100 leading-snug">
                             {msg.text}
                           </p>
@@ -488,10 +498,12 @@ const DemoMode = ({
               )}
             </div>
 
-            <div className="flex items-center gap-2 ml-4">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-slate-400 font-mono">{recordingTime}s</span>
-            </div>
+            {isDemoMode && (
+              <div className="flex items-center gap-2 ml-4">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-slate-400 font-mono">{recordingTime}s</span>
+              </div>
+            )}
           </div>
         </div>
       )}

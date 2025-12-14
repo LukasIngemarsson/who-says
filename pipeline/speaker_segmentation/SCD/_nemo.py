@@ -631,30 +631,44 @@ class NemoSCD:
         if waveform_np.ndim == 2 and waveform_np.shape[0] > 1:
             waveform_np = waveform_np.mean(axis=0)
 
-        # Sortformer requires audio file path, so write to temp file
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-            temp_path = f.name
-            sf.write(temp_path, waveform_np, sample_rate)
+        audio_duration = len(waveform_np) / sample_rate
 
-        try:
-            # Run diarization - NeMo API varies by version
-            with torch.no_grad():
-                predicted_segments = self._call_diarize(temp_path)
+        # Clear GPU cache before processing
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
-            # predicted_segments is a list (one per audio file) of lists of segment strings
-            segments = []
-            if predicted_segments and len(predicted_segments) > 0:
-                raw_segments = predicted_segments[0]  # First (only) audio file
-                for seg_str in raw_segments:
-                    start, end, speaker = self._parse_segment(seg_str)
-                    segments.append({
-                        'start': start,
-                        'end': end,
-                        'speaker': speaker
-                    })
+        # For long audio (>30s), use chunking to avoid OOM
+        # WARNING: Chunking causes speaker label inconsistency across chunks,
+        # which degrades overlap detection accuracy. Use --skip-nemo for SOD on long audio.
+        max_chunk_sec = 30.0
+        if audio_duration > max_chunk_sec:
+            print(f"[NemoSCD] Audio is {audio_duration:.1f}s, using chunked processing")
+            print(f"[NemoSCD] WARNING: Chunking may reduce overlap detection accuracy (speaker labels inconsistent across chunks)")
+            predicted_segments = self._diarize_chunked(waveform_np, sample_rate, max_chunk_sec, overlap_sec=5.0)
+        else:
+            # Short audio - use standard approach
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+                temp_path = f.name
+                sf.write(temp_path, waveform_np, sample_rate)
 
-            return segments
+            try:
+                # Run diarization - NeMo API varies by version
+                with torch.no_grad():
+                    predicted_segments = self._call_diarize(temp_path)
+            finally:
+                # Clean up temp file
+                os.unlink(temp_path)
 
-        finally:
-            # Clean up temp file
-            os.unlink(temp_path)
+        # predicted_segments is a list (one per audio file) of lists of segment strings
+        segments = []
+        if predicted_segments and len(predicted_segments) > 0:
+            raw_segments = predicted_segments[0]  # First (only) audio file
+            for seg_str in raw_segments:
+                start, end, speaker = self._parse_segment(seg_str)
+                segments.append({
+                    'start': start,
+                    'end': end,
+                    'speaker': speaker
+                })
+
+        return segments

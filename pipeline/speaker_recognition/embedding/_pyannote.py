@@ -7,18 +7,49 @@ import torch
 
 # Fix for PyTorch 2.6+ weights_only default change
 import torch.serialization
+import typing
+
 try:
     import pytorch_lightning.callbacks.early_stopping
     import pytorch_lightning.callbacks.model_checkpoint
     from omegaconf import ListConfig, DictConfig
-    torch.serialization.add_safe_globals([
+    from omegaconf.base import ContainerMetadata
+
+    safe_globals = [
         pytorch_lightning.callbacks.early_stopping.EarlyStopping,
         pytorch_lightning.callbacks.model_checkpoint.ModelCheckpoint,
         ListConfig,
         DictConfig,
-    ])
+        ContainerMetadata,
+        typing.Any,
+    ]
+
+    # Add additional omegaconf types if available
+    try:
+        from omegaconf._utils import ValueKind
+        # Only add ValueKind (an enum class), not MISSING/SI/II which are string constants
+        safe_globals.append(ValueKind)
+    except ImportError:
+        pass
+
+    # Add collections types
+    try:
+        import collections
+        safe_globals.append(collections.OrderedDict)
+    except ImportError:
+        pass
+
+    torch.serialization.add_safe_globals(safe_globals)
 except (ImportError, AttributeError):
     pass
+
+# Alternative: Monkey-patch torch.load to use weights_only=False for pyannote models
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    # Always force weights_only=False for pyannote model loading
+    kwargs['weights_only'] = False
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
 
 from pyannote.audio import Model, Inference
 

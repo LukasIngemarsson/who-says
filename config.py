@@ -48,7 +48,7 @@ class SODetectionPyannoteConfig(BaseConfig):
     model: str = "pyannote/segmentation-3.0"
     onset: float = 0.5
     offset: float = 0.5
-    min_duration: float = 0.0
+    min_duration: float = 0.3  # 300ms minimum overlap duration
 
 
 @dataclass
@@ -57,7 +57,7 @@ class SODetectionNemoConfig(BaseConfig):
     model_name: str = "nvidia/diar_sortformer_4spk-v1"
     onset: float = 0.5
     offset: float = 0.5
-    min_duration: float = 0.0
+    min_duration: float = 0.3  # 300ms minimum overlap duration
     max_chunk_duration: float = 30.0  # Process in 30-second chunks to avoid GPU OOM
 
 
@@ -172,8 +172,8 @@ class VADConfig:
 # -----------------------------
 @dataclass
 class ASRConfig(BaseConfig):
-    asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "large-v3" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
+    asr_type: TypeASR = TypeASR.WHISPER
+    model: str = "openai/whisper-large-v3" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
     compute_type: str = "float32"  # int8 can cause cuBLAS issues with alignment
     language: str = "en"
@@ -402,6 +402,7 @@ class RecognitionConfig:
 @dataclass
 class PipelineConfig(BaseConfig):
     sr: int = SR  # Sample Rate
+    skip_overlap: bool = False  # Skip overlap detection and processing
 
     so: SOConfig = field(default_factory=SOConfig)
     scd: SCDConfig = field(default_factory=SCDConfig)

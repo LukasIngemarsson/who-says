@@ -6,6 +6,7 @@ import torch
 import numpy as np
 from typing import Optional, List, Tuple
 from pyannote.audio import Model
+from pyannote.audio.utils.powerset import Powerset
 
 
 class PyannoteSOD(object):
@@ -55,20 +56,53 @@ class PyannoteSOD(object):
         self.offset = offset
         self.min_duration = min_duration
 
+        # Get model specifications for proper powerset conversion
+        specs = self.model.specifications
+        if specs.powerset:
+            self.powerset = Powerset(
+                len(specs.classes),
+                specs.powerset_max_classes
+            )
+            # Pre-compute overlap mask (which classes have 2+ speakers)
+            num_classes = self.powerset.num_powerset_classes
+            self.overlap_mask = torch.zeros(num_classes)
+            for class_idx in range(num_classes):
+                one_hot = torch.zeros(1, 1, num_classes)
+                one_hot[0, 0, class_idx] = 1.0
+                multilabel = self.powerset.to_multilabel(one_hot)
+                num_speakers = (multilabel > 0.5).sum().item()
+                if num_speakers >= 2:
+                    self.overlap_mask[class_idx] = 1.0
+            print(f"[PyannoteSOD] Overlap classes: {torch.where(self.overlap_mask > 0)[0].tolist()}")
+        else:
+            self.powerset = None
+            self.overlap_mask = None
+
     def _extract_overlap_scores(self, scores: torch.Tensor) -> torch.Tensor:
         """
         Extract overlap scores from powerset-encoded model output.
 
-        For segmentation-3.0:
-        - Classes 0-3: no speaker or single speakers
-        - Classes 4+: overlap classes (2+ speakers)
-        """
-        # Check if LogSoftmax output (negative values)
-        if scores.max() <= 0:
-            scores = torch.exp(scores)
+        For segmentation-3.0 with 3 speakers and max 2 per frame:
+        - 7 powerset classes total
+        - Classes 0-3: no speaker or single speaker
+        - Classes 4-6: overlap (2 speakers active)
 
-        # Sum probabilities of overlap classes (index 4 onwards)
-        overlap_probs = scores[..., 4:].sum(dim=-1)
+        The probability of overlap = sum of probabilities of overlap classes.
+        """
+        # Model outputs log-softmax, convert to probabilities
+        if scores.min() < 0:
+            probs = torch.exp(scores)  # Convert log-probs to probs
+        else:
+            probs = scores
+
+        if self.overlap_mask is not None:
+            # Use pre-computed overlap mask
+            mask = self.overlap_mask.to(probs.device)
+            overlap_probs = (probs * mask).sum(dim=-1)
+        else:
+            # Fallback: assume classes 4+ are overlap (for 7-class powerset)
+            overlap_probs = probs[..., 4:].sum(dim=-1)
+
         return overlap_probs
 
     def _binarize(
@@ -146,8 +180,11 @@ class PyannoteSOD(object):
 
         # Run inference
         with torch.no_grad():
-            waveform = waveform.to(self.device).contiguous()
-            scores = self.model(waveform)
+            # Ensure tensor is float32 and contiguous
+            waveform = waveform.to(device=self.device, dtype=torch.float32).contiguous()
+            # Disable cuDNN for LSTM to avoid CUDNN_STATUS_NOT_SUPPORTED error
+            with torch.backends.cudnn.flags(enabled=False):
+                scores = self.model(waveform)
             overlap_scores = self._extract_overlap_scores(scores)
             overlap_scores = overlap_scores.squeeze().cpu().numpy()
 

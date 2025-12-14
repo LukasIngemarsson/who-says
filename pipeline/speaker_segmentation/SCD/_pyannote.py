@@ -137,7 +137,8 @@ class PyannoteSCD(object):
     def __call__(
         self,
         waveform: torch.Tensor,
-        sample_rate: int = 16000
+        sample_rate: int = 16000,
+        chunk_duration: float = 60.0
     ) -> List[float]:
         """
         Detect speaker change points.
@@ -148,6 +149,8 @@ class PyannoteSCD(object):
             Audio waveform, shape (num_samples,) or (1, num_samples)
         sample_rate : int
             Sample rate of the audio
+        chunk_duration : float
+            Duration of each chunk in seconds (for long audio processing)
 
         Returns
         -------
@@ -158,21 +161,108 @@ class PyannoteSCD(object):
         if waveform.ndim == 2 and waveform.shape[0] > 1:
             waveform = waveform.mean(dim=0)
 
-        # Ensure correct shape
+        # Ensure 1D for processing
+        if waveform.ndim == 2:
+            waveform = waveform.squeeze(0)
+
+        audio_duration = waveform.shape[-1] / sample_rate
+        chunk_samples = int(chunk_duration * sample_rate)
+
+        # Process long audio in chunks
+        if waveform.shape[-1] > chunk_samples:
+            return self._process_chunked(waveform, sample_rate, chunk_samples)
+
+        # Short audio - process directly
         if waveform.ndim == 1:
             waveform = waveform.unsqueeze(0)
 
         # Run inference
         with torch.no_grad():
-            waveform = waveform.to(self.device)
+            # Ensure contiguous for CUDA/cuDNN operations
+            waveform = waveform.contiguous().to(self.device)
             scores = self.model(waveform)
             change_scores = self._extract_change_scores(scores)
             change_scores = change_scores.squeeze().cpu().numpy()
 
         # Calculate frame duration
         num_frames = len(change_scores)
-        audio_duration = waveform.shape[-1] / sample_rate
         frame_duration = audio_duration / num_frames
 
         # Detect peaks and return change points
         return self._detect_peaks(change_scores, frame_duration)
+
+    def _process_chunked(
+        self,
+        waveform: torch.Tensor,
+        sample_rate: int,
+        chunk_samples: int
+    ) -> List[float]:
+        """
+        Process long audio in chunks to avoid CUDA memory issues.
+
+        Parameters
+        ----------
+        waveform : torch.Tensor
+            1D audio waveform
+        sample_rate : int
+            Sample rate
+        chunk_samples : int
+            Number of samples per chunk
+
+        Returns
+        -------
+        change_points : List[float]
+            Combined change points from all chunks
+        """
+        all_change_scores = []
+        total_samples = waveform.shape[-1]
+        overlap_samples = int(sample_rate * 2)  # 2 second overlap
+
+        position = 0
+        while position < total_samples:
+            end_pos = min(position + chunk_samples, total_samples)
+            chunk = waveform[position:end_pos]
+
+            # Ensure correct shape
+            if chunk.ndim == 1:
+                chunk = chunk.unsqueeze(0)
+
+            # Run inference on chunk
+            with torch.no_grad():
+                chunk = chunk.contiguous().to(self.device)
+                scores = self.model(chunk)
+                change_scores = self._extract_change_scores(scores)
+                change_scores = change_scores.squeeze().cpu().numpy()
+
+            # Calculate frame info for this chunk
+            chunk_duration = chunk.shape[-1] / sample_rate
+            num_frames = len(change_scores)
+            frame_duration = chunk_duration / num_frames
+            chunk_offset = position / sample_rate
+
+            # Detect peaks in this chunk
+            chunk_changes = self._detect_peaks(change_scores, frame_duration)
+
+            # Offset by chunk position
+            for cp in chunk_changes:
+                all_change_scores.append(cp + chunk_offset)
+
+            # Move to next chunk (with overlap to avoid missing changes at boundaries)
+            position += chunk_samples - overlap_samples
+            if position >= total_samples:
+                break
+
+            # Clear CUDA cache
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+        # Remove duplicate change points near chunk boundaries
+        if len(all_change_scores) > 1:
+            all_change_scores = sorted(all_change_scores)
+            filtered = [all_change_scores[0]]
+            for cp in all_change_scores[1:]:
+                if cp - filtered[-1] >= self.min_duration:
+                    filtered.append(cp)
+            all_change_scores = filtered
+
+        return all_change_scores

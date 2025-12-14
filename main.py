@@ -41,7 +41,7 @@ class WhoSays(object):
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = ASR(**self.config.asr.to_dict())
-        #self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
+        self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
 
         # Initialize embedding based on config type
         from config import TypeEmbedding
@@ -312,15 +312,20 @@ class WhoSays(object):
             logger.info(f"Found {len(speech_segments)} speech segments")
 
             # Speaker Overlap Detection & Separation
-            logger.info("Detecting and separating speaker overlaps...")
-            if include_timing:
-                start_time = time.time()
-            overlap_result = self.sod(waveform, sr)
-            overlap_segments = overlap_result['overlap_segments']
-            separated_regions = overlap_result['separated_regions']
-            if include_timing:
-                timing['overlap_detection'] = time.time() - start_time
-            logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
+            overlap_segments = []
+            separated_regions = {}
+            if not self.config.skip_overlap:
+                logger.info("Detecting and separating speaker overlaps...")
+                if include_timing:
+                    start_time = time.time()
+                overlap_result = self.sod(waveform, sr)
+                overlap_segments = overlap_result['overlap_segments']
+                separated_regions = overlap_result['separated_regions']
+                if include_timing:
+                    timing['overlap_detection'] = time.time() - start_time
+                logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
+            else:
+                logger.info("Skipping overlap detection (skip_overlap=True)")
 
             # Clear GPU memory after overlap detection before ASR
             if torch.cuda.is_available():
@@ -373,7 +378,7 @@ class WhoSays(object):
             overlap_embedding_info = []  # List of {region: (start, end), speaker_idx: int, embedding_idx: int}
             overlap_embeddings_list = []
 
-            if separated_regions:
+            if separated_regions and not self.config.skip_overlap:
                 logger.info(f"Embedding {len(separated_regions)} separated overlap regions...")
                 for (start_time_ovlp, end_time_ovlp), speaker_waveforms in separated_regions.items():
                     for spk_idx, spk_waveform in speaker_waveforms.items():
@@ -434,7 +439,7 @@ class WhoSays(object):
 
             # Step 8: Process overlap regions (transcribe and assign speakers from clustering)
             processed_overlaps = []
-            if separated_regions:
+            if separated_regions and not self.config.skip_overlap:
                 logger.info("Processing separated overlap regions...")
                 if include_timing or return_diarization_time:
                     start_time = time.time()

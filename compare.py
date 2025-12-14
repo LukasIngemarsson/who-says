@@ -48,6 +48,8 @@ from utils import (
     plot_embedding_comparison,
     plot_cluster_umap,
     plot_sos_comparison,
+    plot_sod_comparison,
+    plot_scd_comparison,
     load_audio_from_file
 )
 from utils.constants import SR
@@ -108,12 +110,41 @@ def main():
     parser.add_argument(
         "--reference-dir",
         type=Path,
-        help="Directory containing reference speaker audio files (for speaker-id component)"
+        help="Directory containing reference speaker audio files (for speaker-id and scd components)"
     )
     parser.add_argument(
         "--skip-nemo",
         action="store_true",
         help="Skip NeMo benchmark (for scd, sod components)"
+    )
+    parser.add_argument(
+        "--skip-naive",
+        action="store_true",
+        help="Skip Naive (cosine similarity) benchmark (for scd component)"
+    )
+    parser.add_argument(
+        "--skip-wavlm",
+        action="store_true",
+        help="Skip WavLM benchmark (for sod component)"
+    )
+    parser.add_argument(
+        "--skip-overlap",
+        action="store_true",
+        help="Skip overlap detection and processing (for e2e component)"
+    )
+    parser.add_argument(
+        "--scd-metric",
+        type=str,
+        choices=["f1", "precision", "recall"],
+        default="f1",
+        help="Metric to optimize for when selecting best SCD config (default: f1)"
+    )
+    parser.add_argument(
+        "--sod-metric",
+        type=str,
+        choices=["frame_f1", "frame_precision", "frame_recall"],
+        default="frame_f1",
+        help="Metric to optimize for when selecting best SOD config (default: frame_f1)"
     )
     parser.add_argument(
         "--max-regions",
@@ -348,7 +379,7 @@ def main():
         logger.info("Running End-to-End Pipeline comparison...")
         logger.info("="*60)
 
-        pipelines = compare_e2e_pipelines(file_pairs)
+        pipelines = compare_e2e_pipelines(file_pairs, skip_overlap=args.skip_overlap)
         pipelines = aggregate_e2e_results(pipelines)
 
         output_data = {
@@ -359,7 +390,7 @@ def main():
             "evaluation_settings": {
                 "collar": 0.25,
                 "skip_overlap": False,
-                "timing_note": "WhoSays reports diarization-only time (excluding ASR) for fair comparison diarization-only pipelines"
+                "timing_note": "WhoSays: diarization-only. Pyannote: diarization-only."
             },
             "pipelines": {
                 name: {
@@ -387,8 +418,8 @@ def main():
         print("\n" + "="*60)
         print("END-TO-END PIPELINE COMPARISON SUMMARY")
         print("="*60)
-        print("\nNOTE: Timing measures diarization only (VAD, SCD, embedding, clustering).")
-        print("      ASR transcription excluded from WhoSays timing for fair comparison.\n")
+        print("\nNOTE: WhoSays timing = diarization only (excludes ASR).")
+        print("      Pyannote timing = diarization only (no ASR).\n")
         print("-"*60)
         for name, data in pipelines.items():
             if 'aggregated' not in data:
@@ -402,10 +433,30 @@ def main():
             if 'wer' in agg:
                 print(f"  WER:         {agg['wer']['mean']:6.2f}% (±{agg['wer']['std']:.2f}%)")
             print(f"  Avg Time:    {agg['timing']['mean']:6.2f}s/file")
+
+            # Print component timing breakdown if available
+            if 'component_timing' in agg:
+                print(f"\n  Component Timing (avg per file):")
+                ct = agg['component_timing']
+                component_labels = [
+                    ('audio_loading', 'Audio Loading'),
+                    ('vad', 'VAD'),
+                    ('overlap_detection', 'Overlap Detection'),
+                    ('scd', 'Speaker Change Detection'),
+                    ('embedding', 'Embedding'),
+                    ('clustering', 'Clustering'),
+                    ('asr', 'ASR'),
+                    ('phoneme', 'Phoneme Alignment'),
+                    ('overlap_processing', 'Overlap Processing'),
+                    ('formatting', 'Formatting')
+                ]
+                for key, label in component_labels:
+                    if key in ct:
+                        print(f"    {label:<22} {ct[key]['mean']:6.2f}s (±{ct[key]['std']:.2f}s)")
         print("="*60)
 
     elif args.component == "scd":
-        # Speaker Change Detection comparison (Pyannote vs NeMo)
+        # Speaker Change Detection comparison (Pyannote vs NeMo vs Naive)
         logger.info("\n" + "="*60)
         logger.info("Running SCD (Speaker Change Detection) comparison...")
         logger.info("="*60)
@@ -414,12 +465,17 @@ def main():
             logger.error("--audio argument required for scd component")
             return
 
+        if args.reference_dir:
+            logger.info(f"Reference dir: {args.reference_dir} (naive SCD enabled)")
+
         results = compare_scd_models(
             audio_path=args.audio,
             benchmark_dir=args.annotation_dir,
-            include_nemo=not args.skip_nemo
+            include_nemo=not args.skip_nemo,
+            include_naive=not args.skip_naive,
+            reference_dir=args.reference_dir
         )
-        results = aggregate_scd_results(results)
+        results = aggregate_scd_results(results, optimize_metric=args.scd_metric)
 
         output_data = {
             "comparison_type": "scd",
@@ -434,22 +490,63 @@ def main():
         logger.info(f"\nSaved results: {json_path}")
 
         print("\n" + "="*60)
-        print("SCD COMPARISON SUMMARY")
+        print(f"SCD COMPARISON SUMMARY (tolerance=3.0s, optimize={args.scd_metric})")
         print("="*60)
         print(f"Ground Truth: {results['ground_truth_count']} speaker changes")
-        print(f"\nPyannote SCD (best by tolerance):")
-        for tol_key, config in results['aggregated']['best_pyannote_by_tolerance'].items():
-            if config:
-                print(f"  {tol_key}: prominence={config['prominence']}, F1={config['f1']:.3f}")
 
+        # Use tolerance_3.0s for all results
+        tol_key = 'tolerance_3.0s'
+
+        # Pyannote SCD - find best config's detected count
+        pyannote_config = results['aggregated']['best_pyannote_by_tolerance'].get(tol_key)
+        if pyannote_config:
+            # Find the result with this prominence to get detected_count
+            detected = None
+            for r in results.get('pyannote', []):
+                if r['prominence'] == pyannote_config['prominence']:
+                    detected = r['detected_count']
+                    break
+            print(f"\nPyannote SCD (prominence={pyannote_config['prominence']}):")
+            if detected:
+                print(f"  Detected: {detected} changes")
+            print(f"  F1: {pyannote_config['f1']:.3f}, Precision: {pyannote_config['precision']:.3f}, Recall: {pyannote_config['recall']:.3f}")
+
+        # NeMo Sortformer
         if results.get('nemo') and 'error' not in results['nemo']:
-            print(f"\nNeMo Sortformer:")
-            for tol_key, metrics in results['aggregated']['nemo_by_tolerance'].items():
-                print(f"  {tol_key}: F1={metrics['f1']:.3f}")
+            nemo_metrics = results['aggregated']['nemo_by_tolerance'].get(tol_key)
+            if nemo_metrics:
+                detected = results['nemo'].get('detected_count')
+                print(f"\nNeMo Sortformer:")
+                if detected:
+                    print(f"  Detected: {detected} changes")
+                print(f"  F1: {nemo_metrics['f1']:.3f}, Precision: {nemo_metrics['precision']:.3f}, Recall: {nemo_metrics['recall']:.3f}")
+
+        # Naive SCD models
+        for emb_model in ['pyannote', 'speechbrain', 'wav2vec2']:
+            agg_key = f'best_naive_{emb_model}_by_tolerance'
+            naive_key = f'naive_{emb_model}'
+            if results['aggregated'].get(agg_key):
+                config = results['aggregated'][agg_key].get(tol_key)
+                if config:
+                    # Find detected count
+                    detected = None
+                    for r in results.get(naive_key, []) or []:
+                        if r.get('window_duration') == config['window_duration'] and r.get('similarity_threshold') == config['similarity_threshold']:
+                            detected = r.get('detected_count')
+                            break
+                    print(f"\nNaive SCD ({emb_model}) (window={config['window_duration']}s, thresh={config['similarity_threshold']}):")
+                    if detected:
+                        print(f"  Detected: {detected} changes")
+                    print(f"  F1: {config['f1']:.3f}, Precision: {config['precision']:.3f}, Recall: {config['recall']:.3f}")
         print("="*60)
 
+        # Generate plot
+        plot_path = args.output_dir / f"scd_comparison_{timestamp}.png"
+        plot_scd_comparison(results, system_info, plot_path)
+        print(f"\nPlot saved: {plot_path}")
+
     elif args.component == "sod":
-        # Speech Overlap Detection comparison (Pyannote vs NeMo)
+        # Speech Overlap Detection comparison (Pyannote vs WavLM vs NeMo)
         logger.info("\n" + "="*60)
         logger.info("Running SOD (Speech Overlap Detection) comparison...")
         logger.info("="*60)
@@ -468,9 +565,10 @@ def main():
             audio_path=args.audio,
             benchmark_dir=args.annotation_dir,
             speaker_dir=args.speaker_dir,
-            include_nemo=not args.skip_nemo
+            include_nemo=not args.skip_nemo,
+            include_wavlm=not args.skip_wavlm
         )
-        results = aggregate_sod_results(results)
+        results = aggregate_sod_results(results, optimize_metric=args.sod_metric)
 
         output_data = {
             "comparison_type": "sod",
@@ -485,18 +583,31 @@ def main():
         logger.info(f"\nSaved results: {json_path}")
 
         print("\n" + "="*60)
-        print("SOD COMPARISON SUMMARY")
+        print(f"SOD COMPARISON SUMMARY")
         print("="*60)
         print(f"Ground Truth: {results['ground_truth_count']} overlap regions ({results['ground_truth_duration']:.2f}s)")
         print(f"\nBest Pyannote (onset={results['aggregated']['best_pyannote']['onset']}):")
+        print(f"  Frame Precision: {results['aggregated']['best_pyannote']['frame_precision']:.1f}%")
+        print(f"  Frame Recall: {results['aggregated']['best_pyannote']['frame_recall']:.1f}%")
         print(f"  Frame F1: {results['aggregated']['best_pyannote']['frame_f1']:.1f}%")
-        print(f"  Segment F1@0.5: {results['aggregated']['best_pyannote']['segment_f1_iou05']:.1f}%")
+
+        if results['aggregated'].get('best_wavlm'):
+            print(f"\nBest WavLM (onset={results['aggregated']['best_wavlm']['onset']}):")
+            print(f"  Frame Precision: {results['aggregated']['best_wavlm']['frame_precision']:.1f}%")
+            print(f"  Frame Recall: {results['aggregated']['best_wavlm']['frame_recall']:.1f}%")
+            print(f"  Frame F1: {results['aggregated']['best_wavlm']['frame_f1']:.1f}%")
 
         if results.get('nemo_results') and 'error' not in results['nemo_results']:
             print(f"\nNeMo Sortformer (via diarization):")
+            print(f"  Frame Precision: {results['aggregated']['nemo']['frame_precision']:.1f}%")
+            print(f"  Frame Recall: {results['aggregated']['nemo']['frame_recall']:.1f}%")
             print(f"  Frame F1: {results['aggregated']['nemo']['frame_f1']:.1f}%")
-            print(f"  Segment F1@0.5: {results['aggregated']['nemo']['segment_f1_iou05']:.1f}%")
         print("="*60)
+
+        # Generate plot
+        plot_path = args.output_dir / f"sod_comparison_{timestamp}.png"
+        plot_sod_comparison(results, system_info, plot_path)
+        print(f"\nPlot saved: {plot_path}")
 
     elif args.component == "sos":
         # Speech Overlap Separation comparison (Pyannote vs SpeechBrain)

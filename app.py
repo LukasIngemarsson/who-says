@@ -80,26 +80,26 @@ KNOWN_SPEAKERS: Dict[str, torch.Tensor] = {}  # name -> 1D normed embedding (CPU
 #
 # NOTE: Frontend chunk size can vary depending on backend. For all gating logic
 # we use *seconds* rather than "frames" to avoid mismatches.
-ASR_MIN_NEW_SEC = 0.50          # minimum new audio (seconds) before ASR
-MIN_ASR_INTERVAL_SEC = 0.45     # throttle ASR calls (seconds)
+ASR_MIN_NEW_SEC = 0.5          # minimum new audio (seconds) before ASR
+MIN_ASR_INTERVAL_SEC = 0.0     # throttle ASR calls (seconds)
 MAX_ASR_BUFFER_SEC = 12.0       # cap per-session ASR buffer (seconds)
-WCPP_CONTEXT_SEC = 2.0          # decode this much audio before cursor for stability
+WCPP_CONTEXT_SEC = 0.0          # decode this much audio before cursor for stability
 
 # Minimal de-dup: guard against jittery re-emits across calls
-CROSS_TAIL_DUP_PAD_SEC = 0.03
+CROSS_TAIL_DUP_PAD_SEC = 0.0
 
 # Rolling prompt (used as whisper.cpp --prompt for streaming stability)
 ASR_PROMPT_MAX_CHARS = 240
-USE_INITIAL_PROMPT = True
+USE_INITIAL_PROMPT = False
 
 # Diarization: how much speech to accumulate for embedding
-MIN_SPEECH_SEC = 0.25
+MIN_SPEECH_SEC = 0.0
 
 # Diarization state
 CURRENT_SPEAKER: Optional[str] = None
 CURRENT_CONFIDENCE: float = 0.0
 LAST_SWITCH_TIME: float = 0.0
-SWITCH_COOLDOWN: float = 0.05   # seconds
+SWITCH_COOLDOWN: float = 0.0   # seconds
 
 SIM_CONF_FLOOR = 0.05
 SIM_CONF_CEIL = 0.50
@@ -461,7 +461,7 @@ def get_live_snippet_for_session(session_id: str, sr: int) -> Optional[Dict[str,
 
     # New audio region (incremental)
     new_audio = buffer[cursor:]
-    min_new_samples = int(max(1.0, float(ASR_MIN_NEW_SEC)) * float(sr))
+    min_new_samples = int(float(ASR_MIN_NEW_SEC) * float(sr))
     if new_audio.shape[0] < min_new_samples:
         return None
 
@@ -691,15 +691,15 @@ def tuning():
         preset = TUNING_PRESETS[preset_name]
 
         if "asr_min_new_sec" in preset:
-            ASR_MIN_NEW_SEC = max(0.05, float(preset["asr_min_new_sec"]))
+            ASR_MIN_NEW_SEC = max(0.0, float(preset["asr_min_new_sec"]))
         if "min_asr_interval_sec" in preset:
             MIN_ASR_INTERVAL_SEC = max(0.0, float(preset["min_asr_interval_sec"]))
         if "max_asr_buffer_sec" in preset:
-            MAX_ASR_BUFFER_SEC = max(1.0, float(preset["max_asr_buffer_sec"]))
+            MAX_ASR_BUFFER_SEC = max(0.0, float(preset["max_asr_buffer_sec"]))
         if "wcpp_context_sec" in preset:
             WCPP_CONTEXT_SEC = max(0.0, float(preset["wcpp_context_sec"]))
         if "min_speech_sec" in preset:
-            MIN_SPEECH_SEC = max(0.05, float(preset["min_speech_sec"]))
+            MIN_SPEECH_SEC = max(0.0, float(preset["min_speech_sec"]))
         if "cross_tail_dup_pad_sec" in preset:
             CROSS_TAIL_DUP_PAD_SEC = max(0.0, float(preset["cross_tail_dup_pad_sec"]))
         if "use_initial_prompt" in preset:
@@ -732,11 +732,11 @@ def tuning():
     # Manual tuning
     try:
         if "asr_min_new_sec" in data:
-            ASR_MIN_NEW_SEC = max(0.05, float(data["asr_min_new_sec"]))
+            ASR_MIN_NEW_SEC = max(0.0, float(data["asr_min_new_sec"]))
         if "min_asr_interval_sec" in data:
             MIN_ASR_INTERVAL_SEC = max(0.0, float(data["min_asr_interval_sec"]))
         if "max_asr_buffer_sec" in data:
-            MAX_ASR_BUFFER_SEC = max(1.0, float(data["max_asr_buffer_sec"]))
+            MAX_ASR_BUFFER_SEC = max(0.0, float(data["max_asr_buffer_sec"]))
         if "wcpp_context_sec" in data:
             WCPP_CONTEXT_SEC = max(0.0, float(data["wcpp_context_sec"]))
         if "use_initial_prompt" in data:
@@ -744,7 +744,7 @@ def tuning():
         if "asr_prompt_max_chars" in data:
             ASR_PROMPT_MAX_CHARS = max(0, int(data["asr_prompt_max_chars"]))
         if "min_speech_sec" in data:
-            MIN_SPEECH_SEC = max(0.05, float(data["min_speech_sec"]))
+            MIN_SPEECH_SEC = max(0.0, float(data["min_speech_sec"]))
         if "cross_tail_dup_pad_sec" in data:
             CROSS_TAIL_DUP_PAD_SEC = max(0.0, float(data["cross_tail_dup_pad_sec"]))
     except (TypeError, ValueError):
@@ -963,9 +963,9 @@ def identify_speaker():
                 snippet_obj,
                 CURRENT_SPEAKER or "Unknown",
             )
-            live_text = squash_adjacent_short_repeats(live_text)
-            for seg in transcript_segments:
-                seg["text"] = squash_adjacent_short_repeats(seg.get("text") or "")
+            #live_text = squash_adjacent_short_repeats(live_text)
+            #for seg in transcript_segments:
+                #seg["text"] = squash_adjacent_short_repeats(seg.get("text") or "")
 
             ui_conf = similarity_to_confidence(CURRENT_CONFIDENCE)
             resp = {
@@ -1060,7 +1060,7 @@ def identify_speaker():
                     ALPHA = 0.3
                     CURRENT_CONFIDENCE = ALPHA * best_score + (1 - ALPHA) * CURRENT_CONFIDENCE
                     LAST_SWITCH_TIME = now
-
+        logger.log(f"Speaker: {CURRENT_SPEAKER}{best_score}")
         # Speaker timeline
         timeline = SESSION_SPEAKER_TIMELINE.setdefault(session_id, [])
         if CURRENT_SPEAKER is not None:
@@ -1085,9 +1085,9 @@ def identify_speaker():
             CURRENT_SPEAKER or "Unknown",
         )
 
-        live_text = squash_adjacent_short_repeats(live_text)
-        for seg in transcript_segments:
-            seg["text"] = squash_adjacent_short_repeats(seg.get("text") or "")
+        #live_text = squash_adjacent_short_repeats(live_text)
+        #for seg in transcript_segments:
+        #    seg["text"] = squash_adjacent_short_repeats(seg.get("text") or "")
 
         resp: Dict[str, Any] = {
             "speaker": CURRENT_SPEAKER or "Unknown",

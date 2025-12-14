@@ -450,7 +450,7 @@ const App = () => {
         bufferAccumulator.push(...inputData);
 
         // Faster-Whisper can handle ~256ms frames; whisper.cpp (CLI wrapper) needs longer chunks.
-        const TARGET_SIZE = asrBackend === "whispercpp" ? 16000 : 4096;
+        const TARGET_SIZE = asrBackend === "whispercpp" ? 16000 : 16000;
 
         while (bufferAccumulator.length >= TARGET_SIZE) {
           const slice = bufferAccumulator.slice(0, TARGET_SIZE);

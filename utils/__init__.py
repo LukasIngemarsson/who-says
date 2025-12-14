@@ -46,7 +46,8 @@ from .plot import (
     plot_e2e_wer,
     plot_e2e_timing,
     plot_embedding_comparison,
-    plot_cluster_umap
+    plot_cluster_umap,
+    plot_sos_comparison
 )
 
 __all__ = [
@@ -95,5 +96,6 @@ __all__ = [
     "plot_e2e_timing",
     "plot_embedding_comparison",
     "plot_cluster_umap",
+    "plot_sos_comparison",
     "compare_cluster_viz"
 ]

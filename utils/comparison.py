@@ -5,7 +5,7 @@ Comparison utils
 import time
 import json
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -1310,6 +1310,7 @@ def compute_segment_metrics(
 def compare_sod_models(
     audio_path: str,
     benchmark_dir: Path,
+    speaker_dir: Path = None,
     onset_thresholds: List[float] = None,
     include_nemo: bool = True,
     min_overlap_duration: float = 0.1
@@ -1320,9 +1321,13 @@ def compare_sod_models(
     Parameters
     ----------
     audio_path : str
-        Path to audio file
+        Path to audio file (used if speaker_dir not provided)
     benchmark_dir : Path
         Directory containing ground truth annotations
+    speaker_dir : Path, optional
+        Directory containing individual speaker audio files ({speaker}.mp3).
+        If provided, creates synthetic mix by summing speaker tracks (like SOS).
+        If not provided, uses audio_path directly.
     onset_thresholds : List[float]
         Onset thresholds to test for Pyannote
     include_nemo : bool
@@ -1343,15 +1348,53 @@ def compare_sod_models(
         onset_thresholds = [0.3, 0.5, 0.7]
 
     config = PipelineConfig()
+    sr = config.sr
 
     # Load ground truth
     gt_overlaps = extract_overlap_ground_truth(benchmark_dir, min_overlap_duration)
     logger.info(f"Ground truth: {len(gt_overlaps)} overlap regions")
 
-    # Load audio
-    waveform, sr = load_audio_from_file(file_path=audio_path, sr=config.sr)
-    if waveform.dim() > 1:
-        waveform = waveform.mean(dim=0)
+    # Load audio - either from speaker files (synthetic mix) or combined audio
+    if speaker_dir is not None:
+        speaker_dir = Path(speaker_dir)
+        logger.info(f"Creating synthetic mix from speaker files in {speaker_dir}")
+
+        # Find available speaker audio files
+        speaker_audio = {}
+        for speaker in ['gor', 'johan', 'kalle', 'lukas', 'marten', 'oscar']:
+            audio_file = speaker_dir / f"{speaker}.mp3"
+            if audio_file.exists():
+                spk_audio, _ = load_audio_from_file(str(audio_file), sr=sr)
+                if spk_audio.dim() > 1:
+                    spk_audio = spk_audio.mean(dim=0)
+                speaker_audio[speaker.upper()] = spk_audio.numpy()
+                logger.info(f"  Loaded {speaker}.mp3 ({len(spk_audio)/sr:.1f}s)")
+
+        if not speaker_audio:
+            logger.warning("No speaker audio files found, falling back to audio_path")
+            waveform, _ = load_audio_from_file(file_path=audio_path, sr=sr)
+            if waveform.dim() > 1:
+                waveform = waveform.mean(dim=0)
+        else:
+            # Create synthetic mix by summing all speaker tracks
+            max_len = max(len(a) for a in speaker_audio.values())
+            mix = np.zeros(max_len, dtype=np.float32)
+            for spk_name, spk_audio_data in speaker_audio.items():
+                mix[:len(spk_audio_data)] += spk_audio_data
+
+            # Normalize to prevent clipping
+            max_val = np.abs(mix).max()
+            if max_val > 0:
+                mix = mix / max_val * 0.9
+
+            waveform = torch.from_numpy(mix).float()
+            logger.info(f"Created synthetic mix from {len(speaker_audio)} speakers ({len(mix)/sr:.1f}s)")
+    else:
+        # Load audio from file
+        waveform, _ = load_audio_from_file(file_path=audio_path, sr=sr)
+        if waveform.dim() > 1:
+            waveform = waveform.mean(dim=0)
+
     waveform = waveform.to(config.device)
     total_duration = waveform.shape[-1] / sr
 
@@ -1475,10 +1518,131 @@ def aggregate_sod_results(results: Dict) -> Dict:
 # SOS (Speech Overlap Separation) Comparison Functions
 # =============================================================================
 
+def extract_overlap_with_speakers(
+    benchmark_dir: Path,
+    min_overlap_duration: float = 0.05
+) -> List[Dict]:
+    """
+    Extract overlap regions with speaker information from benchmark JSONs.
+
+    Returns list of dicts with overlap info including which speakers overlap,
+    their segment timing, and segment IDs for loading audio chunks.
+    """
+    all_overlaps = []
+
+    for f in sorted(benchmark_dir.glob("*.json")):
+        chunk_idx = int(f.stem)
+        chunk_offset = chunk_idx * 30.0
+
+        with open(f) as fp:
+            data = json.load(fp)
+
+        segments = data['segments']
+
+        for i, seg1 in enumerate(segments):
+            for j, seg2 in enumerate(segments):
+                if i >= j:
+                    continue
+                if seg1['speaker'] != seg2['speaker']:
+                    overlap_start = max(seg1['start'], seg2['start'])
+                    overlap_end = min(seg1['end'], seg2['end'])
+                    overlap_duration = overlap_end - overlap_start
+
+                    if overlap_duration >= min_overlap_duration:
+                        # Get segment IDs (use 'id' field if present, else use index)
+                        seg1_id = seg1.get('id', i)
+                        seg2_id = seg2.get('id', j)
+
+                        all_overlaps.append({
+                            'chunk_idx': chunk_idx,
+                            'chunk_offset': chunk_offset,
+                            'abs_start': chunk_offset + overlap_start,
+                            'abs_end': chunk_offset + overlap_end,
+                            'overlap_start': overlap_start,
+                            'overlap_end': overlap_end,
+                            'speakers': [
+                                {
+                                    'name': seg1['speaker'],
+                                    'segment_id': seg1_id,
+                                    'seg_start': seg1['start'],
+                                    'seg_end': seg1['end']
+                                },
+                                {
+                                    'name': seg2['speaker'],
+                                    'segment_id': seg2_id,
+                                    'seg_start': seg2['start'],
+                                    'seg_end': seg2['end']
+                                }
+                            ]
+                        })
+
+    return all_overlaps
+
+
+def load_speaker_chunk_audio(
+    speaker_dir: Path,
+    speaker_name: str,
+    chunk_idx: int,
+    sr: int
+) -> Optional[np.ndarray]:
+    """
+    Load a speaker's 30-second chunk audio from their audio_chunks or audio directory.
+
+    The audio_chunks/audio folders contain 30-second isolated speaker tracks,
+    one per benchmark chunk. Different naming conventions may be used:
+    - {speaker}_chunk_{chunk_idx:03d}.mp3
+    - {speaker}_{chunk_idx:03d}.mp3
+    - {speaker}_part{chunk_idx:03d}.mp3
+    - meeting3_{speaker}_{chunk_idx:03d}.mp3
+
+    Parameters
+    ----------
+    speaker_dir : Path
+        Base directory containing speaker folders (e.g., meeting3-en/)
+    speaker_name : str
+        Speaker name (e.g., 'JOHAN', 'GOR')
+    chunk_idx : int
+        Chunk index (0, 1, 2, ...) corresponding to benchmark JSON files
+    sr : int
+        Sample rate
+
+    Returns
+    -------
+    np.ndarray or None
+        Audio waveform for the 30-second chunk, or None if not found
+    """
+    speaker_lower = speaker_name.lower()
+
+    # Try different naming patterns and directories
+    # Each speaker may have different naming conventions
+    patterns = [
+        # Standard patterns
+        (speaker_lower, "audio_chunks", f"{speaker_lower}_chunk_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio_chunks", f"{speaker_lower}_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"{speaker_lower}_chunk_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"{speaker_lower}_{chunk_idx:03d}.mp3"),
+        # Additional patterns found in meeting3-en
+        (speaker_lower, "audio_chunks", f"{speaker_lower}_part{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio_chunks", f"meeting3_{speaker_lower}_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"{speaker_lower}_part{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"meeting3_{speaker_lower}_{chunk_idx:03d}.mp3"),
+    ]
+
+    for speaker_folder, audio_folder, filename in patterns:
+        chunk_path = speaker_dir / speaker_folder / audio_folder / filename
+        if chunk_path.exists():
+            waveform, _ = load_audio_from_file(str(chunk_path), sr=sr)
+            if waveform.dim() > 1:
+                waveform = waveform.mean(dim=0)
+            return waveform.numpy()
+
+    return None
+
+
 def compare_sos_models(
     audio_path: str,
     benchmark_dir: Path,
-    speaker_dir: Path,
+    speaker_dir: Path = None,
     max_regions: int = 15
 ) -> Dict:
     """
@@ -1490,64 +1654,154 @@ def compare_sos_models(
         Path to combined audio file
     benchmark_dir : Path
         Directory containing ground truth annotations
-    speaker_dir : Path
-        Directory containing individual speaker tracks
+    speaker_dir : Path, optional
+        Directory containing speaker folders with audio_chunks/ subdirectories.
+        Structure: speaker_dir/{speaker_name}/audio_chunks/{speaker}_{chunk_idx}.mp3
+        If provided, uses SI-SDR evaluation against ground truth speaker audio.
     max_regions : int
         Maximum overlap regions to process
 
     Returns
     -------
     Dict
-        Results for both models with SI-SDR metrics
+        Results for both models with SI-SDR metrics (if speaker_dir provided)
+        or alternative metrics (energy ratio, num sources, timing)
     """
     from pipeline.speaker_segmentation.SO.Separation import PyannoteSOS, SpeechBrainSOS
-    from utils.metrics import si_sdr
     from config import PipelineConfig
     import torchaudio
 
     config = PipelineConfig()
+    sr = config.sr
 
-    # Load ground truth overlaps
-    gt_overlaps = extract_overlap_ground_truth(benchmark_dir)
-    logger.info(f"Found {len(gt_overlaps)} overlap regions")
+    # Load ground truth overlaps with speaker info
+    gt_overlaps_with_speakers = extract_overlap_with_speakers(benchmark_dir)
+    logger.info(f"Found {len(gt_overlaps_with_speakers)} overlap regions")
 
-    # Load audio
-    waveform, sr = load_audio_from_file(file_path=audio_path, sr=config.sr)
+    # Load combined audio
+    waveform, _ = load_audio_from_file(file_path=audio_path, sr=sr)
     if waveform.dim() > 1:
         waveform = waveform.mean(dim=0)
 
-    # Load speaker reference tracks
-    speaker_tracks = {
-        'GOR': 'gor.mp3', 'JOHAN': 'johan.mp3', 'KALLE': 'kalle.mp3',
-        'LUKAS': 'lukas.mp3', 'MARTEN': 'marten.mp3', 'OSCAR': 'oscar.mp3'
-    }
+    # Check if we have full speaker audio files for SI-SDR evaluation
+    # Speaker audio files are expected as {speaker}.mp3 in speaker_dir (e.g., marten.mp3)
+    has_references = False
+    available_speakers = set()
+    speaker_audio_cache = {}  # Cache loaded speaker audio to avoid reloading
 
-    speaker_waveforms = {}
-    for speaker, filename in speaker_tracks.items():
-        track_path = speaker_dir / filename
-        if track_path.exists():
-            spk_waveform, _ = load_audio_from_file(file_path=str(track_path), sr=config.sr)
-            if spk_waveform.dim() > 1:
-                spk_waveform = spk_waveform.mean(dim=0)
-            speaker_waveforms[speaker] = spk_waveform.numpy()
+    if speaker_dir is not None:
+        speaker_dir = Path(speaker_dir)
+        # Check which speakers have full audio files (e.g., marten.mp3, johan.mp3)
+        for speaker in ['gor', 'johan', 'kalle', 'lukas', 'marten', 'oscar']:
+            audio_file = speaker_dir / f"{speaker}.mp3"
+            if audio_file.exists():
+                available_speakers.add(speaker.upper())
+
+        has_references = len(available_speakers) > 0
+        if has_references:
+            logger.info(f"Found speaker audio files for: {available_speakers}")
+        else:
+            logger.warning("No speaker audio files found (expected {speaker}.mp3), using alternative metrics")
+    else:
+        logger.info("No speaker-dir provided, using alternative metrics (energy ratio, timing)")
+
+    # Filter overlaps to only those where we have audio files for all speakers
+    if has_references:
+        valid_overlaps = []
+        for overlap in gt_overlaps_with_speakers:
+            speakers_in_overlap = {s['name'] for s in overlap['speakers']}
+            if speakers_in_overlap.issubset(available_speakers):
+                valid_overlaps.append(overlap)
+        logger.info(f"Found {len(valid_overlaps)} overlaps with available speaker audio files")
+    else:
+        valid_overlaps = gt_overlaps_with_speakers
 
     results = {
-        'ground_truth_overlaps': len(gt_overlaps),
+        'ground_truth_overlaps': len(gt_overlaps_with_speakers),
+        'valid_overlaps': len(valid_overlaps),
+        'has_references': has_references,
         'pyannote': None,
         'sepformer': None
     }
 
-    regions_to_process = gt_overlaps[:max_regions]
+    regions_to_process = valid_overlaps[:max_regions]
+    logger.info(f"Processing {len(regions_to_process)} overlap regions")
+
+    def compute_energy_ratio(sources: Dict[int, np.ndarray]) -> float:
+        """Compute energy ratio between sources (higher is better separation)."""
+        if len(sources) < 2:
+            return 0.0
+        energies = []
+        for source in sources.values():
+            if isinstance(source, torch.Tensor):
+                source = source.numpy()
+            energies.append(np.sum(source ** 2))
+        if sum(energies) == 0:
+            return 0.0
+        return min(energies) / max(energies) if max(energies) > 0 else 0.0
 
     # Helper function to run separation benchmark
     def run_separation(model, model_name: str, target_sr: int = None) -> Dict:
         region_results = []
         total_time = 0
 
-        for start, end in regions_to_process:
-            start_sample = int(start * sr)
-            end_sample = int(end * sr)
-            segment = waveform[start_sample:end_sample]
+        for overlap in regions_to_process:
+            abs_start = overlap['abs_start']
+            abs_end = overlap['abs_end']
+            chunk_idx = overlap['chunk_idx']
+
+            # Create synthetic mix from speaker audio files instead of using combined.mp3
+            # This ensures the ground truth and mix are perfectly aligned
+            start_sample = int(abs_start * sr)
+            end_sample = int(abs_end * sr)
+
+            # Load speaker references and create mix
+            speaker_refs = {}
+            mix_components = []
+
+            for spk_info in overlap['speakers']:
+                spk_name = spk_info['name']
+                spk_lower = spk_name.lower()
+
+                # Load full speaker audio from cache or file
+                if spk_name not in speaker_audio_cache:
+                    audio_file = speaker_dir / f"{spk_lower}.mp3"
+                    if audio_file.exists():
+                        spk_audio, _ = load_audio_from_file(str(audio_file), sr=sr)
+                        if spk_audio.dim() > 1:
+                            spk_audio = spk_audio.mean(dim=0)
+                        speaker_audio_cache[spk_name] = spk_audio.numpy()
+                    else:
+                        speaker_audio_cache[spk_name] = None
+
+                spk_full_audio = speaker_audio_cache.get(spk_name)
+
+                if spk_full_audio is not None and len(spk_full_audio) > start_sample:
+                    # Extract the overlap portion using absolute times
+                    spk_end_sample = min(len(spk_full_audio), end_sample)
+                    spk_segment = spk_full_audio[start_sample:spk_end_sample]
+
+                    if len(spk_segment) >= 100:
+                        speaker_refs[spk_name] = spk_segment
+                        mix_components.append(spk_segment)
+
+            # Skip if we don't have at least 2 speakers
+            if len(speaker_refs) < 2:
+                logger.debug(f"Skipping overlap at {abs_start:.2f}s - insufficient speaker refs")
+                continue
+
+            # Create synthetic mix by summing speaker tracks
+            min_len = min(len(c) for c in mix_components)
+            segment = np.zeros(min_len, dtype=np.float32)
+            for comp in mix_components:
+                segment += comp[:min_len]
+
+            # Normalize to prevent clipping
+            max_val = np.abs(segment).max()
+            if max_val > 0:
+                segment = segment / max_val * 0.9
+
+            segment = torch.from_numpy(segment).float()
 
             if len(segment) < sr * 0.1:
                 continue
@@ -1565,7 +1819,10 @@ def compare_sos_models(
                 logger.warning(f"Separation error: {e}")
                 continue
 
-            source_si_sdrs = []
+            num_sources = len(separated)
+
+            # Process separated sources
+            sources_np = {}
             for source_idx, source_waveform in separated.items():
                 if isinstance(source_waveform, torch.Tensor):
                     source_np = source_waveform.numpy()
@@ -1577,47 +1834,73 @@ def compare_sos_models(
                     source_tensor = torch.from_numpy(source_np).float()
                     source_np = resampler(source_tensor).numpy()
 
-                best_si_sdr = float('-inf')
-                for speaker, ref_waveform in speaker_waveforms.items():
-                    ref_segment = ref_waveform[start_sample:end_sample]
-                    min_len = min(len(source_np), len(ref_segment))
-                    if min_len < 100:
-                        continue
-                    sdr = si_sdr(ref_segment[:min_len], source_np[:min_len])
-                    if sdr > best_si_sdr:
-                        best_si_sdr = sdr
+                sources_np[source_idx] = source_np
 
-                source_si_sdrs.append(best_si_sdr)
+            # Compute metrics
+            region_result = {
+                'start': abs_start,
+                'end': abs_end,
+                'chunk_idx': chunk_idx,
+                'speakers': [s['name'] for s in overlap['speakers']],
+                'num_sources': num_sources,
+                'time': elapsed,
+                'energy_ratio': compute_energy_ratio(sources_np)
+            }
 
-            valid_sdrs = [s for s in source_si_sdrs if s > float('-inf')]
-            avg_si_sdr = np.mean(valid_sdrs) if valid_sdrs else float('-inf')
+            # Compute SI-SDR using speaker_refs already loaded above
+            if has_references and len(speaker_refs) >= 2:
+                from utils.metrics import si_sdr
+                source_si_sdrs = []
 
-            region_results.append({
-                'start': start,
-                'end': end,
-                'avg_si_sdr': avg_si_sdr,
-                'time': elapsed
-            })
+                # Match each separated source to best reference
+                for source_idx, source_np in sources_np.items():
+                    best_si_sdr = float('-inf')
+                    best_speaker = None
+                    for spk_name, ref_segment in speaker_refs.items():
+                        min_len = min(len(source_np), len(ref_segment))
+                        if min_len < 100:
+                            continue
+                        sdr_val = si_sdr(ref_segment[:min_len], source_np[:min_len])
+                        if sdr_val > best_si_sdr:
+                            best_si_sdr = sdr_val
+                            best_speaker = spk_name
+                    source_si_sdrs.append(best_si_sdr)
 
-        all_si_sdrs = [r['avg_si_sdr'] for r in region_results if r['avg_si_sdr'] > float('-inf')]
-        mean_si_sdr = np.mean(all_si_sdrs) if all_si_sdrs else float('-inf')
-        std_si_sdr = np.std(all_si_sdrs) if len(all_si_sdrs) > 1 else 0
+                valid_sdrs = [s for s in source_si_sdrs if s > float('-inf')]
+                region_result['avg_si_sdr'] = np.mean(valid_sdrs) if valid_sdrs else float('-inf')
+            else:
+                region_result['avg_si_sdr'] = float('-inf')
 
-        return {
+            region_results.append(region_result)
+
+        # Aggregate metrics
+        result = {
             'model': model_name,
             'num_regions': len(region_results),
             'total_time': total_time,
-            'mean_si_sdr': mean_si_sdr,
-            'std_si_sdr': std_si_sdr,
+            'avg_time_per_region': total_time / len(region_results) if region_results else 0,
+            'mean_num_sources': np.mean([r['num_sources'] for r in region_results]) if region_results else 0,
+            'mean_energy_ratio': np.mean([r['energy_ratio'] for r in region_results]) if region_results else 0,
+            'std_energy_ratio': np.std([r['energy_ratio'] for r in region_results]) if len(region_results) > 1 else 0,
             'region_results': region_results
         }
+
+        if has_references:
+            all_si_sdrs = [r['avg_si_sdr'] for r in region_results if r.get('avg_si_sdr', float('-inf')) > float('-inf')]
+            result['mean_si_sdr'] = np.mean(all_si_sdrs) if all_si_sdrs else float('-inf')
+            result['std_si_sdr'] = np.std(all_si_sdrs) if len(all_si_sdrs) > 1 else 0
+
+        return result
 
     # Test PyannoteSOS
     logger.info("Testing PyannoteSOS...")
     try:
         pyannote_sos = PyannoteSOS(device=torch.device(config.device))
         results['pyannote'] = run_separation(pyannote_sos, "PyannoteSOS (separation-ami-1.0)")
-        logger.info(f"  Mean SI-SDR: {results['pyannote']['mean_si_sdr']:.1f} dB")
+        if has_references and 'mean_si_sdr' in results['pyannote']:
+            logger.info(f"  Mean SI-SDR: {results['pyannote']['mean_si_sdr']:.1f} dB")
+        logger.info(f"  Mean Energy Ratio: {results['pyannote']['mean_energy_ratio']:.3f}")
+        logger.info(f"  Total Time: {results['pyannote']['total_time']:.2f}s")
     except Exception as e:
         logger.error(f"PyannoteSOS failed: {e}")
         results['pyannote'] = {'error': str(e)}
@@ -1627,7 +1910,10 @@ def compare_sos_models(
     try:
         sepformer_sos = SpeechBrainSOS(device=torch.device(config.device))
         results['sepformer'] = run_separation(sepformer_sos, "SepFormer (wsj02mix)", target_sr=8000)
-        logger.info(f"  Mean SI-SDR: {results['sepformer']['mean_si_sdr']:.1f} dB")
+        if has_references and 'mean_si_sdr' in results['sepformer']:
+            logger.info(f"  Mean SI-SDR: {results['sepformer']['mean_si_sdr']:.1f} dB")
+        logger.info(f"  Mean Energy Ratio: {results['sepformer']['mean_energy_ratio']:.3f}")
+        logger.info(f"  Total Time: {results['sepformer']['total_time']:.2f}s")
     except Exception as e:
         logger.error(f"SepFormer failed: {e}")
         results['sepformer'] = {'error': str(e)}
@@ -1641,11 +1927,19 @@ def aggregate_sos_results(results: Dict) -> Dict:
 
     for model in ['pyannote', 'sepformer']:
         if results[model] and 'error' not in results[model]:
-            results['aggregated'][model] = {
-                'mean_si_sdr': results[model]['mean_si_sdr'],
-                'std_si_sdr': results[model]['std_si_sdr'],
-                'total_time': results[model]['total_time']
+            agg = {
+                'total_time': results[model]['total_time'],
+                'avg_time_per_region': results[model].get('avg_time_per_region', 0),
+                'mean_num_sources': results[model].get('mean_num_sources', 0),
+                'mean_energy_ratio': results[model].get('mean_energy_ratio', 0),
+                'std_energy_ratio': results[model].get('std_energy_ratio', 0),
             }
+            # Include SI-SDR if available
+            if 'mean_si_sdr' in results[model]:
+                agg['mean_si_sdr'] = results[model]['mean_si_sdr']
+                agg['std_si_sdr'] = results[model]['std_si_sdr']
+
+            results['aggregated'][model] = agg
 
     return results
 

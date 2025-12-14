@@ -1002,3 +1002,151 @@ def plot_cluster_umap(
     plt.close()
 
     logger.info(f"Saved cluster UMAP plot: {output_path}")
+
+
+def plot_sos_comparison(
+    results: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """
+    Generate Speech Overlap Separation (SOS) comparison plot.
+
+    Shows SI-SDR metrics (if available) or energy ratio, and timing comparison
+    between separation models (PyannoteSOS vs SpeechBrain SepFormer).
+
+    Parameters
+    ----------
+    results : Dict
+        Results from compare_sos_models containing:
+        - ground_truth_overlaps: number of overlap regions
+        - has_references: bool indicating if SI-SDR is available
+        - pyannote: dict with metrics and region_results
+        - sepformer: dict with metrics and region_results
+    system_info : Dict
+        System information (GPU, etc.)
+    output_path : Path
+        Path to save the plot
+    """
+    # Collect model data
+    models = []
+    model_names = []
+    colors = []
+
+    if results.get('pyannote') and 'error' not in results['pyannote']:
+        models.append(results['pyannote'])
+        model_names.append('PyannoteSOS\n(separation-ami-1.0)')
+        colors.append('#A23B72')
+
+    if results.get('sepformer') and 'error' not in results['sepformer']:
+        models.append(results['sepformer'])
+        model_names.append('SpeechBrain\n(SepFormer)')
+        colors.append('#2E86AB')
+
+    if not models:
+        logger.warning("No SOS model results to plot")
+        return
+
+    has_references = results.get('has_references', False)
+    fig, axes = plt.subplots(1, 3, figsize=(14, 5))
+    x = np.arange(len(models))
+
+    # Plot 1: Quality metric (SI-SDR if available, else Energy Ratio)
+    ax1 = axes[0]
+    if has_references:
+        # SI-SDR plot
+        si_sdrs = [m.get('mean_si_sdr', 0) for m in models]
+        std_sdrs = [m.get('std_si_sdr', 0) for m in models]
+
+        bars1 = ax1.bar(x, si_sdrs, color=colors, yerr=std_sdrs, capsize=5, alpha=0.8)
+        ax1.set_ylabel('SI-SDR (dB)', fontsize=12)
+        ax1.set_title('Source Separation Quality (SI-SDR)', fontsize=11)
+        ax1.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
+
+        for bar, val, std in zip(bars1, si_sdrs, std_sdrs):
+            if val != float('-inf') and val is not None:
+                ax1.text(bar.get_x() + bar.get_width()/2., bar.get_height() + std + 0.5,
+                        f'{val:.1f} dB', ha='center', va='bottom', fontsize=9)
+    else:
+        # Energy ratio plot
+        energy_ratios = [m.get('mean_energy_ratio', 0) for m in models]
+        std_ratios = [m.get('std_energy_ratio', 0) for m in models]
+
+        bars1 = ax1.bar(x, energy_ratios, color=colors, yerr=std_ratios, capsize=5, alpha=0.8)
+        ax1.set_ylabel('Energy Ratio', fontsize=12)
+        ax1.set_title('Source Separation Quality (Energy Ratio)', fontsize=11)
+        ax1.set_ylim(0, 1.1)
+
+        for bar, val in zip(bars1, energy_ratios):
+            ax1.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.02,
+                    f'{val:.3f}', ha='center', va='bottom', fontsize=9)
+
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(model_names, fontsize=10)
+    ax1.grid(axis='y', alpha=0.3)
+
+    # Plot 2: Success rate (percentage of positive SI-SDR)
+    ax2 = axes[1]
+    if has_references:
+        success_rates = []
+        for m in models:
+            region_results = m.get('region_results', [])
+            if region_results:
+                positive_count = sum(1 for r in region_results
+                                    if r.get('avg_si_sdr') is not None and r.get('avg_si_sdr') > 0)
+                success_rate = 100 * positive_count / len(region_results)
+            else:
+                success_rate = 0
+            success_rates.append(success_rate)
+
+        bars2 = ax2.bar(x, success_rates, color=colors, alpha=0.8)
+        ax2.set_ylabel('Success Rate (%)', fontsize=12)
+        ax2.set_title('Success Rate (SI-SDR > 0 dB)', fontsize=11)
+        ax2.set_ylim(0, 105)
+        ax2.axhline(y=50, color='gray', linestyle='--', alpha=0.5)
+
+        for bar, val in zip(bars2, success_rates):
+            ax2.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 2,
+                    f'{val:.1f}%', ha='center', va='bottom', fontsize=9)
+    else:
+        # If no SI-SDR, show number of sources
+        num_sources = [m.get('mean_num_sources', 0) for m in models]
+        bars2 = ax2.bar(x, num_sources, color=colors, alpha=0.8)
+        ax2.set_ylabel('Avg Sources', fontsize=12)
+        ax2.set_title('Average Number of Sources', fontsize=11)
+
+        for bar, val in zip(bars2, num_sources):
+            ax2.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.1,
+                    f'{val:.1f}', ha='center', va='bottom', fontsize=9)
+
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(model_names, fontsize=10)
+    ax2.grid(axis='y', alpha=0.3)
+
+    # Plot 3: Total processing time
+    ax3 = axes[2]
+    times = [m['total_time'] for m in models]
+
+    bars3 = ax3.bar(x, times, color=colors, alpha=0.8)
+    ax3.set_ylabel('Total Time (seconds)', fontsize=12)
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(model_names, fontsize=10)
+    ax3.set_title('Processing Time', fontsize=11)
+    ax3.grid(axis='y', alpha=0.3)
+
+    for bar, val in zip(bars3, times):
+        ax3.text(bar.get_x() + bar.get_width()/2., bar.get_height() + max(times) * 0.02,
+                f'{val:.1f}s', ha='center', va='bottom', fontsize=9)
+
+    # Overall title
+    n_overlaps = results.get('ground_truth_overlaps', 0)
+    metric_type = "SI-SDR" if has_references else "Energy Ratio"
+    title = f"Speech Overlap Separation (SOS) Comparison\n"
+    title += f"Overlap Regions: {n_overlaps} | Metric: {metric_type} | Hardware: {system_info.get('gpu', 'N/A')}"
+    fig.suptitle(title, fontsize=12, y=1.02)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved SOS comparison plot: {output_path}")

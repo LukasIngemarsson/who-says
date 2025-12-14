@@ -82,18 +82,39 @@ class PyannoteSOS(object):
         separated_waveforms = {}
 
         # Handle different output formats from the model
-        if isinstance(separated, torch.Tensor):
-            # Shape: (batch, num_sources, num_samples)
-            num_sources = separated.shape[1]
-            for i in range(num_sources):
-                speaker_waveform = separated[0, i, :].cpu()
-                separated_waveforms[i] = speaker_waveform
-        elif isinstance(separated, (list, tuple)):
-            # Some models return a list/tuple of tensors
-            for i, source in enumerate(separated):
-                if isinstance(source, torch.Tensor):
-                    speaker_waveform = source.squeeze().cpu()
+        if isinstance(separated, (list, tuple)):
+            # pyannote/separation-ami-1.0 returns tuple:
+            # - Element 0: some metadata/embedding (batch, frames, num_sources)
+            # - Element 1: separated audio (batch, num_samples, num_sources)
+            # We want element 1 (the actual separated audio)
+            if len(separated) >= 2 and isinstance(separated[1], torch.Tensor):
+                sources = separated[1]  # Shape: (batch, num_samples, num_sources)
+                if sources.ndim == 3:
+                    num_sources = sources.shape[2]
+                    for i in range(num_sources):
+                        speaker_waveform = sources[0, :, i].cpu()
+                        separated_waveforms[i] = speaker_waveform
+                else:
+                    # Fallback for unexpected shape
+                    speaker_waveform = sources.squeeze().cpu()
+                    separated_waveforms[0] = speaker_waveform
+            else:
+                # Fallback: treat as list of tensors
+                for i, source in enumerate(separated):
+                    if isinstance(source, torch.Tensor):
+                        speaker_waveform = source.squeeze().cpu()
+                        separated_waveforms[i] = speaker_waveform
+        elif isinstance(separated, torch.Tensor):
+            # Shape: (batch, num_sources, num_samples) or (batch, num_samples, num_sources)
+            if separated.ndim == 3:
+                # Assume (batch, num_sources, num_samples)
+                num_sources = separated.shape[1]
+                for i in range(num_sources):
+                    speaker_waveform = separated[0, i, :].cpu()
                     separated_waveforms[i] = speaker_waveform
+            else:
+                speaker_waveform = separated.squeeze().cpu()
+                separated_waveforms[0] = speaker_waveform
 
         return separated_waveforms
 

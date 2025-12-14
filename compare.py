@@ -47,6 +47,7 @@ from utils import (
     plot_e2e_timing,
     plot_embedding_comparison,
     plot_cluster_umap,
+    plot_sos_comparison,
     load_audio_from_file
 )
 from utils.constants import SR
@@ -457,9 +458,16 @@ def main():
             logger.error("--audio argument required for sod component")
             return
 
+        # speaker_dir is optional - if provided, creates synthetic mix from speaker files
+        if args.speaker_dir:
+            logger.info(f"Speaker dir: {args.speaker_dir} (synthetic mix mode)")
+        else:
+            logger.info(f"Using audio file directly: {args.audio}")
+
         results = compare_sod_models(
             audio_path=args.audio,
             benchmark_dir=args.annotation_dir,
+            speaker_dir=args.speaker_dir,
             include_nemo=not args.skip_nemo
         )
         results = aggregate_sod_results(results)
@@ -499,14 +507,17 @@ def main():
         if not args.audio:
             logger.error("--audio argument required for sos component")
             return
-        if not args.speaker_dir:
-            logger.error("--speaker-dir argument required for sos component")
-            return
+
+        # speaker_dir is now optional
+        if args.speaker_dir:
+            logger.info(f"Speaker dir: {args.speaker_dir} (SI-SDR evaluation enabled)")
+        else:
+            logger.info("No speaker-dir provided, using alternative metrics")
 
         results = compare_sos_models(
             audio_path=args.audio,
             benchmark_dir=args.annotation_dir,
-            speaker_dir=args.speaker_dir,
+            speaker_dir=args.speaker_dir,  # Can be None
             max_regions=args.max_regions
         )
         results = aggregate_sos_results(results)
@@ -520,25 +531,50 @@ def main():
 
         json_path = args.output_dir / f"sos_comparison_{timestamp}.json"
         with open(json_path, 'w') as f:
-            json.dump(output_data, f, indent=2, default=lambda x: None if x == float('-inf') else x)
+            def json_serializer(x):
+                import numpy as np
+                if isinstance(x, (np.floating, np.integer)):
+                    return float(x) if not np.isinf(x) else None
+                if x == float('-inf') or x == float('inf'):
+                    return None
+                raise TypeError(f"Object of type {type(x)} is not JSON serializable")
+            json.dump(output_data, f, indent=2, default=json_serializer)
         logger.info(f"\nSaved results: {json_path}")
+
+        # Generate plot
+        plot_path = args.output_dir / f"sos_comparison_{timestamp}.png"
+        plot_sos_comparison(results, system_info, plot_path)
 
         print("\n" + "="*60)
         print("SOS (SPEECH OVERLAP SEPARATION) COMPARISON SUMMARY")
         print("="*60)
         print(f"Processed {results['ground_truth_overlaps']} overlap regions")
-        print(f"\n{'Model':<40} {'Mean SI-SDR':<15} {'Std':<10} {'Time':<10}")
-        print("-"*75)
 
-        for model in ['pyannote', 'sepformer']:
-            if results[model] and 'error' not in results[model]:
-                name = results[model]['model']
-                mean_sdr = results[model]['mean_si_sdr']
-                std_sdr = results[model]['std_si_sdr']
-                total_time = results[model]['total_time']
-                print(f"{name:<40} {mean_sdr:>8.1f} dB    ±{std_sdr:<6.1f}   {total_time:.2f}s")
-            elif results[model]:
-                print(f"{model:<40} ERROR: {results[model].get('error', 'Unknown')}")
+        has_references = results.get('has_references', False)
+        if has_references:
+            print(f"\n{'Model':<40} {'Mean SI-SDR':<15} {'Std':<10} {'Time':<10}")
+            print("-"*75)
+            for model in ['pyannote', 'sepformer']:
+                if results[model] and 'error' not in results[model]:
+                    name = results[model]['model']
+                    mean_sdr = results[model].get('mean_si_sdr', float('-inf'))
+                    std_sdr = results[model].get('std_si_sdr', 0)
+                    total_time = results[model]['total_time']
+                    print(f"{name:<40} {mean_sdr:>8.1f} dB    ±{std_sdr:<6.1f}   {total_time:.2f}s")
+                elif results[model]:
+                    print(f"{model:<40} ERROR: {results[model].get('error', 'Unknown')}")
+        else:
+            print(f"\n{'Model':<40} {'Energy Ratio':<15} {'Sources':<10} {'Time':<10}")
+            print("-"*75)
+            for model in ['pyannote', 'sepformer']:
+                if results[model] and 'error' not in results[model]:
+                    name = results[model]['model']
+                    energy_ratio = results[model].get('mean_energy_ratio', 0)
+                    num_sources = results[model].get('mean_num_sources', 0)
+                    total_time = results[model]['total_time']
+                    print(f"{name:<40} {energy_ratio:>10.3f}     {num_sources:>6.1f}     {total_time:.2f}s")
+                elif results[model]:
+                    print(f"{model:<40} ERROR: {results[model].get('error', 'Unknown')}")
         print("="*60)
 
     elif args.component == "speaker-id":

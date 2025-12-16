@@ -102,10 +102,10 @@ class VADConfig:
 @dataclass
 class ASRConfig(BaseConfig):
     asr_type: TypeASR = TypeASR.FASTER_WHISPER
-    model: str = "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
+    model: str = "medium" # "large-v3"# "large-v3-turbo" # "KBLab/kb-whisper-large" # openai/whisper-large-v3
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
-    compute_type: str = "float32"
-    language: str = "en"  # Swedish language code
+    compute_type: str = "int8" # "float32"
+    language: str = "en"
     
 # -----------------------------
 # Phoneme

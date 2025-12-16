@@ -1,0 +1,43 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.459,
+      "speaker": "LUKAS",
+      "text": " I mean, for Gor, you just have to remove the words key from the JSON file."
+    },
+    {
+      "start": 4.479,
+      "end": 6.6,
+      "speaker": "LUKAS",
+      "text": "It's not difficult."
+    },
+    {
+      "start": 16.782,
+      "end": 17.945,
+      "speaker": "LUKAS",
+      "text": "Actually, yeah."
+    },
+    {
+      "start": 17.965,
+      "end": 20.129,
+      "speaker": "LUKAS",
+      "text": "We spoke about clearing the branches."
+    },
+    {
+      "start": 20.189,
+      "end": 25.859,
+      "speaker": "LUKAS",
+      "text": "Can everyone who knows they were at least, in part, responsible for a branch just look at it?"
+    },
+    {
+      "start": 25.879,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "Johan already said that, he's going to"
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:52:06.324Z"
+  }
+}

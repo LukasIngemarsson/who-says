@@ -1,0 +1,55 @@
+{
+  "segments": [
+    {
+      "start": 0.402,
+      "end": 1.784,
+      "speaker": "LUKAS",
+      "text": " So they're just obsolete."
+    },
+    {
+      "start": 2.625,
+      "end": 12.541,
+      "speaker": "LUKAS",
+      "text": "When we output the JSON files from the editor app, the only thing we change is the sentence or segment stuff."
+    },
+    {
+      "start": 12.561,
+      "end": 21.295,
+      "speaker": "LUKAS",
+      "text": "So I was just wondering if we're keeping them for a certain reason if we should just exclude them, because I don't think we use them in the actual pipeline anyways."
+    },
+    {
+      "id": 0,
+      "start": 22,
+      "end": 22.892,
+      "text": " Do you mean this?",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 24.997,
+      "end": 26.039,
+      "text": "You can see in my stream.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 25.221,
+      "end": 25.722,
+      "speaker": "LUKAS",
+      "text": "I can check."
+    },
+    {
+      "start": 27.685,
+      "end": 27.945,
+      "speaker": "LUKAS",
+      "text": "Yeah."
+    },
+    {
+      "id": 2,
+      "start": 28.584,
+      "end": 29.987,
+      "text": "Yeah, yeah I was",
+      "speaker": "GOR"
+    }
+  ]
+}

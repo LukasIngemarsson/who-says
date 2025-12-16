@@ -1,0 +1,84 @@
+{
+  "segments": [
+    {
+      "start": 25.175,
+      "end": 29.987,
+      "text": " Combining all the mental ones.",
+      "words": [
+        {
+          "word": "Combining",
+          "start": 25.175,
+          "end": 26.021,
+          "score": 0.896,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "all",
+          "start": 26.081,
+          "end": 26.162,
+          "score": 0.992,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 26.202,
+          "end": 26.303,
+          "score": 0.757,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "mental",
+          "start": 26.343,
+          "end": 26.625,
+          "score": 0.86,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "ones.",
+          "start": 26.705,
+          "end": 29.987,
+          "score": 0.808,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Combining",
+      "start": 25.175,
+      "end": 26.021,
+      "score": 0.896,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "all",
+      "start": 26.081,
+      "end": 26.162,
+      "score": 0.992,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 26.202,
+      "end": 26.303,
+      "score": 0.757,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "mental",
+      "start": 26.343,
+      "end": 26.625,
+      "score": 0.86,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "ones.",
+      "start": 26.705,
+      "end": 29.987,
+      "score": 0.808,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

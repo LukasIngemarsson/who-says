@@ -1,0 +1,204 @@
+{
+  "segments": [
+    {
+      "start": 3.743,
+      "end": 4.89,
+      "text": " Yeah that's why we merge them.",
+      "words": [
+        {
+          "word": "Yeah",
+          "start": 3.743,
+          "end": 4.005,
+          "score": 0.438,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that's",
+          "start": 4.065,
+          "end": 4.206,
+          "score": 0.919,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "why",
+          "start": 4.246,
+          "end": 4.327,
+          "score": 0.948,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 4.387,
+          "end": 4.447,
+          "score": 0.974,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "merge",
+          "start": 4.488,
+          "end": 4.709,
+          "score": 0.845,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "them.",
+          "start": 4.749,
+          "end": 4.89,
+          "score": 0.975,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 7.285,
+      "end": 8.472,
+      "text": "And then we have all the voices.",
+      "words": [
+        {
+          "word": "And",
+          "start": 7.285,
+          "end": 7.345,
+          "score": 0.951,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "then",
+          "start": 7.365,
+          "end": 7.466,
+          "score": 0.879,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 7.486,
+          "end": 7.546,
+          "score": 0.734,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "have",
+          "start": 7.587,
+          "end": 7.687,
+          "score": 0.911,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "all",
+          "start": 7.728,
+          "end": 7.808,
+          "score": 0.749,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 7.848,
+          "end": 7.909,
+          "score": 0.92,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "voices.",
+          "start": 7.949,
+          "end": 8.472,
+          "score": 0.89,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Yeah",
+      "start": 3.743,
+      "end": 4.005,
+      "score": 0.438,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "that's",
+      "start": 4.065,
+      "end": 4.206,
+      "score": 0.919,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "why",
+      "start": 4.246,
+      "end": 4.327,
+      "score": 0.948,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we",
+      "start": 4.387,
+      "end": 4.447,
+      "score": 0.974,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "merge",
+      "start": 4.488,
+      "end": 4.709,
+      "score": 0.845,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "them.",
+      "start": 4.749,
+      "end": 4.89,
+      "score": 0.975,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "And",
+      "start": 7.285,
+      "end": 7.345,
+      "score": 0.951,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "then",
+      "start": 7.365,
+      "end": 7.466,
+      "score": 0.879,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "we",
+      "start": 7.486,
+      "end": 7.546,
+      "score": 0.734,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "have",
+      "start": 7.587,
+      "end": 7.687,
+      "score": 0.911,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "all",
+      "start": 7.728,
+      "end": 7.808,
+      "score": 0.749,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "the",
+      "start": 7.848,
+      "end": 7.909,
+      "score": 0.92,
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "word": "voices.",
+      "start": 7.949,
+      "end": 8.472,
+      "score": 0.89,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

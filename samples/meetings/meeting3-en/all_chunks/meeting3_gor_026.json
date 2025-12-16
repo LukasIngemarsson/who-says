@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:21:09.662Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 4
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 1,
+      "end": 10.083,
+      "text": " Yeah, the thing is we will need a database in that case or something else because I don't know where to save.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 10.564,
+      "end": 13.547,
+      "text": "This one, if you press this button, it doesn't save it anywhere.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 13.587,
+      "end": 24.26,
+      "text": "It only shows it here in the front end or it maybe saves something in your cache but it doesn't save on your computer until you press the save button here.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 25.101,
+      "end": 29.987,
+      "text": "So it only like shows you the front without saving",
+      "speaker": "GOR"
+    }
+  ]
+}

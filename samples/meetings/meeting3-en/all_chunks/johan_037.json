@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "exported_at": "2025-11-26T12:53:57.289Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 16.521,
+      "end": 20.553,
+      "text": " Yeah, I think some of us have more to annotate than others, but it's all good.",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 1,
+      "start": 23.574,
+      "end": 25.379,
+      "text": "Some of us are talking more than others, just.",
+      "speaker": "JOHAN"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.318,
+      "speaker": "LUKAS",
+      "text": " one of them, but if there's something that you're completely finished with, like actually deleting it."
+    },
+    {
+      "start": 4.959,
+      "end": 10.247,
+      "speaker": "LUKAS",
+      "text": "Because it's hard for one person to go through and see which ones are supposed to be finished if they haven't worked on them themselves."
+    },
+    {
+      "start": 11.689,
+      "end": 12.29,
+      "speaker": "LUKAS",
+      "text": "If that makes sense."
+    },
+    {
+      "start": 12.045,
+      "end": 12.49,
+      "speaker": "KALLE",
+      "text": " Oh."
+    },
+    {
+      "id": 28,
+      "start": 14.803000000000111,
+      "end": 17.208000000000084,
+      "text": " Yeah, yeah.",
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "id": 0,
+      "start": 15.1,
+      "end": 16.381,
+      "text": " Okay.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 16.4,
+      "end": 17.8,
+      "text": "All right. Yeah yeah. Sounds good.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 18.419,
+      "end": 24.949,
+      "speaker": "LUKAS",
+      "text": "And I'll merge the pipeline MVP to main and then make a new branch that we can work on for."
+    },
+    {
+      "start": 24.969,
+      "end": 28.755,
+      "speaker": "LUKAS",
+      "text": "You know, continued development, I guess."
+    }
+  ]
+}

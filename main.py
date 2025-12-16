@@ -2,8 +2,10 @@ from loguru import logger
 import argparse
 from pathlib import Path
 import time
+import numpy as np
 
 import torch
+import torch.nn.functional as F
 
 from dotenv import load_dotenv
 
@@ -35,12 +37,78 @@ class WhoSays(object):
         self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
         self.clustering = SklearnClustering(**self.config.clustering.kmeans.to_dict()) 
         self.recognition = SpeechBrainSpeakerRecognition(**self.config.recognition.speechbrain.to_dict())
+
+    def get_reference_embedding(self, audio_file: str):
+        """
+        Helper to generate an embedding for a specific user enrollment file.
+        Assumes the file contains only the target speaker.
+        """
+        # NOTE: moved conversion to mono to the audio load function itself
+        waveform, sr = load_audio_from_file(file_path=audio_file, sr=self.config.sr, convert_to_mono=True)
+            
+        waveform = waveform.to(self.config.device)
+        
+        # We treat the whole file as one segment for enrollment
+        # Pass a fake 'change_point' that covers the whole duration
+        duration = waveform.shape[-1] / sr
+        fake_change_points = [duration] 
+        
+        # Get embedding
+        emb = self.embedder.embed_segments(waveform, sr, fake_change_points)
+        
+        # Return the first (and only) embedding vector
+        return emb[0]
+
+    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.5):
+        """
+        Compare cluster centroids to known speaker embeddings.
+        Returns a dictionary mapping Cluster ID (int) -> Name (str).
+        """
+        cluster_mapping = {}
+        unique_clusters = set(clusters.tolist())
+
+        # Pre-process known speakers into a tensor for batch comparison
+        if not known_speakers:
+            return {c_id: f"SPEAKER_{c_id}" for c_id in unique_clusters}
+
+        # known_names = list(known_speakers.keys())
+        # known_embs = torch.stack(list(known_speakers.values()))
+
+        for c_id in unique_clusters:
+            # 1. Find indices of all segments belonging to this cluster
+            indices = [i for i, x in enumerate(clusters) if x == c_id]
+            
+            # 2. Calculate the average embedding (Centroid) for this cluster
+            # segment_embeddings is likely a Tensor or Numpy array. 
+            # If Tensor:
+            cluster_embs = segment_embeddings[indices]
+            centroid = torch.mean(cluster_embs, dim=0)
+
+            # 3. Compare Centroid vs Known Speakers
+            best_score = -1.0
+            best_name = f"SPEAKER_{c_id}"
+
+            for name, ref_emb in known_speakers.items():
+                # Cosine Similarity
+                score = F.cosine_similarity(centroid.unsqueeze(0), ref_emb.unsqueeze(0))
+                score = score.item()
+                
+                if score > best_score:
+                    best_score = score
+                    if score > threshold:
+                        best_name = name
+            
+            cluster_mapping[c_id] = best_name
+            logger.info(f"Cluster {c_id} identified as '{best_name}' (Score: {best_score:.4f})")
+
+        return cluster_mapping
     
     def __call__(
         self,
         audio_file: str,
         num_speakers: int = 2,
-        include_timing: bool = False
+        include_timing: bool = False,
+        known_speakers: dict | None = None
     ):
         """
         Process audio file through the complete speaker diarization pipeline.
@@ -148,6 +216,12 @@ class WhoSays(object):
             timing['clustering'] = time.time() - start_time
         logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
 
+        logger.info("Identifying speakers against known registry...")
+        if known_speakers:
+            cluster_names = self._identify_clusters(segment_embeddings, segment_clusters, known_speakers)
+        else:
+            cluster_names = {c: f"SPEAKER_{c}" for c in set(segment_clusters.tolist())}
+
         # Step 8: Merge results into structured output
         logger.info("Merging results...")
         if include_timing:
@@ -155,6 +229,7 @@ class WhoSays(object):
         result = self._format_output(
             change_points=change_points,
             clusters=segment_clusters,
+            cluster_names=cluster_names,
             transcriptions=transcriptions,
             overlap_segments= [],# overlap_segments,
             waveform_duration=waveform.shape[-1] / sr,
@@ -170,6 +245,9 @@ class WhoSays(object):
             result['total_time'] = total_time
             logger.info(f"Total pipeline time: {total_time:.2f}s")
 
+        result['embeddings'] = segment_embeddings.cpu().numpy()
+        result['cluster_labels'] = segment_clusters.cpu().numpy()
+
         logger.info("Pipeline complete!")
         return result
 
@@ -177,6 +255,7 @@ class WhoSays(object):
         self,
         change_points: list[float],
         clusters: list[int],
+        cluster_names: dict,
         transcriptions: list[dict],
         overlap_segments: list[tuple[float, float]],
         waveform_duration: float,
@@ -200,10 +279,14 @@ class WhoSays(object):
         segment_times = [0.0] + change_points + [waveform_duration]
 
         for i in range(len(segment_times) - 1):
+            c_id = int(clusters[i]) if i < len(clusters) else -1
+            speaker_name = cluster_names.get(c_id, "UNKNOWN")
+
             speaker_segments.append({
                 'start': segment_times[i],
                 'end': segment_times[i + 1],
-                'speaker': f"SPEAKER_{int(clusters[i])}" if i < len(clusters) else "UNKNOWN",
+                'speaker': speaker_name,
+                'cluster_id': c_id,
                 'duration': segment_times[i + 1] - segment_times[i]
             })
 

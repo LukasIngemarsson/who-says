@@ -1,0 +1,659 @@
+{
+  "meta": {
+    "exported_at": "2025-11-23T11:58:50.717Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 6
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 1.059,
+      "end": 4.96,
+      "text": "Ja, alltså nej, det är inget avancerat, det var nog mer bara jag tänkte om vi skulle komma fram till.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 1.0599999999999996,
+          "end": 1.38,
+          "word": " Ja,"
+        },
+        {
+          "start": 1.4,
+          "end": 1.56,
+          "word": " alltså"
+        },
+        {
+          "start": 1.56,
+          "end": 1.72,
+          "word": " nej,"
+        },
+        {
+          "start": 1.76,
+          "end": 1.82,
+          "word": " det"
+        },
+        {
+          "start": 1.82,
+          "end": 1.82,
+          "word": " är"
+        },
+        {
+          "start": 1.82,
+          "end": 2.22,
+          "word": " inget"
+        },
+        {
+          "start": 2.22,
+          "end": 3.28,
+          "word": " avancerat,"
+        },
+        {
+          "start": 3.28,
+          "end": 3.36,
+          "word": " det"
+        },
+        {
+          "start": 3.36,
+          "end": 3.4,
+          "word": " var"
+        },
+        {
+          "start": 3.4,
+          "end": 3.54,
+          "word": " nog"
+        },
+        {
+          "start": 3.54,
+          "end": 3.64,
+          "word": " mer"
+        },
+        {
+          "start": 3.64,
+          "end": 3.78,
+          "word": " vad"
+        },
+        {
+          "start": 3.78,
+          "end": 3.88,
+          "word": " jag"
+        },
+        {
+          "start": 3.88,
+          "end": 4.06,
+          "word": " tänkte"
+        },
+        {
+          "start": 4.06,
+          "end": 4.16,
+          "word": " om"
+        },
+        {
+          "start": 4.16,
+          "end": 4.18,
+          "word": " vi"
+        },
+        {
+          "start": 4.18,
+          "end": 4.34,
+          "word": " skulle"
+        },
+        {
+          "start": 4.34,
+          "end": 4.48,
+          "word": " komma"
+        },
+        {
+          "start": 4.48,
+          "end": 4.66,
+          "word": " fram"
+        },
+        {
+          "start": 4.66,
+          "end": 4.96,
+          "word": " till."
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "start": 5.679,
+      "end": 10,
+      "text": "Det kanske inte är så viktigt att vi kör någon sorts global convention för hur det ska se ut.",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 5.68,
+          "end": 6,
+          "word": " Det"
+        },
+        {
+          "start": 6,
+          "end": 6.18,
+          "word": " kanske"
+        },
+        {
+          "start": 6.18,
+          "end": 6.38,
+          "word": " inte"
+        },
+        {
+          "start": 6.38,
+          "end": 6.52,
+          "word": " är"
+        },
+        {
+          "start": 6.52,
+          "end": 6.56,
+          "word": " så"
+        },
+        {
+          "start": 6.56,
+          "end": 6.78,
+          "word": " viktigt"
+        },
+        {
+          "start": 6.78,
+          "end": 7.02,
+          "word": " att"
+        },
+        {
+          "start": 7.02,
+          "end": 7.18,
+          "word": " vi"
+        },
+        {
+          "start": 7.18,
+          "end": 8.26,
+          "word": " kör"
+        },
+        {
+          "start": 8.26,
+          "end": 8.3,
+          "word": " någon"
+        },
+        {
+          "start": 8.3,
+          "end": 8.54,
+          "word": " sorts"
+        },
+        {
+          "start": 8.54,
+          "end": 8.86,
+          "word": " global"
+        },
+        {
+          "start": 8.86,
+          "end": 9.4,
+          "word": " convention"
+        },
+        {
+          "start": 9.4,
+          "end": 9.82,
+          "word": " för"
+        },
+        {
+          "start": 9.82,
+          "end": 9.92,
+          "word": " hur"
+        },
+        {
+          "start": 9.92,
+          "end": 9.96,
+          "word": " det"
+        },
+        {
+          "start": 9.96,
+          "end": 10.04,
+          "word": " ska"
+        },
+        {
+          "start": 10.04,
+          "end": 10.14,
+          "word": " se"
+        },
+        {
+          "start": 10.14,
+          "end": 10.26,
+          "word": " ut."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "start": 10.34,
+      "end": 16.559,
+      "text": "Jag tänkte till exempel i de fallen där vi vet att vi förväntar oss att man loadar från audiofile och får sample rating också ",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 10.34,
+          "end": 10.38,
+          "word": " Jag"
+        },
+        {
+          "start": 10.38,
+          "end": 10.56,
+          "word": " tänkte"
+        },
+        {
+          "start": 10.56,
+          "end": 10.64,
+          "word": " till"
+        },
+        {
+          "start": 10.64,
+          "end": 10.96,
+          "word": " exempel"
+        },
+        {
+          "start": 10.96,
+          "end": 11.64,
+          "word": " i"
+        },
+        {
+          "start": 11.64,
+          "end": 11.72,
+          "word": " de"
+        },
+        {
+          "start": 11.72,
+          "end": 12.04,
+          "word": " fallen"
+        },
+        {
+          "start": 12.04,
+          "end": 12.28,
+          "word": " där"
+        },
+        {
+          "start": 12.28,
+          "end": 12.38,
+          "word": " vi"
+        },
+        {
+          "start": 12.38,
+          "end": 12.56,
+          "word": " vet"
+        },
+        {
+          "start": 12.56,
+          "end": 12.72,
+          "word": " att"
+        },
+        {
+          "start": 12.72,
+          "end": 12.76,
+          "word": " vi"
+        },
+        {
+          "start": 12.76,
+          "end": 13.16,
+          "word": " förväntar"
+        },
+        {
+          "start": 13.16,
+          "end": 13.28,
+          "word": " oss"
+        },
+        {
+          "start": 13.28,
+          "end": 13.76,
+          "word": " att"
+        },
+        {
+          "start": 13.76,
+          "end": 14.08,
+          "word": " man"
+        },
+        {
+          "start": 14.08,
+          "end": 14.64,
+          "word": " loadar"
+        },
+        {
+          "start": 14.64,
+          "end": 14.74,
+          "word": " från"
+        },
+        {
+          "start": 14.74,
+          "end": 15.48,
+          "word": " audiofile"
+        },
+        {
+          "start": 15.48,
+          "end": 15.58,
+          "word": " och"
+        },
+        {
+          "start": 15.58,
+          "end": 15.8,
+          "word": " får"
+        },
+        {
+          "start": 15.8,
+          "end": 16.16,
+          "word": " sample"
+        },
+        {
+          "start": 16.16,
+          "end": 16.42,
+          "word": "-ratin"
+        },
+        {
+          "start": 16.42,
+          "end": 16.56,
+          "word": " också,"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "start": 16.78,
+      "end": 19.9,
+      "text": " att man kanske har en, alltså en viss struktur på det varje gång. ",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 16.78,
+          "end": 16.88,
+          "word": " att"
+        },
+        {
+          "start": 16.88,
+          "end": 17.06,
+          "word": " man"
+        },
+        {
+          "start": 17.06,
+          "end": 17.28,
+          "word": " kanske"
+        },
+        {
+          "start": 17.28,
+          "end": 18.06,
+          "word": " har"
+        },
+        {
+          "start": 18.06,
+          "end": 18.7,
+          "word": " en"
+        },
+        {
+          "start": 18.7,
+          "end": 18.92,
+          "word": " viss"
+        },
+        {
+          "start": 18.92,
+          "end": 19.12,
+          "word": " struktur"
+        },
+        {
+          "start": 19.12,
+          "end": 19.26,
+          "word": " på"
+        },
+        {
+          "start": 19.26,
+          "end": 19.34,
+          "word": " det"
+        },
+        {
+          "start": 19.34,
+          "end": 19.66,
+          "word": " varje"
+        },
+        {
+          "start": 19.66,
+          "end": 19.9,
+          "word": " gång."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "start": 20.42,
+      "end": 24.3,
+      "text": "Till exempel om man implementerar såhär, nu vet jag att man inte kan ha det på alla grejer,",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 20.42,
+          "end": 20.74,
+          "word": " Till"
+        },
+        {
+          "start": 20.74,
+          "end": 20.96,
+          "word": " exempel"
+        },
+        {
+          "start": 20.96,
+          "end": 21.12,
+          "word": " om"
+        },
+        {
+          "start": 21.12,
+          "end": 21.5,
+          "word": " man"
+        },
+        {
+          "start": 21.5,
+          "end": 22.1,
+          "word": " implementerar,"
+        },
+        {
+          "start": 22.1,
+          "end": 22.92,
+          "word": " nu"
+        },
+        {
+          "start": 22.92,
+          "end": 23.08,
+          "word": " vet"
+        },
+        {
+          "start": 23.08,
+          "end": 23.14,
+          "word": " jag"
+        },
+        {
+          "start": 23.14,
+          "end": 23.2,
+          "word": " att"
+        },
+        {
+          "start": 23.2,
+          "end": 23.24,
+          "word": " man"
+        },
+        {
+          "start": 23.24,
+          "end": 23.36,
+          "word": " inte"
+        },
+        {
+          "start": 23.36,
+          "end": 23.48,
+          "word": " kan"
+        },
+        {
+          "start": 23.48,
+          "end": 23.86,
+          "word": " ha"
+        },
+        {
+          "start": 23.86,
+          "end": 23.96,
+          "word": " det"
+        },
+        {
+          "start": 23.96,
+          "end": 24.04,
+          "word": " på"
+        },
+        {
+          "start": 24.04,
+          "end": 24.18,
+          "word": " alla"
+        },
+        {
+          "start": 24.18,
+          "end": 24.46,
+          "word": " grejer,"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "start": 24.519,
+      "end": 29.96,
+      "text": " men för de grejerna som är samma, som förväntas i samma input, att de ska vara samma sak, så att det inte till exempel en vektor i fl..",
+      "speaker": "Lukas",
+      "words": [
+        {
+          "start": 24.52,
+          "end": 24.54,
+          "word": " men"
+        },
+        {
+          "start": 24.54,
+          "end": 24.64,
+          "word": " för"
+        },
+        {
+          "start": 24.64,
+          "end": 24.74,
+          "word": " de"
+        },
+        {
+          "start": 24.74,
+          "end": 24.94,
+          "word": " grejerna"
+        },
+        {
+          "start": 24.94,
+          "end": 25.04,
+          "word": " som"
+        },
+        {
+          "start": 25.04,
+          "end": 25.18,
+          "word": " är"
+        },
+        {
+          "start": 25.18,
+          "end": 25.68,
+          "word": " samma,"
+        },
+        {
+          "start": 25.8,
+          "end": 25.86,
+          "word": " som"
+        },
+        {
+          "start": 25.86,
+          "end": 26.18,
+          "word": " förväntas"
+        },
+        {
+          "start": 26.18,
+          "end": 26.24,
+          "word": " i"
+        },
+        {
+          "start": 26.24,
+          "end": 26.4,
+          "word": " samma"
+        },
+        {
+          "start": 26.4,
+          "end": 26.62,
+          "word": " input,"
+        },
+        {
+          "start": 26.68,
+          "end": 26.8,
+          "word": " att"
+        },
+        {
+          "start": 26.8,
+          "end": 26.86,
+          "word": " de"
+        },
+        {
+          "start": 26.86,
+          "end": 27.04,
+          "word": " ska"
+        },
+        {
+          "start": 27.04,
+          "end": 27.22,
+          "word": " vara"
+        },
+        {
+          "start": 27.22,
+          "end": 27.38,
+          "word": " samma"
+        },
+        {
+          "start": 27.38,
+          "end": 27.68,
+          "word": " sak,"
+        },
+        {
+          "start": 27.74,
+          "end": 27.86,
+          "word": " så"
+        },
+        {
+          "start": 27.86,
+          "end": 27.9,
+          "word": " att"
+        },
+        {
+          "start": 27.9,
+          "end": 27.94,
+          "word": " det"
+        },
+        {
+          "start": 27.94,
+          "end": 28.08,
+          "word": " inte"
+        },
+        {
+          "start": 28.08,
+          "end": 28.16,
+          "word": " till"
+        },
+        {
+          "start": 28.16,
+          "end": 28.42,
+          "word": " exempel"
+        },
+        {
+          "start": 28.42,
+          "end": 29.08,
+          "word": " en"
+        },
+        {
+          "start": 29.08,
+          "end": 29.66,
+          "word": " vektor"
+        },
+        {
+          "start": 29.66,
+          "end": 29.78,
+          "word": " i"
+        },
+        {
+          "start": 29.78,
+          "end": 29.96,
+          "word": " flykt,"
+        }
+      ]
+    }
+  ]
+}

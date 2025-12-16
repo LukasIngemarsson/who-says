@@ -1,0 +1,32 @@
+{
+  "segments": [
+    {
+      "id": 17,
+      "start": 0,
+      "end": 1.1610000000000582,
+      "text": " yeah it's it's difficult to to get a you can't really just because you have accuracy of the the pipeline it doesn't really give a generalization of like how how well it actually performs",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 18,
+      "start": 2.161000000000058,
+      "end": 5.161000000000058,
+      "text": "so those are more only for comparing models but",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 19,
+      "start": 9.079999999999927,
+      "end": 29.510999999999967,
+      "text": " For me, I would really like to deep dive more on the, on the multiple mic or the triangulation to see if we can compare that to the current setup.",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 0,
+      "start": 25.293,
+      "end": 25.602,
+      "text": " Hmm.",
+      "speaker": "GOR"
+    }
+  ]
+}

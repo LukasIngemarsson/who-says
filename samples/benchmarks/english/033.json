@@ -1,0 +1,53 @@
+{
+  "segments": [
+    {
+      "start": 2.748,
+      "end": 5.712,
+      "speaker": "KALLE",
+      "text": " And what does benchmark measure?"
+    },
+    {
+      "start": 3,
+      "end": 17.147,
+      "speaker": "LUKAS",
+      "text": " Like for instance ASR, well it's just, I guess we have like a some sort of like reference data set that we used to measure how well our pipelines performing, right?"
+    },
+    {
+      "start": 17.848,
+      "end": 24.154,
+      "speaker": "LUKAS",
+      "text": "Or, I mean, now we've just set up the eval so you can pass any example and get a score for it."
+    },
+    {
+      "start": 22.701,
+      "end": 24.011,
+      "speaker": "KALLE",
+      "text": "Oh, yeah."
+    },
+    {
+      "start": 24.192,
+      "end": 25.433,
+      "speaker": "KALLE",
+      "text": "Okay, I understand what you mean."
+    },
+    {
+      "start": 24.374,
+      "end": 27.777,
+      "speaker": "LUKAS",
+      "text": "You know, it's not like anything that's comparable."
+    },
+    {
+      "start": 27.375,
+      "end": 27.675,
+      "speaker": "KALLE",
+      "text": "Yeah."
+    },
+    {
+      "id": 0,
+      "start": 29.663,
+      "end": 29.99,
+      "text": " So.",
+      "speaker": "GOR"
+    }
+  ]
+}

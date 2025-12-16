@@ -52,7 +52,7 @@ def test_timing():
     print("PASS: Timing data included")
 
     # Verify timing components
-    expected_components = ['audio_loading', 'vad', 'asr', 'scd', 'embedding', 'clustering', 'formatting']
+    expected_components = ['audio_loading', 'vad', 'asr', 'phoneme', 'scd', 'embedding', 'clustering', 'formatting']
     timing = result2['timing']
 
     print(f"\nTiming components found: {list(timing.keys())}")

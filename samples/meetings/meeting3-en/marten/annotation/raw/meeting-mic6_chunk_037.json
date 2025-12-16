@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "chunk_id": 37,
+    "start_time": 1110,
+    "end_time": 1140,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "start": 0,
+      "end": 8.544000000000096,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 0,
+          "end": 8.544000000000096,
+          "score": 0.687,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 8.564000000000078,
+      "end": 9.50500000000011,
+      "text": "Yeah, yeah.",
+      "words": [
+        {
+          "word": "Yeah,",
+          "start": 8.564000000000078,
+          "end": 8.804000000000087,
+          "score": 0.631,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "yeah.",
+          "start": 9.224999999999909,
+          "end": 9.50500000000011,
+          "score": 0.529,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

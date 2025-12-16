@@ -8,15 +8,33 @@ The following diagram illustrates the complete pipeline flow, showing how audio 
 
 ## Run with docker
 
-Use `chmod +x ./run.sh` to make the script runnable as `./run.sh` (only needed once).
+You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.
+Use `chmod +x docker_run.py` to make the script runnable as `./docker_run.py` (only needed once).
 
-#### Build
-./run.sh build
+> **Note:**  
+> To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
 
-#### Run
-./run.sh start
+Usage:
 
-Now that your in the docker filer, you can use the following parameters when working with main.py
+```bash
+./docker_run.py pipeline <audio_file> # (runs main / full pipeline)
+./docker_run.py component <module_path> # (runs specified module / isolated component)
+```
+
+### Running with evaluation metrics
+
+To evaluate pipeline performance against gold standard annotations, use the `--annotation` flag:
+
+For example:
+
+```bash
+./docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json
+```
+
+```bash
+docker build -t my-diarization-api .
+docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
+```
 
  - "audio_file", type=Path, help="Path to the audio file to process"
  - "--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)"
@@ -24,6 +42,55 @@ Now that your in the docker filer, you can use the following parameters when wor
  - "--output", "-o", type=Path, help="Output JSON file path (optional)"
  - "--pretty", action="store_true", help="Pretty print the output"
  - "--timing", action="store_true", help="Include timing metrics for each model run"
+
+### Compare pipeline models
+Run from inside docker (after running `./run.sh start`)
+
+#### Compare models with benchmark datasets
+
+**Options:**
+- `--component`: Component to compare (`vad` or `sc`)
+- `--audio-dir`: Directory containing audio files (required)
+- `--annotation-dir`: Directory containing annotation JSON files (required)
+- `--language`: Language of dataset (default: `unknown`)
+- `--limit`: Limit number of files for quick testing
+- `--output-dir`: Output directory (default: `results/comparison/english`)
+
+
+**VAD Comparison** (Silero vs Pyannote):
+```bash
+python compare.py --component vad \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+**Speaker Clustering Comparison**:
+```bash
+python compare.py --component sc \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+**ASR Comparison** (7 Whisper models from tiny to large):
+```bash
+python compare.py --component asr \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+```
+
+#### Single file comparison
+**VAD:**
+```bash
+python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
+```
+
+**Speaker embedding and clustering:**
+```bash
+python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
+```
  
 <!-- Running w/o the script: -->
 <!-- Build image -->
@@ -56,24 +123,10 @@ Now that your in the docker filer, you can use the following parameters when wor
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
 
-### Compare pipeline models
-Run from inside docker (after running `./run.sh start`)
-
-#### VAD models (currently Silero vs Pyannote)
-Evaluates speech detection accuracy using precision, recall, and F1 score against ground truth annotations.
-```bash
-python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
-```
-
-#### Speaker embedding models (currently SpeechBrain ECAPA vs Wav2Vec2)
-Evaluates how well embeddings distinguish between speakers using clustering silhouette score.
-```bash
-python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
-```
 
 ## Update `requirements.txt`
 
-For now, manually add necessary packages that are not yet installed in the Docker container, i.e., 
+For now, manually add necessary packages that are not yet installed in the Docker container, i.e.,
 add the library (and if needed, the specific version) as a new line in `requirements.txt`.
 
 <!-- We can try this more automated alternative as well, but we need to ensure that it properly includes -->

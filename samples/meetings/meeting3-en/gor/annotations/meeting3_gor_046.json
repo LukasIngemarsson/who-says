@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:49:34.284Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 23,
+      "end": 29.987,
+      "text": " By the way, I was thinking for the annotation it would be easy if I fix this.",
+      "speaker": "GOR"
+    }
+  ]
+}

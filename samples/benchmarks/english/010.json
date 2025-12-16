@@ -1,0 +1,49 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 0.576,
+      "text": " have time.",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 0,
+      "start": 1.988,
+      "end": 2.297,
+      "text": " Mm.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 2.022,
+      "end": 3.645,
+      "speaker": "LUKAS",
+      "text": " I mean, it shouldn't be..."
+    },
+    {
+      "start": 3.685,
+      "end": 5.789,
+      "speaker": "LUKAS",
+      "text": "It's not something hard."
+    },
+    {
+      "start": 6.23,
+      "end": 10.859,
+      "speaker": "LUKAS",
+      "text": "So, I mean, if you want to do it now, go ahead."
+    },
+    {
+      "start": 11.14,
+      "end": 17.432,
+      "speaker": "LUKAS",
+      "text": "I think it shouldn't take more than an hour or two to just add a button that records."
+    },
+    {
+      "id": 6,
+      "start": 20,
+      "end": 30,
+      "text": " We can also. Should probably just be able to update otherwise to take a small segment of what we have been saying to confirm who's talking and then assign that segment to a specific speaker. And that will then clarify the cluster name instead of speaker 01 or 02.",
+      "speaker": "MARTEN"
+    }
+  ]
+}

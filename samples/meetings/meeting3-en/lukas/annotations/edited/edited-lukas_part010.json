@@ -1,0 +1,31 @@
+{
+  "segments": [
+    {
+      "start": 2.022,
+      "end": 3.645,
+      "speaker": "LUKAS",
+      "text": " I mean, it shouldn't be..."
+    },
+    {
+      "start": 3.685,
+      "end": 5.789,
+      "speaker": "LUKAS",
+      "text": "It's not something hard."
+    },
+    {
+      "start": 6.23,
+      "end": 10.859,
+      "speaker": "LUKAS",
+      "text": "So, I mean, if you want to do it now, go ahead."
+    },
+    {
+      "start": 11.14,
+      "end": 17.432,
+      "speaker": "LUKAS",
+      "text": "I think it shouldn't take more than an hour or two to just add a button that records."
+    }
+  ],
+  "metadata": {
+    "exportedAt": "2025-11-27T13:28:32.720Z"
+  }
+}

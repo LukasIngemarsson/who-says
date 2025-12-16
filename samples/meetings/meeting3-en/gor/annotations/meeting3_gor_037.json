@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T22:34:39.032Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 4
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 7.355,
+      "end": 9.277,
+      "text": " Hmm.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 9.297,
+      "end": 9.518,
+      "text": "So.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 11.821,
+      "end": 12.321,
+      "text": "Prio.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 16.947,
+      "end": 18,
+      "text": "Sounds reasonable.",
+      "speaker": "GOR"
+    }
+  ]
+}

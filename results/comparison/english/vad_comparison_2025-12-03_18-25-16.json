@@ -1,0 +1,1294 @@
+{
+  "comparison_type": "vad",
+  "timestamp": "2025-12-03_18-25-16",
+  "system_info": {
+    "gpu": "NVIDIA GeForce RTX 3090 Ti",
+    "vram": "24 GB",
+    "device": "cuda"
+  },
+  "dataset": {
+    "language": "english",
+    "num_files": 56,
+    "total_duration_seconds": 1649.4975624999988
+  },
+  "models": {
+    "silero": {
+      "per_file_results": [
+        {
+          "file_id": "000",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part000.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 94.41800086542622,
+            "recall": 87.48997594226142,
+            "f1": 90.82206035379812
+          },
+          "timing": 2.360276460647583
+        },
+        {
+          "file_id": "001",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part001.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 86.56716417910447,
+            "recall": 78.64406779661017,
+            "f1": 82.41563055062167
+          },
+          "timing": 0.45070600509643555
+        },
+        {
+          "file_id": "002",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part002.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 96.83929931454684,
+            "recall": 91.73881673881674,
+            "f1": 94.220081511671
+          },
+          "timing": 0.4476456642150879
+        },
+        {
+          "file_id": "003",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part003.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.24631327222001,
+            "recall": 86.12858141160028,
+            "f1": 91.78923850307206
+          },
+          "timing": 0.4481208324432373
+        },
+        {
+          "file_id": "004",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part004.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 97.13717693836979,
+            "recall": 85.68923184847422,
+            "f1": 91.05478941483413
+          },
+          "timing": 0.4447340965270996
+        },
+        {
+          "file_id": "005",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part005.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 99.27813163481953,
+            "recall": 80.6484994825802,
+            "f1": 88.99885801294252
+          },
+          "timing": 0.44808483123779297
+        },
+        {
+          "file_id": "006",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part006.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.8597972972973,
+            "recall": 80.7519834425664,
+            "f1": 88.89310803113727
+          },
+          "timing": 0.4448869228363037
+        },
+        {
+          "file_id": "007",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part007.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 96.65379665379665,
+            "recall": 81.10151187904968,
+            "f1": 88.19729888432178
+          },
+          "timing": 0.4441654682159424
+        },
+        {
+          "file_id": "008",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part008.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 94.88517745302714,
+            "recall": 81.78137651821862,
+            "f1": 87.84730611258759
+          },
+          "timing": 0.4403822422027588
+        },
+        {
+          "file_id": "009",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part009.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.35873388042205,
+            "recall": 89.25531914893618,
+            "f1": 93.58616843279421
+          },
+          "timing": 0.4396541118621826
+        },
+        {
+          "file_id": "010",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part010.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 88.49785407725322,
+            "recall": 81.92292411601112,
+            "f1": 85.08355683928202
+          },
+          "timing": 0.44037795066833496
+        },
+        {
+          "file_id": "011",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part011.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 99.23566878980891,
+            "recall": 78.47548690396239,
+            "f1": 87.64297768610538
+          },
+          "timing": 0.4401586055755615
+        },
+        {
+          "file_id": "012",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part012.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.92512972572275,
+            "recall": 91.49811450119986,
+            "f1": 95.06678539626002
+          },
+          "timing": 0.44208216667175293
+        },
+        {
+          "file_id": "013",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part013.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 84.17366946778712,
+            "recall": 68.96156052782558,
+            "f1": 75.81204667297382
+          },
+          "timing": 0.4431955814361572
+        },
+        {
+          "file_id": "014",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part014.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 86.98146513680494,
+            "recall": 93.72325249643366,
+            "f1": 90.22659647516595
+          },
+          "timing": 0.4422743320465088
+        },
+        {
+          "file_id": "015",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part015.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 91.20768064679132,
+            "recall": 82.49542961608776,
+            "f1": 86.63306935445164
+          },
+          "timing": 0.4402756690979004
+        },
+        {
+          "file_id": "016",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part016.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 98.93390191897655,
+            "recall": 71.8266253869969,
+            "f1": 83.2286995515695
+          },
+          "timing": 0.4399545192718506
+        },
+        {
+          "file_id": "017",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part017.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 93.25657894736842,
+            "recall": 76.2780269058296,
+            "f1": 83.9171188949186
+          },
+          "timing": 0.4402039051055908
+        },
+        {
+          "file_id": "018",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part018.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 94.81065918653576,
+            "recall": 75.0,
+            "f1": 83.7497418955193
+          },
+          "timing": 0.4415907859802246
+        },
+        {
+          "file_id": "019",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part019.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.03642987249545,
+            "recall": 83.98390342052315,
+            "f1": 89.16898098696859
+          },
+          "timing": 0.4406270980834961
+        },
+        {
+          "file_id": "020",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part020.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 100.0,
+            "recall": 73.7721349816238,
+            "f1": 84.90674870217266
+          },
+          "timing": 0.44101691246032715
+        },
+        {
+          "file_id": "021",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part021.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.77769289533995,
+            "recall": 88.6527254028111,
+            "f1": 93.44173441734416
+          },
+          "timing": 0.4418642520904541
+        },
+        {
+          "file_id": "022",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part022.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 97.93310785419015,
+            "recall": 93.50556153570147,
+            "f1": 95.66813509544787
+          },
+          "timing": 0.44208717346191406
+        },
+        {
+          "file_id": "023",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part023.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 98.24480369515013,
+            "recall": 77.76965265082268,
+            "f1": 86.81632653061224
+          },
+          "timing": 0.44040608406066895
+        },
+        {
+          "file_id": "024",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part024.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 93.89489953632149,
+            "recall": 95.63164108618653,
+            "f1": 94.75531292649639
+          },
+          "timing": 1.1791508197784424
+        },
+        {
+          "file_id": "025",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part025.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 98.34896810506567,
+            "recall": 89.79102432339843,
+            "f1": 93.87535816618912
+          },
+          "timing": 1.0539076328277588
+        },
+        {
+          "file_id": "026",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part026.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 96.42184557438794,
+            "recall": 90.84457061745918,
+            "f1": 93.55015530787503
+          },
+          "timing": 0.43622326850891113
+        },
+        {
+          "file_id": "027",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part027.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.1745162468054,
+            "recall": 91.58719346049047,
+            "f1": 94.76651982378854
+          },
+          "timing": 0.43782639503479004
+        },
+        {
+          "file_id": "028",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part028.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 90.76923076923077,
+            "recall": 74.35412728418399,
+            "f1": 81.74575684101143
+          },
+          "timing": 0.4382307529449463
+        },
+        {
+          "file_id": "029",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part029.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.51351351351352,
+            "recall": 83.27049952874647,
+            "f1": 88.97280966767372
+          },
+          "timing": 0.4455404281616211
+        },
+        {
+          "file_id": "030",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part030.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 91.84339314845025,
+            "recall": 81.20192307692308,
+            "f1": 86.19545802500637
+          },
+          "timing": 0.43989014625549316
+        },
+        {
+          "file_id": "031",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part031.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 93.67488931056293,
+            "recall": 71.58047365877236,
+            "f1": 81.15068493150685
+          },
+          "timing": 0.4407792091369629
+        },
+        {
+          "file_id": "032",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part032.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 97.81170483460559,
+            "recall": 78.70597870597871,
+            "f1": 87.22486952575449
+          },
+          "timing": 0.4391505718231201
+        },
+        {
+          "file_id": "033",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part033.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.50187265917603,
+            "recall": 74.7766043866775,
+            "f1": 85.01500808127453
+          },
+          "timing": 0.4406552314758301
+        },
+        {
+          "file_id": "034",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part034.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 77.0197486535009,
+            "recall": 70.63666300768386,
+            "f1": 73.69023761809333
+          },
+          "timing": 0.43947315216064453
+        },
+        {
+          "file_id": "035",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part035.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 87.56302521008404,
+            "recall": 42.357723577235774,
+            "f1": 57.0958904109589
+          },
+          "timing": 0.4419550895690918
+        },
+        {
+          "file_id": "036",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part036.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 96.65032679738562,
+            "recall": 85.1998559596687,
+            "f1": 90.56459330143541
+          },
+          "timing": 0.4420139789581299
+        },
+        {
+          "file_id": "037",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part037.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 89.52830188679245,
+            "recall": 79.64750314729334,
+            "f1": 84.29935598489897
+          },
+          "timing": 0.4409596920013428
+        },
+        {
+          "file_id": "038",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part038.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 80.80553807426054,
+            "recall": 80.1998750780762,
+            "f1": 80.50156739811912
+          },
+          "timing": 0.44035840034484863
+        },
+        {
+          "file_id": "039",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part039.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 93.62600253271422,
+            "recall": 89.83394086674767,
+            "f1": 91.69078131459281
+          },
+          "timing": 0.44101643562316895
+        },
+        {
+          "file_id": "040",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part040.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 86.72605790645879,
+            "recall": 78.57142857142857,
+            "f1": 82.44759686639847
+          },
+          "timing": 0.4446403980255127
+        },
+        {
+          "file_id": "041",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part041.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.87301587301587,
+            "recall": 82.5136612021858,
+            "f1": 88.69309838472834
+          },
+          "timing": 0.44199490547180176
+        },
+        {
+          "file_id": "042",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part042.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 100.0,
+            "recall": 82.07011686143572,
+            "f1": 90.15220979277461
+          },
+          "timing": 0.44268059730529785
+        },
+        {
+          "file_id": "043",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part043.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 92.59094942324757,
+            "recall": 88.58234295415959,
+            "f1": 90.54229934924078
+          },
+          "timing": 0.4428696632385254
+        },
+        {
+          "file_id": "044",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part044.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 96.58011399620013,
+            "recall": 66.33318834275772,
+            "f1": 78.64878803506963
+          },
+          "timing": 0.44411683082580566
+        },
+        {
+          "file_id": "045",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part045.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 96.75281643472499,
+            "recall": 79.04710341093666,
+            "f1": 87.0083432657926
+          },
+          "timing": 0.44946885108947754
+        },
+        {
+          "file_id": "046",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part046.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 94.9699289229087,
+            "recall": 87.15504264927245,
+            "f1": 90.89481946624804
+          },
+          "timing": 0.4444241523742676
+        },
+        {
+          "file_id": "047",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part047.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 98.3367139959432,
+            "recall": 85.98793898545584,
+            "f1": 91.74867524602574
+          },
+          "timing": 0.4419088363647461
+        },
+        {
+          "file_id": "048",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part048.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 97.48867846850557,
+            "recall": 81.5146299483649,
+            "f1": 88.78890138732658
+          },
+          "timing": 0.44150733947753906
+        },
+        {
+          "file_id": "049",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part049.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.07593189139439,
+            "recall": 86.62473794549265,
+            "f1": 90.65379552435279
+          },
+          "timing": 0.4440889358520508
+        },
+        {
+          "file_id": "050",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part050.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 89.38668986515876,
+            "recall": 86.70886075949366,
+            "f1": 88.02741486399658
+          },
+          "timing": 0.9436945915222168
+        },
+        {
+          "file_id": "051",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part051.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 97.92626728110599,
+            "recall": 85.20449077786688,
+            "f1": 91.12349914236707
+          },
+          "timing": 1.2948288917541504
+        },
+        {
+          "file_id": "052",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part052.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 94.13654618473896,
+            "recall": 72.39036442248302,
+            "f1": 81.84357541899442
+          },
+          "timing": 0.4409186840057373
+        },
+        {
+          "file_id": "053",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part053.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 96.93928750627195,
+            "recall": 77.49699157641395,
+            "f1": 86.13464110566206
+          },
+          "timing": 0.44672346115112305
+        },
+        {
+          "file_id": "054",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part054.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 91.16279069767442,
+            "recall": 55.44554455445545,
+            "f1": 68.95338610378188
+          },
+          "timing": 0.4500608444213867
+        },
+        {
+          "file_id": "055",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part055.mp3",
+          "duration": 1.292,
+          "metrics": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "timing": 0.02696061134338379
+        }
+      ],
+      "aggregated": {
+        "precision": {
+          "mean": 92.70271069649039,
+          "std": 13.420763563145703
+        },
+        "recall": {
+          "mean": 79.57787148897621,
+          "std": 14.10090290386377
+        },
+        "f1": {
+          "mean": 85.3561153854287,
+          "std": 13.32332852555029
+        },
+        "timing": {
+          "mean": 0.5175498298236302,
+          "std": 0.3113837163624114,
+          "total": 28.98279047012329
+        }
+      }
+    },
+    "pyannote": {
+      "per_file_results": [
+        {
+          "file_id": "000",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part000.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 82.95652173913044,
+            "recall": 76.50360866078589,
+            "f1": 79.59949937421777
+          },
+          "timing": 0.5258183479309082
+        },
+        {
+          "file_id": "001",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part001.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 90.9,
+            "recall": 38.516949152542374,
+            "f1": 54.107142857142854
+          },
+          "timing": 0.05140948295593262
+        },
+        {
+          "file_id": "002",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part002.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 89.45610687022901,
+            "recall": 67.64069264069265,
+            "f1": 77.03368940016433
+          },
+          "timing": 0.058621883392333984
+        },
+        {
+          "file_id": "003",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part003.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 93.94736842105263,
+            "recall": 62.36897274633124,
+            "f1": 74.9685006299874
+          },
+          "timing": 0.05254364013671875
+        },
+        {
+          "file_id": "004",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part004.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 98.3076923076923,
+            "recall": 44.82637670992634,
+            "f1": 61.575523970127676
+          },
+          "timing": 0.05453944206237793
+        },
+        {
+          "file_id": "005",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part005.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.0445434298441,
+            "recall": 58.88237323214902,
+            "f1": 72.71565495207668
+          },
+          "timing": 0.052121877670288086
+        },
+        {
+          "file_id": "006",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part006.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 94.19999999999999,
+            "recall": 32.493963435667474,
+            "f1": 48.32008207232624
+          },
+          "timing": 0.05341029167175293
+        },
+        {
+          "file_id": "007",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part007.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 89.22845691382766,
+            "recall": 64.11087113030958,
+            "f1": 74.61248428990365
+          },
+          "timing": 0.05208921432495117
+        },
+        {
+          "file_id": "008",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part008.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 72.46153846153847,
+            "recall": 42.37516869095816,
+            "f1": 53.47715015611695
+          },
+          "timing": 0.050435781478881836
+        },
+        {
+          "file_id": "009",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part009.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 95.46666666666667,
+            "recall": 50.78014184397163,
+            "f1": 66.2962962962963
+          },
+          "timing": 0.05056905746459961
+        },
+        {
+          "file_id": "010",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part010.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 81.95187165775401,
+            "recall": 48.70878029400079,
+            "f1": 61.1014203837528
+          },
+          "timing": 0.049933433532714844
+        },
+        {
+          "file_id": "011",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part011.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 100.0,
+            "recall": 36.803223640026864,
+            "f1": 53.8046146293569
+          },
+          "timing": 0.050217390060424805
+        },
+        {
+          "file_id": "012",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part012.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 99.66666666666667,
+            "recall": 61.50154268083647,
+            "f1": 76.06529573881704
+          },
+          "timing": 0.051030874252319336
+        },
+        {
+          "file_id": "013",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part013.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 59.63636363636363,
+            "recall": 75.27251864601261,
+            "f1": 66.54831346690338
+          },
+          "timing": 0.05067777633666992
+        },
+        {
+          "file_id": "014",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part014.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 72.8,
+            "recall": 34.61721350451736,
+            "f1": 46.922333225910414
+          },
+          "timing": 0.05219674110412598
+        },
+        {
+          "file_id": "015",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part015.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 74.2,
+            "recall": 33.912248628884825,
+            "f1": 46.5495608531995
+          },
+          "timing": 0.05178356170654297
+        },
+        {
+          "file_id": "016",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part016.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 85.92896174863388,
+            "recall": 73.02631578947368,
+            "f1": 78.9539748953975
+          },
+          "timing": 0.0522305965423584
+        },
+        {
+          "file_id": "017",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part017.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 69.42857142857143,
+            "recall": 43.587443946188344,
+            "f1": 53.553719008264466
+          },
+          "timing": 0.05181598663330078
+        },
+        {
+          "file_id": "018",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part018.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 87.22727272727273,
+            "recall": 70.9689349112426,
+            "f1": 78.26264274061991
+          },
+          "timing": 0.05141305923461914
+        },
+        {
+          "file_id": "019",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part019.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 82.17299578059072,
+            "recall": 62.69617706237425,
+            "f1": 71.12531385528418
+          },
+          "timing": 0.05188441276550293
+        },
+        {
+          "file_id": "020",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part020.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 100.0,
+            "recall": 36.75242231874373,
+            "f1": 53.7503053994625
+          },
+          "timing": 0.05166339874267578
+        },
+        {
+          "file_id": "021",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part021.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 98.6,
+            "recall": 67.60370243400754,
+            "f1": 80.2115110839943
+          },
+          "timing": 0.051468849182128906
+        },
+        {
+          "file_id": "022",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part022.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 90.72727272727272,
+            "recall": 35.80911374237532,
+            "f1": 51.350656032930274
+          },
+          "timing": 0.05167055130004883
+        },
+        {
+          "file_id": "023",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part023.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 90.23046092184369,
+            "recall": 65.85009140767825,
+            "f1": 76.13612344113295
+          },
+          "timing": 0.052579641342163086
+        },
+        {
+          "file_id": "024",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part024.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 84.625,
+            "recall": 53.286107831562376,
+            "f1": 65.39483216614344
+          },
+          "timing": 0.06059837341308594
+        },
+        {
+          "file_id": "025",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part025.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 98.86759581881533,
+            "recall": 77.76635834189791,
+            "f1": 87.05656759348035
+          },
+          "timing": 0.052214860916137695
+        },
+        {
+          "file_id": "026",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part026.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.23076923076923,
+            "recall": 43.9318665720369,
+            "f1": 60.12627489072365
+          },
+          "timing": 0.05277848243713379
+        },
+        {
+          "file_id": "027",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part027.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 97.15,
+            "recall": 66.17847411444143,
+            "f1": 78.72771474878444
+          },
+          "timing": 0.05258440971374512
+        },
+        {
+          "file_id": "028",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part028.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 51.703406813627254,
+            "recall": 65.02835538752363,
+            "f1": 57.60535863801284
+          },
+          "timing": 0.052858829498291016
+        },
+        {
+          "file_id": "029",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part029.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 67.77426160337554,
+            "recall": 60.556079170593776,
+            "f1": 63.962170233947234
+          },
+          "timing": 0.051406145095825195
+        },
+        {
+          "file_id": "030",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part030.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 70.36842105263158,
+            "recall": 64.27884615384616,
+            "f1": 67.1859296482412
+          },
+          "timing": 0.05117678642272949
+        },
+        {
+          "file_id": "031",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part031.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 55.68561872909699,
+            "recall": 32.189463508941515,
+            "f1": 40.79632465543644
+          },
+          "timing": 0.051169633865356445
+        },
+        {
+          "file_id": "032",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part032.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 84.68511450381679,
+            "recall": 72.6863226863227,
+            "f1": 78.22829440282064
+          },
+          "timing": 0.05179309844970703
+        },
+        {
+          "file_id": "033",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part033.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 79.76470588235294,
+            "recall": 55.07717303005687,
+            "f1": 65.16098029793369
+          },
+          "timing": 0.05258584022521973
+        },
+        {
+          "file_id": "034",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part034.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 56.90909090909091,
+            "recall": 34.357848518111965,
+            "f1": 42.847364818617386
+          },
+          "timing": 0.05133867263793945
+        },
+        {
+          "file_id": "035",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part035.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 81.6,
+            "recall": 33.170731707317074,
+            "f1": 47.167630057803464
+          },
+          "timing": 0.0522761344909668
+        },
+        {
+          "file_id": "036",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part036.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 92.94117647058823,
+            "recall": 56.89593086064097,
+            "f1": 70.58297967388877
+          },
+          "timing": 0.05172085762023926
+        },
+        {
+          "file_id": "037",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part037.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 78.8328729281768,
+            "recall": 95.80360889634913,
+            "f1": 86.49365410115553
+          },
+          "timing": 0.050966501235961914
+        },
+        {
+          "file_id": "038",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part038.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 52.958015267175576,
+            "recall": 69.3316677076827,
+            "f1": 60.04868812550717
+          },
+          "timing": 0.05119729042053223
+        },
+        {
+          "file_id": "039",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part039.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 82.71428571428572,
+            "recall": 70.35236938031592,
+            "f1": 76.03414313854235
+          },
+          "timing": 0.051496028900146484
+        },
+        {
+          "file_id": "040",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part040.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 85.23809523809524,
+            "recall": 72.23567393058919,
+            "f1": 78.2000873743993
+          },
+          "timing": 0.051621198654174805
+        },
+        {
+          "file_id": "041",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part041.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 89.23529411764706,
+            "recall": 59.211553473848554,
+            "f1": 71.18723603941811
+          },
+          "timing": 0.05236482620239258
+        },
+        {
+          "file_id": "042",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part042.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 100.0,
+            "recall": 33.3889816360601,
+            "f1": 50.06257822277848
+          },
+          "timing": 0.05165219306945801
+        },
+        {
+          "file_id": "043",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part043.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 77.10420841683366,
+            "recall": 65.32258064516128,
+            "f1": 70.72610294117648
+          },
+          "timing": 0.05293416976928711
+        },
+        {
+          "file_id": "044",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part044.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 73.53923205342237,
+            "recall": 76.64201826881254,
+            "f1": 75.05857294994675
+          },
+          "timing": 0.053571462631225586
+        },
+        {
+          "file_id": "045",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part045.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 62.6,
+            "recall": 33.89279913373037,
+            "f1": 43.97611520899192
+          },
+          "timing": 0.05079913139343262
+        },
+        {
+          "file_id": "046",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part046.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 67.38476953907816,
+            "recall": 67.4862017059709,
+            "f1": 67.43544748057158
+          },
+          "timing": 0.05175423622131348
+        },
+        {
+          "file_id": "047",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part047.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 95.6140350877193,
+            "recall": 54.13267115998581,
+            "f1": 69.12797281993205
+          },
+          "timing": 0.052828311920166016
+        },
+        {
+          "file_id": "048",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part048.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 96.6,
+            "recall": 33.25301204819277,
+            "f1": 49.47503201024328
+          },
+          "timing": 0.05139756202697754
+        },
+        {
+          "file_id": "049",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part049.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 77.61692650334075,
+            "recall": 58.44863731656184,
+            "f1": 66.68261181535517
+          },
+          "timing": 0.05193781852722168
+        },
+        {
+          "file_id": "050",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part050.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 72.95296167247388,
+            "recall": 70.67510548523207,
+            "f1": 71.795970852979
+          },
+          "timing": 0.039040327072143555
+        },
+        {
+          "file_id": "051",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part051.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 81.1875,
+            "recall": 52.08500400962309,
+            "f1": 63.45872007816317
+          },
+          "timing": 0.05251193046569824
+        },
+        {
+          "file_id": "052",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part052.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 60.74498567335244,
+            "recall": 52.378011117974054,
+            "f1": 56.25207296849087
+          },
+          "timing": 0.05159926414489746
+        },
+        {
+          "file_id": "053",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part053.mp3",
+          "duration": 29.9549375,
+          "metrics": {
+            "precision": 82.40534521158129,
+            "recall": 59.366225431207376,
+            "f1": 69.01375612030776
+          },
+          "timing": 0.05304384231567383
+        },
+        {
+          "file_id": "054",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part054.mp3",
+          "duration": 29.9909375,
+          "metrics": {
+            "precision": 7.5,
+            "recall": 2.1216407355021216,
+            "f1": 3.307607497243661
+          },
+          "timing": 0.05183291435241699
+        },
+        {
+          "file_id": "055",
+          "audio_file": "samples/meetings/meeting3-en/chunks/combined_part055.mp3",
+          "duration": 1.292,
+          "metrics": {
+            "precision": 93.33333333333333,
+            "recall": 23.931623931623932,
+            "f1": 38.095238095238095
+          },
+          "timing": 0.02300405502319336
+        }
+      ],
+      "aggregated": {
+        "precision": {
+          "mean": 81.23939917635055,
+          "std": 16.553163362732068
+        },
+        "recall": {
+          "mean": 54.48342484191811,
+          "std": 17.19987715759375
+        },
+        "f1": {
+          "mean": 63.362782828922505,
+          "std": 14.675075950373884
+        },
+        "timing": {
+          "mean": 0.059860365731375556,
+          "std": 0.06299230146294439,
+          "total": 3.3521804809570312
+        }
+      }
+    }
+  }
+}

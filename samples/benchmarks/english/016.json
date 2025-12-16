@@ -1,0 +1,23 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 12.5,
+      "text": " So I'll just look around and see if there is something to use or if AI can help me somehow create something. Yeah. Yup.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 8.992,
+      "end": 9.233,
+      "speaker": "KALLE",
+      "text": " Yeah."
+    },
+    {
+      "start": 16.592,
+      "end": 29.987,
+      "speaker": "KALLE",
+      "text": "And so for the other benchmark parts, I saw that Abbas wrote something just before the meeting."
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "chunk_id": 39,
+    "start_time": 1170,
+    "end_time": 1200,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 24,
+      "start": 23.223999999999933,
+      "end": 24.50500000000011,
+      "text": " Yeah.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 20.22499999999991,
+          "end": 20.50500000000011,
+          "word": "Yeah."
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "start": 21.656999999999925,
+      "end": 30,
+      "text": "I don't think you need to do it too complicated either. Its like, we don't really need a database or something like that.\nYou can probably just store it in a temporary file or something like that. Because. Otherwise, it's probably just going to get too... Yeah.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 27.6579999999999,
+          "end": 27.718000000000075,
+          "word": "You"
+        },
+        {
+          "start": 27.738000000000056,
+          "end": 27.87799999999993,
+          "word": "can"
+        },
+        {
+          "start": 28.05899999999997,
+          "end": 28.298999999999978,
+          "word": "probably"
+        },
+        {
+          "start": 28.338999999999942,
+          "end": 28.479000000000042,
+          "word": "just"
+        },
+        {
+          "start": 28.5,
+          "end": 28.680000000000064,
+          "word": "store"
+        },
+        {
+          "start": 28.720000000000027,
+          "end": 28.799999999999955,
+          "word": "it"
+        }
+      ]
+    }
+  ]
+}

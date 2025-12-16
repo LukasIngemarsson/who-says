@@ -1,0 +1,264 @@
+{
+  "meta": {
+    "chunk_id": 15,
+    "start_time": 450,
+    "end_time": 480,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "start": 0,
+      "end": 6.583000000000027,
+      "text": "It would be good, but it's quite difficult to create.",
+      "words": [
+        {
+          "word": "would",
+          "start": 0.8770000000000095,
+          "end": 1.016999999999996,
+          "score": 0.965,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "be",
+          "start": 1.0570000000000164,
+          "end": 1.1370000000000005,
+          "score": 0.953,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "good,",
+          "start": 1.1580000000000155,
+          "end": 1.358000000000004,
+          "score": 0.904,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "but",
+          "start": 1.3980000000000246,
+          "end": 1.5179999999999723,
+          "score": 0.757,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it's",
+          "start": 1.5579999999999927,
+          "end": 1.7379999999999995,
+          "score": 0.594,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "quite",
+          "start": 1.7980000000000018,
+          "end": 1.9580000000000268,
+          "score": 0.71,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "difficult",
+          "start": 2.038000000000011,
+          "end": 2.399000000000001,
+          "score": 0.827,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 2.459000000000003,
+          "end": 2.6990000000000123,
+          "score": 0.978,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "create.",
+          "start": 6.182999999999993,
+          "end": 6.583000000000027,
+          "score": 0.831,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 12.689999999999998,
+      "end": 20.778999999999996,
+      "text": "Especially if we have it in the paper, I think they would want us to have in order to just see how well it performs.",
+      "words": [
+        {
+          "word": "Especially",
+          "start": 12.689999999999998,
+          "end": 13.031000000000006,
+          "score": 0.843,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "if",
+          "start": 13.071000000000026,
+          "end": 13.130999999999972,
+          "score": 0.944,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "we",
+          "start": 13.170999999999992,
+          "end": 13.271000000000015,
+          "score": 0.601,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "have",
+          "start": 13.61099999999999,
+          "end": 13.89100000000002,
+          "score": 0.751,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 13.932000000000016,
+          "end": 14.012,
+          "score": 0.564,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "in",
+          "start": 14.172000000000025,
+          "end": 14.232000000000028,
+          "score": 0.984,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the",
+          "start": 14.271999999999991,
+          "end": 14.331999999999994,
+          "score": 0.972,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "paper,",
+          "start": 14.391999999999996,
+          "end": 14.711999999999989,
+          "score": 0.906,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "I",
+          "start": 14.732000000000028,
+          "end": 14.75200000000001,
+          "score": 0.992,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "think",
+          "start": 14.973000000000013,
+          "end": 15.15300000000002,
+          "score": 0.988,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "they",
+          "start": 15.192999999999984,
+          "end": 15.353000000000009,
+          "score": 0.937,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "would",
+          "start": 15.37299999999999,
+          "end": 15.552999999999997,
+          "score": 0.744,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "want",
+          "start": 15.593000000000018,
+          "end": 17.915999999999997,
+          "score": 0.869,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "us",
+          "start": 17.99599999999998,
+          "end": 18.076000000000022,
+          "score": 0.92,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 18.115999999999985,
+          "end": 18.196000000000026,
+          "score": 0.787,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "have",
+          "start": 18.255999999999972,
+          "end": 18.43599999999998,
+          "score": 0.866,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "in",
+          "start": 18.476,
+          "end": 18.656999999999982,
+          "score": 0.64,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "order",
+          "start": 18.737000000000023,
+          "end": 18.956999999999994,
+          "score": 0.873,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "to",
+          "start": 19.016999999999996,
+          "end": 19.137,
+          "score": 0.958,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "just",
+          "start": 19.197000000000003,
+          "end": 19.37700000000001,
+          "score": 0.919,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "see",
+          "start": 19.437999999999988,
+          "end": 19.637999999999977,
+          "score": 0.917,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "how",
+          "start": 19.658000000000015,
+          "end": 19.838000000000022,
+          "score": 0.432,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "well",
+          "start": 19.898000000000025,
+          "end": 20.057999999999993,
+          "score": 0.952,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "it",
+          "start": 20.117999999999995,
+          "end": 20.218000000000018,
+          "score": 0.682,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "performs.",
+          "start": 20.25799999999998,
+          "end": 20.778999999999996,
+          "score": 0.937,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

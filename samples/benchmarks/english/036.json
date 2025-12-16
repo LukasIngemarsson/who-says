@@ -1,0 +1,36 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 8.882,
+      "speaker": "LUKAS",
+      "text": " Yeah, I think that's a really interesting thing, but I also think that first we should annotate the thing that we're recording now."
+    },
+    {
+      "start": 9.983,
+      "end": 19.735,
+      "speaker": "LUKAS",
+      "text": "And then, yeah, just to get the eVal done and stuff, perhaps get as many benchmarks as possible for those that we can and then we can look at that."
+    },
+    {
+      "id": 20,
+      "start": 11.219000000000051,
+      "end": 14.710000000000036,
+      "text": " Yeah, of course, of course, yeah.",
+      "speaker": "MARTEN"
+    },
+    {
+      "start": 20.816,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "But I think it would be good for, since everyone's annotating their own recording, try to be as fast as possible, since everyone else depends on"
+    },
+    {
+      "id": 21,
+      "start": 23.730000000000018,
+      "end": 24.544000000000096,
+      "text": "Yeah.",
+      "speaker": "MARTEN"
+    }
+  ]
+}

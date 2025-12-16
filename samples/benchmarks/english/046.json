@@ -1,0 +1,29 @@
+{
+  "segments": [
+    {
+      "start": 0.52,
+      "end": 7.435,
+      "speaker": "LUKAS",
+      "text": " Maybe it's easier to do this when everyone's done annotating, but we're going to have to write some scripts to merge them."
+    },
+    {
+      "start": 8.357,
+      "end": 13.99,
+      "speaker": "LUKAS",
+      "text": "Because we're going to have a bunch of JSON files separately, maybe we want to put them together."
+    },
+    {
+      "start": 11.511,
+      "end": 14.412,
+      "speaker": "KALLE",
+      "text": " Oh yeah right, we have to merge those also."
+    },
+    {
+      "id": 0,
+      "start": 23,
+      "end": 29.987,
+      "text": " By the way, I was thinking for the annotation it would be easy if I fix this.",
+      "speaker": "GOR"
+    }
+  ]
+}

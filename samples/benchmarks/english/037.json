@@ -1,0 +1,95 @@
+{
+  "segments": [
+    {
+      "start": 0.942,
+      "end": 2.384,
+      "speaker": "LUKAS",
+      "text": " Um, the others."
+    },
+    {
+      "start": 2.745,
+      "end": 6.911,
+      "speaker": "LUKAS",
+      "text": "Like, we, everyone needs to finish their annotations for the full thing to be finished."
+    },
+    {
+      "start": 6.681,
+      "end": 7.308,
+      "speaker": "KALLE",
+      "text": " Yeah."
+    },
+    {
+      "start": 7.272,
+      "end": 10.657,
+      "speaker": "LUKAS",
+      "text": "So try to do that this week if possible."
+    },
+    {
+      "id": 0,
+      "start": 7.355,
+      "end": 9.277,
+      "text": " Hmm.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 22,
+      "start": 8.564000000000078,
+      "end": 9.50500000000011,
+      "text": "Yeah, yeah.",
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "id": 1,
+      "start": 9.297,
+      "end": 9.518,
+      "text": "So.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 11.821,
+      "end": 12.321,
+      "text": "Prio.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 12.961,
+      "end": 17.508,
+      "speaker": "LUKAS",
+      "text": "Or at least half of it or something so we can, you know, start."
+    },
+    {
+      "id": 0,
+      "start": 16.521,
+      "end": 20.553,
+      "text": " Yeah, I think some of us have more to annotate than others, but it's all good.",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 3,
+      "start": 16.947,
+      "end": 18,
+      "text": "Sounds reasonable.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 23.574,
+      "end": 25.379,
+      "text": "Some of us are talking more than others, just.",
+      "speaker": "JOHAN"
+    },
+    {
+      "start": 23.858,
+      "end": 24.078,
+      "speaker": "LUKAS",
+      "text": "Why?"
+    },
+    {
+      "start": 24.098,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "Oh."
+    }
+  ]
+}

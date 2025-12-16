@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "chunk_id": 0,
+    "start_time": 0,
+    "end_time": 30,
+    "segments_count": 1
+  },
+  "segments": [
+    {
+      "start": 2.545,
+      "end": 3.107,
+      "text": " Sounds good.",
+      "words": [
+        {
+          "word": "Sounds",
+          "start": 2.545,
+          "end": 2.869,
+          "score": 0.189,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "good.",
+          "start": 2.891,
+          "end": 3.107,
+          "score": 0.544,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

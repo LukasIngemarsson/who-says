@@ -1,0 +1,68 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 1.263,
+      "end": 1.886,
+      "text": " Alrighty.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 0,
+      "start": 2,
+      "end": 2.905,
+      "text": "Okie Dokie.",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 0,
+      "start": 2.545,
+      "end": 3.107,
+      "text": " Sounds good.",
+      "speaker": "MARTEN"
+    },
+    {
+      "start": 3.338,
+      "end": 3.941,
+      "speaker": "KALLE",
+      "text": " Yes sir."
+    },
+    {
+      "start": 4.132,
+      "end": 9.279,
+      "speaker": "LUKAS",
+      "text": " So I'll just continue with the points I was going over."
+    },
+    {
+      "id": 1,
+      "start": 8.864,
+      "end": 8.944,
+      "text": "Hmm.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 9.108,
+      "end": 9.349,
+      "speaker": "KALLE",
+      "text": "Yeah."
+    },
+    {
+      "start": 10.601,
+      "end": 15.527,
+      "speaker": "LUKAS",
+      "text": "So the second one was for annotations and the JSON files."
+    },
+    {
+      "start": 16.529,
+      "end": 25.181,
+      "speaker": "LUKAS",
+      "text": "And I mean, when whisper generates, like for each segment, it has not only just the segments' transcription, but also for each word."
+    },
+    {
+      "start": 26.162,
+      "end": 29.987,
+      "speaker": "LUKAS",
+      "text": "But when we edit stuff in the debug app, we don't change these."
+    }
+  ]
+}

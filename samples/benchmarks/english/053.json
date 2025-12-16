@@ -1,0 +1,42 @@
+{
+  "segments": [
+    {
+      "id": 0,
+      "start": 0.031,
+      "end": 4.458,
+      "text": " If no one else has anything to add then we should be done.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 4.979,
+      "end": 10.2,
+      "text": "Do we want to write down something for Abbas to know or this should be enough?",
+      "speaker": "GOR"
+    },
+    {
+      "start": 12.367,
+      "end": 18.258,
+      "speaker": "LUKAS",
+      "text": " Yeah, we can just ask if he wants clarification."
+    },
+    {
+      "start": 18.739,
+      "end": 23.268,
+      "speaker": "LUKAS",
+      "text": "He might be, I think he's still working on the things he sent to, like some of them."
+    },
+    {
+      "start": 25.091,
+      "end": 26.494,
+      "speaker": "LUKAS",
+      "text": "So he probably has stuff he can do."
+    },
+    {
+      "start": 25.123,
+      "end": 29.987,
+      "speaker": "KALLE",
+      "text": "And we can tell him about the removing branches also."
+    }
+  ]
+}

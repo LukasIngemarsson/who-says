@@ -1,0 +1,23 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 0.643,
+      "speaker": "LUKAS",
+      "text": " Yep."
+    },
+    {
+      "start": 0.031,
+      "end": 0.929,
+      "speaker": "KALLE",
+      "text": " Yeah."
+    },
+    {
+      "id": 29,
+      "start": 1.0299999999999727,
+      "end": 1.6269999999999527,
+      "text": " Yep.",
+      "speaker": "SPEAKER_01"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "chunk_id": 3,
+    "start_time": 90,
+    "end_time": 120,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "start": 18.165999999999997,
+      "end": 19.408,
+      "text": " Wait, say that again.",
+      "words": [
+        {
+          "word": "Wait,",
+          "start": 18.165999999999997,
+          "end": 18.667,
+          "score": 0.767,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "say",
+          "start": 18.686999999999998,
+          "end": 19.067999999999998,
+          "score": 0.515,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "that",
+          "start": 19.087999999999994,
+          "end": 19.168000000000006,
+          "score": 0.015,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "again.",
+          "start": 19.188000000000002,
+          "end": 19.408,
+          "score": 0.459,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    },
+    {
+      "start": 19.429000000000002,
+      "end": 30,
+      "text": "I didn't really hear what the...",
+      "words": [
+        {
+          "word": "I",
+          "start": 19.429000000000002,
+          "end": 19.468999999999994,
+          "score": 0.432,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "didn't",
+          "start": 19.489000000000004,
+          "end": 19.709000000000003,
+          "score": 0.538,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "really",
+          "start": 19.748999999999995,
+          "end": 19.950000000000003,
+          "score": 0.764,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "hear",
+          "start": 19.989999999999995,
+          "end": 20.150000000000006,
+          "score": 0.722,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "what",
+          "start": 20.450999999999993,
+          "end": 20.631,
+          "score": 0.639,
+          "speaker": "SPEAKER_00"
+        },
+        {
+          "word": "the...",
+          "start": 20.671000000000006,
+          "end": 30,
+          "score": 0.773,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

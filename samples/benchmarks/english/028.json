@@ -1,0 +1,57 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 4.259,
+      "speaker": "LUKAS",
+      "text": " embeddings of the segments to compare to and stuff, you know."
+    },
+    {
+      "id": 0,
+      "start": 1.465,
+      "end": 4.849,
+      "text": " Oh yeah, no, no, no, yeah.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 4.869,
+      "end": 5.41,
+      "text": "I see, I see.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 4.98,
+      "end": 8.787,
+      "speaker": "LUKAS",
+      "text": "Since we want to have the thing that it detects the person's name and stuff like that."
+    },
+    {
+      "id": 2,
+      "start": 9.835,
+      "end": 12.958,
+      "text": "Oh yeah, that one is for the demo app, not for this one.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 3,
+      "start": 15.742,
+      "end": 16.863,
+      "text": "This is only the editor.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 18.025,
+      "end": 18.225,
+      "speaker": "LUKAS",
+      "text": "Yeah."
+    },
+    {
+      "id": 4,
+      "start": 26.154,
+      "end": 28.857,
+      "text": "Yes.",
+      "speaker": "GOR"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "exported_at": "2025-11-27T21:41:06.589Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 3
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 22,
+      "end": 22.892,
+      "text": " Do you mean this?",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 24.997,
+      "end": 26.039,
+      "text": "You can see in my stream.",
+      "speaker": "GOR"
+    },
+    {
+      "id": 2,
+      "start": 28.584,
+      "end": 29.987,
+      "text": "Yeah, yeah I was",
+      "speaker": "GOR"
+    }
+  ]
+}

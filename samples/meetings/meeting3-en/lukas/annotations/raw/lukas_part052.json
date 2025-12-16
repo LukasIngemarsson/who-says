@@ -1,0 +1,324 @@
+{
+  "segments": [
+    {
+      "start": 6.275,
+      "end": 10.121,
+      "text": " Yeah, you can merge it into like when you merge back, you can merge back into the new one.",
+      "words": [
+        {
+          "word": "Yeah,",
+          "start": 6.275,
+          "end": 6.596,
+          "score": 0.427,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you",
+          "start": 6.616,
+          "end": 6.696,
+          "score": 0.836,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "can",
+          "start": 6.716,
+          "end": 6.816,
+          "score": 0.869,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "merge",
+          "start": 6.856,
+          "end": 7.076,
+          "score": 0.882,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "it",
+          "start": 7.116,
+          "end": 7.156,
+          "score": 0.998,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "into",
+          "start": 7.196,
+          "end": 7.597,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "like",
+          "start": 7.737,
+          "end": 7.838,
+          "score": 0.918,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "when",
+          "start": 7.878,
+          "end": 7.958,
+          "score": 0.999,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you",
+          "start": 7.998,
+          "end": 8.058,
+          "score": 0.997,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "merge",
+          "start": 8.098,
+          "end": 8.278,
+          "score": 0.947,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "back,",
+          "start": 8.338,
+          "end": 8.499,
+          "score": 0.999,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "you",
+          "start": 8.539,
+          "end": 8.619,
+          "score": 0.795,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "can",
+          "start": 8.639,
+          "end": 8.719,
+          "score": 0.984,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "merge",
+          "start": 8.759,
+          "end": 8.939,
+          "score": 0.965,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "back",
+          "start": 8.979,
+          "end": 9.14,
+          "score": 0.959,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "into",
+          "start": 9.2,
+          "end": 9.4,
+          "score": 0.814,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "the",
+          "start": 9.701,
+          "end": 9.801,
+          "score": 0.924,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "new",
+          "start": 9.841,
+          "end": 9.941,
+          "score": 0.998,
+          "speaker": "SPEAKER_01"
+        },
+        {
+          "word": "one.",
+          "start": 10.021,
+          "end": 10.121,
+          "score": 0.976,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 11.724,
+      "end": 11.904,
+      "text": "Yeah.",
+      "words": [
+        {
+          "word": "Yeah.",
+          "start": 11.724,
+          "end": 11.904,
+          "score": 0.638,
+          "speaker": "SPEAKER_01"
+        }
+      ],
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "start": 27.269,
+      "end": 27.81,
+      "text": "Probably.",
+      "words": [
+        {
+          "word": "Probably.",
+          "start": 27.269,
+          "end": 27.81,
+          "score": 0.822,
+          "speaker": "SPEAKER_00"
+        }
+      ],
+      "speaker": "SPEAKER_00"
+    }
+  ],
+  "word_segments": [
+    {
+      "word": "Yeah,",
+      "start": 6.275,
+      "end": 6.596,
+      "score": 0.427,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "you",
+      "start": 6.616,
+      "end": 6.696,
+      "score": 0.836,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "can",
+      "start": 6.716,
+      "end": 6.816,
+      "score": 0.869,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "merge",
+      "start": 6.856,
+      "end": 7.076,
+      "score": 0.882,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "it",
+      "start": 7.116,
+      "end": 7.156,
+      "score": 0.998,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "into",
+      "start": 7.196,
+      "end": 7.597,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "like",
+      "start": 7.737,
+      "end": 7.838,
+      "score": 0.918,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "when",
+      "start": 7.878,
+      "end": 7.958,
+      "score": 0.999,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "you",
+      "start": 7.998,
+      "end": 8.058,
+      "score": 0.997,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "merge",
+      "start": 8.098,
+      "end": 8.278,
+      "score": 0.947,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "back,",
+      "start": 8.338,
+      "end": 8.499,
+      "score": 0.999,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "you",
+      "start": 8.539,
+      "end": 8.619,
+      "score": 0.795,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "can",
+      "start": 8.639,
+      "end": 8.719,
+      "score": 0.984,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "merge",
+      "start": 8.759,
+      "end": 8.939,
+      "score": 0.965,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "back",
+      "start": 8.979,
+      "end": 9.14,
+      "score": 0.959,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "into",
+      "start": 9.2,
+      "end": 9.4,
+      "score": 0.814,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "the",
+      "start": 9.701,
+      "end": 9.801,
+      "score": 0.924,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "new",
+      "start": 9.841,
+      "end": 9.941,
+      "score": 0.998,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "one.",
+      "start": 10.021,
+      "end": 10.121,
+      "score": 0.976,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Yeah.",
+      "start": 11.724,
+      "end": 11.904,
+      "score": 0.638,
+      "speaker": "SPEAKER_01"
+    },
+    {
+      "word": "Probably.",
+      "start": 27.269,
+      "end": 27.81,
+      "score": 0.822,
+      "speaker": "SPEAKER_00"
+    }
+  ]
+}

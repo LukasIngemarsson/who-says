@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "exported_at": "2025-11-26T12:58:55.014Z",
+    "app": "who-says-editor",
+    "version": 1,
+    "segments_count": 3
+  },
+  "segments": [
+    {
+      "id": 0,
+      "start": 6.882,
+      "end": 8,
+      "text": " no that's not good",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 1,
+      "start": 12.355,
+      "end": 20,
+      "text": " yeah i was thinking i could start with making like the demo look nice and functional",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 2,
+      "start": 28.6,
+      "end": 29,
+      "text": "yeah",
+      "speaker": "JOHAN"
+    }
+  ]
+}

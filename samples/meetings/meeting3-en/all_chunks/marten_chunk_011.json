@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "chunk_id": 11,
+    "start_time": 330,
+    "end_time": 360,
+    "segments_count": 2
+  },
+  "segments": [
+    {
+      "id": 6,
+      "start": 0,
+      "end": 15.019000000000005,
+      "text": " We can also. Should probably just be able to update otherwise to take a small segment of what we have been saying to confirm who's talking and then assign that segment to a specific speaker. And that will then clarify the cluster name instead of speaker 01 or 02.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 0.49799999999999045,
+          "end": 0.9590000000000032,
+          "word": "segment"
+        },
+        {
+          "start": 1.0190000000000055,
+          "end": 1.0989999999999895,
+          "word": "to"
+        },
+        {
+          "start": 1.13900000000001,
+          "end": 1.1589999999999918,
+          "word": "a"
+        },
+        {
+          "start": 1.1990000000000123,
+          "end": 1.579999999999984,
+          "word": "specific"
+        },
+        {
+          "start": 1.6399999999999864,
+          "end": 2.019999999999982,
+          "word": "speaker."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "start": 15.199999999999989,
+      "end": 21.110000000000014,
+      "text": "So if we label one specific, then all the ones in the same cluster should have the same name.",
+      "speaker": "MARTEN",
+      "words": [
+        {
+          "start": 13.396000000000015,
+          "end": 13.576999999999998,
+          "word": "So"
+        },
+        {
+          "start": 13.677000000000021,
+          "end": 13.757000000000005,
+          "word": "if"
+        },
+        {
+          "start": 14.538999999999987,
+          "end": 14.800000000000011,
+          "word": "we"
+        },
+        {
+          "start": 14.819999999999993,
+          "end": 15.40100000000001,
+          "word": "label"
+        },
+        {
+          "start": 15.440999999999974,
+          "end": 15.961999999999989,
+          "word": "one"
+        },
+        {
+          "start": 16.142999999999972,
+          "end": 16.624000000000024,
+          "word": "specific,"
+        },
+        {
+          "start": 16.644000000000005,
+          "end": 16.783999999999992,
+          "word": "then"
+        },
+        {
+          "start": 16.845000000000027,
+          "end": 16.964999999999975,
+          "word": "all"
+        },
+        {
+          "start": 16.985000000000014,
+          "end": 17.045000000000016,
+          "word": "the"
+        },
+        {
+          "start": 17.305999999999983,
+          "end": 17.446000000000026,
+          "word": "ones"
+        },
+        {
+          "start": 17.505999999999972,
+          "end": 17.565999999999974,
+          "word": "in"
+        },
+        {
+          "start": 17.605999999999995,
+          "end": 17.666999999999973,
+          "word": "the"
+        },
+        {
+          "start": 17.687000000000012,
+          "end": 17.84699999999998,
+          "word": "same"
+        },
+        {
+          "start": 17.887,
+          "end": 18.187999999999988,
+          "word": "cluster"
+        },
+        {
+          "start": 18.22800000000001,
+          "end": 18.367999999999995,
+          "word": "should"
+        },
+        {
+          "start": 18.408000000000015,
+          "end": 18.488999999999976,
+          "word": "have"
+        },
+        {
+          "start": 18.528999999999996,
+          "end": 18.60899999999998,
+          "word": "the"
+        },
+        {
+          "start": 18.649,
+          "end": 18.788999999999987,
+          "word": "same"
+        },
+        {
+          "start": 18.84899999999999,
+          "end": 19.110000000000014,
+          "word": "name."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "segments": [
+    {
+      "start": 0.031,
+      "end": 3.949,
+      "speaker": "LUKAS",
+      "text": "Ha ha"
+    },
+    {
+      "id": 0,
+      "start": 1.094,
+      "end": 3.1,
+      "text": " Damn, now I regret talking so much.",
+      "speaker": "GOR"
+    },
+    {
+      "start": 1.111,
+      "end": 3.73,
+      "speaker": "KALLE",
+      "text": " Hahahaha!"
+    },
+    {
+      "id": 0,
+      "start": 4.722,
+      "end": 5.216,
+      "text": " Nah.",
+      "speaker": "OSCAR"
+    },
+    {
+      "id": 23,
+      "start": 5.981999999999971,
+      "end": 8.548999999999978,
+      "text": " yeah now everybody will start being quiet instead",
+      "speaker": "MARTEN"
+    },
+    {
+      "id": 0,
+      "start": 6.882,
+      "end": 8,
+      "text": " no that's not good",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 1,
+      "start": 10,
+      "end": 11,
+      "text": "Speak more!",
+      "speaker": "GOR"
+    },
+    {
+      "id": 1,
+      "start": 12.355,
+      "end": 20,
+      "text": " yeah i was thinking i could start with making like the demo look nice and functional",
+      "speaker": "JOHAN"
+    },
+    {
+      "id": 2,
+      "start": 28.6,
+      "end": 29,
+      "text": "yeah",
+      "speaker": "JOHAN"
+    }
+  ]
+}

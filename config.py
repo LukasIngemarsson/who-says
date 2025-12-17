@@ -340,7 +340,7 @@ class KMeansConfig(BaseClusteringConfig):
 class AgglomerativeConfig(BaseClusteringConfig):
     algorithm: str = "agglomerative"
     n_clusters: int = 2
-    affinity: str = "euclidean"
+    metric: str = "euclidean"
     linkage: str = "ward"
 
 

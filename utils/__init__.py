@@ -31,7 +31,9 @@ from .comparison import (
     aggregate_embedding_viz_results,
     compare_embedding_models,
     aggregate_embedding_results,
-    compare_cluster_viz
+    compare_cluster_viz,
+    compare_full_e2e_pipelines,
+    aggregate_full_e2e_results
 )
 from .plot import (
     plot_metrics,
@@ -47,7 +49,11 @@ from .plot import (
     plot_e2e_timing,
     plot_embedding_comparison,
     plot_cluster_umap,
-    plot_sos_comparison
+    plot_sos_comparison,
+    plot_sod_comparison,
+    plot_scd_comparison,
+    plot_full_e2e_comparison,
+    plot_full_e2e_heatmap
 )
 
 __all__ = [
@@ -97,5 +103,11 @@ __all__ = [
     "plot_embedding_comparison",
     "plot_cluster_umap",
     "plot_sos_comparison",
-    "compare_cluster_viz"
+    "plot_sod_comparison",
+    "plot_scd_comparison",
+    "compare_cluster_viz",
+    "compare_full_e2e_pipelines",
+    "aggregate_full_e2e_results",
+    "plot_full_e2e_comparison",
+    "plot_full_e2e_heatmap"
 ]

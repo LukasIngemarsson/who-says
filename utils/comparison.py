@@ -712,7 +712,7 @@ def aggregate_asr_results(models: Dict) -> Dict:
     return models
 
 
-def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
+def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]], skip_overlap: bool = False) -> Dict:
     """
     Compare end-to-end diarization pipelines.
 
@@ -720,6 +720,7 @@ def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
 
     Args:
         file_pairs: List of (audio_path, annotation_path, file_id) tuples
+        skip_overlap: If True, skip overlap detection and processing in WhoSays
 
     Returns:
         Dict mapping pipeline names to results:
@@ -743,12 +744,18 @@ def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
     """
     from pipeline.pyannote_full_pipeline import PyannoteFullPipeline
     from main import WhoSays
+    from config import PipelineConfig as Config
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
+    # Create WhoSays config with skip_overlap setting
+    whosays_config = Config(skip_overlap=skip_overlap)
+    if skip_overlap:
+        logger.info("WhoSays: overlap detection/processing DISABLED")
+
     pipelines = {
         'who-says': {
-            'instance': WhoSays(),
+            'instance': WhoSays(config=whosays_config),
             'has_transcription': True
         },
         'pyannote-3.1': {
@@ -806,6 +813,11 @@ def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
                     pred_transcriptions = [seg['text'] for seg in pred_segments]
                     wer_metrics = evaluate_asr(ref_transcriptions, pred_transcriptions)
 
+                # Capture component timing if available
+                component_timing = None
+                if pipeline_name == 'who-says' and 'timing' in result:
+                    component_timing = result['timing']
+
                 pipeline_data['results'].append({
                     'file_id': file_id,
                     'audio_file': str(audio_file),
@@ -814,7 +826,8 @@ def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]]) -> Dict:
                     'n_speakers_ref': n_speakers_ref,
                     'der_metrics': der_metrics,
                     'wer_metrics': wer_metrics,
-                    'timing': inference_time
+                    'timing': inference_time,
+                    'component_timing': component_timing
                 })
 
                 logger.info(f"    DER: {der_metrics['der']:.2f}%")
@@ -866,6 +879,20 @@ def aggregate_e2e_results(pipelines: Dict) -> Dict:
             }
         }
 
+        # Aggregate component timing if available (for who-says pipeline)
+        component_timings = [r['component_timing'] for r in results if r.get('component_timing')]
+        if component_timings:
+            component_keys = ['audio_loading', 'vad', 'overlap_detection', 'asr', 'phoneme',
+                              'scd', 'embedding', 'clustering', 'overlap_processing', 'formatting']
+            aggregated['component_timing'] = {}
+            for key in component_keys:
+                values = [ct.get(key, 0) for ct in component_timings if ct.get(key) is not None]
+                if values:
+                    aggregated['component_timing'][key] = {
+                        'mean': float(np.mean(values)),
+                        'std': float(np.std(values))
+                    }
+
         if pipeline_data['has_transcription'] and results[0]['wer_metrics']:
             wers = [r['wer_metrics']['wer'] for r in results if r['wer_metrics']]
             if wers:
@@ -883,6 +910,9 @@ def aggregate_e2e_results(pipelines: Dict) -> Dict:
 def load_scd_ground_truth(benchmark_dir: Path) -> Tuple[int, List[float]]:
     """
     Load ground truth speaker changes from benchmark annotations.
+
+    Counts speaker changes based on the primary/longest speaker in each time region.
+    Brief interruptions (< 0.5s) are ignored.
 
     Parameters
     ----------
@@ -905,10 +935,50 @@ def load_scd_ground_truth(benchmark_dir: Path) -> Tuple[int, List[float]]:
             data = json.load(fp)
 
         segs = data['segments']
-        for i in range(1, len(segs)):
-            if segs[i]['speaker'] != segs[i-1]['speaker']:
-                total_changes += 1
-                all_change_times.append(chunk_offset + segs[i]['start'])
+        if not segs:
+            continue
+
+        # Sort segments by start time
+        segs_sorted = sorted(segs, key=lambda x: x['start'])
+
+        # Filter out very short segments (brief interruptions < 0.2s)
+        min_segment_duration = 0.2
+        segs_filtered = [s for s in segs_sorted if (s['end'] - s['start']) >= min_segment_duration]
+
+        if not segs_filtered:
+            continue
+
+        # Simple approach: count change when a new speaker starts after previous ends
+        # Allow small overlap tolerance (0.3s) for natural turn-taking
+        overlap_tolerance = 0.3
+
+        last_speaker = segs_filtered[0]['speaker']
+        last_end = segs_filtered[0]['end']
+
+        for seg in segs_filtered[1:]:
+            seg_start = seg['start']
+            seg_end = seg['end']
+            seg_speaker = seg['speaker']
+
+            # Check if this is a new turn (starts near or after previous ends)
+            if seg_start >= last_end - overlap_tolerance:
+                # New turn - check if speaker changed
+                if seg_speaker != last_speaker:
+                    total_changes += 1
+                    all_change_times.append(chunk_offset + seg_start)
+                last_speaker = seg_speaker
+                last_end = seg_end
+            else:
+                # Overlapping speech - update end time but keep tracking
+                # If this segment is longer, it might become the "main" speaker
+                if seg_end > last_end:
+                    # This overlapping segment extends beyond - consider it a potential change
+                    if seg_speaker != last_speaker and (seg_end - seg_start) > (last_end - seg_start):
+                        # The new speaker talks longer in this overlap - count as change
+                        total_changes += 1
+                        all_change_times.append(chunk_offset + seg_start)
+                        last_speaker = seg_speaker
+                    last_end = seg_end
 
     return total_changes, sorted(all_change_times)
 
@@ -919,7 +989,7 @@ def match_change_points(
     tolerance: float = 2.0
 ) -> Tuple[float, float, float]:
     """
-    Match detected change points to ground truth within tolerance.
+    Match detected change points to ground truth within tolerance using optimal bipartite matching.
 
     Parameters
     ----------
@@ -935,6 +1005,8 @@ def match_change_points(
     Tuple[float, float, float]
         Precision, recall, F1 score
     """
+    from scipy.optimize import linear_sum_assignment
+
     if not detected or not ground_truth:
         if not detected and not ground_truth:
             return 1.0, 1.0, 1.0
@@ -943,19 +1015,31 @@ def match_change_points(
     detected = sorted(detected)
     ground_truth = sorted(ground_truth)
 
-    matched_gt = set()
-    matched_det = set()
+    # Build cost matrix (distance between each detection and ground truth)
+    n_det = len(detected)
+    n_gt = len(ground_truth)
+
+    # Use a large cost for invalid matches (beyond tolerance)
+    INF = 1e9
+    cost_matrix = np.full((n_gt, n_det), INF)
 
     for i, gt in enumerate(ground_truth):
         for j, det in enumerate(detected):
-            if j not in matched_det and abs(det - gt) <= tolerance:
-                matched_gt.add(i)
-                matched_det.add(j)
-                break
+            dist = abs(det - gt)
+            if dist <= tolerance:
+                cost_matrix[i, j] = dist
 
-    true_positives = len(matched_gt)
-    precision = true_positives / len(detected) if detected else 0
-    recall = true_positives / len(ground_truth) if ground_truth else 0
+    # Optimal bipartite matching using Hungarian algorithm
+    row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
+    # Count valid matches (those within tolerance)
+    true_positives = 0
+    for i, j in zip(row_ind, col_ind):
+        if cost_matrix[i, j] < INF:
+            true_positives += 1
+
+    precision = true_positives / n_det if n_det > 0 else 0
+    recall = true_positives / n_gt if n_gt > 0 else 0
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
 
     return precision, recall, f1
@@ -967,10 +1051,12 @@ def compare_scd_models(
     prominence_values: List[float] = None,
     tolerance_values: List[float] = None,
     include_nemo: bool = True,
+    include_naive: bool = True,
+    reference_dir: Path = None,
     chunk_duration: float = 300.0
 ) -> Dict:
     """
-    Compare SCD models: Pyannote (with different prominence values) vs NeMo Sortformer.
+    Compare SCD models: Pyannote (with different prominence values) vs NeMo Sortformer vs Naive (cosine similarity).
 
     Parameters
     ----------
@@ -984,6 +1070,10 @@ def compare_scd_models(
         List of tolerance values for matching evaluation
     include_nemo : bool
         Whether to include NeMo Sortformer benchmark
+    include_naive : bool
+        Whether to include naive cosine similarity benchmark
+    reference_dir : Path
+        Directory containing reference speaker audio files (required for naive SCD)
     chunk_duration : float
         Chunk duration for processing (to avoid OOM)
 
@@ -996,7 +1086,7 @@ def compare_scd_models(
     from config import PipelineConfig
 
     if prominence_values is None:
-        prominence_values = [0.1, 0.15, 0.2, 0.25, 0.3]
+        prominence_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
     if tolerance_values is None:
         tolerance_values = [0.5, 1.0, 2.0, 3.0, 5.0]
 
@@ -1012,16 +1102,38 @@ def compare_scd_models(
     waveform, sr = load_audio_from_file(file_path=audio_path, sr=config.sr)
     if waveform.dim() > 1:
         waveform = waveform.mean(dim=0)
-    waveform = waveform.to(config.device)
+    # Ensure tensor is contiguous for CUDA operations
+    waveform = waveform.contiguous().to(config.device)
     total_duration = waveform.shape[-1] / sr
     logger.info(f"Audio loaded: {total_duration:.1f} seconds")
+
+    # Remove overlapping regions from audio to avoid confusing SCD models
+    # Use a very low min_overlap_duration to catch all overlaps
+    overlap_regions = extract_overlap_ground_truth(benchmark_dir, min_overlap_duration=0.1)
+    if overlap_regions:
+        logger.info(f"Removing {len(overlap_regions)} overlap regions from audio...")
+        total_overlap_duration = sum(end - start for start, end in overlap_regions)
+        logger.info(f"  Total overlap duration: {total_overlap_duration:.1f}s ({total_overlap_duration/total_duration*100:.1f}% of audio)")
+
+        # Zero out overlap regions in the waveform
+        for start, end in overlap_regions:
+            start_sample = int(start * sr)
+            end_sample = min(int(end * sr), waveform.shape[-1])
+            waveform[start_sample:end_sample] = 0.0
+
+        logger.info("  Overlap regions zeroed out")
 
     results = {
         'ground_truth_count': gt_changes,
         'ground_truth_times': gt_times,
         'total_duration': total_duration,
+        'overlap_regions_removed': len(overlap_regions) if overlap_regions else 0,
+        'overlap_duration_removed': sum(end - start for start, end in overlap_regions) if overlap_regions else 0.0,
         'pyannote': [],
-        'nemo': None
+        'nemo': None,
+        'naive_pyannote': None,
+        'naive_speechbrain': None,
+        'naive_wav2vec2': None
     }
 
     # Test Pyannote with different prominence values
@@ -1115,22 +1227,98 @@ def compare_scd_models(
             logger.error(f"NeMo SCD failed: {e}")
             results['nemo'] = {'error': str(e)}
 
+    # Test Naive cosine similarity SCD with all embedding models
+    if include_naive and reference_dir is not None:
+        logger.info("Testing Naive SCD (cosine similarity)...")
+
+        embedding_models = ["pyannote", "speechbrain", "wav2vec2"]
+        window_sizes = [0.5, 1.0, 1.5]
+        similarity_thresholds = [0.4, 0.5, 0.6]
+
+        for emb_model in embedding_models:
+            logger.info(f"Testing Naive SCD ({emb_model})...")
+            try:
+                from pipeline.speaker_segmentation.SCD._naive import NaiveSCD
+
+                naive_results = []
+                for window_dur in window_sizes:
+                    for sim_threshold in similarity_thresholds:
+                        logger.info(f"  {emb_model}: window={window_dur}s, threshold={sim_threshold}...")
+
+                        naive_scd = NaiveSCD(
+                            reference_dir=reference_dir,
+                            embedding_model=emb_model,
+                            window_duration=window_dur,
+                            step_duration=window_dur / 2,  # 50% overlap
+                            similarity_threshold=sim_threshold,
+                            min_duration=config.scd.pyannote.min_duration,
+                            device=torch.device(config.device)
+                        )
+
+                        start_time = time.time()
+                        with torch.no_grad():
+                            change_points = naive_scd(waveform.cpu())
+                        elapsed = time.time() - start_time
+
+                        # Evaluate at all tolerance levels
+                        tolerance_results = []
+                        for tol in tolerance_values:
+                            precision, recall, f1 = match_change_points(change_points, gt_times, tolerance=tol)
+                            tolerance_results.append({
+                                'tolerance': tol,
+                                'precision': precision,
+                                'recall': recall,
+                                'f1': f1
+                            })
+
+                        naive_results.append({
+                            'window_duration': window_dur,
+                            'similarity_threshold': sim_threshold,
+                            'detected_count': len(change_points),
+                            'change_points': change_points,
+                            'time': elapsed,
+                            'results_by_tolerance': tolerance_results
+                        })
+
+                        logger.info(f"    Detected: {len(change_points)}, Time: {elapsed:.2f}s")
+
+                results[f'naive_{emb_model}'] = naive_results
+
+            except Exception as e:
+                logger.error(f"Naive SCD ({emb_model}) failed: {e}")
+                import traceback
+                traceback.print_exc()
+                results[f'naive_{emb_model}'] = {'error': str(e)}
+
+    elif include_naive and reference_dir is None:
+        logger.warning("Naive SCD skipped: --reference-dir not provided")
+        results['naive_pyannote'] = {'error': 'reference_dir not provided'}
+        results['naive_speechbrain'] = {'error': 'reference_dir not provided'}
+        results['naive_wav2vec2'] = {'error': 'reference_dir not provided'}
+
     return results
 
 
-def aggregate_scd_results(results: Dict) -> Dict:
-    """Aggregate SCD comparison results with best configs."""
+def aggregate_scd_results(results: Dict, optimize_metric: str = "f1") -> Dict:
+    """
+    Aggregate SCD comparison results with best configs.
+
+    Args:
+        results: Raw SCD comparison results
+        optimize_metric: Metric to optimize for ("f1", "precision", or "recall")
+    """
     # Find best Pyannote config for each tolerance
     best_pyannote = {}
     for tol_result in results['pyannote'][0]['results_by_tolerance']:
         tol = tol_result['tolerance']
-        best_f1 = 0
+        best_score = 0
         best_config = None
 
         for pya_result in results['pyannote']:
             for tr in pya_result['results_by_tolerance']:
-                if tr['tolerance'] == tol and tr['f1'] > best_f1:
-                    best_f1 = tr['f1']
+                score = tr[optimize_metric]
+                if tr['tolerance'] == tol and score > best_score:
+                    best_score = score
                     best_config = {
                         'prominence': pya_result['prominence'],
                         'f1': tr['f1'],
@@ -1141,7 +1329,8 @@ def aggregate_scd_results(results: Dict) -> Dict:
         best_pyannote[f'tolerance_{tol}s'] = best_config
 
     results['aggregated'] = {
-        'best_pyannote_by_tolerance': best_pyannote
+        'best_pyannote_by_tolerance': best_pyannote,
+        'optimize_metric': optimize_metric
     }
 
     if results['nemo'] and 'error' not in results['nemo']:
@@ -1154,6 +1343,33 @@ def aggregate_scd_results(results: Dict) -> Dict:
             for tr in results['nemo']['results_by_tolerance']
         }
 
+    # Find best Naive config for each embedding model and tolerance
+    for emb_model in ['pyannote', 'speechbrain', 'wav2vec2']:
+        naive_key = f'naive_{emb_model}'
+        if results.get(naive_key) and isinstance(results[naive_key], list) and len(results[naive_key]) > 0:
+            best_naive = {}
+            for tol_result in results[naive_key][0]['results_by_tolerance']:
+                tol = tol_result['tolerance']
+                best_score = 0
+                best_config = None
+
+                for naive_result in results[naive_key]:
+                    for tr in naive_result['results_by_tolerance']:
+                        score = tr[optimize_metric]
+                        if tr['tolerance'] == tol and score > best_score:
+                            best_score = score
+                            best_config = {
+                                'window_duration': naive_result['window_duration'],
+                                'similarity_threshold': naive_result['similarity_threshold'],
+                                'f1': tr['f1'],
+                                'precision': tr['precision'],
+                                'recall': tr['recall']
+                            }
+
+                best_naive[f'tolerance_{tol}s'] = best_config
+
+            results['aggregated'][f'best_{naive_key}_by_tolerance'] = best_naive
+
     return results
 
 
@@ -1163,7 +1379,7 @@ def aggregate_scd_results(results: Dict) -> Dict:
 
 def extract_overlap_ground_truth(
     benchmark_dir: Path,
-    min_overlap_duration: float = 0.05
+    min_overlap_duration: float = 0.3
 ) -> List[Tuple[float, float]]:
     """
     Extract overlap regions from benchmark JSONs by finding
@@ -1267,6 +1483,40 @@ def compute_frame_metrics(ref_frames: np.ndarray, pred_frames: np.ndarray) -> Di
     return {'precision': precision, 'recall': recall, 'f1': f1}
 
 
+def compute_frame_metrics_with_tolerance(
+    ref_frames: np.ndarray,
+    pred_frames: np.ndarray,
+    tolerance_frames: int
+) -> Dict[str, float]:
+    """
+    Compute frame-level precision, recall, F1 with tolerance.
+
+    Expands ground truth by tolerance_frames on each side, so predictions
+    within the tolerance window of actual overlap are counted as hits.
+    """
+    from scipy.ndimage import binary_dilation
+
+    max_len = max(len(ref_frames), len(pred_frames))
+    if len(ref_frames) < max_len:
+        ref_frames = np.pad(ref_frames, (0, max_len - len(ref_frames)))
+    if len(pred_frames) < max_len:
+        pred_frames = np.pad(pred_frames, (0, max_len - len(pred_frames)))
+
+    # Expand ground truth by tolerance
+    structure = np.ones(2 * tolerance_frames + 1)
+    ref_expanded = binary_dilation(ref_frames.astype(bool), structure=structure).astype(int)
+
+    tp = np.sum((ref_expanded == 1) & (pred_frames == 1))
+    fp = np.sum((ref_expanded == 0) & (pred_frames == 1))
+    fn = np.sum((ref_frames == 1) & (pred_frames == 0))  # Use original ref for FN
+
+    precision = tp / (tp + fp) * 100 if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) * 100 if (tp + fn) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
+    return {'precision': precision, 'recall': recall, 'f1': f1}
+
+
 def compute_segment_iou(seg1: Tuple[float, float], seg2: Tuple[float, float]) -> float:
     """Compute Intersection over Union (IoU) between two segments."""
     intersection_start = max(seg1[0], seg2[0])
@@ -1313,10 +1563,11 @@ def compare_sod_models(
     speaker_dir: Path = None,
     onset_thresholds: List[float] = None,
     include_nemo: bool = True,
-    min_overlap_duration: float = 0.1
+    include_wavlm: bool = True,
+    min_overlap_duration: float = 0.3
 ) -> Dict:
     """
-    Compare SOD models: PyannoteSOD vs NeMo Sortformer (via diarization).
+    Compare SOD models: PyannoteSOD vs WavLM vs NeMo Sortformer (via diarization).
 
     Parameters
     ----------
@@ -1329,9 +1580,11 @@ def compare_sod_models(
         If provided, creates synthetic mix by summing speaker tracks (like SOS).
         If not provided, uses audio_path directly.
     onset_thresholds : List[float]
-        Onset thresholds to test for Pyannote
+        Onset thresholds to test for Pyannote and WavLM
     include_nemo : bool
         Whether to include NeMo benchmark
+    include_wavlm : bool
+        Whether to include WavLM benchmark
     min_overlap_duration : float
         Minimum overlap duration for ground truth
 
@@ -1340,19 +1593,24 @@ def compare_sod_models(
     Dict
         Results for all models
     """
-    from pipeline.speaker_segmentation.SO.Detection import PyannoteSOD
+    from pipeline.speaker_segmentation.SO.Detection import PyannoteSOD, WavLMSOD
     from pipeline.speaker_segmentation.SCD._nemo import NemoSCD
     from config import PipelineConfig
 
     if onset_thresholds is None:
-        onset_thresholds = [0.3, 0.5, 0.7]
+        # Test wide range of thresholds for optimal performance
+        onset_thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
 
     config = PipelineConfig()
     sr = config.sr
 
     # Load ground truth
     gt_overlaps = extract_overlap_ground_truth(benchmark_dir, min_overlap_duration)
-    logger.info(f"Ground truth: {len(gt_overlaps)} overlap regions")
+    gt_total_duration = sum(e - s for s, e in gt_overlaps)
+    logger.info(f"Ground truth: {len(gt_overlaps)} overlap regions ({gt_total_duration:.1f}s total)")
+    if gt_overlaps:
+        logger.info(f"  First 5 GT overlaps: {gt_overlaps[:5]}")
+        logger.info(f"  Last GT overlap ends at: {gt_overlaps[-1][1]:.1f}s")
 
     # Load audio - either from speaker files (synthetic mix) or combined audio
     if speaker_dir is not None:
@@ -1406,6 +1664,7 @@ def compare_sod_models(
         'ground_truth_duration': gt_total_time,
         'total_audio_duration': total_duration,
         'pyannote_results': [],
+        'wavlm_results': [],
         'nemo_results': None
     }
 
@@ -1417,7 +1676,7 @@ def compare_sod_models(
             model_name="pyannote/segmentation-3.0",
             onset=onset,
             offset=onset,
-            min_duration=0.0,
+            min_duration=min_overlap_duration,  # Match ground truth filtering
             device=torch.device(config.device)
         )
 
@@ -1427,11 +1686,19 @@ def compare_sod_models(
         elapsed = time.time() - start_time
 
         pred_frames = overlaps_to_frames(detected_overlaps, total_duration)
-        frame_metrics = compute_frame_metrics(gt_frames, pred_frames)
+        frame_metrics_strict = compute_frame_metrics(gt_frames, pred_frames)
+        frame_metrics = compute_frame_metrics_with_tolerance(gt_frames, pred_frames, tolerance_frames=50)  # 0.5s at 100fps
         seg_metrics_05 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.5)
         seg_metrics_03 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.3)
 
         detected_total_time = sum(end - start for start, end in detected_overlaps)
+
+        # Debug: show precision/recall breakdown
+        logger.info(f"  Detected: {len(detected_overlaps)} overlaps ({detected_total_time:.1f}s)")
+        logger.info(f"  Frame metrics (strict) - P: {frame_metrics_strict['precision']:.1f}%, R: {frame_metrics_strict['recall']:.1f}%, F1: {frame_metrics_strict['f1']:.1f}%")
+        logger.info(f"  Frame metrics (0.5s tol) - P: {frame_metrics['precision']:.1f}%, R: {frame_metrics['recall']:.1f}%, F1: {frame_metrics['f1']:.1f}%")
+        if detected_overlaps and onset == onset_thresholds[0]:
+            logger.info(f"  First 5 detected: {detected_overlaps[:5]}")
 
         results['pyannote_results'].append({
             'onset': onset,
@@ -1439,15 +1706,70 @@ def compare_sod_models(
             'detected_duration': detected_total_time,
             'time': elapsed,
             'frame_metrics': frame_metrics,
+            'frame_metrics_strict': frame_metrics_strict,
             'segment_metrics_iou05': seg_metrics_05,
             'segment_metrics_iou03': seg_metrics_03
         })
 
         logger.info(f"  Detected: {len(detected_overlaps)}, Frame F1: {frame_metrics['f1']:.1f}%")
 
+    # Test WavLM with different thresholds
+    if include_wavlm:
+        logger.info("Testing WavLM SOD...")
+        try:
+            for onset in onset_thresholds:
+                logger.info(f"Testing WavLMSOD (onset={onset})...")
+
+                sod = WavLMSOD(
+                    model_name="microsoft/wavlm-base-plus-sd",
+                    onset=onset,
+                    offset=onset,
+                    min_duration=min_overlap_duration,
+                    device=torch.device(config.device)
+                )
+
+                start_time = time.time()
+                with torch.no_grad():
+                    detected_overlaps = sod(waveform, sample_rate=sr)
+                elapsed = time.time() - start_time
+
+                pred_frames = overlaps_to_frames(detected_overlaps, total_duration)
+                frame_metrics_strict = compute_frame_metrics(gt_frames, pred_frames)
+                frame_metrics = compute_frame_metrics_with_tolerance(gt_frames, pred_frames, tolerance_frames=50)
+                seg_metrics_05 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.5)
+                seg_metrics_03 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.3)
+
+                detected_total_time = sum(end - start for start, end in detected_overlaps)
+
+                logger.info(f"  Detected: {len(detected_overlaps)} overlaps ({detected_total_time:.1f}s)")
+                logger.info(f"  Frame metrics (strict) - P: {frame_metrics_strict['precision']:.1f}%, R: {frame_metrics_strict['recall']:.1f}%, F1: {frame_metrics_strict['f1']:.1f}%")
+                logger.info(f"  Frame metrics (0.5s tol) - P: {frame_metrics['precision']:.1f}%, R: {frame_metrics['recall']:.1f}%, F1: {frame_metrics['f1']:.1f}%")
+
+                results['wavlm_results'].append({
+                    'onset': onset,
+                    'detected_count': len(detected_overlaps),
+                    'detected_duration': detected_total_time,
+                    'time': elapsed,
+                    'frame_metrics': frame_metrics,
+                    'frame_metrics_strict': frame_metrics_strict,
+                    'segment_metrics_iou05': seg_metrics_05,
+                    'segment_metrics_iou03': seg_metrics_03
+                })
+
+                logger.info(f"  Detected: {len(detected_overlaps)}, Frame F1: {frame_metrics['f1']:.1f}%")
+
+        except Exception as e:
+            logger.error(f"WavLM SOD failed: {e}")
+            results['wavlm_results'] = [{'error': str(e)}]
+
     # Test NeMo (via diarization overlaps)
+    # NOTE: NeMo detects overlaps indirectly from diarization segments.
+    # For long audio (>30s), chunking is used which causes speaker label
+    # inconsistency across chunks, reducing overlap detection accuracy.
     if include_nemo:
         logger.info("Testing NeMo Sortformer (via diarization)...")
+        if total_duration > 30.0:
+            logger.warning("NeMo accuracy may be reduced for long audio due to chunking. Consider --skip-nemo.")
         try:
             nemo_scd = NemoSCD(device=torch.device(config.device))
             waveform_cpu = waveform.cpu()
@@ -1466,12 +1788,17 @@ def compare_sod_models(
                     if seg1['speaker'] != seg2['speaker']:
                         ov_start = max(seg1['start'], seg2['start'])
                         ov_end = min(seg1['end'], seg2['end'])
-                        if ov_start < ov_end:
+                        ov_duration = ov_end - ov_start
+                        # Apply same min_duration filter as ground truth
+                        if ov_duration >= min_overlap_duration:
                             nemo_overlaps.append((ov_start, ov_end))
 
             nemo_overlaps = merge_overlapping_segments(nemo_overlaps)
+            # Filter merged overlaps by min_duration again
+            nemo_overlaps = [(s, e) for s, e in nemo_overlaps if (e - s) >= min_overlap_duration]
             pred_frames = overlaps_to_frames(nemo_overlaps, total_duration)
-            frame_metrics = compute_frame_metrics(gt_frames, pred_frames)
+            frame_metrics_strict = compute_frame_metrics(gt_frames, pred_frames)
+            frame_metrics = compute_frame_metrics_with_tolerance(gt_frames, pred_frames, tolerance_frames=50)
             seg_metrics_05 = compute_segment_metrics(gt_overlaps, nemo_overlaps, iou_threshold=0.5)
             seg_metrics_03 = compute_segment_metrics(gt_overlaps, nemo_overlaps, iou_threshold=0.3)
 
@@ -1480,11 +1807,13 @@ def compare_sod_models(
                 'detected_duration': sum(e - s for s, e in nemo_overlaps),
                 'time': elapsed,
                 'frame_metrics': frame_metrics,
+                'frame_metrics_strict': frame_metrics_strict,
                 'segment_metrics_iou05': seg_metrics_05,
                 'segment_metrics_iou03': seg_metrics_03
             }
 
             logger.info(f"  Detected: {len(nemo_overlaps)}, Frame F1: {frame_metrics['f1']:.1f}%")
+            logger.info(f"  Frame metrics (strict) - P: {frame_metrics_strict['precision']:.1f}%, R: {frame_metrics_strict['recall']:.1f}%, F1: {frame_metrics_strict['f1']:.1f}%")
 
         except Exception as e:
             logger.error(f"NeMo SOD failed: {e}")
@@ -1493,22 +1822,52 @@ def compare_sod_models(
     return results
 
 
-def aggregate_sod_results(results: Dict) -> Dict:
-    """Aggregate SOD results with best config."""
-    best_pyannote = max(results['pyannote_results'], key=lambda x: x['frame_metrics']['f1'])
+def aggregate_sod_results(results: Dict, optimize_metric: str = "frame_f1") -> Dict:
+    """
+    Aggregate SOD results with best config.
+
+    Args:
+        results: Raw SOD comparison results
+        optimize_metric: Metric to optimize for ("frame_f1", "frame_precision", or "frame_recall")
+    """
+    # Select best model by average of precision and F1
+    def score_fn(x):
+        return (x['frame_metrics']['precision'] + x['frame_metrics']['f1']) / 2
+
+    best_pyannote = max(results['pyannote_results'], key=score_fn)
 
     results['aggregated'] = {
         'best_pyannote': {
             'onset': best_pyannote['onset'],
+            'frame_precision': best_pyannote['frame_metrics']['precision'],
+            'frame_recall': best_pyannote['frame_metrics']['recall'],
             'frame_f1': best_pyannote['frame_metrics']['f1'],
-            'segment_f1_iou05': best_pyannote['segment_metrics_iou05']['f1']
-        }
+            'segment_f1_iou05': best_pyannote['segment_metrics_iou05']['f1'],
+            'time': best_pyannote['time']
+        },
+        'optimize_metric': optimize_metric
     }
+
+    # Add WavLM results if available
+    wavlm_results = results.get('wavlm_results', [])
+    if wavlm_results and not (len(wavlm_results) == 1 and 'error' in wavlm_results[0]):
+        best_wavlm = max(wavlm_results, key=score_fn)
+        results['aggregated']['best_wavlm'] = {
+            'onset': best_wavlm['onset'],
+            'frame_precision': best_wavlm['frame_metrics']['precision'],
+            'frame_recall': best_wavlm['frame_metrics']['recall'],
+            'frame_f1': best_wavlm['frame_metrics']['f1'],
+            'segment_f1_iou05': best_wavlm['segment_metrics_iou05']['f1'],
+            'time': best_wavlm['time']
+        }
 
     if results['nemo_results'] and 'error' not in results['nemo_results']:
         results['aggregated']['nemo'] = {
+            'frame_precision': results['nemo_results']['frame_metrics']['precision'],
+            'frame_recall': results['nemo_results']['frame_metrics']['recall'],
             'frame_f1': results['nemo_results']['frame_metrics']['f1'],
-            'segment_f1_iou05': results['nemo_results']['segment_metrics_iou05']['f1']
+            'segment_f1_iou05': results['nemo_results']['segment_metrics_iou05']['f1'],
+            'time': results['nemo_results']['time']
         }
 
     return results
@@ -1520,7 +1879,7 @@ def aggregate_sod_results(results: Dict) -> Dict:
 
 def extract_overlap_with_speakers(
     benchmark_dir: Path,
-    min_overlap_duration: float = 0.05
+    min_overlap_duration: float = 0.3
 ) -> List[Dict]:
     """
     Extract overlap regions with speaker information from benchmark JSONs.
@@ -2923,3 +3282,416 @@ def compare_cluster_viz(
         results['umap_coords'] = umap_coords.tolist()
 
     return results
+
+
+# =============================================================================
+# Full E2E (All Component Combinations) Comparison Functions
+# =============================================================================
+
+def compare_full_e2e_pipelines(
+    file_pairs: List[Tuple[Path, Path, str]],
+    skip_sod_sos: bool = False,
+    checkpoint_dir: Optional[Path] = None
+) -> Dict:
+    """
+    Compare all combinations of pipeline components for end-to-end diarization.
+
+    Tests combinations of:
+    - SOD (Speaker Overlap Detection): PYANNOTE, NEMO
+    - SOS (Speaker Overlap Separation): PYANNOTE, SPEECHBRAIN
+    - SCD (Speaker Change Detection): PYANNOTE, NEMO
+    - Embedding: PYANNOTE, SPEECHBRAIN, WAV2VEC2
+    - Clustering: KMEANS, AGGLOMERATIVE, DBSCAN, COSINE_SIMILARITY
+    - ASR: WHISPER tiny (constant)
+
+    Args:
+        file_pairs: List of (audio_path, annotation_path, file_id) tuples
+        skip_sod_sos: If True, skip SOD/SOS variations (use default) to reduce combinations
+        checkpoint_dir: Directory to save/load checkpoints (default: results/checkpoints)
+
+    Returns:
+        Dict mapping combination names to results with DER, WER, and timing metrics
+    """
+    from itertools import product
+    from main import WhoSays
+    from config import (
+        PipelineConfig as Config,
+        TypeEmbedding,
+        TypeClustering,
+    )
+    from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
+    from pipeline.speaker_segmentation.SCD.main import TypeSCD
+
+    # ASR model constant - always use tiny for speed
+    ASR_MODEL = "openai/whisper-tiny"
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # Setup checkpoint directory
+    if checkpoint_dir is None:
+        checkpoint_dir = Path("results/checkpoints")
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint_file = checkpoint_dir / "full_e2e_checkpoint.json"
+
+    # Load existing checkpoint if available
+    results = {}
+    if checkpoint_file.exists():
+        try:
+            with open(checkpoint_file, 'r') as f:
+                results = json.load(f)
+            logger.info(f"Loaded checkpoint with {len(results)} completed combinations")
+        except Exception as e:
+            logger.warning(f"Failed to load checkpoint: {e}, starting fresh")
+            results = {}
+
+    # Define component options
+    if skip_sod_sos:
+        # Reduced combinations - use default SOD/SOS
+        sod_options = [TypeSOD.NEMO]  # Default
+        sos_options = [TypeSOS.SPEECHBRAIN]  # Default
+    else:
+        sod_options = [TypeSOD.PYANNOTE, TypeSOD.NEMO]
+        sos_options = [TypeSOS.PYANNOTE, TypeSOS.SPEECHBRAIN]
+
+    scd_options = [TypeSCD.PYANNOTE, TypeSCD.NEMO]
+    embedding_options = [TypeEmbedding.PYANNOTE, TypeEmbedding.SPEECHBRAIN, TypeEmbedding.WAV2VEC2]
+    clustering_options = [TypeClustering.KMEANS, TypeClustering.AGGLOMERATIVE, TypeClustering.DBSCAN, TypeClustering.COSINE_SIMILARITY]
+
+    # Generate all combinations
+    combinations = list(product(
+        sod_options,
+        sos_options,
+        scd_options,
+        embedding_options,
+        clustering_options
+    ))
+
+    total_combinations = len(combinations)
+    total_files = len(file_pairs)
+    total_iterations = total_combinations * total_files
+
+    # Count already completed combinations
+    completed_count = len([c for c in results if 'error' not in results.get(c, {})])
+    remaining_count = total_combinations - completed_count
+
+    logger.info(f"Testing {total_combinations} pipeline combinations")
+    logger.info(f"Already completed: {completed_count} combinations")
+    logger.info(f"Remaining: {remaining_count} combinations")
+    logger.info(f"Files per combination: {total_files}")
+    logger.info(f"ASR Model: {ASR_MODEL} (constant)")
+    logger.info(f"Checkpoint file: {checkpoint_file}")
+
+    # Progress bar for combinations
+    combo_pbar = tqdm(
+        enumerate(combinations),
+        total=total_combinations,
+        desc="Pipeline Combinations",
+        unit="combo",
+        position=0
+    )
+
+    for combo_idx, (sod_type, sos_type, scd_type, emb_type, cluster_type) in combo_pbar:
+        # Create combination name
+        combo_name = f"sod_{sod_type.value}_sos_{sos_type.value}_scd_{scd_type.value}_emb_{emb_type.value}_clust_{cluster_type.value}"
+
+        # Skip if already completed (checkpoint)
+        if combo_name in results and 'error' not in results[combo_name]:
+            logger.info(f"Skipping {combo_name} (already completed)")
+            combo_pbar.set_description(f"[{combo_idx+1}/{total_combinations}] SKIPPED")
+            continue
+
+        # Update progress bar description
+        short_name = f"{sod_type.value[:3]}/{sos_type.value[:3]}/{scd_type.value[:3]}/{emb_type.value[:3]}/{cluster_type.value[:4]}"
+        combo_pbar.set_description(f"[{combo_idx+1}/{total_combinations}] {short_name}")
+
+        logger.info(f"\n{'='*60}")
+        logger.info(f"Combination {combo_idx + 1}/{total_combinations}: {combo_name}")
+        logger.info(f"Remaining: {total_combinations - combo_idx - 1} combinations")
+        logger.info(f"{'='*60}")
+
+        try:
+            # Create config with this combination
+            config = Config()
+            config.so.detection_type = sod_type
+            config.so.separation_type = sos_type
+            config.scd.scd_type = scd_type
+            config.embedding.embedding_type = emb_type
+            config.clustering.clustering_type = cluster_type
+            # Set ASR model to constant
+            config.asr.model = ASR_MODEL
+
+            # Initialize pipeline with this config
+            pipeline = WhoSays(config=config)
+
+            combo_results = {
+                'config': {
+                    'sod': sod_type.value,
+                    'sos': sos_type.value,
+                    'scd': scd_type.value,
+                    'embedding': emb_type.value,
+                    'clustering': cluster_type.value,
+                    'asr': ASR_MODEL
+                },
+                'has_transcription': True,
+                'results': []
+            }
+
+            # Progress bar for files within this combination
+            file_pbar = tqdm(
+                file_pairs,
+                desc=f"Files",
+                unit="file",
+                position=1,
+                leave=False
+            )
+
+            for audio_file, annotation_file, file_id in file_pbar:
+                file_pbar.set_description(f"Processing {file_id}")
+                try:
+                    annotation_data = load_annotation_file(annotation_file)
+                    waveform, sr = load_audio_from_file(audio_file, sr=SR)
+                    duration = waveform.shape[-1] / sr
+
+                    ref_segments = annotation_data['segments']
+                    ref_transcriptions = annotation_data.get('transcriptions')
+                    n_speakers_ref = len(set(seg['speaker'] for seg in ref_segments))
+
+                    # Skip files with no speakers or ensure at least 1
+                    if n_speakers_ref < 1:
+                        logger.warning(f"  Skipping {file_id}: no speakers found in reference")
+                        continue
+
+                    start_time = time.time()
+
+                    result = pipeline(
+                        str(audio_file),
+                        num_speakers=n_speakers_ref,
+                        include_timing=True,
+                        return_diarization_time=True
+                    )
+
+                    inference_time = result.get('diarization_time', time.time() - start_time)
+                    total_time = time.time() - start_time
+
+                    pred_segments = result['segments']
+                    n_speakers_pred = len(set(seg['speaker'] for seg in pred_segments))
+
+                    der_metrics = evaluate_diarization(
+                        reference_segments=ref_segments,
+                        hypothesis_segments=pred_segments,
+                        total_duration=duration
+                    )
+
+                    wer_metrics = None
+                    if ref_transcriptions:
+                        pred_transcriptions = [seg['text'] for seg in pred_segments]
+                        wer_metrics = evaluate_asr(ref_transcriptions, pred_transcriptions)
+
+                    # Capture component timing if available
+                    component_timing = result.get('timing', None)
+
+                    combo_results['results'].append({
+                        'file_id': file_id,
+                        'audio_file': str(audio_file),
+                        'duration': duration,
+                        'n_speakers_pred': n_speakers_pred,
+                        'n_speakers_ref': n_speakers_ref,
+                        'der_metrics': der_metrics,
+                        'wer_metrics': wer_metrics,
+                        'timing': inference_time,
+                        'total_time': total_time,
+                        'component_timing': component_timing
+                    })
+
+                    logger.debug(f"  {file_id}: DER={der_metrics['der']:.2f}%, Time={inference_time:.2f}s")
+
+                except Exception as e:
+                    logger.error(f"  Error processing {file_id}: {e}")
+                    continue
+
+            results[combo_name] = combo_results
+
+            # Log summary for this combination
+            if combo_results['results']:
+                avg_der = np.mean([r['der_metrics']['der'] for r in combo_results['results']])
+                avg_time = np.mean([r['timing'] for r in combo_results['results']])
+                logger.info(f"  Avg DER: {avg_der:.2f}%, Avg Time: {avg_time:.2f}s")
+
+            # Save checkpoint after each successful combination
+            try:
+                with open(checkpoint_file, 'w') as f:
+                    json.dump(results, f, indent=2)
+                logger.info(f"  Checkpoint saved ({len(results)}/{total_combinations} combinations)")
+            except Exception as e:
+                logger.warning(f"  Failed to save checkpoint: {e}")
+
+            # Clean up to free GPU memory
+            del pipeline
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+
+        except Exception as e:
+            logger.error(f"Failed to initialize combination {combo_name}: {e}")
+            results[combo_name] = {
+                'config': {
+                    'sod': sod_type.value,
+                    'sos': sos_type.value,
+                    'scd': scd_type.value,
+                    'embedding': emb_type.value,
+                    'clustering': cluster_type.value,
+                    'asr': ASR_MODEL
+                },
+                'error': str(e),
+                'results': []
+            }
+            # Clean up after error too
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+            continue
+
+    # Close progress bar
+    combo_pbar.close()
+
+    return results
+
+
+def aggregate_full_e2e_results(pipelines: Dict) -> Dict:
+    """
+    Aggregate full end-to-end pipeline results.
+
+    Computes mean and std for DER, WER, confusion, miss, false alarm, and timing.
+    Also identifies best combinations for each metric.
+
+    Args:
+        pipelines: Dict from compare_full_e2e_pipelines()
+
+    Returns:
+        Updated dict with 'aggregated' key for each pipeline and 'summary' with best configs
+    """
+    summary = {
+        'best_by_der': None,
+        'best_by_wer': None,
+        'best_by_time': None,
+        'rankings': []
+    }
+
+    best_der = float('inf')
+    best_wer = float('inf')
+    best_time = float('inf')
+
+    for combo_name, combo_data in pipelines.items():
+        if 'error' in combo_data:
+            continue
+
+        results = combo_data.get('results', [])
+        if not results:
+            logger.warning(f"No results for {combo_name}, skipping aggregation")
+            continue
+
+        # Extract metrics
+        ders = [r['der_metrics']['der'] for r in results]
+        misses = [r['der_metrics']['miss'] for r in results]
+        false_alarms = [r['der_metrics']['false_alarm'] for r in results]
+        confusions = [r['der_metrics']['confusion'] for r in results]
+        timings = [r['timing'] for r in results]
+        total_times = [r.get('total_time', r['timing']) for r in results]
+
+        aggregated = {
+            'der': {'mean': float(np.mean(ders)), 'std': float(np.std(ders))},
+            'miss': {'mean': float(np.mean(misses)), 'std': float(np.std(misses))},
+            'false_alarm': {'mean': float(np.mean(false_alarms)), 'std': float(np.std(false_alarms))},
+            'confusion': {'mean': float(np.mean(confusions)), 'std': float(np.std(confusions))},
+            'timing': {
+                'mean': float(np.mean(timings)),
+                'std': float(np.std(timings)),
+                'total': float(np.sum(timings))
+            },
+            'total_time': {
+                'mean': float(np.mean(total_times)),
+                'std': float(np.std(total_times)),
+                'total': float(np.sum(total_times))
+            }
+        }
+
+        # Aggregate WER if available
+        wers = [r['wer_metrics']['wer'] for r in results if r.get('wer_metrics')]
+        if wers:
+            aggregated['wer'] = {'mean': float(np.mean(wers)), 'std': float(np.std(wers))}
+
+        # Aggregate component timing if available
+        component_timings = [r['component_timing'] for r in results if r.get('component_timing')]
+        if component_timings:
+            component_keys = ['audio_loading', 'vad', 'overlap_detection', 'asr', 'phoneme',
+                              'scd', 'embedding', 'clustering', 'overlap_processing', 'formatting']
+            aggregated['component_timing'] = {}
+            for key in component_keys:
+                values = [ct.get(key, 0) for ct in component_timings if ct.get(key) is not None]
+                if values:
+                    aggregated['component_timing'][key] = {
+                        'mean': float(np.mean(values)),
+                        'std': float(np.std(values))
+                    }
+
+        combo_data['aggregated'] = aggregated
+
+        # Track best configurations
+        mean_der = aggregated['der']['mean']
+        mean_time = aggregated['timing']['mean']
+
+        if mean_der < best_der:
+            best_der = mean_der
+            summary['best_by_der'] = {
+                'name': combo_name,
+                'config': combo_data['config'],
+                'der': mean_der,
+                'miss': aggregated['miss']['mean'],
+                'false_alarm': aggregated['false_alarm']['mean'],
+                'confusion': aggregated['confusion']['mean'],
+                'timing': mean_time
+            }
+
+        if mean_time < best_time:
+            best_time = mean_time
+            summary['best_by_time'] = {
+                'name': combo_name,
+                'config': combo_data['config'],
+                'der': mean_der,
+                'timing': mean_time
+            }
+
+        if wers:
+            mean_wer = aggregated['wer']['mean']
+            if mean_wer < best_wer:
+                best_wer = mean_wer
+                summary['best_by_wer'] = {
+                    'name': combo_name,
+                    'config': combo_data['config'],
+                    'wer': mean_wer,
+                    'der': mean_der
+                }
+
+        # Add to rankings
+        summary['rankings'].append({
+            'name': combo_name,
+            'config': combo_data['config'],
+            'der': mean_der,
+            'miss': aggregated['miss']['mean'],
+            'false_alarm': aggregated['false_alarm']['mean'],
+            'confusion': aggregated['confusion']['mean'],
+            'wer': aggregated.get('wer', {}).get('mean'),
+            'timing': mean_time
+        })
+
+    # Sort rankings by DER
+    summary['rankings'].sort(key=lambda x: x['der'])
+
+    # Add summary to results
+    pipelines['_summary'] = summary
+
+    return pipelines

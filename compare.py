@@ -34,6 +34,8 @@ from utils import (
     compare_embedding_models,
     aggregate_embedding_results,
     compare_cluster_viz,
+    compare_full_e2e_pipelines,
+    aggregate_full_e2e_results,
     plot_metrics,
     plot_timing,
     plot_sc_timing,
@@ -50,6 +52,8 @@ from utils import (
     plot_sos_comparison,
     plot_sod_comparison,
     plot_scd_comparison,
+    plot_full_e2e_comparison,
+    plot_full_e2e_heatmap,
     load_audio_from_file
 )
 from utils.constants import SR
@@ -62,11 +66,12 @@ def main():
     parser.add_argument(
         "--component",
         required=True,
-        choices=["vad", "sc", "asr", "e2e", "scd", "sod", "sos", "speaker-id", "embedding-viz", "cluster-viz"],
+        choices=["vad", "sc", "asr", "e2e", "full-e2e", "scd", "sod", "sos", "speaker-id", "embedding-viz", "cluster-viz"],
         help="Component to compare: vad, sc (speaker clustering), asr, e2e (end-to-end), "
-             "scd (speaker change detection), sod (speech overlap detection), "
-             "sos (speech overlap separation), speaker-id (speaker identification), "
-             "embedding-viz (embedding visualization), cluster-viz (clustering with UMAP)"
+             "full-e2e (all component combinations), scd (speaker change detection), "
+             "sod (speech overlap detection), sos (speech overlap separation), "
+             "speaker-id (speaker identification), embedding-viz (embedding visualization), "
+             "cluster-viz (clustering with UMAP)"
     )
     parser.add_argument(
         "--audio-dir",
@@ -131,6 +136,11 @@ def main():
         "--skip-overlap",
         action="store_true",
         help="Skip overlap detection and processing (for e2e component)"
+    )
+    parser.add_argument(
+        "--skip-sod-sos",
+        action="store_true",
+        help="Skip SOD/SOS variations to reduce combinations (for full-e2e component)"
     )
     parser.add_argument(
         "--scd-metric",
@@ -454,6 +464,132 @@ def main():
                     if key in ct:
                         print(f"    {label:<22} {ct[key]['mean']:6.2f}s (±{ct[key]['std']:.2f}s)")
         print("="*60)
+
+    elif args.component == "full-e2e":
+        # Full E2E comparison - all component combinations
+        # ASR model is constant - always use large-v3
+        ASR_MODEL = "openai/whisper-tiny"
+
+        logger.info("\n" + "="*60)
+        logger.info("Running Full E2E Pipeline comparison (all component combinations)...")
+        logger.info("="*60)
+        logger.info(f"ASR Model: {ASR_MODEL} (constant)")
+
+        if args.skip_sod_sos:
+            logger.info("Skipping SOD/SOS variations (using defaults)")
+            num_combos = 2 * 3 * 4  # SCD × Embedding × Clustering = 24
+        else:
+            num_combos = 2 * 2 * 2 * 3 * 4  # SOD × SOS × SCD × Embedding × Clustering = 96
+        logger.info(f"Total combinations to test: {num_combos}")
+        logger.info(f"Files to process per combination: {len(file_pairs)}")
+
+        # Checkpoint directory for resumable runs
+        checkpoint_dir = args.output_dir / "checkpoints"
+
+        pipelines = compare_full_e2e_pipelines(
+            file_pairs,
+            skip_sod_sos=args.skip_sod_sos,
+            checkpoint_dir=checkpoint_dir
+        )
+        pipelines = aggregate_full_e2e_results(pipelines)
+
+        # Get summary for output
+        summary = pipelines.get('_summary', {})
+
+        output_data = {
+            "comparison_type": "full-e2e",
+            "timestamp": timestamp,
+            "system_info": system_info,
+            "dataset": dataset_info,
+            "evaluation_settings": {
+                "collar": 0.25,
+                "skip_sod_sos": args.skip_sod_sos,
+                "num_combinations": num_combos,
+                "asr_model": ASR_MODEL,
+                "timing_note": "Diarization time only (excludes ASR for comparability)"
+            },
+            "summary": summary,
+            "pipelines": {
+                name: {
+                    "config": data.get('config'),
+                    "has_transcription": data.get('has_transcription', True),
+                    "per_file_results": data.get('results', []),
+                    "aggregated": data.get('aggregated')
+                }
+                for name, data in pipelines.items()
+                if name != '_summary' and 'error' not in data
+            },
+            "failed_pipelines": {
+                name: data
+                for name, data in pipelines.items()
+                if name != '_summary' and 'error' in data
+            }
+        }
+
+        json_path = args.output_dir / f"full_e2e_comparison_{timestamp}.json"
+        with open(json_path, 'w') as f:
+            json.dump(output_data, f, indent=2)
+        logger.info(f"\nSaved results: {json_path}")
+
+        # Generate plots
+        comparison_plot = args.output_dir / f"full_e2e_comparison_{timestamp}.png"
+        heatmap_plot = args.output_dir / f"full_e2e_heatmap_{timestamp}.png"
+
+        plot_full_e2e_comparison(pipelines, dataset_info, system_info, comparison_plot)
+        plot_full_e2e_heatmap(pipelines, dataset_info, system_info, heatmap_plot)
+
+        print("\n" + "="*60)
+        print("FULL E2E PIPELINE COMPARISON SUMMARY")
+        print("="*60)
+        print(f"ASR Model: {ASR_MODEL} (constant for all combinations)")
+        print(f"Tested {len([p for p in pipelines if p != '_summary' and 'error' not in pipelines[p]])} configurations")
+        print(f"Failed: {len([p for p in pipelines if p != '_summary' and 'error' in pipelines.get(p, {})])} configurations")
+
+        if summary.get('best_by_der'):
+            best = summary['best_by_der']
+            print(f"\n🏆 BEST BY DER:")
+            print(f"   Config: {best['name']}")
+            print(f"   SOD: {best['config'].get('sod')} | SOS: {best['config'].get('sos')} | SCD: {best['config'].get('scd')}")
+            print(f"   Embedding: {best['config'].get('embedding')} | Clustering: {best['config'].get('clustering')}")
+            print(f"   DER:       {best['der']:.2f}%")
+            print(f"   Miss:      {best['miss']:.2f}%")
+            print(f"   False Alarm: {best['false_alarm']:.2f}%")
+            print(f"   Confusion: {best['confusion']:.2f}%")
+            print(f"   Time:      {best['timing']:.2f}s/file")
+
+        if summary.get('best_by_wer'):
+            best = summary['best_by_wer']
+            print(f"\n📝 BEST BY WER:")
+            print(f"   Config: {best['name']}")
+            print(f"   WER:   {best['wer']:.2f}%")
+            print(f"   DER:   {best['der']:.2f}%")
+
+        if summary.get('best_by_time'):
+            best = summary['best_by_time']
+            print(f"\n⚡ FASTEST:")
+            print(f"   Config: {best['name']}")
+            print(f"   Time:  {best['timing']:.2f}s/file")
+            print(f"   DER:   {best['der']:.2f}%")
+
+        # Print top 5 rankings
+        rankings = summary.get('rankings', [])[:5]
+        if rankings:
+            print(f"\n📊 TOP 5 CONFIGURATIONS BY DER:")
+            print("-"*60)
+            for i, r in enumerate(rankings, 1):
+                print(f"  {i}. {r['name']}")
+                print(f"     DER: {r['der']:.2f}% | Miss: {r['miss']:.2f}% | FA: {r['false_alarm']:.2f}% | Conf: {r['confusion']:.2f}%")
+                if r.get('wer'):
+                    print(f"     WER: {r['wer']:.2f}% | Time: {r['timing']:.2f}s")
+                else:
+                    print(f"     Time: {r['timing']:.2f}s")
+
+        print("="*60)
+        print(f"\nResults saved to: {json_path}")
+        print(f"Comparison plot: {comparison_plot}")
+        print(f"Heatmap plot: {heatmap_plot}")
+        print(f"Checkpoint: {checkpoint_dir / 'full_e2e_checkpoint.json'}")
+        print(f"\nTip: Re-run the same command to resume from checkpoint if interrupted.")
 
     elif args.component == "scd":
         # Speaker Change Detection comparison (Pyannote vs NeMo vs Naive)

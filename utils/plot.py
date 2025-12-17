@@ -1150,3 +1150,581 @@ def plot_sos_comparison(
     plt.close()
 
     logger.info(f"Saved SOS comparison plot: {output_path}")
+
+
+def plot_sod_comparison(
+    results: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """
+    Generate Speech Overlap Detection (SOD) comparison plot.
+
+    Shows grouped bar graph comparing F1, Precision, and Recall for each model.
+
+    Parameters
+    ----------
+    results : Dict
+        Results from compare_sod_models containing:
+        - ground_truth_count: number of overlap regions
+        - ground_truth_duration: total duration of overlaps
+        - aggregated: dict with best results for each model
+    system_info : Dict
+        System information (GPU, etc.)
+    output_path : Path
+        Path to save the plot
+    """
+    aggregated = results.get('aggregated', {})
+    if not aggregated:
+        logger.warning("No aggregated SOD results to plot")
+        return
+
+    optimize_metric = aggregated.get('optimize_metric', 'frame_f1')
+
+    # Collect best results for each model
+    model_data = []
+
+    # Pyannote best
+    best_pyannote = aggregated.get('best_pyannote', {})
+    if best_pyannote:
+        time_str = f"{best_pyannote.get('time', 0):.2f}s"
+        model_data.append({
+            'name': 'Pyannote',
+            'label': f"Pyannote\n({time_str})",
+            'frame_f1': best_pyannote.get('frame_f1', 0),
+            'frame_precision': best_pyannote.get('frame_precision', 0),
+            'frame_recall': best_pyannote.get('frame_recall', 0),
+            'segment_f1': best_pyannote.get('segment_f1_iou05', 0),
+            'color': '#3498DB'
+        })
+
+    # WavLM best
+    best_wavlm = aggregated.get('best_wavlm', {})
+    if best_wavlm:
+        time_str = f"{best_wavlm.get('time', 0):.2f}s"
+        model_data.append({
+            'name': 'WavLM',
+            'label': f"WavLM\n({time_str})",
+            'frame_f1': best_wavlm.get('frame_f1', 0),
+            'frame_precision': best_wavlm.get('frame_precision', 0),
+            'frame_recall': best_wavlm.get('frame_recall', 0),
+            'segment_f1': best_wavlm.get('segment_f1_iou05', 0),
+            'color': '#27AE60'
+        })
+
+    # NeMo
+    nemo = aggregated.get('nemo', {})
+    if nemo:
+        time_str = f"{nemo.get('time', 0):.2f}s"
+        model_data.append({
+            'name': 'NeMo',
+            'label': f"NeMo\n({time_str})",
+            'frame_f1': nemo.get('frame_f1', 0),
+            'frame_precision': nemo.get('frame_precision', 0),
+            'frame_recall': nemo.get('frame_recall', 0),
+            'segment_f1': nemo.get('segment_f1_iou05', 0),
+            'color': '#E74C3C'
+        })
+
+    if not model_data:
+        logger.warning("No valid SOD model results to plot")
+        return
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    x = np.arange(len(model_data))
+    bar_width = 0.25
+
+    # Frame-level metrics (F1, Precision, Recall)
+    f1_vals = [m['frame_f1'] for m in model_data]
+    prec_vals = [m['frame_precision'] for m in model_data]
+    rec_vals = [m['frame_recall'] for m in model_data]
+
+    bars_f1 = ax.bar(x - bar_width, f1_vals, bar_width, label='F1', color='#3498DB', alpha=0.85, edgecolor='black', linewidth=1)
+    bars_prec = ax.bar(x, prec_vals, bar_width, label='Precision', color='#27AE60', alpha=0.85, edgecolor='black', linewidth=1)
+    bars_rec = ax.bar(x + bar_width, rec_vals, bar_width, label='Recall', color='#E74C3C', alpha=0.85, edgecolor='black', linewidth=1)
+
+    # Add value labels on bars
+    for bars, vals in [(bars_f1, f1_vals), (bars_prec, prec_vals), (bars_rec, rec_vals)]:
+        for bar, val in zip(bars, vals):
+            ax.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.5,
+                    f'{val:.1f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+    ax.set_ylabel('Score (%)', fontsize=13, fontweight='bold')
+    ax.set_title('Frame-level Metrics', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels([m['label'] for m in model_data], fontsize=11)
+    all_vals = f1_vals + prec_vals + rec_vals
+    ax.set_ylim(0, max(all_vals) * 1.2 if all_vals else 100)
+    ax.grid(axis='y', alpha=0.3)
+    ax.legend(loc='upper right', fontsize=10)
+
+    # Overall title
+    gt_count = results.get('ground_truth_count', 0)
+    gt_duration = results.get('ground_truth_duration', 0)
+
+    title = f"Speech Overlap Detection (SOD) - Best Model Comparison\n"
+    title += f"Ground Truth: {gt_count} overlaps ({gt_duration:.1f}s) | {system_info.get('gpu', 'N/A')}"
+    fig.suptitle(title, fontsize=13, fontweight='bold', y=1.02)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved SOD comparison plot: {output_path}")
+
+
+def plot_scd_comparison(
+    results: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """
+    Generate Speaker Change Detection (SCD) comparison plot.
+
+    Shows grouped bar graph comparing F1, Precision, and Recall for each model at tolerance 3.0s.
+
+    Parameters
+    ----------
+    results : Dict
+        Results from compare_scd_models containing model results and aggregated data
+    system_info : Dict
+        System information (GPU, etc.)
+    output_path : Path
+        Path to save the plot
+    """
+    aggregated = results.get('aggregated', {})
+
+    if not aggregated:
+        logger.warning("No SCD results to plot")
+        return
+
+    # Use tolerance 3.0s
+    tol_key = 'tolerance_3.0s'
+    optimize_metric = aggregated.get('optimize_metric', 'f1')
+
+    # Define colors for each model
+    model_colors = {
+        'pyannote': '#3498DB',
+        'nemo': '#E74C3C',
+        'naive_pyannote': '#27AE60',
+        'naive_speechbrain': '#9B59B6',
+        'naive_wav2vec2': '#F39C12'
+    }
+
+    # Collect results for each model
+    model_data = []
+
+    # Pyannote
+    pyannote_by_tol = aggregated.get('best_pyannote_by_tolerance', {})
+    if pyannote_by_tol.get(tol_key):
+        config = pyannote_by_tol[tol_key]
+        model_data.append({
+            'name': 'pyannote',
+            'label': f"Pyannote\n(prom={config['prominence']})",
+            'f1': config['f1'] * 100,
+            'precision': config['precision'] * 100,
+            'recall': config['recall'] * 100,
+            'color': model_colors['pyannote']
+        })
+
+    # NeMo
+    nemo_by_tol = aggregated.get('nemo_by_tolerance', {})
+    if nemo_by_tol and nemo_by_tol.get(tol_key):
+        metrics = nemo_by_tol[tol_key]
+        model_data.append({
+            'name': 'nemo',
+            'label': 'NeMo\nSortformer',
+            'f1': metrics['f1'] * 100,
+            'precision': metrics['precision'] * 100,
+            'recall': metrics['recall'] * 100,
+            'color': model_colors['nemo']
+        })
+
+    # Naive models
+    for naive_model in ['naive_pyannote', 'naive_speechbrain', 'naive_wav2vec2']:
+        naive_by_tol = aggregated.get(f'best_{naive_model}_by_tolerance', {})
+        if naive_by_tol and naive_by_tol.get(tol_key):
+            config = naive_by_tol[tol_key]
+            emb_name = naive_model.replace('naive_', '')
+            model_data.append({
+                'name': naive_model,
+                'label': f"Naive\n({emb_name})",
+                'f1': config['f1'] * 100,
+                'precision': config['precision'] * 100,
+                'recall': config['recall'] * 100,
+                'color': model_colors[naive_model]
+            })
+
+    if not model_data:
+        logger.warning("No valid SCD model results to plot")
+        return
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    x = np.arange(len(model_data))
+    bar_width = 0.25
+
+    # Create grouped bars for F1, Precision, Recall
+    f1_vals = [m['f1'] for m in model_data]
+    prec_vals = [m['precision'] for m in model_data]
+    rec_vals = [m['recall'] for m in model_data]
+
+    bars_f1 = ax.bar(x - bar_width, f1_vals, bar_width, label='F1', color='#3498DB', alpha=0.85, edgecolor='black', linewidth=1)
+    bars_prec = ax.bar(x, prec_vals, bar_width, label='Precision', color='#27AE60', alpha=0.85, edgecolor='black', linewidth=1)
+    bars_rec = ax.bar(x + bar_width, rec_vals, bar_width, label='Recall', color='#E74C3C', alpha=0.85, edgecolor='black', linewidth=1)
+
+    # Add value labels on bars
+    for bars, vals in [(bars_f1, f1_vals), (bars_prec, prec_vals), (bars_rec, rec_vals)]:
+        for bar, val in zip(bars, vals):
+            ax.text(bar.get_x() + bar.get_width()/2., bar.get_height() + 0.5,
+                    f'{val:.1f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+    # Highlight best model (by optimized metric) with gold border
+    metric_map = {'f1': (bars_f1, f1_vals), 'precision': (bars_prec, prec_vals), 'recall': (bars_rec, rec_vals)}
+    if optimize_metric in metric_map:
+        opt_bars, opt_vals = metric_map[optimize_metric]
+        best_idx = opt_vals.index(max(opt_vals))
+        opt_bars[best_idx].set_edgecolor('#FFD700')
+        opt_bars[best_idx].set_linewidth(3)
+
+    ax.set_ylabel('Score (%)', fontsize=13, fontweight='bold')
+    ax.set_title(f'Speaker Change Detection - Model Comparison (optimized: {optimize_metric})', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels([m['label'] for m in model_data], fontsize=11)
+    all_vals = f1_vals + prec_vals + rec_vals
+    ax.set_ylim(0, max(all_vals) * 1.2 if all_vals else 100)
+    ax.grid(axis='y', alpha=0.3)
+    ax.legend(loc='upper right', fontsize=11)
+
+    # Overall title
+    gt_count = results.get('ground_truth_count', 0)
+    total_duration = results.get('total_duration', 0)
+
+    title = f"Speaker Change Detection (SCD) Comparison\n"
+    title += f"Ground Truth: {gt_count} changes | Audio: {total_duration:.1f}s | {system_info.get('gpu', 'N/A')}"
+    fig.suptitle(title, fontsize=13, fontweight='bold', y=1.02)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved SCD comparison plot: {output_path}")
+
+
+def plot_full_e2e_comparison(
+    results: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """
+    Generate comprehensive comparison plots for full-e2e pipeline combinations.
+
+    Creates a multi-panel figure showing:
+    1. Top 10 configurations by DER
+    2. DER component breakdown (miss, false alarm, confusion)
+    3. Timing comparison
+    4. WER comparison (if available)
+
+    Args:
+        results: Dict from aggregate_full_e2e_results()
+        dataset_info: Dataset information dict
+        system_info: System/hardware information dict
+        output_path: Path to save the plot
+    """
+    summary = results.get('_summary', {})
+    rankings = summary.get('rankings', [])
+
+    if not rankings:
+        logger.warning("No rankings available for plotting")
+        return
+
+    # Take top 15 configurations by DER for visualization
+    top_n = min(15, len(rankings))
+    top_configs = rankings[:top_n]
+
+    # Create figure with subplots
+    fig = plt.figure(figsize=(20, 16))
+
+    # Create GridSpec for custom layout
+    gs = fig.add_gridspec(3, 2, hspace=0.35, wspace=0.25)
+
+    # Color palette for components
+    colors = {
+        'der': '#E74C3C',
+        'miss': '#3498DB',
+        'false_alarm': '#2ECC71',
+        'confusion': '#9B59B6',
+        'wer': '#F39C12',
+        'timing': '#1ABC9C'
+    }
+
+    # Short labels for configurations
+    def get_short_label(config):
+        """Create a short label from config dict."""
+        sod = config.get('sod', 'unk')[:3]
+        sos = config.get('sos', 'unk')[:3]
+        scd = config.get('scd', 'unk')[:3]
+        emb = config.get('embedding', 'unk')[:3]
+        clust = config.get('clustering', 'unk')[:4]
+        return f"{sod}/{sos}/{scd}/{emb}/{clust}"
+
+    labels = [get_short_label(c['config']) for c in top_configs]
+
+    # =========================================================================
+    # Panel 1: Top configurations by DER (horizontal bar chart)
+    # =========================================================================
+    ax1 = fig.add_subplot(gs[0, :])
+
+    ders = [c['der'] for c in top_configs]
+    y_pos = np.arange(len(labels))
+
+    bars = ax1.barh(y_pos, ders, color=colors['der'], alpha=0.8, edgecolor='black', linewidth=0.5)
+
+    # Add value labels
+    for i, (bar, val) in enumerate(zip(bars, ders)):
+        ax1.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height()/2,
+                f'{val:.1f}%', va='center', fontsize=9, fontweight='bold')
+
+    ax1.set_yticks(y_pos)
+    ax1.set_yticklabels(labels, fontsize=9)
+    ax1.set_xlabel('DER (%)', fontsize=12, fontweight='bold')
+    ax1.set_title(f'Top {top_n} Pipeline Configurations by DER', fontsize=14, fontweight='bold')
+    ax1.invert_yaxis()  # Best at top
+    ax1.grid(axis='x', alpha=0.3)
+
+    # Highlight best config
+    bars[0].set_color('#27AE60')
+    bars[0].set_edgecolor('#1E8449')
+    bars[0].set_linewidth(2)
+
+    # =========================================================================
+    # Panel 2: DER Component Breakdown (stacked bar)
+    # =========================================================================
+    ax2 = fig.add_subplot(gs[1, 0])
+
+    misses = [c['miss'] for c in top_configs]
+    false_alarms = [c['false_alarm'] for c in top_configs]
+    confusions = [c['confusion'] for c in top_configs]
+
+    x = np.arange(len(labels))
+    width = 0.6
+
+    ax2.bar(x, misses, width, label='Miss', color=colors['miss'], alpha=0.8)
+    ax2.bar(x, false_alarms, width, bottom=misses, label='False Alarm', color=colors['false_alarm'], alpha=0.8)
+    ax2.bar(x, confusions, width, bottom=np.array(misses) + np.array(false_alarms),
+            label='Confusion', color=colors['confusion'], alpha=0.8)
+
+    ax2.set_xticks(x)
+    ax2.set_xticklabels(labels, rotation=45, ha='right', fontsize=8)
+    ax2.set_ylabel('Error Rate (%)', fontsize=12, fontweight='bold')
+    ax2.set_title('DER Component Breakdown', fontsize=13, fontweight='bold')
+    ax2.legend(loc='upper right', fontsize=9)
+    ax2.grid(axis='y', alpha=0.3)
+
+    # =========================================================================
+    # Panel 3: Timing Comparison
+    # =========================================================================
+    ax3 = fig.add_subplot(gs[1, 1])
+
+    timings = [c['timing'] for c in top_configs]
+    bars3 = ax3.bar(x, timings, width, color=colors['timing'], alpha=0.8, edgecolor='black', linewidth=0.5)
+
+    # Add value labels
+    for bar, val in zip(bars3, timings):
+        ax3.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
+                f'{val:.1f}s', ha='center', va='bottom', fontsize=8, fontweight='bold')
+
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(labels, rotation=45, ha='right', fontsize=8)
+    ax3.set_ylabel('Time (s/file)', fontsize=12, fontweight='bold')
+    ax3.set_title('Average Processing Time per File', fontsize=13, fontweight='bold')
+    ax3.grid(axis='y', alpha=0.3)
+
+    # =========================================================================
+    # Panel 4: WER Comparison (if available)
+    # =========================================================================
+    ax4 = fig.add_subplot(gs[2, 0])
+
+    wers = [c.get('wer') for c in top_configs]
+    has_wer = any(w is not None for w in wers)
+
+    if has_wer:
+        wers_clean = [w if w is not None else 0 for w in wers]
+        bars4 = ax4.bar(x, wers_clean, width, color=colors['wer'], alpha=0.8, edgecolor='black', linewidth=0.5)
+
+        for bar, val, orig in zip(bars4, wers_clean, wers):
+            if orig is not None:
+                ax4.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5,
+                        f'{val:.1f}%', ha='center', va='bottom', fontsize=8, fontweight='bold')
+
+        ax4.set_xticks(x)
+        ax4.set_xticklabels(labels, rotation=45, ha='right', fontsize=8)
+        ax4.set_ylabel('WER (%)', fontsize=12, fontweight='bold')
+        ax4.set_title('Word Error Rate Comparison', fontsize=13, fontweight='bold')
+        ax4.grid(axis='y', alpha=0.3)
+    else:
+        ax4.text(0.5, 0.5, 'WER data not available', ha='center', va='center',
+                fontsize=14, transform=ax4.transAxes)
+        ax4.set_title('Word Error Rate Comparison', fontsize=13, fontweight='bold')
+
+    # =========================================================================
+    # Panel 5: Summary Table
+    # =========================================================================
+    ax5 = fig.add_subplot(gs[2, 1])
+    ax5.axis('off')
+
+    # Create summary text
+    best_der = summary.get('best_by_der', {})
+    best_wer = summary.get('best_by_wer', {})
+    best_time = summary.get('best_by_time', {})
+
+    summary_text = "BEST CONFIGURATIONS\n" + "="*50 + "\n\n"
+
+    if best_der:
+        summary_text += "🏆 Best by DER:\n"
+        summary_text += f"   Config: {best_der.get('name', 'N/A')}\n"
+        summary_text += f"   DER: {best_der.get('der', 0):.2f}%\n"
+        summary_text += f"   Miss: {best_der.get('miss', 0):.2f}% | FA: {best_der.get('false_alarm', 0):.2f}% | Conf: {best_der.get('confusion', 0):.2f}%\n\n"
+
+    if best_wer:
+        summary_text += "📝 Best by WER:\n"
+        summary_text += f"   Config: {best_wer.get('name', 'N/A')}\n"
+        summary_text += f"   WER: {best_wer.get('wer', 0):.2f}%\n\n"
+
+    if best_time:
+        summary_text += "⚡ Best by Speed:\n"
+        summary_text += f"   Config: {best_time.get('name', 'N/A')}\n"
+        summary_text += f"   Time: {best_time.get('timing', 0):.2f}s/file\n"
+
+    ax5.text(0.05, 0.95, summary_text, transform=ax5.transAxes, fontsize=10,
+            verticalalignment='top', fontfamily='monospace',
+            bbox=dict(boxstyle='round', facecolor='#f0f0f0', alpha=0.8))
+
+    # =========================================================================
+    # Overall title
+    # =========================================================================
+    if dataset_info:
+        total_duration_min = dataset_info.get('total_duration_seconds', 0) / 60
+        title = f"Full E2E Pipeline Comparison - {len(rankings)} Configurations Tested\n"
+        title += f"Language: {dataset_info.get('language', 'unknown').title()} | "
+        title += f"Files: {dataset_info.get('num_files', 0)} | "
+        title += f"Duration: {total_duration_min:.1f} min | "
+        title += f"Hardware: {system_info.get('gpu', 'N/A')}"
+    else:
+        title = f"Full E2E Pipeline Comparison - {len(rankings)} Configurations Tested\n"
+        title += f"Hardware: {system_info.get('gpu', 'N/A')}"
+
+    fig.suptitle(title, fontsize=14, fontweight='bold', y=0.99)
+
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved full E2E comparison plot: {output_path}")
+
+
+def plot_full_e2e_heatmap(
+    results: Dict,
+    dataset_info: Dict,
+    system_info: Dict,
+    output_path: Path
+):
+    """
+    Generate a heatmap showing DER for different component combinations.
+
+    Creates separate heatmaps for embedding vs clustering at each SCD type.
+
+    Args:
+        results: Dict from aggregate_full_e2e_results()
+        dataset_info: Dataset information dict
+        system_info: System/hardware information dict
+        output_path: Path to save the plot
+    """
+    import pandas as pd
+
+    summary = results.get('_summary', {})
+    rankings = summary.get('rankings', [])
+
+    if not rankings:
+        logger.warning("No rankings available for heatmap plotting")
+        return
+
+    # Create dataframe from rankings
+    df = pd.DataFrame(rankings)
+
+    # Extract component values from config
+    df['sod'] = df['config'].apply(lambda x: x.get('sod', 'unknown'))
+    df['sos'] = df['config'].apply(lambda x: x.get('sos', 'unknown'))
+    df['scd'] = df['config'].apply(lambda x: x.get('scd', 'unknown'))
+    df['embedding'] = df['config'].apply(lambda x: x.get('embedding', 'unknown'))
+    df['clustering'] = df['config'].apply(lambda x: x.get('clustering', 'unknown'))
+
+    # Get unique values
+    scd_types = df['scd'].unique()
+    embeddings = df['embedding'].unique()
+    clusterings = df['clustering'].unique()
+
+    # Create figure with subplots for each SCD type
+    n_scd = len(scd_types)
+    fig, axes = plt.subplots(1, n_scd, figsize=(8 * n_scd, 6))
+
+    if n_scd == 1:
+        axes = [axes]
+
+    for idx, scd_type in enumerate(scd_types):
+        ax = axes[idx]
+
+        # Filter data for this SCD type (averaging over SOD/SOS combinations)
+        scd_data = df[df['scd'] == scd_type]
+
+        # Create pivot table: embedding vs clustering, values = mean DER
+        pivot = scd_data.pivot_table(
+            values='der',
+            index='embedding',
+            columns='clustering',
+            aggfunc='mean'
+        )
+
+        # Plot heatmap
+        im = ax.imshow(pivot.values, cmap='RdYlGn_r', aspect='auto')
+
+        # Add colorbar
+        cbar = plt.colorbar(im, ax=ax, shrink=0.8)
+        cbar.set_label('DER (%)', fontsize=10)
+
+        # Set ticks
+        ax.set_xticks(np.arange(len(pivot.columns)))
+        ax.set_yticks(np.arange(len(pivot.index)))
+        ax.set_xticklabels(pivot.columns, rotation=45, ha='right', fontsize=10)
+        ax.set_yticklabels(pivot.index, fontsize=10)
+
+        # Add value annotations
+        for i in range(len(pivot.index)):
+            for j in range(len(pivot.columns)):
+                val = pivot.iloc[i, j]
+                if not np.isnan(val):
+                    text_color = 'white' if val > pivot.values.mean() else 'black'
+                    ax.text(j, i, f'{val:.1f}', ha='center', va='center',
+                           fontsize=9, fontweight='bold', color=text_color)
+
+        ax.set_xlabel('Clustering', fontsize=12, fontweight='bold')
+        ax.set_ylabel('Embedding', fontsize=12, fontweight='bold')
+        ax.set_title(f'SCD: {scd_type.upper()}', fontsize=13, fontweight='bold')
+
+    # Overall title
+    if dataset_info:
+        title = f"DER Heatmap: Embedding × Clustering (averaged over SOD/SOS)\n"
+        title += f"Language: {dataset_info.get('language', 'unknown').title()} | "
+        title += f"Hardware: {system_info.get('gpu', 'N/A')}"
+    else:
+        title = f"DER Heatmap: Embedding × Clustering (averaged over SOD/SOS)\n"
+        title += f"Hardware: {system_info.get('gpu', 'N/A')}"
+
+    fig.suptitle(title, fontsize=14, fontweight='bold', y=1.02)
+
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+
+    logger.info(f"Saved full E2E heatmap plot: {output_path}")

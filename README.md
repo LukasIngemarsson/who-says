@@ -83,10 +83,18 @@ python compare.py --component asr \
 
 **E2E (End-to-End) Comparison** (Complete pipeline comparison):
 ```bash
+# Base comparison (WhoSays + Pyannote 3.1)
 python compare.py --component e2e \
     --audio-dir samples/meetings/meeting3-en/chunks \
     --annotation-dir samples/benchmarks/english \
     --language english
+
+# Include WhisperX (runs in separate environment component because of conflicting dependencies with the main pipeline)
+python compare.py --component e2e \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english \
+    --include-whisperx
 ```
 
 #### Single file comparison

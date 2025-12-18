@@ -468,28 +468,40 @@ def plot_e2e_der(
     output_path: Path
 ):
     """Generate end-to-end DER comparison plot."""
-    fig, ax = plt.subplots(figsize=(10, 7))
+    fig, ax = plt.subplots(figsize=(14, 8))
 
     metrics = ['der', 'miss', 'false_alarm', 'confusion']
     metric_labels = ['DER', 'Miss Rate', 'False Alarm', 'Confusion']
     pipeline_names = [name for name in pipelines.keys() if 'aggregated' in pipelines[name]]
 
     x = np.arange(len(metrics))
-    width = 0.25
     num_pipelines = len(pipeline_names)
+    width = 0.8 / num_pipelines
 
-    colors = {
+    import matplotlib.cm as cm
+    color_groups = {
         'who-says': '#2E86AB',
-        'whisperx': '#A23B72',
-        'pyannote-3.1': '#F18F01'
+        'pyannote-3.1': '#F18F01',
     }
+
+    whisperx_cmap = cm.get_cmap('Purples')
+    whisperx_models = ['tiny', 'medium', 'large-v3', 'distil-large-v3']
+    for i, model in enumerate(whisperx_models):
+        color_groups[f'whisperx-{model}'] = whisperx_cmap(0.3 + i * 0.15)
 
     for i, pipeline_name in enumerate(pipeline_names):
         agg = pipelines[pipeline_name]['aggregated']
         means = [agg[m]['mean'] for m in metrics]
         offset = (i - num_pipelines/2) * width + width/2
-        color = colors.get(pipeline_name, '#808080')
-        ax.bar(x + offset, means, width, label=pipeline_name, color=color)
+        color = color_groups.get(pipeline_name, '#808080')
+
+        model_info = pipelines[pipeline_name].get('model_info', '')
+        if model_info:
+            label = f"{pipeline_name}\n({model_info})"
+        else:
+            label = pipeline_name
+
+        ax.bar(x + offset, means, width, label=label, color=color)
 
     ax.set_ylabel('Score (%)', fontsize=12)
     max_val = max([pipelines[name]['aggregated'][m]['mean']
@@ -498,7 +510,12 @@ def plot_e2e_der(
     ax.set_ylim(0, max_val * 1.2)
     ax.set_xticks(x)
     ax.set_xticklabels(metric_labels, fontsize=11)
-    ax.legend(fontsize=10, loc='upper right')
+
+    if num_pipelines > 4:
+        ax.legend(fontsize=8, loc='center left', bbox_to_anchor=(1, 0.5), ncol=1)
+    else:
+        ax.legend(fontsize=10, loc='upper right')
+
     ax.grid(axis='y', alpha=0.3)
 
     total_duration_min = dataset_info['total_duration_seconds'] / 60
@@ -523,8 +540,6 @@ def plot_e2e_wer(
     output_path: Path
 ):
     """Generate end-to-end WER comparison plot (only pipelines with ASR)."""
-    fig, ax = plt.subplots(figsize=(8, 6))
-
     transcription_pipelines = {
         name: data for name, data in pipelines.items()
         if data['has_transcription'] and 'wer' in data.get('aggregated', {})
@@ -538,13 +553,40 @@ def plot_e2e_wer(
     wer_means = [transcription_pipelines[name]['aggregated']['wer']['mean']
                  for name in pipeline_names]
 
+    fig_width = max(10, len(pipeline_names) * 1.2)
+    fig, ax = plt.subplots(figsize=(fig_width, 7))
+
     x = np.arange(len(pipeline_names))
-    colors = ['#2E86AB', '#A23B72']
-    bars = ax.bar(x, wer_means, color=colors[:len(pipeline_names)])
+
+    import matplotlib.cm as cm
+    colors = []
+    for name in pipeline_names:
+        if name == 'who-says':
+            colors.append('#2E86AB')
+        elif name.startswith('whisperx'):
+            whisperx_models = ['tiny', 'medium', 'large-v3', 'distil-large-v3']
+            for i, model in enumerate(whisperx_models):
+                if name == f'whisperx-{model}':
+                    cmap = cm.get_cmap('Purples')
+                    colors.append(cmap(0.3 + i * 0.15))
+                    break
+        else:
+            colors.append('#808080')
+
+    bars = ax.bar(x, wer_means, color=colors)
 
     ax.set_ylabel('WER (%)', fontsize=12)
     ax.set_xticks(x)
-    ax.set_xticklabels(pipeline_names, fontsize=11)
+
+    labels_with_info = []
+    for name in pipeline_names:
+        model_info = transcription_pipelines[name].get('model_info', '')
+        if model_info and len(pipeline_names) <= 4:
+            labels_with_info.append(f"{name}\n({model_info})")
+        else:
+            labels_with_info.append(name)
+
+    ax.set_xticklabels(labels_with_info, fontsize=10, rotation=45, ha='right')
     ax.grid(axis='y', alpha=0.3)
 
     total_duration_min = dataset_info['total_duration_seconds'] / 60
@@ -568,42 +610,66 @@ def plot_e2e_timing(
     system_info: Dict,
     output_path: Path
 ):
-    """Generate end-to-end timing comparison plot."""
-    fig, ax = plt.subplots(figsize=(8, 6))
-
+    """Generate end-to-end timing comparison plot with stacked ASR time for WhoSays."""
     pipeline_names = [name for name in pipelines.keys() if 'aggregated' in pipelines[name]]
-    means = [pipelines[name]['aggregated']['timing']['mean']
-             for name in pipeline_names]
-    totals = [pipelines[name]['aggregated']['timing']['total']
-              for name in pipeline_names]
+    diarization_means = []
+    asr_means = []
+    totals = []
+
+    for name in pipeline_names:
+        agg = pipelines[name]['aggregated']
+        if name == 'who-says' and 'component_timing' in agg and 'asr' in agg['component_timing']:
+            diar_time = agg['timing']['mean']
+            asr_time = agg['component_timing']['asr']['mean']
+            diarization_means.append(diar_time)
+            asr_means.append(asr_time)
+            totals.append(agg['timing']['total'] + agg['component_timing']['asr']['total'])
+        else:
+            diarization_means.append(agg['timing']['mean'])
+            asr_means.append(0)
+            totals.append(agg['timing']['total'])
+
+    fig_width = max(10, len(pipeline_names) * 1.2)
+    fig, ax = plt.subplots(figsize=(fig_width, 7))
 
     x = np.arange(len(pipeline_names))
-    colors = {
-        'who-says': '#2E86AB',
-        'whisperx': '#A23B72',
-        'pyannote-3.1': '#F18F01'
-    }
-    bar_colors = [colors.get(name, '#808080') for name in pipeline_names]
-    bars = ax.bar(x, means, color=bar_colors)
 
-    max_height = max(means)
+    import matplotlib.cm as cm
+    color_groups = {
+        'who-says': '#2E86AB',
+        'pyannote-3.1': '#F18F01',
+    }
+
+    whisperx_cmap = cm.get_cmap('Purples')
+    whisperx_models = ['tiny', 'medium', 'large-v3', 'distil-large-v3']
+    for i, model in enumerate(whisperx_models):
+        color_groups[f'whisperx-{model}'] = whisperx_cmap(0.3 + i * 0.15)
+
+    bar_colors = [color_groups.get(name, '#808080') for name in pipeline_names]
+
+    bars_diar = ax.bar(x, diarization_means, color=bar_colors, label='Diarization')
+    bars_asr = ax.bar(x, asr_means, bottom=diarization_means, color='#90C978', label='ASR (WhoSays only)', alpha=0.8)
+
+    max_height = max([d + a for d, a in zip(diarization_means, asr_means)])
     text_height_estimate = max_height * 0.08
     y_max = max_height + text_height_estimate + (max_height * 0.15)
     ax.set_ylim(0, y_max)
 
-    for i, (bar, total) in enumerate(zip(bars, totals)):
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height + (max_height * 0.03),
-                f'Total: {total:.1f}s',
+    for i, total in enumerate(totals):
+        height = diarization_means[i] + asr_means[i]
+        ax.text(x[i], height + (max_height * 0.03),
+                f'{total:.1f}s',
                 ha='center', va='bottom', fontsize=9)
 
     ax.set_ylabel('Mean Time per File (seconds)', fontsize=12)
     ax.set_xticks(x)
-    ax.set_xticklabels(pipeline_names, fontsize=11)
+    ax.set_xticklabels(pipeline_names, fontsize=10, rotation=45, ha='right')
+    ax.legend(loc='upper left', fontsize=9)
     ax.grid(axis='y', alpha=0.3)
 
     total_duration_min = dataset_info['total_duration_seconds'] / 60
-    title = f"End-to-End Pipeline Comparison - Diarization Timing\n"
+    title = f"End-to-End Pipeline Comparison - Inference Timing\n"
+    title += f"WhoSays = diarization + ASR | Pyannote = diarization only | WhisperX = diarization + ASR \n"
     title += f"Language: {dataset_info['language'].title()} | "
     title += f"Files: {dataset_info['num_files']} | "
     title += f"Duration: {total_duration_min:.1f} min\n"

@@ -59,6 +59,57 @@ from utils import (
 from utils.constants import SR
 
 
+def run_whisperx_in_venv(audio_dir, annotation_dir, language, limit):
+    """Run WhisperX comparison in isolated venv, return pipelines dict."""
+    import subprocess
+    import sys
+
+    VENV_DIR = Path("/app/.venv_whisperx")
+    VENV_PYTHON = VENV_DIR / "bin/python"
+
+    if not VENV_DIR.exists():
+        logger.info("Creating WhisperX venv ")
+        subprocess.run([sys.executable, "-m", "venv", str(VENV_DIR)], check=True)
+
+        logger.info("Installing WhisperX dependencies...")
+        subprocess.run([
+            str(VENV_PYTHON), "-m", "pip", "install", "--upgrade", "pip"
+        ], check=True)
+
+        subprocess.run([
+            str(VENV_PYTHON), "-m", "pip", "install",
+            "whisperx>=3.1.1",
+            "torch==2.5.1",
+            "torchaudio==2.5.1",
+            "pyannote.audio==3.3.0",
+            "faster-whisper>=1.0.0",
+            "transformers==4.49.0",
+            "loguru==0.7.0",
+            "numpy==1.26.4",
+            "soundfile==0.13.1",
+            "python-dotenv==1.1.1",
+            "scikit-learn>=1.3.0"
+        ], check=True)
+
+    helper_script = Path(__file__).parent / "_whisperx_helper.py"
+
+    cmd = [
+        str(VENV_PYTHON),
+        str(helper_script),
+        "--audio-dir", str(audio_dir),
+        "--annotation-dir", str(annotation_dir),
+        "--language", language
+    ]
+    if limit:
+        cmd.extend(["--limit", str(limit)])
+
+    logger.info("Running WhisperX subprocess...")
+    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+
+    whisperx_data = json.loads(result.stdout)
+    return whisperx_data['pipelines']
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Compare models for who-says pipeline components"
@@ -136,6 +187,11 @@ def main():
         "--skip-overlap",
         action="store_true",
         help="Skip overlap detection and processing (for e2e component)"
+    )
+    parser.add_argument(
+        "--include-whisperx",
+        action="store_true",
+        help="Include WhisperX models (7 sizes, runs in separate venv) for e2e component"
     )
     parser.add_argument(
         "--skip-sod-sos",
@@ -392,6 +448,21 @@ def main():
         pipelines = compare_e2e_pipelines(file_pairs, skip_overlap=args.skip_overlap)
         pipelines = aggregate_e2e_results(pipelines)
 
+        if args.include_whisperx:
+            logger.info("\n" + "="*60)
+            logger.info("Running WhisperX in separate venv...")
+            logger.info("="*60)
+
+            whisperx_pipelines = run_whisperx_in_venv(
+                args.audio_dir,
+                args.annotation_dir,
+                args.language,
+                args.limit
+            )
+
+            pipelines.update(whisperx_pipelines)
+            logger.info(f"Merged {len(whisperx_pipelines)} WhisperX pipelines")
+
         output_data = {
             "comparison_type": "e2e",
             "timestamp": timestamp,
@@ -400,11 +471,12 @@ def main():
             "evaluation_settings": {
                 "collar": 0.25,
                 "skip_overlap": False,
-                "timing_note": "WhoSays: diarization-only. Pyannote: diarization-only."
+                "timing_note": "WhoSays: diarization + ASR (separate). Pyannote: diarization only. WhisperX: diarization + ASR (combined)."
             },
             "pipelines": {
                 name: {
                     "has_transcription": data['has_transcription'],
+                    "model_info": data.get('model_info', 'N/A'),
                     "per_file_results": data['results'],
                     "aggregated": data['aggregated']
                 }
@@ -428,14 +500,19 @@ def main():
         print("\n" + "="*60)
         print("END-TO-END PIPELINE COMPARISON SUMMARY")
         print("="*60)
-        print("\nNOTE: WhoSays timing = diarization only (excludes ASR).")
-        print("      Pyannote timing = diarization only (no ASR).\n")
+        print("\nNOTE: Timing measurements (diarization-only for fair comparison):")
+        print("      - WhoSays: diarization reported below, ASR shown separately in plot")
+        print("      - Pyannote: diarization only (no ASR component)")
+        print("      - WhisperX: full pipeline (cannot separate ASR from diarization)\n")
         print("-"*60)
         for name, data in pipelines.items():
             if 'aggregated' not in data:
                 continue
             agg = data['aggregated']
+            model_info = data.get('model_info', 'N/A')
             print(f"\n{name.upper()}:")
+            if model_info != 'N/A':
+                print(f"  Model:       {model_info}")
             print(f"  DER:         {agg['der']['mean']:6.2f}% (±{agg['der']['std']:.2f}%)")
             print(f"  Miss:        {agg['miss']['mean']:6.2f}% (±{agg['miss']['std']:.2f}%)")
             print(f"  False Alarm: {agg['false_alarm']['mean']:6.2f}% (±{agg['false_alarm']['std']:.2f}%)")

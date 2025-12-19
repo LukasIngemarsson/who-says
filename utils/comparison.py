@@ -756,11 +756,13 @@ def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]], skip_overlap
     pipelines = {
         'who-says': {
             'instance': WhoSays(config=whosays_config),
-            'has_transcription': True
+            'has_transcription': True,
+            'model_info': 'WhoSays'
         },
         'pyannote-3.1': {
             'instance': PyannoteFullPipeline(device=device),
-            'has_transcription': False
+            'has_transcription': False,
+            'model_info': 'Pyannote 3.1'
         }
     }
 
@@ -890,7 +892,8 @@ def aggregate_e2e_results(pipelines: Dict) -> Dict:
                 if values:
                     aggregated['component_timing'][key] = {
                         'mean': float(np.mean(values)),
-                        'std': float(np.std(values))
+                        'std': float(np.std(values)),
+                        'total': float(np.sum(values))
                     }
 
         if pipeline_data['has_transcription'] and results[0]['wer_metrics']:

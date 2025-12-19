@@ -64,7 +64,8 @@ def run_whisperx_in_venv(audio_dir, annotation_dir, language, limit):
     import subprocess
     import sys
 
-    VENV_DIR = Path("/app/.venv_whisperx")
+    PROJECT_ROOT = Path(__file__).parent
+    VENV_DIR = PROJECT_ROOT / ".venv_whisperx"
     VENV_PYTHON = VENV_DIR / "bin/python"
 
     if not VENV_DIR.exists():
@@ -81,14 +82,15 @@ def run_whisperx_in_venv(audio_dir, annotation_dir, language, limit):
             "whisperx>=3.1.1",
             "torch==2.5.1",
             "torchaudio==2.5.1",
-            "pyannote.audio==3.3.0",
+            "pyannote.audio>=3.3.0",
             "faster-whisper>=1.0.0",
             "transformers==4.49.0",
             "loguru==0.7.0",
-            "numpy==1.26.4",
-            "soundfile==0.13.1",
-            "python-dotenv==1.1.1",
-            "scikit-learn>=1.3.0"
+            "numpy>=2.0.2,<2.1.0",
+            "soundfile>=0.12.0",
+            "python-dotenv>=1.0.0",
+            "scikit-learn>=1.3.0",
+            "jiwer>=3.0.0" 
         ], check=True)
 
     helper_script = Path(__file__).parent / "_whisperx_helper.py"
@@ -104,9 +106,27 @@ def run_whisperx_in_venv(audio_dir, annotation_dir, language, limit):
         cmd.extend(["--limit", str(limit)])
 
     logger.info("Running WhisperX subprocess...")
-    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
 
-    whisperx_data = json.loads(result.stdout)
+    result = subprocess.run(cmd, capture_output=False, stdout=subprocess.PIPE, text=True)
+
+    if result.returncode != 0:
+        logger.error("WhisperX subprocess failed!")
+        logger.error(f"STDOUT:\n{result.stdout}")
+        raise subprocess.CalledProcessError(result.returncode, cmd, result.stdout)
+
+    if not result.stdout or not result.stdout.strip():
+        logger.error("WhisperX subprocess produced no output!")
+        logger.error(f"STDOUT:\n{result.stdout}")
+        raise ValueError("WhisperX subprocess produced no output")
+
+    try:
+        whisperx_data = json.loads(result.stdout)
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse WhisperX output as JSON: {e}")
+        logger.error(f"STDOUT (first 2000 chars):\n{result.stdout[:2000]}")
+        logger.error(f"Check if WhisperX printed errors above (stderr was not captured)")
+        raise
+
     return whisperx_data['pipelines']
 
 
@@ -445,12 +465,10 @@ def main():
         logger.info("Running End-to-End Pipeline comparison...")
         logger.info("="*60)
 
-        pipelines = compare_e2e_pipelines(file_pairs, skip_overlap=args.skip_overlap)
-        pipelines = aggregate_e2e_results(pipelines)
-
+        whisperx_pipelines = {}
         if args.include_whisperx:
             logger.info("\n" + "="*60)
-            logger.info("Running WhisperX in separate venv...")
+            logger.info("Running full WhisperX setup")
             logger.info("="*60)
 
             whisperx_pipelines = run_whisperx_in_venv(
@@ -459,7 +477,16 @@ def main():
                 args.language,
                 args.limit
             )
+            logger.info(f"WhisperX setup successful! Tested {len(whisperx_pipelines)} models")
 
+        logger.info("\n" + "="*60)
+        logger.info("Running WhoSays and Pyannote comparison...")
+        logger.info("="*60)
+
+        pipelines = compare_e2e_pipelines(file_pairs, skip_overlap=args.skip_overlap)
+        pipelines = aggregate_e2e_results(pipelines)
+
+        if whisperx_pipelines:
             pipelines.update(whisperx_pipelines)
             logger.info(f"Merged {len(whisperx_pipelines)} WhisperX pipelines")
 
@@ -477,7 +504,7 @@ def main():
                 name: {
                     "has_transcription": data['has_transcription'],
                     "model_info": data.get('model_info', 'N/A'),
-                    "per_file_results": data['results'],
+                    "per_file_results": data.get('per_file_results', data.get('results', [])),
                     "aggregated": data['aggregated']
                 }
                 for name, data in pipelines.items()

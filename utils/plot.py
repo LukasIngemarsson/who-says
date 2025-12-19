@@ -478,16 +478,14 @@ def plot_e2e_der(
     num_pipelines = len(pipeline_names)
     width = 0.8 / num_pipelines
 
-    import matplotlib.cm as cm
     color_groups = {
-        'who-says': '#2E86AB',
-        'pyannote-3.1': '#F18F01',
+        'who-says': '#1f77b4',
+        'pyannote-3.1': '#ff7f0e',
+        'whisperx-tiny': '#2ca02c',
+        'whisperx-medium': '#d62728',
+        'whisperx-large-v3': '#9467bd',
+        'whisperx-distil-large-v3': '#8c564b'
     }
-
-    whisperx_cmap = cm.get_cmap('Purples')
-    whisperx_models = ['tiny', 'medium', 'large-v3', 'distil-large-v3']
-    for i, model in enumerate(whisperx_models):
-        color_groups[f'whisperx-{model}'] = whisperx_cmap(0.3 + i * 0.15)
 
     for i, pipeline_name in enumerate(pipeline_names):
         agg = pipelines[pipeline_name]['aggregated']
@@ -496,10 +494,7 @@ def plot_e2e_der(
         color = color_groups.get(pipeline_name, '#808080')
 
         model_info = pipelines[pipeline_name].get('model_info', '')
-        if model_info:
-            label = f"{pipeline_name}\n({model_info})"
-        else:
-            label = pipeline_name
+        label = model_info if model_info else pipeline_name
 
         ax.bar(x + offset, means, width, label=label, color=color)
 
@@ -581,10 +576,7 @@ def plot_e2e_wer(
     labels_with_info = []
     for name in pipeline_names:
         model_info = transcription_pipelines[name].get('model_info', '')
-        if model_info and len(pipeline_names) <= 4:
-            labels_with_info.append(f"{name}\n({model_info})")
-        else:
-            labels_with_info.append(name)
+        labels_with_info.append(model_info if model_info else name)
 
     ax.set_xticklabels(labels_with_info, fontsize=10, rotation=45, ha='right')
     ax.grid(axis='y', alpha=0.3)
@@ -623,7 +615,11 @@ def plot_e2e_timing(
             asr_time = agg['component_timing']['asr']['mean']
             diarization_means.append(diar_time)
             asr_means.append(asr_time)
-            totals.append(agg['timing']['total'] + agg['component_timing']['asr']['total'])
+            if 'total' in agg['component_timing']['asr']:
+                combined_total = agg['timing']['total'] + agg['component_timing']['asr']['total']
+            else:
+                combined_total = agg['timing']['total']
+            totals.append(combined_total)
         else:
             diarization_means.append(agg['timing']['mean'])
             asr_means.append(0)
@@ -634,21 +630,19 @@ def plot_e2e_timing(
 
     x = np.arange(len(pipeline_names))
 
-    import matplotlib.cm as cm
     color_groups = {
-        'who-says': '#2E86AB',
-        'pyannote-3.1': '#F18F01',
+        'who-says': '#1f77b4',
+        'pyannote-3.1': '#ff7f0e',
+        'whisperx-tiny': '#2ca02c',
+        'whisperx-medium': '#d62728',
+        'whisperx-large-v3': '#9467bd',
+        'whisperx-distil-large-v3': '#8c564b'
     }
-
-    whisperx_cmap = cm.get_cmap('Purples')
-    whisperx_models = ['tiny', 'medium', 'large-v3', 'distil-large-v3']
-    for i, model in enumerate(whisperx_models):
-        color_groups[f'whisperx-{model}'] = whisperx_cmap(0.3 + i * 0.15)
 
     bar_colors = [color_groups.get(name, '#808080') for name in pipeline_names]
 
-    bars_diar = ax.bar(x, diarization_means, color=bar_colors, label='Diarization')
-    bars_asr = ax.bar(x, asr_means, bottom=diarization_means, color='#90C978', label='ASR (WhoSays only)', alpha=0.8)
+    bars_diar = ax.bar(x, diarization_means, color=bar_colors)
+    bars_asr = ax.bar(x, asr_means, bottom=diarization_means, color='#ff9896', alpha=0.9, edgecolor='black', linewidth=0.5)
 
     max_height = max([d + a for d, a in zip(diarization_means, asr_means)])
     text_height_estimate = max_height * 0.08
@@ -658,18 +652,41 @@ def plot_e2e_timing(
     for i, total in enumerate(totals):
         height = diarization_means[i] + asr_means[i]
         ax.text(x[i], height + (max_height * 0.03),
-                f'{total:.1f}s',
-                ha='center', va='bottom', fontsize=9)
+                f'Total: {total:.1f}s',
+                ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+    for i, name in enumerate(pipeline_names):
+        diar_height = diarization_means[i]
+        asr_height = asr_means[i]
+
+        if diar_height > 0.3:
+            diar_y_pos = diar_height / 2
+            if name.startswith('whisperx'):
+                ax.text(x[i], diar_y_pos, f'Diarization + ASR\n{diar_height:.2f}s',
+                        ha='center', va='center', fontsize=8, fontweight='bold', color='white')
+            else:
+                ax.text(x[i], diar_y_pos, f'Diarization\n{diar_height:.2f}s',
+                        ha='center', va='center', fontsize=8, fontweight='bold', color='white')
+
+        if name == 'who-says' and asr_height > 0.3:
+            asr_y_pos = diar_height + (asr_height / 2)
+            ax.text(x[i], asr_y_pos, f'ASR\n{asr_height:.2f}s',
+                    ha='center', va='center', fontsize=8, fontweight='bold', color='white')
 
     ax.set_ylabel('Mean Time per File (seconds)', fontsize=12)
     ax.set_xticks(x)
-    ax.set_xticklabels(pipeline_names, fontsize=10, rotation=45, ha='right')
-    ax.legend(loc='upper left', fontsize=9)
+
+    labels_with_info = []
+    for name in pipeline_names:
+        model_info = pipelines[name].get('model_info', '')
+        labels_with_info.append(model_info if model_info else name)
+
+    ax.set_xticklabels(labels_with_info, fontsize=10, rotation=45, ha='right')
     ax.grid(axis='y', alpha=0.3)
 
     total_duration_min = dataset_info['total_duration_seconds'] / 60
     title = f"End-to-End Pipeline Comparison - Inference Timing\n"
-    title += f"WhoSays = diarization + ASR | Pyannote = diarization only | WhisperX = diarization + ASR \n"
+    title += f"WhoSays = diarization + ASR (separated) | Pyannote = diarization only | WhisperX = diarization + ASR (combined) \n"
     title += f"Language: {dataset_info['language'].title()} | "
     title += f"Files: {dataset_info['num_files']} | "
     title += f"Duration: {total_duration_min:.1f} min\n"

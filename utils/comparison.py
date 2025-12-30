@@ -3,15 +3,17 @@ Comparison utils
 """
 
 import time
+import json
 from pathlib import Path
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import torch
+import torch.nn.functional as F
 import numpy as np
 from loguru import logger
-from scipy.optimize import linear_sum_assignment
+from tqdm import tqdm
 
 from pipeline.speaker_segmentation.VAD.pyannote_vad import PyannoteVAD
-from pipeline.speaker_segmentation.SCD import SCD
+from pipeline.speaker_segmentation.SCD import SCD, TypeSCD
 from pipeline.speaker_recognition.embedding.speechbrain import SpeechBrainEmbedding
 from pipeline.speaker_recognition.embedding._pyannote import PyAnnoteEmbedding
 from pipeline.speaker_recognition.embedding.wav2vec2 import Wav2Vec2Embedding
@@ -121,45 +123,6 @@ def change_points_to_segments(
     return segments
 
 
-def compute_temporal_overlap(
-    segments1: List[Dict],
-    label1: any,
-    segments2: List[Dict],
-    label2: any
-) -> float:
-    """
-    Compute temporal overlap between segments with specific labels.
-
-    Parameters
-    ----------
-    segments1 : List[Dict]
-        First list of segments
-    label1 : any
-        Label to filter from segments1
-    segments2 : List[Dict]
-        Second list of segments
-    label2 : any
-        Label to filter from segments2
-
-    Returns
-    -------
-    float
-        Total temporal overlap in seconds
-    """
-    segs1 = [s for s in segments1 if s['speaker'] == label1]
-    segs2 = [s for s in segments2 if s['speaker'] == label2]
-
-    total_overlap = 0.0
-    for s1 in segs1:
-        for s2 in segs2:
-            overlap_start = max(s1['start'], s2['start'])
-            overlap_end = min(s1['end'], s2['end'])
-            if overlap_start < overlap_end:
-                total_overlap += (overlap_end - overlap_start)
-
-    return total_overlap
-
-
 def handle_dbscan_noise(labels: torch.Tensor) -> torch.Tensor:
     """
     Handle DBSCAN noise labels (-1) by reassigning to new cluster.
@@ -181,62 +144,6 @@ def handle_dbscan_noise(labels: torch.Tensor) -> torch.Tensor:
     return labels
 
 
-def map_clusters_to_speakers(
-    pred_segments: List[Dict],
-    ref_segments: List[Dict]
-) -> List[Dict]:
-    """
-    Map cluster IDs to speaker labels using Hungarian algorithm.
-
-    Uses optimal assignment to minimize speaker confusion by maximizing
-    temporal overlap between predicted clusters and reference speakers.
-
-    Parameters
-    ----------
-    pred_segments : List[Dict]
-        Predicted segments with cluster IDs as speaker labels
-    ref_segments : List[Dict]
-        Reference segments with ground truth speaker labels
-
-    Returns
-    -------
-    List[Dict]
-        Predicted segments with cluster IDs mapped to speaker labels
-    """
-    unique_clusters = sorted(set(seg['speaker'] for seg in pred_segments))
-    unique_speakers = sorted(set(seg['speaker'] for seg in ref_segments))
-
-    n_clusters = len(unique_clusters)
-    n_speakers = len(unique_speakers)
-
-    cost_matrix = np.zeros((n_clusters, n_speakers))
-
-    for i, cluster_id in enumerate(unique_clusters):
-        for j, speaker_id in enumerate(unique_speakers):
-            overlap = compute_temporal_overlap(
-                pred_segments, cluster_id,
-                ref_segments, speaker_id
-            )
-            cost_matrix[i, j] = -overlap
-
-    row_ind, col_ind = linear_sum_assignment(cost_matrix)
-
-    cluster_to_speaker = {}
-    for cluster_idx, speaker_idx in zip(row_ind, col_ind):
-        cluster_to_speaker[unique_clusters[cluster_idx]] = unique_speakers[speaker_idx]
-
-    mapped_segments = []
-    for seg in pred_segments:
-        mapped_seg = seg.copy()
-        mapped_seg['speaker'] = cluster_to_speaker.get(
-            seg['speaker'],
-            f"UNKNOWN_{seg['speaker']}"
-        )
-        mapped_segments.append(mapped_seg)
-
-    return mapped_segments
-
-
 def compare_vad_models(
     file_pairs: List[Tuple[Path, Path, str]]
 ) -> Dict:
@@ -247,7 +154,6 @@ def compare_vad_models(
         Dictionary with results for both models
     """
     from pipeline.speaker_segmentation.VAD.silero import SileroVAD
-
     silero_vad = SileroVAD()
     pyannote_vad = PyannoteVAD()
 
@@ -343,13 +249,17 @@ def compare_sc_models(
     Compare speaker embedding models and clustering algorithms.
 
     Tests 3 embedding models (SpeechBrain, PyAnnote, Wav2Vec2) with
-    2 clustering algorithms (KMeans, DBSCAN) = 6 combinations total.
+    4 clustering algorithms (KMeans, Agglomerative, DBSCAN, Naive/Cosine) = 12 combinations total.
 
     Returns
     -------
     Dict
-        Dictionary with results for all 6 combinations
+        Dictionary with results for all 12 combinations
     """
+    from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+    from sklearn.metrics import silhouette_score, adjusted_rand_score, f1_score
+    from scipy.optimize import linear_sum_assignment
+
     scd_model = SCD()
 
     embedding_models = {}
@@ -372,16 +282,44 @@ def compare_sc_models(
         logger.error("No embedding models available!")
         return {}
 
-    clustering_configs = {
-        'kmeans': {'algorithm': 'kmeans'},
-        'dbscan': {'algorithm': 'dbscan', 'eps': 0.5, 'min_samples': 2}
-    }
+    # Clustering methods: kmeans, agglomerative, dbscan, naive (cosine similarity)
+    clustering_methods = ['kmeans', 'agglomerative', 'dbscan', 'naive']
 
     models = {}
     for emb_name in embedding_models.keys():
-        for clus_name in clustering_configs.keys():
+        for clus_name in clustering_methods:
             key = f'{emb_name}_{clus_name}'
             models[key] = {'results': []}
+
+    # Helper function to compute F1 with Hungarian matching
+    def compute_f1_hungarian(true_labels: np.ndarray, pred_labels: np.ndarray) -> float:
+        mask = pred_labels != -1
+        if not np.any(mask):
+            return 0.0
+
+        true_filtered = true_labels[mask]
+        pred_filtered = pred_labels[mask]
+
+        true_unique = np.unique(true_filtered)
+        pred_unique = np.unique(pred_filtered)
+
+        n_true = len(true_unique)
+        n_pred = len(pred_unique)
+
+        cost_matrix = np.zeros((n_pred, n_true))
+        for i, p in enumerate(pred_unique):
+            for j, t in enumerate(true_unique):
+                cost_matrix[i, j] = -np.sum((pred_filtered == p) & (true_filtered == t))
+
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+        label_map = {pred_unique[r]: true_unique[c] for r, c in zip(row_ind, col_ind)}
+        aligned = np.array([label_map.get(p, -1) for p in pred_filtered])
+
+        valid_mask = aligned != -1
+        if np.sum(valid_mask) == 0:
+            return 0.0
+
+        return f1_score(true_filtered[valid_mask], aligned[valid_mask], average='macro', zero_division=0)
 
     for audio_file, annotation_file, file_id in file_pairs:
         logger.info(f"\nProcessing file: {file_id}")
@@ -429,49 +367,159 @@ def compare_sc_models(
                 logger.warning(f"    NaN values in embeddings for {file_id}, skipping {emb_name}")
                 continue
 
-            for clus_name, clus_config in clustering_configs.items():
+            # L2 normalize embeddings for cosine-based methods
+            embeddings_np = embeddings.cpu().numpy()
+            norms = np.linalg.norm(embeddings_np, axis=1, keepdims=True)
+            norms = np.where(norms == 0, 1, norms)
+            embeddings_norm = embeddings_np / norms
+
+            # Get ground truth labels for segments (map segments to speakers)
+            # This is an approximation - assign each segment to the speaker with most overlap
+            boundaries = [0.0] + change_points + [duration]
+            true_labels = []
+            speaker_map = {}  # Move outside the loop to maintain consistent mapping
+            for i in range(len(boundaries) - 1):
+                seg_start = boundaries[i]
+                seg_end = boundaries[i + 1]
+                # Find which ground truth speaker has most overlap with this segment
+                best_speaker = 0
+                best_overlap = 0
+                for gt_seg in annotation_data['segments']:
+                    speaker = gt_seg['speaker']
+                    if speaker not in speaker_map:
+                        speaker_map[speaker] = len(speaker_map)
+                    overlap_start = max(seg_start, gt_seg['start'])
+                    overlap_end = min(seg_end, gt_seg['end'])
+                    overlap = max(0, overlap_end - overlap_start)
+                    if overlap > best_overlap:
+                        best_overlap = overlap
+                        best_speaker = speaker_map[speaker]
+                true_labels.append(best_speaker)
+            true_labels = np.array(true_labels)
+
+            # Trim true_labels to match embeddings if some segments were filtered (e.g., too short)
+            n_embeddings = embeddings_norm.shape[0]
+            if len(true_labels) > n_embeddings:
+                logger.debug(f"      Trimming true_labels from {len(true_labels)} to {n_embeddings} to match embeddings")
+                true_labels = true_labels[:n_embeddings]
+
+            for clus_name in clustering_methods:
                 logger.info(f"    Clustering: {clus_name}")
 
-                clusterer = SklearnClustering(**clus_config)
-
                 start_time = time.time()
-                n_clus = n_speakers if clus_name == 'kmeans' else None
 
-                if n_clus is not None and embeddings.shape[0] < n_clus:
-                    logger.warning(f"      Only {embeddings.shape[0]} segments but {n_clus} speakers in ground truth, using {embeddings.shape[0]} clusters")
-                    n_clus = embeddings.shape[0]
+                if clus_name == 'kmeans':
+                    n_clus = min(n_speakers, embeddings_norm.shape[0])
+                    clusterer = KMeans(n_clusters=n_clus, random_state=42, n_init=10)
+                    labels = clusterer.fit_predict(embeddings_norm)
+                    # Silhouette requires: 2 <= n_labels <= n_samples - 1
+                    n_unique = len(set(labels))
+                    if n_unique > 1 and n_unique < embeddings_norm.shape[0]:
+                        silhouette = silhouette_score(embeddings_norm, labels, metric='cosine')
+                    else:
+                        silhouette = 0.0
 
-                labels = clusterer.cluster_segments(embeddings, n_clusters=n_clus)
+                elif clus_name == 'agglomerative':
+                    n_clus = min(n_speakers, embeddings_norm.shape[0])
+                    clusterer = AgglomerativeClustering(n_clusters=n_clus, metric='cosine', linkage='average')
+                    labels = clusterer.fit_predict(embeddings_norm)
+                    # Silhouette requires: 2 <= n_labels <= n_samples - 1
+                    n_unique = len(set(labels))
+                    if n_unique > 1 and n_unique < embeddings_norm.shape[0]:
+                        silhouette = silhouette_score(embeddings_norm, labels, metric='cosine')
+                    else:
+                        silhouette = 0.0
+
+                elif clus_name == 'dbscan':
+                    # DBSCAN with eps tuning
+                    best_eps = 0.3
+                    best_ari = -1
+                    best_labels = None
+                    for eps in np.linspace(0.1, 1.0, 10):
+                        dbscan = DBSCAN(eps=eps, min_samples=2, metric='cosine')
+                        dbscan_labels = dbscan.fit_predict(embeddings_norm)
+                        n_clusters = len(set(dbscan_labels)) - (1 if -1 in dbscan_labels else 0)
+                        if n_clusters >= 2:
+                            ari = adjusted_rand_score(true_labels[:len(dbscan_labels)], dbscan_labels)
+                            if ari > best_ari:
+                                best_ari = ari
+                                best_eps = eps
+                                best_labels = dbscan_labels
+
+                    if best_labels is not None:
+                        labels = best_labels
+                        mask = labels != -1
+                        if np.sum(mask) > 1 and len(set(labels[mask])) > 1:
+                            silhouette = silhouette_score(embeddings_norm[mask], labels[mask], metric='cosine')
+                        else:
+                            silhouette = 0.0
+                    else:
+                        # Fallback if no good DBSCAN found
+                        labels = np.zeros(embeddings_norm.shape[0], dtype=int)
+                        silhouette = 0.0
+
+                elif clus_name == 'naive':
+                    # Naive Cosine Similarity with Leave-One-Out
+                    # For each embedding, compute centroids from OTHER samples only,
+                    # then assign to closest centroid. This avoids circular evaluation.
+                    unique_true = np.unique(true_labels)
+                    labels = []
+
+                    for i, emb in enumerate(embeddings_norm):
+                        # Compute centroids excluding the current sample
+                        centroids = {}
+                        for speaker_idx in unique_true:
+                            # Get mask for this speaker, excluding current sample
+                            speaker_mask = (true_labels == speaker_idx)
+                            speaker_mask[i] = False  # Exclude current sample
+                            if np.any(speaker_mask):
+                                centroid = embeddings_norm[speaker_mask].mean(axis=0)
+                                centroid = centroid / (np.linalg.norm(centroid) + 1e-8)
+                                centroids[speaker_idx] = centroid
+
+                        # Assign to closest centroid
+                        best_sim = -1
+                        best_speaker = 0
+                        for speaker_idx, centroid in centroids.items():
+                            sim = np.dot(emb, centroid)
+                            if sim > best_sim:
+                                best_sim = sim
+                                best_speaker = speaker_idx
+                        labels.append(best_speaker)
+
+                    labels = np.array(labels)
+                    # No silhouette for naive method (uses ground truth structure)
+                    silhouette = None
+
                 clus_time = time.time() - start_time
 
-                labels = handle_dbscan_noise(labels)
+                # Convert labels to tensor for compatibility
+                labels_tensor = torch.tensor(labels)
+                labels_tensor = handle_dbscan_noise(labels_tensor)
+                labels = labels_tensor.numpy()
 
                 if len(labels) != len(change_points) + 1:
                     logger.warning(f"      Label mismatch: {len(labels)} labels, {len(change_points)+1} segments")
                     min_len = min(len(labels), len(change_points) + 1)
                     labels = labels[:min_len]
+                    true_labels_trimmed = true_labels[:min_len]
+                else:
+                    true_labels_trimmed = true_labels
 
                 pred_segments = change_points_to_segments(
-                    change_points[:min_len-1] if len(labels) < len(change_points) + 1 else change_points,
-                    labels.numpy(),
+                    change_points[:len(labels)-1] if len(labels) < len(change_points) + 1 else change_points,
+                    labels,
                     duration
                 )
 
-                mapped_segments = map_clusters_to_speakers(
-                    pred_segments,
-                    annotation_data['segments']
-                )
-
-                n_unique_labels = len(set(labels.tolist()))
-                if n_unique_labels < 2 or n_unique_labels >= embeddings.shape[0]:
-                    logger.warning(f"      Cannot compute silhouette: {n_unique_labels} unique labels for {embeddings.shape[0]} samples")
-                    silhouette = 0.0
-                else:
-                    silhouette = evaluate_clustering(embeddings.cpu(), labels)['silhouette']
+                # Compute ARI and F1
+                ari = adjusted_rand_score(true_labels_trimmed, labels)
+                f1 = compute_f1_hungarian(true_labels_trimmed, labels)
 
                 der_metrics = evaluate_diarization(
                     annotation_data['segments'],
-                    mapped_segments
+                    pred_segments,
+                    total_duration=duration
                 )
 
                 key = f'{emb_name}_{clus_name}'
@@ -482,7 +530,9 @@ def compare_sc_models(
                     'n_speakers': n_speakers,
                     'n_change_points': len(change_points),
                     'metrics': {
-                        'silhouette': silhouette,
+                        'silhouette': silhouette if silhouette is not None else 0.0,
+                        'ari': ari,
+                        'f1': f1,
                         'der': der_metrics['der'],
                         'miss': der_metrics['miss'],
                         'false_alarm': der_metrics['false_alarm'],
@@ -494,7 +544,8 @@ def compare_sc_models(
                     }
                 })
 
-                logger.info(f"      Silhouette: {silhouette:.2f}, DER: {der_metrics['der']:.2f}%")
+                sil_str = f"{silhouette:.3f}" if silhouette is not None else "N/A"
+                logger.info(f"      ARI: {ari:.3f}, F1: {f1:.3f}, Silhouette: {sil_str}, DER: {der_metrics['der']:.2f}%")
 
     return models
 
@@ -514,6 +565,14 @@ def aggregate_sc_results(models: Dict) -> Dict:
             'silhouette': {
                 'mean': float(np.mean([r['metrics']['silhouette'] for r in results])),
                 'std': float(np.std([r['metrics']['silhouette'] for r in results]))
+            },
+            'ari': {
+                'mean': float(np.mean([r['metrics']['ari'] for r in results])),
+                'std': float(np.std([r['metrics']['ari'] for r in results]))
+            },
+            'f1': {
+                'mean': float(np.mean([r['metrics']['f1'] for r in results])),
+                'std': float(np.std([r['metrics']['f1'] for r in results]))
             },
             'der': {
                 'mean': float(np.mean([r['metrics']['der'] for r in results])),
@@ -651,3 +710,2991 @@ def aggregate_asr_results(models: Dict) -> Dict:
         }
 
     return models
+
+
+def compare_e2e_pipelines(file_pairs: List[Tuple[Path, Path, str]], skip_overlap: bool = False) -> Dict:
+    """
+    Compare end-to-end diarization pipelines.
+
+    Evaluates complete pipeline output using DER and timing metrics.
+
+    Args:
+        file_pairs: List of (audio_path, annotation_path, file_id) tuples
+        skip_overlap: If True, skip overlap detection and processing in WhoSays
+
+    Returns:
+        Dict mapping pipeline names to results:
+        {
+            'pipeline_name': {
+                'has_transcription': bool,
+                'results': [
+                    {
+                        'file_id': str,
+                        'audio_file': str,
+                        'duration': float,
+                        'n_speakers_pred': int,
+                        'n_speakers_ref': int,
+                        'der_metrics': {...},
+                        'wer_metrics': {...} or None,
+                        'timing': float
+                    }
+                ]
+            }
+        }
+    """
+    from pipeline.pyannote_full_pipeline import PyannoteFullPipeline
+    from main import WhoSays
+    from config import PipelineConfig as Config
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # Create WhoSays config with skip_overlap setting
+    whosays_config = Config(skip_overlap=skip_overlap)
+    if skip_overlap:
+        logger.info("WhoSays: overlap detection/processing DISABLED")
+
+    pipelines = {
+        'who-says': {
+            'instance': WhoSays(config=whosays_config),
+            'has_transcription': True,
+            'model_info': 'WhoSays'
+        },
+        'pyannote-3.1': {
+            'instance': PyannoteFullPipeline(device=device),
+            'has_transcription': False,
+            'model_info': 'Pyannote 3.1'
+        }
+    }
+
+    for name in pipelines:
+        pipelines[name]['results'] = []
+
+    for audio_file, annotation_file, file_id in tqdm(file_pairs, desc="Processing files"):
+        logger.info(f"\nProcessing: {file_id}")
+
+        annotation_data = load_annotation_file(annotation_file)
+        waveform, sr = load_audio_from_file(audio_file, sr=SR)
+        duration = waveform.shape[-1] / sr
+
+        ref_segments = annotation_data['segments']
+        ref_transcriptions = annotation_data.get('transcriptions')
+        n_speakers_ref = len(set(seg['speaker'] for seg in ref_segments))
+
+        for pipeline_name, pipeline_data in pipelines.items():
+            pipeline = pipeline_data['instance']
+            has_transcription = pipeline_data['has_transcription']
+
+            logger.info(f"  Running {pipeline_name}...")
+
+            try:
+                start_time = time.time()
+
+                if pipeline_name == 'who-says':
+                    result = pipeline(
+                        str(audio_file),
+                        num_speakers=n_speakers_ref,
+                        include_timing=True,
+                        return_diarization_time=True
+                    )
+                    inference_time = result.get('diarization_time', time.time() - start_time)
+                else:
+                    result = pipeline.process(audio_file)
+                    inference_time = time.time() - start_time
+
+                pred_segments = result['segments']
+                n_speakers_pred = len(set(seg['speaker'] for seg in pred_segments))
+
+                der_metrics = evaluate_diarization(
+                    reference_segments=ref_segments,
+                    hypothesis_segments=pred_segments,
+                    total_duration=duration
+                )
+
+                wer_metrics = None
+                if has_transcription and ref_transcriptions:
+                    pred_transcriptions = [seg['text'] for seg in pred_segments]
+                    wer_metrics = evaluate_asr(ref_transcriptions, pred_transcriptions)
+
+                # Capture component timing if available
+                component_timing = None
+                if pipeline_name == 'who-says' and 'timing' in result:
+                    component_timing = result['timing']
+
+                pipeline_data['results'].append({
+                    'file_id': file_id,
+                    'audio_file': str(audio_file),
+                    'duration': duration,
+                    'n_speakers_pred': n_speakers_pred,
+                    'n_speakers_ref': n_speakers_ref,
+                    'der_metrics': der_metrics,
+                    'wer_metrics': wer_metrics,
+                    'timing': inference_time,
+                    'component_timing': component_timing
+                })
+
+                logger.info(f"    DER: {der_metrics['der']:.2f}%")
+                if wer_metrics:
+                    logger.info(f"    WER: {wer_metrics['wer']:.2f}%")
+                logger.info(f"    Time: {inference_time:.2f}s")
+
+            except Exception as e:
+                logger.error(f"    Error with {pipeline_name}: {e}")
+                continue
+
+    return pipelines
+
+
+def aggregate_e2e_results(pipelines: Dict) -> Dict:
+    """
+    Aggregate end-to-end pipeline results.
+
+    Computes mean and std for DER components and timing.
+
+    Args:
+        pipelines: Dict from compare_e2e_pipelines()
+
+    Returns:
+        Updated dict with 'aggregated' key for each pipeline
+    """
+    for pipeline_name, pipeline_data in pipelines.items():
+        results = pipeline_data['results']
+
+        if not results:
+            logger.warning(f"No results for {pipeline_name}, skipping aggregation")
+            continue
+
+        ders = [r['der_metrics']['der'] for r in results]
+        misses = [r['der_metrics']['miss'] for r in results]
+        false_alarms = [r['der_metrics']['false_alarm'] for r in results]
+        confusions = [r['der_metrics']['confusion'] for r in results]
+        timings = [r['timing'] for r in results]
+
+        aggregated = {
+            'der': {'mean': float(np.mean(ders)), 'std': float(np.std(ders))},
+            'miss': {'mean': float(np.mean(misses)), 'std': float(np.std(misses))},
+            'false_alarm': {'mean': float(np.mean(false_alarms)), 'std': float(np.std(false_alarms))},
+            'confusion': {'mean': float(np.mean(confusions)), 'std': float(np.std(confusions))},
+            'timing': {
+                'mean': float(np.mean(timings)),
+                'std': float(np.std(timings)),
+                'total': float(np.sum(timings))
+            }
+        }
+
+        # Aggregate component timing if available (for who-says pipeline)
+        component_timings = [r['component_timing'] for r in results if r.get('component_timing')]
+        if component_timings:
+            component_keys = ['audio_loading', 'vad', 'overlap_detection', 'asr', 'phoneme',
+                              'scd', 'embedding', 'clustering', 'overlap_processing', 'formatting']
+            aggregated['component_timing'] = {}
+            for key in component_keys:
+                values = [ct.get(key, 0) for ct in component_timings if ct.get(key) is not None]
+                if values:
+                    aggregated['component_timing'][key] = {
+                        'mean': float(np.mean(values)),
+                        'std': float(np.std(values)),
+                        'total': float(np.sum(values))
+                    }
+
+        if pipeline_data['has_transcription'] and results[0]['wer_metrics']:
+            wers = [r['wer_metrics']['wer'] for r in results if r['wer_metrics']]
+            if wers:
+                aggregated['wer'] = {'mean': float(np.mean(wers)), 'std': float(np.std(wers))}
+
+        pipeline_data['aggregated'] = aggregated
+
+    return pipelines
+
+
+# =============================================================================
+# SCD (Speaker Change Detection) Comparison Functions
+# =============================================================================
+
+def load_scd_ground_truth(benchmark_dir: Path) -> Tuple[int, List[float]]:
+    """
+    Load ground truth speaker changes from benchmark annotations.
+
+    Counts speaker changes based on the primary/longest speaker in each time region.
+    Brief interruptions (< 0.5s) are ignored.
+
+    Parameters
+    ----------
+    benchmark_dir : Path
+        Directory containing benchmark JSON files (30s chunks named 0.json, 1.json, etc.)
+
+    Returns
+    -------
+    Tuple[int, List[float]]
+        Total number of speaker changes and list of change point timestamps
+    """
+    total_changes = 0
+    all_change_times = []
+
+    for f in sorted(benchmark_dir.glob("*.json")):
+        chunk_idx = int(f.stem)
+        chunk_offset = chunk_idx * 30.0  # 30 second chunks
+
+        with open(f) as fp:
+            data = json.load(fp)
+
+        segs = data['segments']
+        if not segs:
+            continue
+
+        # Sort segments by start time
+        segs_sorted = sorted(segs, key=lambda x: x['start'])
+
+        # Filter out very short segments (brief interruptions < 0.2s)
+        min_segment_duration = 0.2
+        segs_filtered = [s for s in segs_sorted if (s['end'] - s['start']) >= min_segment_duration]
+
+        if not segs_filtered:
+            continue
+
+        # Simple approach: count change when a new speaker starts after previous ends
+        # Allow small overlap tolerance (0.3s) for natural turn-taking
+        overlap_tolerance = 0.3
+
+        last_speaker = segs_filtered[0]['speaker']
+        last_end = segs_filtered[0]['end']
+
+        for seg in segs_filtered[1:]:
+            seg_start = seg['start']
+            seg_end = seg['end']
+            seg_speaker = seg['speaker']
+
+            # Check if this is a new turn (starts near or after previous ends)
+            if seg_start >= last_end - overlap_tolerance:
+                # New turn - check if speaker changed
+                if seg_speaker != last_speaker:
+                    total_changes += 1
+                    all_change_times.append(chunk_offset + seg_start)
+                last_speaker = seg_speaker
+                last_end = seg_end
+            else:
+                # Overlapping speech - update end time but keep tracking
+                # If this segment is longer, it might become the "main" speaker
+                if seg_end > last_end:
+                    # This overlapping segment extends beyond - consider it a potential change
+                    if seg_speaker != last_speaker and (seg_end - seg_start) > (last_end - seg_start):
+                        # The new speaker talks longer in this overlap - count as change
+                        total_changes += 1
+                        all_change_times.append(chunk_offset + seg_start)
+                        last_speaker = seg_speaker
+                    last_end = seg_end
+
+    return total_changes, sorted(all_change_times)
+
+
+def match_change_points(
+    detected: List[float],
+    ground_truth: List[float],
+    tolerance: float = 2.0
+) -> Tuple[float, float, float]:
+    """
+    Match detected change points to ground truth within tolerance using optimal bipartite matching.
+
+    Parameters
+    ----------
+    detected : List[float]
+        Detected change point timestamps
+    ground_truth : List[float]
+        Ground truth change point timestamps
+    tolerance : float
+        Maximum time difference for a match (seconds)
+
+    Returns
+    -------
+    Tuple[float, float, float]
+        Precision, recall, F1 score
+    """
+    from scipy.optimize import linear_sum_assignment
+
+    if not detected or not ground_truth:
+        if not detected and not ground_truth:
+            return 1.0, 1.0, 1.0
+        return 0.0, 0.0, 0.0
+
+    detected = sorted(detected)
+    ground_truth = sorted(ground_truth)
+
+    # Build cost matrix (distance between each detection and ground truth)
+    n_det = len(detected)
+    n_gt = len(ground_truth)
+
+    # Use a large cost for invalid matches (beyond tolerance)
+    INF = 1e9
+    cost_matrix = np.full((n_gt, n_det), INF)
+
+    for i, gt in enumerate(ground_truth):
+        for j, det in enumerate(detected):
+            dist = abs(det - gt)
+            if dist <= tolerance:
+                cost_matrix[i, j] = dist
+
+    # Optimal bipartite matching using Hungarian algorithm
+    row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
+    # Count valid matches (those within tolerance)
+    true_positives = 0
+    for i, j in zip(row_ind, col_ind):
+        if cost_matrix[i, j] < INF:
+            true_positives += 1
+
+    precision = true_positives / n_det if n_det > 0 else 0
+    recall = true_positives / n_gt if n_gt > 0 else 0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+
+    return precision, recall, f1
+
+
+def compare_scd_models(
+    audio_path: str,
+    benchmark_dir: Path,
+    prominence_values: List[float] = None,
+    tolerance_values: List[float] = None,
+    include_nemo: bool = True,
+    include_naive: bool = True,
+    reference_dir: Path = None,
+    chunk_duration: float = 300.0
+) -> Dict:
+    """
+    Compare SCD models: Pyannote (with different prominence values) vs NeMo Sortformer vs Naive (cosine similarity).
+
+    Parameters
+    ----------
+    audio_path : str
+        Path to audio file
+    benchmark_dir : Path
+        Directory containing ground truth annotations
+    prominence_values : List[float]
+        List of prominence thresholds to test for Pyannote
+    tolerance_values : List[float]
+        List of tolerance values for matching evaluation
+    include_nemo : bool
+        Whether to include NeMo Sortformer benchmark
+    include_naive : bool
+        Whether to include naive cosine similarity benchmark
+    reference_dir : Path
+        Directory containing reference speaker audio files (required for naive SCD)
+    chunk_duration : float
+        Chunk duration for processing (to avoid OOM)
+
+    Returns
+    -------
+    Dict
+        Results for all models and configurations
+    """
+    from pipeline.speaker_segmentation.SCD._nemo import NemoSCD
+    from config import PipelineConfig
+
+    if prominence_values is None:
+        prominence_values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+    if tolerance_values is None:
+        tolerance_values = [0.5, 1.0, 2.0, 3.0, 5.0]
+
+    config = PipelineConfig()
+
+    # Load ground truth
+    logger.info("Loading ground truth annotations...")
+    gt_changes, gt_times = load_scd_ground_truth(benchmark_dir)
+    logger.info(f"Ground truth: {gt_changes} speaker changes")
+
+    # Load audio
+    logger.info(f"Loading audio from {audio_path}...")
+    waveform, sr = load_audio_from_file(file_path=audio_path, sr=config.sr)
+    if waveform.dim() > 1:
+        waveform = waveform.mean(dim=0)
+    # Ensure tensor is contiguous for CUDA operations
+    waveform = waveform.contiguous().to(config.device)
+    total_duration = waveform.shape[-1] / sr
+    logger.info(f"Audio loaded: {total_duration:.1f} seconds")
+
+    # Remove overlapping regions from audio to avoid confusing SCD models
+    # Use a very low min_overlap_duration to catch all overlaps
+    overlap_regions = extract_overlap_ground_truth(benchmark_dir, min_overlap_duration=0.1)
+    if overlap_regions:
+        logger.info(f"Removing {len(overlap_regions)} overlap regions from audio...")
+        total_overlap_duration = sum(end - start for start, end in overlap_regions)
+        logger.info(f"  Total overlap duration: {total_overlap_duration:.1f}s ({total_overlap_duration/total_duration*100:.1f}% of audio)")
+
+        # Zero out overlap regions in the waveform
+        for start, end in overlap_regions:
+            start_sample = int(start * sr)
+            end_sample = min(int(end * sr), waveform.shape[-1])
+            waveform[start_sample:end_sample] = 0.0
+
+        logger.info("  Overlap regions zeroed out")
+
+    results = {
+        'ground_truth_count': gt_changes,
+        'ground_truth_times': gt_times,
+        'total_duration': total_duration,
+        'overlap_regions_removed': len(overlap_regions) if overlap_regions else 0,
+        'overlap_duration_removed': sum(end - start for start, end in overlap_regions) if overlap_regions else 0.0,
+        'pyannote': [],
+        'nemo': None,
+        'naive_pyannote': None,
+        'naive_speechbrain': None,
+        'naive_wav2vec2': None
+    }
+
+    # Test Pyannote with different prominence values
+    for prominence in prominence_values:
+        logger.info(f"Testing Pyannote SCD (prominence={prominence})...")
+
+        scd = SCD(
+            scd_type=TypeSCD.PYANNOTE,
+            device=config.device,
+            model=config.scd.pyannote.model,
+            min_prominence=prominence,
+            min_duration=config.scd.pyannote.min_duration
+        )
+
+        start_time = time.time()
+        with torch.no_grad():
+            change_points = scd(waveform)
+        elapsed = time.time() - start_time
+
+        # Evaluate at all tolerance levels
+        tolerance_results = []
+        for tol in tolerance_values:
+            precision, recall, f1 = match_change_points(change_points, gt_times, tolerance=tol)
+            tolerance_results.append({
+                'tolerance': tol,
+                'precision': precision,
+                'recall': recall,
+                'f1': f1
+            })
+
+        results['pyannote'].append({
+            'prominence': prominence,
+            'detected_count': len(change_points),
+            'change_points': change_points,
+            'time': elapsed,
+            'results_by_tolerance': tolerance_results
+        })
+
+        logger.info(f"  Detected: {len(change_points)}, Time: {elapsed:.2f}s")
+
+    # Test NeMo Sortformer
+    if include_nemo:
+        logger.info("Testing NeMo Sortformer SCD...")
+        try:
+            nemo_scd = NemoSCD(device=torch.device(config.device))
+
+            # Process in chunks
+            chunk_samples = int(chunk_duration * sr)
+            num_chunks = int(np.ceil(waveform.shape[-1] / chunk_samples))
+            waveform_cpu = waveform.cpu()
+
+            all_change_points = []
+            start_time = time.time()
+
+            for i in range(num_chunks):
+                chunk_start = i * chunk_samples
+                chunk_end = min((i + 1) * chunk_samples, waveform_cpu.shape[-1])
+                chunk_waveform = waveform_cpu[chunk_start:chunk_end]
+                chunk_offset = chunk_start / sr
+
+                with torch.no_grad():
+                    chunk_changes = nemo_scd(chunk_waveform, sample_rate=sr)
+
+                for cp in chunk_changes:
+                    all_change_points.append(cp + chunk_offset)
+
+            elapsed = time.time() - start_time
+            change_points = sorted(all_change_points)
+
+            # Evaluate at all tolerance levels
+            tolerance_results = []
+            for tol in tolerance_values:
+                precision, recall, f1 = match_change_points(change_points, gt_times, tolerance=tol)
+                tolerance_results.append({
+                    'tolerance': tol,
+                    'precision': precision,
+                    'recall': recall,
+                    'f1': f1
+                })
+
+            results['nemo'] = {
+                'detected_count': len(change_points),
+                'change_points': change_points,
+                'time': elapsed,
+                'results_by_tolerance': tolerance_results
+            }
+
+            logger.info(f"  Detected: {len(change_points)}, Time: {elapsed:.2f}s")
+
+        except Exception as e:
+            logger.error(f"NeMo SCD failed: {e}")
+            results['nemo'] = {'error': str(e)}
+
+    # Test Naive cosine similarity SCD with all embedding models
+    if include_naive and reference_dir is not None:
+        logger.info("Testing Naive SCD (cosine similarity)...")
+
+        embedding_models = ["pyannote", "speechbrain", "wav2vec2"]
+        window_sizes = [0.5, 1.0, 1.5]
+        similarity_thresholds = [0.4, 0.5, 0.6]
+
+        for emb_model in embedding_models:
+            logger.info(f"Testing Naive SCD ({emb_model})...")
+            try:
+                from pipeline.speaker_segmentation.SCD._naive import NaiveSCD
+
+                naive_results = []
+                for window_dur in window_sizes:
+                    for sim_threshold in similarity_thresholds:
+                        logger.info(f"  {emb_model}: window={window_dur}s, threshold={sim_threshold}...")
+
+                        naive_scd = NaiveSCD(
+                            reference_dir=reference_dir,
+                            embedding_model=emb_model,
+                            window_duration=window_dur,
+                            step_duration=window_dur / 2,  # 50% overlap
+                            similarity_threshold=sim_threshold,
+                            min_duration=config.scd.pyannote.min_duration,
+                            device=torch.device(config.device)
+                        )
+
+                        start_time = time.time()
+                        with torch.no_grad():
+                            change_points = naive_scd(waveform.cpu())
+                        elapsed = time.time() - start_time
+
+                        # Evaluate at all tolerance levels
+                        tolerance_results = []
+                        for tol in tolerance_values:
+                            precision, recall, f1 = match_change_points(change_points, gt_times, tolerance=tol)
+                            tolerance_results.append({
+                                'tolerance': tol,
+                                'precision': precision,
+                                'recall': recall,
+                                'f1': f1
+                            })
+
+                        naive_results.append({
+                            'window_duration': window_dur,
+                            'similarity_threshold': sim_threshold,
+                            'detected_count': len(change_points),
+                            'change_points': change_points,
+                            'time': elapsed,
+                            'results_by_tolerance': tolerance_results
+                        })
+
+                        logger.info(f"    Detected: {len(change_points)}, Time: {elapsed:.2f}s")
+
+                results[f'naive_{emb_model}'] = naive_results
+
+            except Exception as e:
+                logger.error(f"Naive SCD ({emb_model}) failed: {e}")
+                import traceback
+                traceback.print_exc()
+                results[f'naive_{emb_model}'] = {'error': str(e)}
+
+    elif include_naive and reference_dir is None:
+        logger.warning("Naive SCD skipped: --reference-dir not provided")
+        results['naive_pyannote'] = {'error': 'reference_dir not provided'}
+        results['naive_speechbrain'] = {'error': 'reference_dir not provided'}
+        results['naive_wav2vec2'] = {'error': 'reference_dir not provided'}
+
+    return results
+
+
+def aggregate_scd_results(results: Dict, optimize_metric: str = "f1") -> Dict:
+    """
+    Aggregate SCD comparison results with best configs.
+
+    Args:
+        results: Raw SCD comparison results
+        optimize_metric: Metric to optimize for ("f1", "precision", or "recall")
+    """
+    # Find best Pyannote config for each tolerance
+    best_pyannote = {}
+    for tol_result in results['pyannote'][0]['results_by_tolerance']:
+        tol = tol_result['tolerance']
+        best_score = 0
+        best_config = None
+
+        for pya_result in results['pyannote']:
+            for tr in pya_result['results_by_tolerance']:
+                score = tr[optimize_metric]
+                if tr['tolerance'] == tol and score > best_score:
+                    best_score = score
+                    best_config = {
+                        'prominence': pya_result['prominence'],
+                        'f1': tr['f1'],
+                        'precision': tr['precision'],
+                        'recall': tr['recall']
+                    }
+
+        best_pyannote[f'tolerance_{tol}s'] = best_config
+
+    results['aggregated'] = {
+        'best_pyannote_by_tolerance': best_pyannote,
+        'optimize_metric': optimize_metric
+    }
+
+    if results['nemo'] and 'error' not in results['nemo']:
+        results['aggregated']['nemo_by_tolerance'] = {
+            f"tolerance_{tr['tolerance']}s": {
+                'f1': tr['f1'],
+                'precision': tr['precision'],
+                'recall': tr['recall']
+            }
+            for tr in results['nemo']['results_by_tolerance']
+        }
+
+    # Find best Naive config for each embedding model and tolerance
+    for emb_model in ['pyannote', 'speechbrain', 'wav2vec2']:
+        naive_key = f'naive_{emb_model}'
+        if results.get(naive_key) and isinstance(results[naive_key], list) and len(results[naive_key]) > 0:
+            best_naive = {}
+            for tol_result in results[naive_key][0]['results_by_tolerance']:
+                tol = tol_result['tolerance']
+                best_score = 0
+                best_config = None
+
+                for naive_result in results[naive_key]:
+                    for tr in naive_result['results_by_tolerance']:
+                        score = tr[optimize_metric]
+                        if tr['tolerance'] == tol and score > best_score:
+                            best_score = score
+                            best_config = {
+                                'window_duration': naive_result['window_duration'],
+                                'similarity_threshold': naive_result['similarity_threshold'],
+                                'f1': tr['f1'],
+                                'precision': tr['precision'],
+                                'recall': tr['recall']
+                            }
+
+                best_naive[f'tolerance_{tol}s'] = best_config
+
+            results['aggregated'][f'best_{naive_key}_by_tolerance'] = best_naive
+
+    return results
+
+
+# =============================================================================
+# SOD (Speech Overlap Detection) Comparison Functions
+# =============================================================================
+
+def extract_overlap_ground_truth(
+    benchmark_dir: Path,
+    min_overlap_duration: float = 0.3
+) -> List[Tuple[float, float]]:
+    """
+    Extract overlap regions from benchmark JSONs by finding
+    overlapping timestamps between different speakers.
+
+    Parameters
+    ----------
+    benchmark_dir : Path
+        Directory containing benchmark JSON annotation files
+    min_overlap_duration : float
+        Minimum overlap duration in seconds
+
+    Returns
+    -------
+    List[Tuple[float, float]]
+        List of (start, end) tuples representing overlap regions
+    """
+    all_overlaps = []
+
+    for f in sorted(benchmark_dir.glob("*.json")):
+        chunk_idx = int(f.stem)
+        chunk_offset = chunk_idx * 30.0
+
+        with open(f) as fp:
+            data = json.load(fp)
+
+        segments = data['segments']
+
+        for i, seg1 in enumerate(segments):
+            for j, seg2 in enumerate(segments):
+                if i >= j:
+                    continue
+                if seg1['speaker'] != seg2['speaker']:
+                    overlap_start = max(seg1['start'], seg2['start'])
+                    overlap_end = min(seg1['end'], seg2['end'])
+                    overlap_duration = overlap_end - overlap_start
+
+                    if overlap_duration >= min_overlap_duration:
+                        abs_start = chunk_offset + overlap_start
+                        abs_end = chunk_offset + overlap_end
+                        all_overlaps.append((abs_start, abs_end))
+
+    # Merge overlapping regions
+    all_overlaps = merge_overlapping_segments(all_overlaps)
+    all_overlaps = [(s, e) for s, e in all_overlaps if (e - s) >= min_overlap_duration]
+
+    return all_overlaps
+
+
+def merge_overlapping_segments(segments: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+    """Merge overlapping or adjacent segments into contiguous regions."""
+    if not segments:
+        return []
+
+    sorted_segs = sorted(segments, key=lambda x: x[0])
+    merged = [sorted_segs[0]]
+
+    for start, end in sorted_segs[1:]:
+        last_start, last_end = merged[-1]
+        if start <= last_end:
+            merged[-1] = (last_start, max(last_end, end))
+        else:
+            merged.append((start, end))
+
+    return merged
+
+
+def overlaps_to_frames(
+    overlaps: List[Tuple[float, float]],
+    total_duration: float,
+    frame_size: float = 0.01
+) -> np.ndarray:
+    """Convert overlap segments to frame-level binary array."""
+    num_frames = int(np.ceil(total_duration / frame_size))
+    frames = np.zeros(num_frames, dtype=np.int32)
+
+    for start, end in overlaps:
+        start_frame = int(start / frame_size)
+        end_frame = min(int(end / frame_size), num_frames)
+        frames[start_frame:end_frame] = 1
+
+    return frames
+
+
+def compute_frame_metrics(ref_frames: np.ndarray, pred_frames: np.ndarray) -> Dict[str, float]:
+    """Compute frame-level precision, recall, F1."""
+    max_len = max(len(ref_frames), len(pred_frames))
+    if len(ref_frames) < max_len:
+        ref_frames = np.pad(ref_frames, (0, max_len - len(ref_frames)))
+    if len(pred_frames) < max_len:
+        pred_frames = np.pad(pred_frames, (0, max_len - len(pred_frames)))
+
+    tp = np.sum((ref_frames == 1) & (pred_frames == 1))
+    fp = np.sum((ref_frames == 0) & (pred_frames == 1))
+    fn = np.sum((ref_frames == 1) & (pred_frames == 0))
+
+    precision = tp / (tp + fp) * 100 if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) * 100 if (tp + fn) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
+    return {'precision': precision, 'recall': recall, 'f1': f1}
+
+
+def compute_frame_metrics_with_tolerance(
+    ref_frames: np.ndarray,
+    pred_frames: np.ndarray,
+    tolerance_frames: int
+) -> Dict[str, float]:
+    """
+    Compute frame-level precision, recall, F1 with tolerance.
+
+    Expands ground truth by tolerance_frames on each side, so predictions
+    within the tolerance window of actual overlap are counted as hits.
+    """
+    from scipy.ndimage import binary_dilation
+
+    max_len = max(len(ref_frames), len(pred_frames))
+    if len(ref_frames) < max_len:
+        ref_frames = np.pad(ref_frames, (0, max_len - len(ref_frames)))
+    if len(pred_frames) < max_len:
+        pred_frames = np.pad(pred_frames, (0, max_len - len(pred_frames)))
+
+    # Expand ground truth by tolerance
+    structure = np.ones(2 * tolerance_frames + 1)
+    ref_expanded = binary_dilation(ref_frames.astype(bool), structure=structure).astype(int)
+
+    tp = np.sum((ref_expanded == 1) & (pred_frames == 1))
+    fp = np.sum((ref_expanded == 0) & (pred_frames == 1))
+    fn = np.sum((ref_frames == 1) & (pred_frames == 0))  # Use original ref for FN
+
+    precision = tp / (tp + fp) * 100 if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) * 100 if (tp + fn) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
+    return {'precision': precision, 'recall': recall, 'f1': f1}
+
+
+def compute_segment_iou(seg1: Tuple[float, float], seg2: Tuple[float, float]) -> float:
+    """Compute Intersection over Union (IoU) between two segments."""
+    intersection_start = max(seg1[0], seg2[0])
+    intersection_end = min(seg1[1], seg2[1])
+    intersection = max(0, intersection_end - intersection_start)
+    union = (seg1[1] - seg1[0]) + (seg2[1] - seg2[0]) - intersection
+    return intersection / union if union > 0 else 0.0
+
+
+def compute_segment_metrics(
+    ref_segments: List[Tuple[float, float]],
+    pred_segments: List[Tuple[float, float]],
+    iou_threshold: float = 0.5
+) -> Dict[str, float]:
+    """Compute segment-level precision, recall, F1 using IoU matching."""
+    if not ref_segments and not pred_segments:
+        return {'precision': 100.0, 'recall': 100.0, 'f1': 100.0}
+    if not pred_segments or not ref_segments:
+        return {'precision': 0.0, 'recall': 0.0, 'f1': 0.0}
+
+    matched_pred = set()
+    matched_ref = set()
+
+    for i, pred in enumerate(pred_segments):
+        for j, ref in enumerate(ref_segments):
+            if j not in matched_ref:
+                iou = compute_segment_iou(pred, ref)
+                if iou >= iou_threshold:
+                    matched_pred.add(i)
+                    matched_ref.add(j)
+                    break
+
+    tp = len(matched_pred)
+    precision = tp / len(pred_segments) * 100 if pred_segments else 0.0
+    recall = tp / len(ref_segments) * 100 if ref_segments else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+
+    return {'precision': precision, 'recall': recall, 'f1': f1}
+
+
+def compare_sod_models(
+    audio_path: str,
+    benchmark_dir: Path,
+    speaker_dir: Path = None,
+    onset_thresholds: List[float] = None,
+    include_nemo: bool = True,
+    include_wavlm: bool = True,
+    min_overlap_duration: float = 0.3
+) -> Dict:
+    """
+    Compare SOD models: PyannoteSOD vs WavLM vs NeMo Sortformer (via diarization).
+
+    Parameters
+    ----------
+    audio_path : str
+        Path to audio file (used if speaker_dir not provided)
+    benchmark_dir : Path
+        Directory containing ground truth annotations
+    speaker_dir : Path, optional
+        Directory containing individual speaker audio files ({speaker}.mp3).
+        If provided, creates synthetic mix by summing speaker tracks (like SOS).
+        If not provided, uses audio_path directly.
+    onset_thresholds : List[float]
+        Onset thresholds to test for Pyannote and WavLM
+    include_nemo : bool
+        Whether to include NeMo benchmark
+    include_wavlm : bool
+        Whether to include WavLM benchmark
+    min_overlap_duration : float
+        Minimum overlap duration for ground truth
+
+    Returns
+    -------
+    Dict
+        Results for all models
+    """
+    from pipeline.speaker_segmentation.SO.Detection import PyannoteSOD, WavLMSOD
+    from pipeline.speaker_segmentation.SCD._nemo import NemoSCD
+    from config import PipelineConfig
+
+    if onset_thresholds is None:
+        # Test wide range of thresholds for optimal performance
+        onset_thresholds = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+
+    config = PipelineConfig()
+    sr = config.sr
+
+    # Load ground truth
+    gt_overlaps = extract_overlap_ground_truth(benchmark_dir, min_overlap_duration)
+    gt_total_duration = sum(e - s for s, e in gt_overlaps)
+    logger.info(f"Ground truth: {len(gt_overlaps)} overlap regions ({gt_total_duration:.1f}s total)")
+    if gt_overlaps:
+        logger.info(f"  First 5 GT overlaps: {gt_overlaps[:5]}")
+        logger.info(f"  Last GT overlap ends at: {gt_overlaps[-1][1]:.1f}s")
+
+    # Load audio - either from speaker files (synthetic mix) or combined audio
+    if speaker_dir is not None:
+        speaker_dir = Path(speaker_dir)
+        logger.info(f"Creating synthetic mix from speaker files in {speaker_dir}")
+
+        # Find available speaker audio files
+        speaker_audio = {}
+        for speaker in ['gor', 'johan', 'kalle', 'lukas', 'marten', 'oscar']:
+            audio_file = speaker_dir / f"{speaker}.mp3"
+            if audio_file.exists():
+                spk_audio, _ = load_audio_from_file(str(audio_file), sr=sr)
+                if spk_audio.dim() > 1:
+                    spk_audio = spk_audio.mean(dim=0)
+                speaker_audio[speaker.upper()] = spk_audio.numpy()
+                logger.info(f"  Loaded {speaker}.mp3 ({len(spk_audio)/sr:.1f}s)")
+
+        if not speaker_audio:
+            logger.warning("No speaker audio files found, falling back to audio_path")
+            waveform, _ = load_audio_from_file(file_path=audio_path, sr=sr)
+            if waveform.dim() > 1:
+                waveform = waveform.mean(dim=0)
+        else:
+            # Create synthetic mix by summing all speaker tracks
+            max_len = max(len(a) for a in speaker_audio.values())
+            mix = np.zeros(max_len, dtype=np.float32)
+            for spk_name, spk_audio_data in speaker_audio.items():
+                mix[:len(spk_audio_data)] += spk_audio_data
+
+            # Normalize to prevent clipping
+            max_val = np.abs(mix).max()
+            if max_val > 0:
+                mix = mix / max_val * 0.9
+
+            waveform = torch.from_numpy(mix).float()
+            logger.info(f"Created synthetic mix from {len(speaker_audio)} speakers ({len(mix)/sr:.1f}s)")
+    else:
+        # Load audio from file
+        waveform, _ = load_audio_from_file(file_path=audio_path, sr=sr)
+        if waveform.dim() > 1:
+            waveform = waveform.mean(dim=0)
+
+    waveform = waveform.to(config.device)
+    total_duration = waveform.shape[-1] / sr
+
+    gt_frames = overlaps_to_frames(gt_overlaps, total_duration)
+    gt_total_time = sum(end - start for start, end in gt_overlaps)
+
+    results = {
+        'ground_truth_count': len(gt_overlaps),
+        'ground_truth_duration': gt_total_time,
+        'total_audio_duration': total_duration,
+        'pyannote_results': [],
+        'wavlm_results': [],
+        'nemo_results': None
+    }
+
+    # Test Pyannote with different thresholds
+    for onset in onset_thresholds:
+        logger.info(f"Testing PyannoteSOD (onset={onset})...")
+
+        sod = PyannoteSOD(
+            model_name="pyannote/segmentation-3.0",
+            onset=onset,
+            offset=onset,
+            min_duration=min_overlap_duration,  # Match ground truth filtering
+            device=torch.device(config.device)
+        )
+
+        start_time = time.time()
+        with torch.no_grad():
+            detected_overlaps = sod(waveform, sample_rate=sr)
+        elapsed = time.time() - start_time
+
+        pred_frames = overlaps_to_frames(detected_overlaps, total_duration)
+        frame_metrics_strict = compute_frame_metrics(gt_frames, pred_frames)
+        frame_metrics = compute_frame_metrics_with_tolerance(gt_frames, pred_frames, tolerance_frames=50)  # 0.5s at 100fps
+        seg_metrics_05 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.5)
+        seg_metrics_03 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.3)
+
+        detected_total_time = sum(end - start for start, end in detected_overlaps)
+
+        # Debug: show precision/recall breakdown
+        logger.info(f"  Detected: {len(detected_overlaps)} overlaps ({detected_total_time:.1f}s)")
+        logger.info(f"  Frame metrics (strict) - P: {frame_metrics_strict['precision']:.1f}%, R: {frame_metrics_strict['recall']:.1f}%, F1: {frame_metrics_strict['f1']:.1f}%")
+        logger.info(f"  Frame metrics (0.5s tol) - P: {frame_metrics['precision']:.1f}%, R: {frame_metrics['recall']:.1f}%, F1: {frame_metrics['f1']:.1f}%")
+        if detected_overlaps and onset == onset_thresholds[0]:
+            logger.info(f"  First 5 detected: {detected_overlaps[:5]}")
+
+        results['pyannote_results'].append({
+            'onset': onset,
+            'detected_count': len(detected_overlaps),
+            'detected_duration': detected_total_time,
+            'time': elapsed,
+            'frame_metrics': frame_metrics,
+            'frame_metrics_strict': frame_metrics_strict,
+            'segment_metrics_iou05': seg_metrics_05,
+            'segment_metrics_iou03': seg_metrics_03
+        })
+
+        logger.info(f"  Detected: {len(detected_overlaps)}, Frame F1: {frame_metrics['f1']:.1f}%")
+
+    # Test WavLM with different thresholds
+    if include_wavlm:
+        logger.info("Testing WavLM SOD...")
+        try:
+            for onset in onset_thresholds:
+                logger.info(f"Testing WavLMSOD (onset={onset})...")
+
+                sod = WavLMSOD(
+                    model_name="microsoft/wavlm-base-plus-sd",
+                    onset=onset,
+                    offset=onset,
+                    min_duration=min_overlap_duration,
+                    device=torch.device(config.device)
+                )
+
+                start_time = time.time()
+                with torch.no_grad():
+                    detected_overlaps = sod(waveform, sample_rate=sr)
+                elapsed = time.time() - start_time
+
+                pred_frames = overlaps_to_frames(detected_overlaps, total_duration)
+                frame_metrics_strict = compute_frame_metrics(gt_frames, pred_frames)
+                frame_metrics = compute_frame_metrics_with_tolerance(gt_frames, pred_frames, tolerance_frames=50)
+                seg_metrics_05 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.5)
+                seg_metrics_03 = compute_segment_metrics(gt_overlaps, detected_overlaps, iou_threshold=0.3)
+
+                detected_total_time = sum(end - start for start, end in detected_overlaps)
+
+                logger.info(f"  Detected: {len(detected_overlaps)} overlaps ({detected_total_time:.1f}s)")
+                logger.info(f"  Frame metrics (strict) - P: {frame_metrics_strict['precision']:.1f}%, R: {frame_metrics_strict['recall']:.1f}%, F1: {frame_metrics_strict['f1']:.1f}%")
+                logger.info(f"  Frame metrics (0.5s tol) - P: {frame_metrics['precision']:.1f}%, R: {frame_metrics['recall']:.1f}%, F1: {frame_metrics['f1']:.1f}%")
+
+                results['wavlm_results'].append({
+                    'onset': onset,
+                    'detected_count': len(detected_overlaps),
+                    'detected_duration': detected_total_time,
+                    'time': elapsed,
+                    'frame_metrics': frame_metrics,
+                    'frame_metrics_strict': frame_metrics_strict,
+                    'segment_metrics_iou05': seg_metrics_05,
+                    'segment_metrics_iou03': seg_metrics_03
+                })
+
+                logger.info(f"  Detected: {len(detected_overlaps)}, Frame F1: {frame_metrics['f1']:.1f}%")
+
+        except Exception as e:
+            logger.error(f"WavLM SOD failed: {e}")
+            results['wavlm_results'] = [{'error': str(e)}]
+
+    # Test NeMo (via diarization overlaps)
+    # NOTE: NeMo detects overlaps indirectly from diarization segments.
+    # For long audio (>30s), chunking is used which causes speaker label
+    # inconsistency across chunks, reducing overlap detection accuracy.
+    if include_nemo:
+        logger.info("Testing NeMo Sortformer (via diarization)...")
+        if total_duration > 30.0:
+            logger.warning("NeMo accuracy may be reduced for long audio due to chunking. Consider --skip-nemo.")
+        try:
+            nemo_scd = NemoSCD(device=torch.device(config.device))
+            waveform_cpu = waveform.cpu()
+
+            start_time = time.time()
+            with torch.no_grad():
+                diar_segments = nemo_scd.get_diarization_segments(waveform_cpu, sample_rate=sr)
+            elapsed = time.time() - start_time
+
+            # Extract overlaps from diarization
+            nemo_overlaps = []
+            for i, seg1 in enumerate(diar_segments):
+                for j, seg2 in enumerate(diar_segments):
+                    if i >= j:
+                        continue
+                    if seg1['speaker'] != seg2['speaker']:
+                        ov_start = max(seg1['start'], seg2['start'])
+                        ov_end = min(seg1['end'], seg2['end'])
+                        ov_duration = ov_end - ov_start
+                        # Apply same min_duration filter as ground truth
+                        if ov_duration >= min_overlap_duration:
+                            nemo_overlaps.append((ov_start, ov_end))
+
+            nemo_overlaps = merge_overlapping_segments(nemo_overlaps)
+            # Filter merged overlaps by min_duration again
+            nemo_overlaps = [(s, e) for s, e in nemo_overlaps if (e - s) >= min_overlap_duration]
+            pred_frames = overlaps_to_frames(nemo_overlaps, total_duration)
+            frame_metrics_strict = compute_frame_metrics(gt_frames, pred_frames)
+            frame_metrics = compute_frame_metrics_with_tolerance(gt_frames, pred_frames, tolerance_frames=50)
+            seg_metrics_05 = compute_segment_metrics(gt_overlaps, nemo_overlaps, iou_threshold=0.5)
+            seg_metrics_03 = compute_segment_metrics(gt_overlaps, nemo_overlaps, iou_threshold=0.3)
+
+            results['nemo_results'] = {
+                'detected_count': len(nemo_overlaps),
+                'detected_duration': sum(e - s for s, e in nemo_overlaps),
+                'time': elapsed,
+                'frame_metrics': frame_metrics,
+                'frame_metrics_strict': frame_metrics_strict,
+                'segment_metrics_iou05': seg_metrics_05,
+                'segment_metrics_iou03': seg_metrics_03
+            }
+
+            logger.info(f"  Detected: {len(nemo_overlaps)}, Frame F1: {frame_metrics['f1']:.1f}%")
+            logger.info(f"  Frame metrics (strict) - P: {frame_metrics_strict['precision']:.1f}%, R: {frame_metrics_strict['recall']:.1f}%, F1: {frame_metrics_strict['f1']:.1f}%")
+
+        except Exception as e:
+            logger.error(f"NeMo SOD failed: {e}")
+            results['nemo_results'] = {'error': str(e)}
+
+    return results
+
+
+def aggregate_sod_results(results: Dict, optimize_metric: str = "frame_f1") -> Dict:
+    """
+    Aggregate SOD results with best config.
+
+    Args:
+        results: Raw SOD comparison results
+        optimize_metric: Metric to optimize for ("frame_f1", "frame_precision", or "frame_recall")
+    """
+    # Select best model by average of precision and F1
+    def score_fn(x):
+        return (x['frame_metrics']['precision'] + x['frame_metrics']['f1']) / 2
+
+    best_pyannote = max(results['pyannote_results'], key=score_fn)
+
+    results['aggregated'] = {
+        'best_pyannote': {
+            'onset': best_pyannote['onset'],
+            'frame_precision': best_pyannote['frame_metrics']['precision'],
+            'frame_recall': best_pyannote['frame_metrics']['recall'],
+            'frame_f1': best_pyannote['frame_metrics']['f1'],
+            'segment_f1_iou05': best_pyannote['segment_metrics_iou05']['f1'],
+            'time': best_pyannote['time']
+        },
+        'optimize_metric': optimize_metric
+    }
+
+    # Add WavLM results if available
+    wavlm_results = results.get('wavlm_results', [])
+    if wavlm_results and not (len(wavlm_results) == 1 and 'error' in wavlm_results[0]):
+        best_wavlm = max(wavlm_results, key=score_fn)
+        results['aggregated']['best_wavlm'] = {
+            'onset': best_wavlm['onset'],
+            'frame_precision': best_wavlm['frame_metrics']['precision'],
+            'frame_recall': best_wavlm['frame_metrics']['recall'],
+            'frame_f1': best_wavlm['frame_metrics']['f1'],
+            'segment_f1_iou05': best_wavlm['segment_metrics_iou05']['f1'],
+            'time': best_wavlm['time']
+        }
+
+    if results['nemo_results'] and 'error' not in results['nemo_results']:
+        results['aggregated']['nemo'] = {
+            'frame_precision': results['nemo_results']['frame_metrics']['precision'],
+            'frame_recall': results['nemo_results']['frame_metrics']['recall'],
+            'frame_f1': results['nemo_results']['frame_metrics']['f1'],
+            'segment_f1_iou05': results['nemo_results']['segment_metrics_iou05']['f1'],
+            'time': results['nemo_results']['time']
+        }
+
+    return results
+
+
+# =============================================================================
+# SOS (Speech Overlap Separation) Comparison Functions
+# =============================================================================
+
+def extract_overlap_with_speakers(
+    benchmark_dir: Path,
+    min_overlap_duration: float = 0.3
+) -> List[Dict]:
+    """
+    Extract overlap regions with speaker information from benchmark JSONs.
+
+    Returns list of dicts with overlap info including which speakers overlap,
+    their segment timing, and segment IDs for loading audio chunks.
+    """
+    all_overlaps = []
+
+    for f in sorted(benchmark_dir.glob("*.json")):
+        chunk_idx = int(f.stem)
+        chunk_offset = chunk_idx * 30.0
+
+        with open(f) as fp:
+            data = json.load(fp)
+
+        segments = data['segments']
+
+        for i, seg1 in enumerate(segments):
+            for j, seg2 in enumerate(segments):
+                if i >= j:
+                    continue
+                if seg1['speaker'] != seg2['speaker']:
+                    overlap_start = max(seg1['start'], seg2['start'])
+                    overlap_end = min(seg1['end'], seg2['end'])
+                    overlap_duration = overlap_end - overlap_start
+
+                    if overlap_duration >= min_overlap_duration:
+                        # Get segment IDs (use 'id' field if present, else use index)
+                        seg1_id = seg1.get('id', i)
+                        seg2_id = seg2.get('id', j)
+
+                        all_overlaps.append({
+                            'chunk_idx': chunk_idx,
+                            'chunk_offset': chunk_offset,
+                            'abs_start': chunk_offset + overlap_start,
+                            'abs_end': chunk_offset + overlap_end,
+                            'overlap_start': overlap_start,
+                            'overlap_end': overlap_end,
+                            'speakers': [
+                                {
+                                    'name': seg1['speaker'],
+                                    'segment_id': seg1_id,
+                                    'seg_start': seg1['start'],
+                                    'seg_end': seg1['end']
+                                },
+                                {
+                                    'name': seg2['speaker'],
+                                    'segment_id': seg2_id,
+                                    'seg_start': seg2['start'],
+                                    'seg_end': seg2['end']
+                                }
+                            ]
+                        })
+
+    return all_overlaps
+
+
+def load_speaker_chunk_audio(
+    speaker_dir: Path,
+    speaker_name: str,
+    chunk_idx: int,
+    sr: int
+) -> Optional[np.ndarray]:
+    """
+    Load a speaker's 30-second chunk audio from their audio_chunks or audio directory.
+
+    The audio_chunks/audio folders contain 30-second isolated speaker tracks,
+    one per benchmark chunk. Different naming conventions may be used:
+    - {speaker}_chunk_{chunk_idx:03d}.mp3
+    - {speaker}_{chunk_idx:03d}.mp3
+    - {speaker}_part{chunk_idx:03d}.mp3
+    - meeting3_{speaker}_{chunk_idx:03d}.mp3
+
+    Parameters
+    ----------
+    speaker_dir : Path
+        Base directory containing speaker folders (e.g., meeting3-en/)
+    speaker_name : str
+        Speaker name (e.g., 'JOHAN', 'GOR')
+    chunk_idx : int
+        Chunk index (0, 1, 2, ...) corresponding to benchmark JSON files
+    sr : int
+        Sample rate
+
+    Returns
+    -------
+    np.ndarray or None
+        Audio waveform for the 30-second chunk, or None if not found
+    """
+    speaker_lower = speaker_name.lower()
+
+    # Try different naming patterns and directories
+    # Each speaker may have different naming conventions
+    patterns = [
+        # Standard patterns
+        (speaker_lower, "audio_chunks", f"{speaker_lower}_chunk_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio_chunks", f"{speaker_lower}_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"{speaker_lower}_chunk_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"{speaker_lower}_{chunk_idx:03d}.mp3"),
+        # Additional patterns found in meeting3-en
+        (speaker_lower, "audio_chunks", f"{speaker_lower}_part{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio_chunks", f"meeting3_{speaker_lower}_{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"{speaker_lower}_part{chunk_idx:03d}.mp3"),
+        (speaker_lower, "audio", f"meeting3_{speaker_lower}_{chunk_idx:03d}.mp3"),
+    ]
+
+    for speaker_folder, audio_folder, filename in patterns:
+        chunk_path = speaker_dir / speaker_folder / audio_folder / filename
+        if chunk_path.exists():
+            waveform, _ = load_audio_from_file(str(chunk_path), sr=sr)
+            if waveform.dim() > 1:
+                waveform = waveform.mean(dim=0)
+            return waveform.numpy()
+
+    return None
+
+
+def compare_sos_models(
+    audio_path: str,
+    benchmark_dir: Path,
+    speaker_dir: Path = None,
+    max_regions: int = 15
+) -> Dict:
+    """
+    Compare SOS models: PyannoteSOS vs SpeechBrainSOS (SepFormer).
+
+    Parameters
+    ----------
+    audio_path : str
+        Path to combined audio file
+    benchmark_dir : Path
+        Directory containing ground truth annotations
+    speaker_dir : Path, optional
+        Directory containing speaker folders with audio_chunks/ subdirectories.
+        Structure: speaker_dir/{speaker_name}/audio_chunks/{speaker}_{chunk_idx}.mp3
+        If provided, uses SI-SDR evaluation against ground truth speaker audio.
+    max_regions : int
+        Maximum overlap regions to process
+
+    Returns
+    -------
+    Dict
+        Results for both models with SI-SDR metrics (if speaker_dir provided)
+        or alternative metrics (energy ratio, num sources, timing)
+    """
+    from pipeline.speaker_segmentation.SO.Separation import PyannoteSOS, SpeechBrainSOS
+    from config import PipelineConfig
+    import torchaudio
+
+    config = PipelineConfig()
+    sr = config.sr
+
+    # Load ground truth overlaps with speaker info
+    gt_overlaps_with_speakers = extract_overlap_with_speakers(benchmark_dir)
+    logger.info(f"Found {len(gt_overlaps_with_speakers)} overlap regions")
+
+    # Load combined audio
+    waveform, _ = load_audio_from_file(file_path=audio_path, sr=sr)
+    if waveform.dim() > 1:
+        waveform = waveform.mean(dim=0)
+
+    # Check if we have full speaker audio files for SI-SDR evaluation
+    # Speaker audio files are expected as {speaker}.mp3 in speaker_dir (e.g., marten.mp3)
+    has_references = False
+    available_speakers = set()
+    speaker_audio_cache = {}  # Cache loaded speaker audio to avoid reloading
+
+    if speaker_dir is not None:
+        speaker_dir = Path(speaker_dir)
+        # Check which speakers have full audio files (e.g., marten.mp3, johan.mp3)
+        for speaker in ['gor', 'johan', 'kalle', 'lukas', 'marten', 'oscar']:
+            audio_file = speaker_dir / f"{speaker}.mp3"
+            if audio_file.exists():
+                available_speakers.add(speaker.upper())
+
+        has_references = len(available_speakers) > 0
+        if has_references:
+            logger.info(f"Found speaker audio files for: {available_speakers}")
+        else:
+            logger.warning("No speaker audio files found (expected {speaker}.mp3), using alternative metrics")
+    else:
+        logger.info("No speaker-dir provided, using alternative metrics (energy ratio, timing)")
+
+    # Filter overlaps to only those where we have audio files for all speakers
+    if has_references:
+        valid_overlaps = []
+        for overlap in gt_overlaps_with_speakers:
+            speakers_in_overlap = {s['name'] for s in overlap['speakers']}
+            if speakers_in_overlap.issubset(available_speakers):
+                valid_overlaps.append(overlap)
+        logger.info(f"Found {len(valid_overlaps)} overlaps with available speaker audio files")
+    else:
+        valid_overlaps = gt_overlaps_with_speakers
+
+    results = {
+        'ground_truth_overlaps': len(gt_overlaps_with_speakers),
+        'valid_overlaps': len(valid_overlaps),
+        'has_references': has_references,
+        'pyannote': None,
+        'sepformer': None
+    }
+
+    regions_to_process = valid_overlaps[:max_regions]
+    logger.info(f"Processing {len(regions_to_process)} overlap regions")
+
+    def compute_energy_ratio(sources: Dict[int, np.ndarray]) -> float:
+        """Compute energy ratio between sources (higher is better separation)."""
+        if len(sources) < 2:
+            return 0.0
+        energies = []
+        for source in sources.values():
+            if isinstance(source, torch.Tensor):
+                source = source.numpy()
+            energies.append(np.sum(source ** 2))
+        if sum(energies) == 0:
+            return 0.0
+        return min(energies) / max(energies) if max(energies) > 0 else 0.0
+
+    # Helper function to run separation benchmark
+    def run_separation(model, model_name: str, target_sr: int = None) -> Dict:
+        region_results = []
+        total_time = 0
+
+        for overlap in regions_to_process:
+            abs_start = overlap['abs_start']
+            abs_end = overlap['abs_end']
+            chunk_idx = overlap['chunk_idx']
+
+            # Create synthetic mix from speaker audio files instead of using combined.mp3
+            # This ensures the ground truth and mix are perfectly aligned
+            start_sample = int(abs_start * sr)
+            end_sample = int(abs_end * sr)
+
+            # Load speaker references and create mix
+            speaker_refs = {}
+            mix_components = []
+
+            for spk_info in overlap['speakers']:
+                spk_name = spk_info['name']
+                spk_lower = spk_name.lower()
+
+                # Load full speaker audio from cache or file
+                if spk_name not in speaker_audio_cache:
+                    audio_file = speaker_dir / f"{spk_lower}.mp3"
+                    if audio_file.exists():
+                        spk_audio, _ = load_audio_from_file(str(audio_file), sr=sr)
+                        if spk_audio.dim() > 1:
+                            spk_audio = spk_audio.mean(dim=0)
+                        speaker_audio_cache[spk_name] = spk_audio.numpy()
+                    else:
+                        speaker_audio_cache[spk_name] = None
+
+                spk_full_audio = speaker_audio_cache.get(spk_name)
+
+                if spk_full_audio is not None and len(spk_full_audio) > start_sample:
+                    # Extract the overlap portion using absolute times
+                    spk_end_sample = min(len(spk_full_audio), end_sample)
+                    spk_segment = spk_full_audio[start_sample:spk_end_sample]
+
+                    if len(spk_segment) >= 100:
+                        speaker_refs[spk_name] = spk_segment
+                        mix_components.append(spk_segment)
+
+            # Skip if we don't have at least 2 speakers
+            if len(speaker_refs) < 2:
+                logger.debug(f"Skipping overlap at {abs_start:.2f}s - insufficient speaker refs")
+                continue
+
+            # Create synthetic mix by summing speaker tracks
+            min_len = min(len(c) for c in mix_components)
+            segment = np.zeros(min_len, dtype=np.float32)
+            for comp in mix_components:
+                segment += comp[:min_len]
+
+            # Normalize to prevent clipping
+            max_val = np.abs(segment).max()
+            if max_val > 0:
+                segment = segment / max_val * 0.9
+
+            segment = torch.from_numpy(segment).float()
+
+            if len(segment) < sr * 0.1:
+                continue
+
+            start_time = time.time()
+            try:
+                with torch.no_grad():
+                    try:
+                        separated = model(segment, sample_rate=sr)
+                    except TypeError:
+                        separated = model(segment)
+                elapsed = time.time() - start_time
+                total_time += elapsed
+            except Exception as e:
+                logger.warning(f"Separation error: {e}")
+                continue
+
+            num_sources = len(separated)
+
+            # Process separated sources
+            sources_np = {}
+            for source_idx, source_waveform in separated.items():
+                if isinstance(source_waveform, torch.Tensor):
+                    source_np = source_waveform.numpy()
+                else:
+                    source_np = source_waveform
+
+                if target_sr and target_sr != sr:
+                    resampler = torchaudio.transforms.Resample(target_sr, sr)
+                    source_tensor = torch.from_numpy(source_np).float()
+                    source_np = resampler(source_tensor).numpy()
+
+                sources_np[source_idx] = source_np
+
+            # Compute metrics
+            region_result = {
+                'start': abs_start,
+                'end': abs_end,
+                'chunk_idx': chunk_idx,
+                'speakers': [s['name'] for s in overlap['speakers']],
+                'num_sources': num_sources,
+                'time': elapsed,
+                'energy_ratio': compute_energy_ratio(sources_np)
+            }
+
+            # Compute SI-SDR using speaker_refs already loaded above
+            if has_references and len(speaker_refs) >= 2:
+                from utils.metrics import si_sdr
+                source_si_sdrs = []
+
+                # Match each separated source to best reference
+                for source_idx, source_np in sources_np.items():
+                    best_si_sdr = float('-inf')
+                    best_speaker = None
+                    for spk_name, ref_segment in speaker_refs.items():
+                        min_len = min(len(source_np), len(ref_segment))
+                        if min_len < 100:
+                            continue
+                        sdr_val = si_sdr(ref_segment[:min_len], source_np[:min_len])
+                        if sdr_val > best_si_sdr:
+                            best_si_sdr = sdr_val
+                            best_speaker = spk_name
+                    source_si_sdrs.append(best_si_sdr)
+
+                valid_sdrs = [s for s in source_si_sdrs if s > float('-inf')]
+                region_result['avg_si_sdr'] = np.mean(valid_sdrs) if valid_sdrs else float('-inf')
+            else:
+                region_result['avg_si_sdr'] = float('-inf')
+
+            region_results.append(region_result)
+
+        # Aggregate metrics
+        result = {
+            'model': model_name,
+            'num_regions': len(region_results),
+            'total_time': total_time,
+            'avg_time_per_region': total_time / len(region_results) if region_results else 0,
+            'mean_num_sources': np.mean([r['num_sources'] for r in region_results]) if region_results else 0,
+            'mean_energy_ratio': np.mean([r['energy_ratio'] for r in region_results]) if region_results else 0,
+            'std_energy_ratio': np.std([r['energy_ratio'] for r in region_results]) if len(region_results) > 1 else 0,
+            'region_results': region_results
+        }
+
+        if has_references:
+            all_si_sdrs = [r['avg_si_sdr'] for r in region_results if r.get('avg_si_sdr', float('-inf')) > float('-inf')]
+            result['mean_si_sdr'] = np.mean(all_si_sdrs) if all_si_sdrs else float('-inf')
+            result['std_si_sdr'] = np.std(all_si_sdrs) if len(all_si_sdrs) > 1 else 0
+
+        return result
+
+    # Test PyannoteSOS
+    logger.info("Testing PyannoteSOS...")
+    try:
+        pyannote_sos = PyannoteSOS(device=torch.device(config.device))
+        results['pyannote'] = run_separation(pyannote_sos, "PyannoteSOS (separation-ami-1.0)")
+        if has_references and 'mean_si_sdr' in results['pyannote']:
+            logger.info(f"  Mean SI-SDR: {results['pyannote']['mean_si_sdr']:.1f} dB")
+        logger.info(f"  Mean Energy Ratio: {results['pyannote']['mean_energy_ratio']:.3f}")
+        logger.info(f"  Total Time: {results['pyannote']['total_time']:.2f}s")
+    except Exception as e:
+        logger.error(f"PyannoteSOS failed: {e}")
+        results['pyannote'] = {'error': str(e)}
+
+    # Test SpeechBrainSOS
+    logger.info("Testing SpeechBrainSOS (SepFormer)...")
+    try:
+        sepformer_sos = SpeechBrainSOS(device=torch.device(config.device))
+        results['sepformer'] = run_separation(sepformer_sos, "SepFormer (wsj02mix)", target_sr=8000)
+        if has_references and 'mean_si_sdr' in results['sepformer']:
+            logger.info(f"  Mean SI-SDR: {results['sepformer']['mean_si_sdr']:.1f} dB")
+        logger.info(f"  Mean Energy Ratio: {results['sepformer']['mean_energy_ratio']:.3f}")
+        logger.info(f"  Total Time: {results['sepformer']['total_time']:.2f}s")
+    except Exception as e:
+        logger.error(f"SepFormer failed: {e}")
+        results['sepformer'] = {'error': str(e)}
+
+    return results
+
+
+def aggregate_sos_results(results: Dict) -> Dict:
+    """Aggregate SOS results."""
+    results['aggregated'] = {}
+
+    for model in ['pyannote', 'sepformer']:
+        if results[model] and 'error' not in results[model]:
+            agg = {
+                'total_time': results[model]['total_time'],
+                'avg_time_per_region': results[model].get('avg_time_per_region', 0),
+                'mean_num_sources': results[model].get('mean_num_sources', 0),
+                'mean_energy_ratio': results[model].get('mean_energy_ratio', 0),
+                'std_energy_ratio': results[model].get('std_energy_ratio', 0),
+            }
+            # Include SI-SDR if available
+            if 'mean_si_sdr' in results[model]:
+                agg['mean_si_sdr'] = results[model]['mean_si_sdr']
+                agg['std_si_sdr'] = results[model]['std_si_sdr']
+
+            results['aggregated'][model] = agg
+
+    return results
+
+
+# =============================================================================
+# Speaker Identification Comparison Functions
+# =============================================================================
+
+def load_ground_truth_segments(benchmark_dir: Path) -> List[Dict]:
+    """Load all segments with golden speaker labels."""
+    all_segments = []
+
+    for f in sorted(benchmark_dir.glob("*.json")):
+        chunk_idx = int(f.stem)
+        chunk_offset = chunk_idx * 30.0
+
+        with open(f) as fp:
+            data = json.load(fp)
+
+        for seg in data['segments']:
+            speaker = seg['speaker'].upper()
+            if speaker == 'SPEAKER_01':
+                continue
+            all_segments.append({
+                'start': chunk_offset + seg['start'],
+                'end': chunk_offset + seg['end'],
+                'speaker': speaker
+            })
+
+    return all_segments
+
+
+def compare_speaker_id_models(
+    audio_path: str,
+    benchmark_dir: Path,
+    reference_dir: Path
+) -> Dict:
+    """
+    Compare speaker identification approaches across embedding models and clustering methods.
+
+    Parameters
+    ----------
+    audio_path : str
+        Path to audio file
+    benchmark_dir : Path
+        Directory containing ground truth annotations
+    reference_dir : Path
+        Directory containing reference speaker audio files
+
+    Returns
+    -------
+    Dict
+        Results for all embedding + clustering combinations
+    """
+    from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+    from sklearn.metrics import accuracy_score
+    from config import PipelineConfig
+
+    config = PipelineConfig()
+
+    # Load ground truth
+    segments = load_ground_truth_segments(benchmark_dir)
+    speakers = set(seg['speaker'] for seg in segments)
+    n_clusters = len(speakers)
+    logger.info(f"Loaded {len(segments)} segments, {n_clusters} speakers")
+
+    # Load audio
+    waveform, sr = load_audio_from_file(audio_path, sr=config.sr)
+    if waveform.dim() > 1:
+        waveform = waveform.mean(dim=0)
+
+    # Initialize embedders
+    embedders = {}
+    try:
+        embedders['SpeechBrain'] = SpeechBrainEmbedding(device=config.device)
+    except Exception as e:
+        logger.warning(f"SpeechBrain failed: {e}")
+    try:
+        embedders['PyAnnote'] = PyAnnoteEmbedding()
+    except Exception as e:
+        logger.warning(f"PyAnnote failed: {e}")
+    try:
+        embedders['Wav2Vec2'] = Wav2Vec2Embedding(device=config.device)
+    except Exception as e:
+        logger.warning(f"Wav2Vec2 failed: {e}")
+
+    results = {
+        'num_segments': len(segments),
+        'num_speakers': n_clusters,
+        'speakers': list(speakers),
+        'embeddings': {}
+    }
+
+    min_duration = 0.5
+
+    for emb_name, embedder in embedders.items():
+        logger.info(f"Testing {emb_name}...")
+
+        # Load reference embeddings
+        reference_embeddings = {}
+        for audio_file in reference_dir.glob("*.mp3"):
+            speaker_name = audio_file.stem.upper()
+            ref_waveform, _ = load_audio_from_file(str(audio_file), sr=sr)
+            if ref_waveform.dim() > 1:
+                ref_waveform = ref_waveform.mean(dim=0)
+            emb = embedder.embed(ref_waveform, sr)
+            while emb.dim() > 1:
+                emb = emb.squeeze(0)
+            reference_embeddings[speaker_name] = emb
+
+        # Extract segment embeddings
+        embeddings = []
+        valid_segments = []
+
+        for seg in segments:
+            start_sample = int(seg['start'] * sr)
+            end_sample = int(seg['end'] * sr)
+
+            if (end_sample - start_sample) / sr < min_duration:
+                continue
+            if start_sample >= waveform.shape[-1] or end_sample > waveform.shape[-1]:
+                continue
+
+            segment_audio = waveform[start_sample:end_sample]
+            emb = embedder.embed(segment_audio, sr)
+            while emb.dim() > 1:
+                emb = emb.squeeze(0)
+
+            if torch.isnan(emb).any():
+                continue
+
+            embeddings.append(emb)
+            valid_segments.append(seg)
+
+        if not embeddings:
+            logger.warning(f"No valid embeddings for {emb_name}")
+            continue
+
+        segment_embeddings = torch.stack(embeddings)
+        ground_truth_labels = [seg['speaker'] for seg in valid_segments]
+
+        emb_results = {}
+
+        # Method 1: Cosine Similarity
+        ref_names = list(reference_embeddings.keys())
+        ref_embs = torch.stack([reference_embeddings[name] for name in ref_names])
+
+        cosine_preds = []
+        for seg_emb in segment_embeddings:
+            similarities = F.cosine_similarity(
+                seg_emb.unsqueeze(0).expand(len(ref_names), -1),
+                ref_embs
+            )
+            best_idx = similarities.argmax().item()
+            cosine_preds.append(ref_names[best_idx])
+
+        emb_results['Cosine Similarity'] = {
+            'accuracy': accuracy_score(ground_truth_labels, cosine_preds) * 100
+        }
+
+        # Method 2: K-Means
+        embeddings_np = segment_embeddings.cpu().numpy()
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        kmeans_labels = kmeans.fit_predict(embeddings_np)
+
+        cluster_to_speaker = {}
+        for cluster_id in range(n_clusters):
+            mask = kmeans_labels == cluster_id
+            if not mask.any():
+                continue
+            centroid = torch.tensor(embeddings_np[mask].mean(axis=0))
+            similarities = F.cosine_similarity(
+                centroid.unsqueeze(0).expand(len(ref_names), -1),
+                ref_embs
+            )
+            cluster_to_speaker[cluster_id] = ref_names[similarities.argmax().item()]
+
+        kmeans_preds = [cluster_to_speaker.get(c, "UNKNOWN") for c in kmeans_labels]
+        emb_results['K-Means'] = {
+            'accuracy': accuracy_score(ground_truth_labels, kmeans_preds) * 100
+        }
+
+        # Method 3: Agglomerative
+        agglo = AgglomerativeClustering(n_clusters=n_clusters, linkage='complete')
+        agglo_labels = agglo.fit_predict(embeddings_np)
+
+        cluster_to_speaker = {}
+        for cluster_id in range(n_clusters):
+            mask = agglo_labels == cluster_id
+            if not mask.any():
+                continue
+            centroid = torch.tensor(embeddings_np[mask].mean(axis=0))
+            similarities = F.cosine_similarity(
+                centroid.unsqueeze(0).expand(len(ref_names), -1),
+                ref_embs
+            )
+            cluster_to_speaker[cluster_id] = ref_names[similarities.argmax().item()]
+
+        agglo_preds = [cluster_to_speaker.get(c, "UNKNOWN") for c in agglo_labels]
+        emb_results['Agglomerative'] = {
+            'accuracy': accuracy_score(ground_truth_labels, agglo_preds) * 100
+        }
+
+        # Method 4: DBSCAN
+        dbscan = DBSCAN(eps=0.3, min_samples=2, metric='cosine')
+        dbscan_labels = dbscan.fit_predict(embeddings_np)
+
+        cluster_to_speaker = {}
+        unique_clusters = set(dbscan_labels)
+        unique_clusters.discard(-1)
+        for cluster_id in unique_clusters:
+            mask = dbscan_labels == cluster_id
+            if not mask.any():
+                continue
+            centroid = torch.tensor(embeddings_np[mask].mean(axis=0))
+            similarities = F.cosine_similarity(
+                centroid.unsqueeze(0).expand(len(ref_names), -1),
+                ref_embs
+            )
+            cluster_to_speaker[cluster_id] = ref_names[similarities.argmax().item()]
+
+        dbscan_preds = [cluster_to_speaker.get(c, "UNKNOWN") for c in dbscan_labels]
+        emb_results['DBSCAN'] = {
+            'accuracy': accuracy_score(ground_truth_labels, dbscan_preds) * 100
+        }
+
+        results['embeddings'][emb_name] = emb_results
+        logger.info(f"  Cosine: {emb_results['Cosine Similarity']['accuracy']:.1f}%, K-Means: {emb_results['K-Means']['accuracy']:.1f}%")
+
+    return results
+
+
+def aggregate_speaker_id_results(results: Dict) -> Dict:
+    """Aggregate speaker ID results with best combination."""
+    best_acc = 0
+    best_combo = None
+
+    for emb_name, methods in results['embeddings'].items():
+        for method_name, res in methods.items():
+            if res['accuracy'] > best_acc:
+                best_acc = res['accuracy']
+                best_combo = (emb_name, method_name)
+
+    results['aggregated'] = {
+        'best_combination': {
+            'embedding': best_combo[0] if best_combo else None,
+            'method': best_combo[1] if best_combo else None,
+            'accuracy': best_acc
+        }
+    }
+
+    return results
+
+
+# =============================================================================
+# Embedding Comparison Functions (Metrics Only)
+# =============================================================================
+
+def compare_embedding_models(
+    audio_path: str,
+    benchmark_dir: Path,
+    reference_dir: Path = None,
+    max_segments_per_speaker: int = 20,
+    min_segment_duration: float = 1.0
+) -> Dict:
+    """
+    Compare embedding models by evaluating clustering quality metrics.
+
+    Parameters
+    ----------
+    audio_path : str
+        Path to audio file
+    benchmark_dir : Path
+        Directory containing ground truth annotations
+    reference_dir : Path, optional
+        Directory containing reference speaker audio files for cosine similarity
+    max_segments_per_speaker : int
+        Maximum segments per speaker to embed
+    min_segment_duration : float
+        Minimum segment duration in seconds
+
+    Returns
+    -------
+    Dict
+        Results including clustering metrics (ARI, Silhouette, F1) for each embedding model
+        If reference_dir is provided, also includes cosine similarity accuracy
+    """
+    from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+    from sklearn.metrics import silhouette_score, adjusted_rand_score, f1_score
+    from scipy.optimize import linear_sum_assignment
+    from config import PipelineConfig
+
+    config = PipelineConfig()
+
+    # Load ground truth segments
+    segments = load_ground_truth_segments(benchmark_dir)
+    speakers = set(seg['speaker'] for seg in segments)
+    n_speakers = len(speakers)
+    logger.info(f"Found {len(segments)} segments, {n_speakers} speakers")
+
+    # Load audio
+    waveform, sr = load_audio_from_file(audio_path, sr=config.sr)
+    if waveform.dim() > 1:
+        waveform = waveform.mean(dim=0)
+
+    # Initialize embedders
+    embedders = {}
+    try:
+        embedders['SpeechBrain'] = SpeechBrainEmbedding(device=config.device)
+    except Exception as e:
+        logger.warning(f"SpeechBrain failed: {e}")
+    try:
+        embedders['PyAnnote'] = PyAnnoteEmbedding()
+    except Exception as e:
+        logger.warning(f"PyAnnote failed: {e}")
+    try:
+        embedders['Wav2Vec2'] = Wav2Vec2Embedding(device=config.device)
+    except Exception as e:
+        logger.warning(f"Wav2Vec2 failed: {e}")
+
+    results = {
+        'num_speakers': n_speakers,
+        'speakers': list(speakers),
+        'embeddings': {},
+        'has_reference': reference_dir is not None
+    }
+
+    # Extract embeddings for each model
+    all_embeddings = {}
+    all_labels = {}
+    reference_embeddings_by_model = {}
+
+    for emb_name, embedder in embedders.items():
+        logger.info(f"Extracting embeddings with {emb_name}...")
+
+        # Load reference embeddings if reference_dir is provided
+        if reference_dir is not None:
+            reference_embeddings = {}
+            for audio_file in reference_dir.glob("*.mp3"):
+                speaker_name = audio_file.stem.upper()
+                try:
+                    ref_waveform, _ = load_audio_from_file(str(audio_file), sr=sr)
+                    if ref_waveform.dim() > 1:
+                        ref_waveform = ref_waveform.mean(dim=0)
+                    emb = embedder.embed(ref_waveform, sr)
+                    while emb.dim() > 1:
+                        emb = emb.squeeze(0)
+                    reference_embeddings[speaker_name] = emb.cpu()
+                except Exception as e:
+                    logger.warning(f"Failed to embed reference {speaker_name}: {e}")
+            reference_embeddings_by_model[emb_name] = reference_embeddings
+            logger.info(f"  Loaded {len(reference_embeddings)} reference embeddings")
+
+        embeddings = []
+        labels = []
+        speaker_counts = {}
+
+        # Sort segments by duration (longer first)
+        sorted_segments = sorted(segments, key=lambda x: x['end'] - x['start'], reverse=True)
+
+        for seg in sorted_segments:
+            speaker = seg['speaker']
+
+            # Limit segments per speaker
+            if speaker_counts.get(speaker, 0) >= max_segments_per_speaker:
+                continue
+
+            duration = seg['end'] - seg['start']
+            if duration < min_segment_duration:
+                continue
+
+            start_sample = int(seg['start'] * sr)
+            end_sample = int(seg['end'] * sr)
+
+            if start_sample >= waveform.shape[-1] or end_sample > waveform.shape[-1]:
+                continue
+
+            segment_audio = waveform[start_sample:end_sample]
+
+            try:
+                emb = embedder.embed(segment_audio, sr)
+                while emb.dim() > 1:
+                    emb = emb.squeeze(0)
+
+                if torch.isnan(emb).any():
+                    continue
+
+                embeddings.append(emb.cpu().numpy())
+                labels.append(speaker)
+                speaker_counts[speaker] = speaker_counts.get(speaker, 0) + 1
+            except Exception as e:
+                continue
+
+        if embeddings:
+            all_embeddings[emb_name] = np.array(embeddings)
+            all_labels[emb_name] = labels
+            logger.info(f"  {emb_name}: {len(embeddings)} embeddings, speakers: {speaker_counts}")
+
+    # Helper function to compute F1 with Hungarian matching
+    def compute_f1_hungarian(true_labels: np.ndarray, pred_labels: np.ndarray) -> float:
+        """Compute F1 score using Hungarian algorithm for optimal label assignment."""
+        # Filter out noise points (label -1 in DBSCAN)
+        mask = pred_labels != -1
+        if not np.any(mask):
+            return 0.0
+
+        true_filtered = true_labels[mask]
+        pred_filtered = pred_labels[mask]
+
+        true_unique = np.unique(true_filtered)
+        pred_unique = np.unique(pred_filtered)
+
+        n_true = len(true_unique)
+        n_pred = len(pred_unique)
+
+        # Build cost matrix (negative overlap for minimization)
+        cost_matrix = np.zeros((n_pred, n_true))
+        for i, p in enumerate(pred_unique):
+            for j, t in enumerate(true_unique):
+                cost_matrix[i, j] = -np.sum((pred_filtered == p) & (true_filtered == t))
+
+        # Hungarian algorithm
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
+        # Create mapping and align labels
+        label_map = {pred_unique[r]: true_unique[c] for r, c in zip(row_ind, col_ind)}
+        aligned = np.array([label_map.get(p, -1) for p in pred_filtered])
+
+        # Compute F1
+        valid_mask = aligned != -1
+        if np.sum(valid_mask) == 0:
+            return 0.0
+
+        return f1_score(true_filtered[valid_mask], aligned[valid_mask], average='macro', zero_division=0)
+
+    # Compute clustering metrics for each embedding model
+    for emb_name, embeddings in all_embeddings.items():
+        labels = all_labels[emb_name]
+        if len(embeddings) < 2:
+            continue
+
+        unique_speakers = sorted(set(labels))
+        true_indices = np.array([unique_speakers.index(l) for l in labels])
+
+        # L2 normalize
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+        norms = np.where(norms == 0, 1, norms)
+        embeddings_norm = embeddings / norms
+
+        emb_results = {
+            'num_embeddings': len(embeddings),
+            'embedding_dim': embeddings.shape[1]
+        }
+
+        # KMeans
+        logger.info(f"  {emb_name}: Running KMeans...")
+        kmeans = KMeans(n_clusters=n_speakers, random_state=42, n_init=10)
+        kmeans_labels = kmeans.fit_predict(embeddings_norm)
+        emb_results['kmeans'] = {
+            'silhouette': float(silhouette_score(embeddings_norm, kmeans_labels, metric='cosine')),
+            'ari': float(adjusted_rand_score(true_indices, kmeans_labels)),
+            'f1': float(compute_f1_hungarian(true_indices, kmeans_labels))
+        }
+
+        # Agglomerative
+        logger.info(f"  {emb_name}: Running Agglomerative...")
+        agglo = AgglomerativeClustering(n_clusters=n_speakers, metric='cosine', linkage='average')
+        agglo_labels = agglo.fit_predict(embeddings_norm)
+        emb_results['agglomerative'] = {
+            'silhouette': float(silhouette_score(embeddings_norm, agglo_labels, metric='cosine')),
+            'ari': float(adjusted_rand_score(true_indices, agglo_labels)),
+            'f1': float(compute_f1_hungarian(true_indices, agglo_labels))
+        }
+
+        # DBSCAN (with optimal eps search)
+        logger.info(f"  {emb_name}: Running DBSCAN...")
+        best_eps = 0.3
+        best_ari = -1
+        best_dbscan_labels = None
+        for eps in np.linspace(0.1, 1.0, 10):
+            dbscan = DBSCAN(eps=eps, min_samples=2, metric='cosine')
+            dbscan_labels = dbscan.fit_predict(embeddings_norm)
+            n_clusters = len(set(dbscan_labels)) - (1 if -1 in dbscan_labels else 0)
+            if n_clusters >= 2:
+                ari = adjusted_rand_score(true_indices, dbscan_labels)
+                if ari > best_ari:
+                    best_ari = ari
+                    best_eps = eps
+                    best_dbscan_labels = dbscan_labels
+
+        if best_ari > -1 and best_dbscan_labels is not None:
+            mask = best_dbscan_labels != -1
+            if np.sum(mask) > 1 and len(set(best_dbscan_labels[mask])) > 1:
+                sil = silhouette_score(embeddings_norm[mask], best_dbscan_labels[mask], metric='cosine')
+            else:
+                sil = 0.0
+            emb_results['dbscan'] = {
+                'silhouette': float(sil),
+                'ari': float(best_ari),
+                'f1': float(compute_f1_hungarian(true_indices, best_dbscan_labels)),
+                'eps': float(best_eps),
+                'n_noise': int(np.sum(best_dbscan_labels == -1))
+            }
+
+        # Cosine Similarity (direct assignment using reference embeddings)
+        if emb_name in reference_embeddings_by_model and reference_embeddings_by_model[emb_name]:
+            logger.info(f"  {emb_name}: Running Cosine Similarity...")
+            ref_embs = reference_embeddings_by_model[emb_name]
+            ref_names = list(ref_embs.keys())
+            ref_stack = torch.stack([ref_embs[name] for name in ref_names])
+
+            # Convert segment embeddings to tensor for cosine similarity
+            segment_embs_tensor = torch.from_numpy(embeddings).float()
+
+            # Assign each segment to the closest reference speaker
+            cosine_preds = []
+            for seg_emb in segment_embs_tensor:
+                similarities = F.cosine_similarity(
+                    seg_emb.unsqueeze(0).expand(len(ref_names), -1),
+                    ref_stack
+                )
+                best_idx = similarities.argmax().item()
+                cosine_preds.append(ref_names[best_idx])
+
+            # Compute metrics
+            # Map true labels to indices
+            correct = sum(1 for pred, true in zip(cosine_preds, labels) if pred == true)
+            accuracy = correct / len(labels) if labels else 0.0
+
+            # Compute ARI and F1 for consistency with other methods
+            # Map predictions to indices using unique_speakers list
+            pred_indices = []
+            for pred in cosine_preds:
+                if pred in unique_speakers:
+                    pred_indices.append(unique_speakers.index(pred))
+                else:
+                    pred_indices.append(-1)  # Unknown speaker
+            pred_indices = np.array(pred_indices)
+
+            # Filter out unknown predictions for metrics
+            valid_mask = pred_indices != -1
+            if np.sum(valid_mask) > 0:
+                cosine_ari = adjusted_rand_score(true_indices[valid_mask], pred_indices[valid_mask])
+                cosine_f1 = f1_score(true_indices[valid_mask], pred_indices[valid_mask], average='macro', zero_division=0)
+            else:
+                cosine_ari = 0.0
+                cosine_f1 = 0.0
+
+            emb_results['cosine'] = {
+                'accuracy': float(accuracy),
+                'ari': float(cosine_ari),
+                'f1': float(cosine_f1)
+            }
+
+        results['embeddings'][emb_name] = emb_results
+
+    return results
+
+
+def aggregate_embedding_results(results: Dict) -> Dict:
+    """Aggregate embedding comparison results."""
+    best_model = None
+    best_ari = -1
+    best_f1 = -1
+    best_accuracy = -1
+    best_cosine_model = None
+
+    for emb_name, emb_data in results['embeddings'].items():
+        for method_name in ['kmeans', 'agglomerative', 'dbscan', 'cosine']:
+            if method_name in emb_data:
+                metrics = emb_data[method_name]
+                if metrics.get('ari', -1) > best_ari:
+                    best_ari = metrics['ari']
+                    best_model = (emb_name, method_name)
+                if metrics.get('f1', -1) > best_f1:
+                    best_f1 = metrics['f1']
+                # Track best cosine similarity accuracy separately
+                if method_name == 'cosine' and metrics.get('accuracy', -1) > best_accuracy:
+                    best_accuracy = metrics['accuracy']
+                    best_cosine_model = emb_name
+
+    results['aggregated'] = {
+        'best_by_ari': {
+            'embedding': best_model[0] if best_model else None,
+            'clustering': best_model[1] if best_model else None,
+            'ari': best_ari
+        },
+        'best_f1': best_f1
+    }
+
+    # Add best cosine similarity if available
+    if best_cosine_model is not None:
+        results['aggregated']['best_cosine'] = {
+            'embedding': best_cosine_model,
+            'accuracy': best_accuracy
+        }
+
+    return results
+
+
+# Keep old function name as alias for backwards compatibility
+compare_embedding_visualization = compare_embedding_models
+aggregate_embedding_viz_results = aggregate_embedding_results
+
+
+def compare_cluster_viz(
+    audio_folder: Path,
+    alignment_file: Path = None,
+    embedding_type: str = 'speechbrain'
+) -> Dict:
+    """
+    Compare clustering methods on audio embeddings with UMAP visualization.
+
+    Parameters
+    ----------
+    audio_folder : Path
+        Directory containing either:
+        - Speaker subdirectories with audio_chunks/ subfolders (e.g., marten/audio_chunks/*.mp3)
+        - Or flat audio files with alignment_file mapping
+    alignment_file : Path, optional
+        JSON file mapping audio filenames to speaker names.
+        If None, uses directory structure where folder name = speaker name
+    embedding_type : str
+        One of 'pyannote', 'wav2vec2', 'speechbrain'
+
+    Returns
+    -------
+    Dict
+        Results including embeddings, UMAP coordinates, and clustering results
+    """
+    from sklearn.cluster import KMeans, AgglomerativeClustering, DBSCAN
+    from sklearn.metrics import silhouette_score, adjusted_rand_score
+    from scipy.optimize import linear_sum_assignment
+    from config import PipelineConfig
+
+    # Try to import UMAP
+    try:
+        from umap import UMAP
+        HAS_UMAP = True
+    except ImportError:
+        HAS_UMAP = False
+        logger.warning("UMAP not installed. Install with: pip install umap-learn")
+
+    config = PipelineConfig()
+
+    # Build alignment from directory structure or load from file
+    alignment = {}
+    reference_files = set()  # Track which files are reference/speaking_alignment samples
+
+    if alignment_file is not None and alignment_file.exists():
+        # Load alignment file
+        with open(alignment_file, 'r') as f:
+            alignment = json.load(f)
+        logger.info(f"Loaded alignment with {len(alignment)} entries")
+    else:
+        # Auto-discover from directory structure
+        # Look for speaker subdirectories with audio_chunks/ subfolders
+        logger.info(f"Auto-discovering speakers from directory structure: {audio_folder}")
+        for speaker_dir in sorted(audio_folder.iterdir()):
+            if not speaker_dir.is_dir():
+                continue
+
+            # Only use directories that have audio_chunks subfolder
+            audio_chunks_dir = speaker_dir / "audio_chunks"
+            if not audio_chunks_dir.exists():
+                continue
+
+            speaker_name = speaker_dir.name.upper()
+
+            # Find audio files in audio_chunks
+            for ext in ['*.mp3', '*.wav', '*.flac', '*.m4a']:
+                for audio_file in audio_chunks_dir.glob(ext):
+                    # Store relative path from audio_folder
+                    rel_path = audio_file.relative_to(audio_folder)
+                    alignment[str(rel_path)] = speaker_name
+
+        logger.info(f"Discovered {len(alignment)} audio files from directory structure")
+
+    # Also check for speaking_alignment folder with reference audio
+    speaking_alignment_dir = audio_folder / "speaking_alignment"
+    if speaking_alignment_dir.exists():
+        logger.info(f"Found speaking_alignment folder, loading reference audio...")
+        for ext in ['*.mp3', '*.wav', '*.flac', '*.m4a']:
+            for audio_file in speaking_alignment_dir.glob(ext):
+                # Speaker name from filename (e.g., marten.mp3 -> MARTEN)
+                speaker_name = audio_file.stem.upper()
+                rel_path = audio_file.relative_to(audio_folder)
+                alignment[str(rel_path)] = speaker_name
+                reference_files.add(str(rel_path))
+        logger.info(f"Loaded {len(reference_files)} reference audio files from speaking_alignment")
+
+    if not alignment:
+        raise ValueError("No audio files found. Provide alignment file or use speaker directory structure.")
+
+    speakers = sorted(set(alignment.values()))
+    n_speakers = len(speakers)
+    logger.info(f"Found {n_speakers} unique speakers: {speakers}")
+
+    # Initialize embedder based on type
+    if embedding_type == 'speechbrain':
+        embedder = SpeechBrainEmbedding(device=config.device)
+        emb_name = 'SpeechBrain'
+    elif embedding_type == 'pyannote':
+        embedder = PyAnnoteEmbedding()
+        emb_name = 'PyAnnote'
+    elif embedding_type == 'wav2vec2':
+        embedder = Wav2Vec2Embedding(device=config.device)
+        emb_name = 'Wav2Vec2'
+    else:
+        raise ValueError(f"Unknown embedding type: {embedding_type}")
+
+    logger.info(f"Using {emb_name} embedder")
+
+    # Extract embeddings for each audio file
+    embeddings = []
+    labels = []
+    filenames = []
+    is_reference = []  # Track which samples are from speaking_alignment
+
+    # Suppress MP3 decoding warnings
+    import warnings
+    import os
+    old_stderr = os.dup(2)
+    devnull = os.open(os.devnull, os.O_WRONLY)
+
+    for filename, speaker in alignment.items():
+        audio_path = audio_folder / filename
+        if not audio_path.exists():
+            logger.warning(f"Audio file not found: {audio_path}")
+            continue
+
+        try:
+            # Temporarily redirect stderr to suppress libmpg123 warnings
+            os.dup2(devnull, 2)
+            waveform, sr = load_audio_from_file(str(audio_path), sr=config.sr)
+            os.dup2(old_stderr, 2)
+            if waveform.dim() > 1:
+                waveform = waveform.mean(dim=0)
+
+            emb = embedder.embed(waveform, sr)
+            while emb.dim() > 1:
+                emb = emb.squeeze(0)
+
+            if torch.isnan(emb).any():
+                logger.warning(f"NaN embedding for {filename}, skipping")
+                continue
+
+            embeddings.append(emb.cpu().numpy())
+            labels.append(speaker)
+            filenames.append(filename)
+            is_reference.append(filename in reference_files)
+        except Exception as e:
+            os.dup2(old_stderr, 2)  # Restore stderr on error
+            logger.warning(f"Failed to embed {filename}: {e}")
+            continue
+
+    # Clean up stderr redirection
+    os.close(devnull)
+
+    if len(embeddings) < 2:
+        raise ValueError(f"Not enough valid embeddings: {len(embeddings)}")
+
+    embeddings = np.array(embeddings)
+    logger.info(f"Extracted {len(embeddings)} embeddings with shape {embeddings.shape}")
+
+    # L2 normalize embeddings
+    norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+    norms = np.where(norms == 0, 1, norms)
+    embeddings_norm = embeddings / norms
+
+    # Convert labels to indices
+    unique_speakers = sorted(set(labels))
+    true_indices = np.array([unique_speakers.index(l) for l in labels])
+
+    # Initialize results
+    results = {
+        'embedding_type': emb_name,
+        'embedding_dim': embeddings.shape[1],
+        'num_embeddings': len(embeddings),
+        'num_speakers': n_speakers,
+        'speakers': unique_speakers,
+        'ground_truth_labels': labels,
+        'filenames': filenames,
+        'is_reference': is_reference,  # Boolean list indicating reference/speaking_alignment samples
+        'clustering_results': {}
+    }
+    logger.info(f"Reference samples: {sum(is_reference)} out of {len(is_reference)} total")
+
+    # Helper function to compute F1 with Hungarian matching
+    def compute_f1_hungarian(true_labels: np.ndarray, pred_labels: np.ndarray) -> float:
+        from sklearn.metrics import f1_score
+        mask = pred_labels != -1
+        if not np.any(mask):
+            return 0.0
+
+        true_filtered = true_labels[mask]
+        pred_filtered = pred_labels[mask]
+
+        true_unique = np.unique(true_filtered)
+        pred_unique = np.unique(pred_filtered)
+
+        n_true = len(true_unique)
+        n_pred = len(pred_unique)
+
+        cost_matrix = np.zeros((n_pred, n_true))
+        for i, p in enumerate(pred_unique):
+            for j, t in enumerate(true_unique):
+                cost_matrix[i, j] = -np.sum((pred_filtered == p) & (true_filtered == t))
+
+        row_ind, col_ind = linear_sum_assignment(cost_matrix)
+        label_map = {pred_unique[r]: true_unique[c] for r, c in zip(row_ind, col_ind)}
+        aligned = np.array([label_map.get(p, -1) for p in pred_filtered])
+
+        valid_mask = aligned != -1
+        if np.sum(valid_mask) == 0:
+            return 0.0
+
+        return f1_score(true_filtered[valid_mask], aligned[valid_mask], average='macro', zero_division=0)
+
+    # Separate reference samples from samples to be clustered
+    # Reference samples (from speaking_alignment) are static and should not be clustered
+    is_ref_arr = np.array(is_reference)
+    non_ref_mask = ~is_ref_arr
+    n_non_ref = np.sum(non_ref_mask)
+
+    if n_non_ref < 2:
+        logger.warning(f"Not enough non-reference samples to cluster: {n_non_ref}")
+        # Still include reference info for visualization
+        results['clustering_results'] = {}
+    else:
+        # Get non-reference embeddings and labels for clustering
+        embeddings_to_cluster = embeddings_norm[non_ref_mask]
+        labels_to_cluster = [l for l, is_ref in zip(labels, is_reference) if not is_ref]
+        true_indices_to_cluster = np.array([unique_speakers.index(l) for l in labels_to_cluster])
+
+        logger.info(f"Clustering {n_non_ref} non-reference samples (excluding {np.sum(is_ref_arr)} reference samples)")
+
+        # Helper to expand cluster labels back to full array (reference samples get -2 = "reference")
+        def expand_labels(cluster_labels):
+            full_labels = np.full(len(is_reference), -2, dtype=int)  # -2 = reference
+            full_labels[non_ref_mask] = cluster_labels
+            return full_labels
+
+        # KMeans clustering (using normalized embeddings = cosine distance)
+        # Since embeddings are L2-normalized, Euclidean distance is equivalent to cosine distance
+        # ||a - b||^2 = ||a||^2 + ||b||^2 - 2*a·b = 2 - 2*cos(a,b) when ||a||=||b||=1
+        logger.info("Running KMeans clustering (on L2-normalized embeddings)...")
+        kmeans = KMeans(n_clusters=n_speakers, random_state=42, n_init=10)
+        kmeans_labels_clustered = kmeans.fit_predict(embeddings_to_cluster)
+        kmeans_labels = expand_labels(kmeans_labels_clustered)
+        kmeans_sil = silhouette_score(embeddings_to_cluster, kmeans_labels_clustered, metric='cosine')
+        kmeans_ari = adjusted_rand_score(true_indices_to_cluster, kmeans_labels_clustered)
+        kmeans_f1 = compute_f1_hungarian(true_indices_to_cluster, kmeans_labels_clustered)
+        results['clustering_results']['kmeans'] = {
+            'labels': kmeans_labels.tolist(),
+            'silhouette': float(kmeans_sil),
+            'ari': float(kmeans_ari),
+            'f1': float(kmeans_f1)
+        }
+
+        # Agglomerative clustering
+        logger.info("Running Agglomerative clustering...")
+        agglo = AgglomerativeClustering(n_clusters=n_speakers, metric='cosine', linkage='average')
+        agglo_labels_clustered = agglo.fit_predict(embeddings_to_cluster)
+        agglo_labels = expand_labels(agglo_labels_clustered)
+        agglo_sil = silhouette_score(embeddings_to_cluster, agglo_labels_clustered, metric='cosine')
+        agglo_ari = adjusted_rand_score(true_indices_to_cluster, agglo_labels_clustered)
+        agglo_f1 = compute_f1_hungarian(true_indices_to_cluster, agglo_labels_clustered)
+        results['clustering_results']['agglomerative'] = {
+            'labels': agglo_labels.tolist(),
+            'silhouette': float(agglo_sil),
+            'ari': float(agglo_ari),
+            'f1': float(agglo_f1)
+        }
+
+        # DBSCAN with eps tuning
+        logger.info("Running DBSCAN clustering...")
+        best_eps = 0.3
+        best_ari = -1
+        best_dbscan_labels_clustered = None
+        for eps in np.linspace(0.1, 1.0, 10):
+            dbscan = DBSCAN(eps=eps, min_samples=2, metric='cosine')
+            dbscan_labels_clustered = dbscan.fit_predict(embeddings_to_cluster)
+            n_clusters = len(set(dbscan_labels_clustered)) - (1 if -1 in dbscan_labels_clustered else 0)
+            if n_clusters >= 2:
+                ari = adjusted_rand_score(true_indices_to_cluster, dbscan_labels_clustered)
+                if ari > best_ari:
+                    best_ari = ari
+                    best_eps = eps
+                    best_dbscan_labels_clustered = dbscan_labels_clustered
+
+        if best_dbscan_labels_clustered is not None:
+            best_dbscan_labels = expand_labels(best_dbscan_labels_clustered)
+            mask = best_dbscan_labels_clustered != -1
+            if np.sum(mask) > 1 and len(set(best_dbscan_labels_clustered[mask])) > 1:
+                dbscan_sil = silhouette_score(embeddings_to_cluster[mask], best_dbscan_labels_clustered[mask], metric='cosine')
+            else:
+                dbscan_sil = 0.0
+            dbscan_f1 = compute_f1_hungarian(true_indices_to_cluster, best_dbscan_labels_clustered)
+            results['clustering_results']['dbscan'] = {
+                'labels': best_dbscan_labels.tolist(),
+                'silhouette': float(dbscan_sil),
+                'ari': float(best_ari),
+                'f1': float(dbscan_f1),
+                'eps': float(best_eps),
+                'n_noise': int(np.sum(best_dbscan_labels_clustered == -1))
+            }
+
+        # Cosine Similarity - compute centroids from ALL ground truth samples
+        # but only predict non-reference samples
+        logger.info("Running Cosine Similarity assignment...")
+        # Compute centroid for each speaker from ALL samples (not just reference)
+        speaker_centroids = {}
+        for speaker in unique_speakers:
+            speaker_mask = np.array([l == speaker for l in labels])
+            speaker_embs = embeddings_norm[speaker_mask]
+            centroid = speaker_embs.mean(axis=0)
+            centroid = centroid / np.linalg.norm(centroid)  # L2 normalize centroid
+            speaker_centroids[speaker] = centroid
+
+        # Assign each NON-REFERENCE embedding to closest centroid
+        # Reference samples stay static (not predicted)
+        cosine_preds = []
+        cosine_pred_indices_list = []
+        for i, (emb, is_ref) in enumerate(zip(embeddings_norm, is_reference)):
+            if is_ref:
+                # Reference samples keep their ground truth label (not predicted)
+                cosine_preds.append(labels[i])
+                cosine_pred_indices_list.append(-2)  # -2 = reference (not predicted)
+            else:
+                best_sim = -1
+                best_speaker = None
+                for speaker, centroid in speaker_centroids.items():
+                    sim = np.dot(emb, centroid)
+                    if sim > best_sim:
+                        best_sim = sim
+                        best_speaker = speaker
+                cosine_preds.append(best_speaker)
+                cosine_pred_indices_list.append(unique_speakers.index(best_speaker))
+
+        cosine_pred_indices = np.array(cosine_pred_indices_list)
+
+        # Compute metrics only on non-reference samples
+        non_ref_preds = [p for p, is_ref in zip(cosine_preds, is_reference) if not is_ref]
+        non_ref_true = [l for l, is_ref in zip(labels, is_reference) if not is_ref]
+        correct = sum(1 for pred, true in zip(non_ref_preds, non_ref_true) if pred == true)
+        cosine_accuracy = correct / len(non_ref_true) if non_ref_true else 0.0
+
+        # For ARI/F1, only use non-reference samples
+        non_ref_pred_indices = np.array([unique_speakers.index(p) for p in non_ref_preds])
+        cosine_ari = adjusted_rand_score(true_indices_to_cluster, non_ref_pred_indices)
+        cosine_f1 = compute_f1_hungarian(true_indices_to_cluster, non_ref_pred_indices)
+
+        results['clustering_results']['cosine'] = {
+            'labels': cosine_pred_indices.tolist(),
+            'predicted_speakers': cosine_preds,
+            'accuracy': float(cosine_accuracy),
+            'ari': float(cosine_ari),
+            'f1': float(cosine_f1)
+        }
+
+    # Compute UMAP projection
+    if HAS_UMAP:
+        logger.info("Computing UMAP projection...")
+        n_neighbors = min(15, max(2, len(embeddings) - 1))
+        umap = UMAP(
+            n_components=2,
+            n_neighbors=n_neighbors,
+            min_dist=0.1,
+            metric='cosine',
+            random_state=42
+        )
+        umap_coords = umap.fit_transform(embeddings_norm)
+        results['umap_coords'] = umap_coords.tolist()
+    else:
+        # Fallback to PCA if UMAP not available
+        from sklearn.decomposition import PCA
+        logger.info("UMAP not available, using PCA...")
+        pca = PCA(n_components=2, random_state=42)
+        umap_coords = pca.fit_transform(embeddings_norm)
+        results['umap_coords'] = umap_coords.tolist()
+
+    return results
+
+
+# =============================================================================
+# Full E2E (All Component Combinations) Comparison Functions
+# =============================================================================
+
+def compare_full_e2e_pipelines(
+    file_pairs: List[Tuple[Path, Path, str]],
+    skip_sod_sos: bool = False,
+    checkpoint_dir: Optional[Path] = None
+) -> Dict:
+    """
+    Compare all combinations of pipeline components for end-to-end diarization.
+
+    Tests combinations of:
+    - SOD (Speaker Overlap Detection): PYANNOTE, NEMO
+    - SOS (Speaker Overlap Separation): PYANNOTE, SPEECHBRAIN
+    - SCD (Speaker Change Detection): PYANNOTE, NEMO
+    - Embedding: PYANNOTE, SPEECHBRAIN, WAV2VEC2
+    - Clustering: KMEANS, AGGLOMERATIVE, DBSCAN, COSINE_SIMILARITY
+    - ASR: WHISPER tiny (constant)
+
+    Args:
+        file_pairs: List of (audio_path, annotation_path, file_id) tuples
+        skip_sod_sos: If True, skip SOD/SOS variations (use default) to reduce combinations
+        checkpoint_dir: Directory to save/load checkpoints (default: results/checkpoints)
+
+    Returns:
+        Dict mapping combination names to results with DER, WER, and timing metrics
+    """
+    from itertools import product
+    from main import WhoSays
+    from config import (
+        PipelineConfig as Config,
+        TypeEmbedding,
+        TypeClustering,
+    )
+    from pipeline.speaker_segmentation.SO.main import TypeSOD, TypeSOS
+    from pipeline.speaker_segmentation.SCD.main import TypeSCD
+
+    # ASR model constant - always use tiny for speed
+    ASR_MODEL = "openai/whisper-tiny"
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # Setup checkpoint directory
+    if checkpoint_dir is None:
+        checkpoint_dir = Path("results/checkpoints")
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
+    checkpoint_file = checkpoint_dir / "full_e2e_checkpoint.json"
+
+    # Load existing checkpoint if available
+    results = {}
+    if checkpoint_file.exists():
+        try:
+            with open(checkpoint_file, 'r') as f:
+                results = json.load(f)
+            logger.info(f"Loaded checkpoint with {len(results)} completed combinations")
+        except Exception as e:
+            logger.warning(f"Failed to load checkpoint: {e}, starting fresh")
+            results = {}
+
+    # Define component options
+    if skip_sod_sos:
+        # Reduced combinations - use default SOD/SOS
+        sod_options = [TypeSOD.NEMO]  # Default
+        sos_options = [TypeSOS.SPEECHBRAIN]  # Default
+    else:
+        sod_options = [TypeSOD.PYANNOTE, TypeSOD.NEMO]
+        sos_options = [TypeSOS.PYANNOTE, TypeSOS.SPEECHBRAIN]
+
+    scd_options = [TypeSCD.PYANNOTE, TypeSCD.NEMO]
+    embedding_options = [TypeEmbedding.PYANNOTE, TypeEmbedding.SPEECHBRAIN, TypeEmbedding.WAV2VEC2]
+    clustering_options = [TypeClustering.KMEANS, TypeClustering.AGGLOMERATIVE, TypeClustering.DBSCAN, TypeClustering.COSINE_SIMILARITY]
+
+    # Generate all combinations
+    combinations = list(product(
+        sod_options,
+        sos_options,
+        scd_options,
+        embedding_options,
+        clustering_options
+    ))
+
+    total_combinations = len(combinations)
+    total_files = len(file_pairs)
+    total_iterations = total_combinations * total_files
+
+    # Count already completed combinations
+    completed_count = len([c for c in results if 'error' not in results.get(c, {})])
+    remaining_count = total_combinations - completed_count
+
+    logger.info(f"Testing {total_combinations} pipeline combinations")
+    logger.info(f"Already completed: {completed_count} combinations")
+    logger.info(f"Remaining: {remaining_count} combinations")
+    logger.info(f"Files per combination: {total_files}")
+    logger.info(f"ASR Model: {ASR_MODEL} (constant)")
+    logger.info(f"Checkpoint file: {checkpoint_file}")
+
+    # Progress bar for combinations
+    combo_pbar = tqdm(
+        enumerate(combinations),
+        total=total_combinations,
+        desc="Pipeline Combinations",
+        unit="combo",
+        position=0
+    )
+
+    for combo_idx, (sod_type, sos_type, scd_type, emb_type, cluster_type) in combo_pbar:
+        # Create combination name
+        combo_name = f"sod_{sod_type.value}_sos_{sos_type.value}_scd_{scd_type.value}_emb_{emb_type.value}_clust_{cluster_type.value}"
+
+        # Skip if already completed (checkpoint)
+        if combo_name in results and 'error' not in results[combo_name]:
+            logger.info(f"Skipping {combo_name} (already completed)")
+            combo_pbar.set_description(f"[{combo_idx+1}/{total_combinations}] SKIPPED")
+            continue
+
+        # Update progress bar description
+        short_name = f"{sod_type.value[:3]}/{sos_type.value[:3]}/{scd_type.value[:3]}/{emb_type.value[:3]}/{cluster_type.value[:4]}"
+        combo_pbar.set_description(f"[{combo_idx+1}/{total_combinations}] {short_name}")
+
+        logger.info(f"\n{'='*60}")
+        logger.info(f"Combination {combo_idx + 1}/{total_combinations}: {combo_name}")
+        logger.info(f"Remaining: {total_combinations - combo_idx - 1} combinations")
+        logger.info(f"{'='*60}")
+
+        try:
+            # Create config with this combination
+            config = Config()
+            config.so.detection_type = sod_type
+            config.so.separation_type = sos_type
+            config.scd.scd_type = scd_type
+            config.embedding.embedding_type = emb_type
+            config.clustering.clustering_type = cluster_type
+            # Set ASR model to constant
+            config.asr.model = ASR_MODEL
+
+            # Initialize pipeline with this config
+            pipeline = WhoSays(config=config)
+
+            combo_results = {
+                'config': {
+                    'sod': sod_type.value,
+                    'sos': sos_type.value,
+                    'scd': scd_type.value,
+                    'embedding': emb_type.value,
+                    'clustering': cluster_type.value,
+                    'asr': ASR_MODEL
+                },
+                'has_transcription': True,
+                'results': []
+            }
+
+            # Progress bar for files within this combination
+            file_pbar = tqdm(
+                file_pairs,
+                desc=f"Files",
+                unit="file",
+                position=1,
+                leave=False
+            )
+
+            for audio_file, annotation_file, file_id in file_pbar:
+                file_pbar.set_description(f"Processing {file_id}")
+                try:
+                    annotation_data = load_annotation_file(annotation_file)
+                    waveform, sr = load_audio_from_file(audio_file, sr=SR)
+                    duration = waveform.shape[-1] / sr
+
+                    ref_segments = annotation_data['segments']
+                    ref_transcriptions = annotation_data.get('transcriptions')
+                    n_speakers_ref = len(set(seg['speaker'] for seg in ref_segments))
+
+                    # Skip files with no speakers or ensure at least 1
+                    if n_speakers_ref < 1:
+                        logger.warning(f"  Skipping {file_id}: no speakers found in reference")
+                        continue
+
+                    start_time = time.time()
+
+                    result = pipeline(
+                        str(audio_file),
+                        num_speakers=n_speakers_ref,
+                        include_timing=True,
+                        return_diarization_time=True
+                    )
+
+                    inference_time = result.get('diarization_time', time.time() - start_time)
+                    total_time = time.time() - start_time
+
+                    pred_segments = result['segments']
+                    n_speakers_pred = len(set(seg['speaker'] for seg in pred_segments))
+
+                    der_metrics = evaluate_diarization(
+                        reference_segments=ref_segments,
+                        hypothesis_segments=pred_segments,
+                        total_duration=duration
+                    )
+
+                    wer_metrics = None
+                    if ref_transcriptions:
+                        pred_transcriptions = [seg['text'] for seg in pred_segments]
+                        wer_metrics = evaluate_asr(ref_transcriptions, pred_transcriptions)
+
+                    # Capture component timing if available
+                    component_timing = result.get('timing', None)
+
+                    combo_results['results'].append({
+                        'file_id': file_id,
+                        'audio_file': str(audio_file),
+                        'duration': duration,
+                        'n_speakers_pred': n_speakers_pred,
+                        'n_speakers_ref': n_speakers_ref,
+                        'der_metrics': der_metrics,
+                        'wer_metrics': wer_metrics,
+                        'timing': inference_time,
+                        'total_time': total_time,
+                        'component_timing': component_timing
+                    })
+
+                    logger.debug(f"  {file_id}: DER={der_metrics['der']:.2f}%, Time={inference_time:.2f}s")
+
+                except Exception as e:
+                    logger.error(f"  Error processing {file_id}: {e}")
+                    continue
+
+            results[combo_name] = combo_results
+
+            # Log summary for this combination
+            if combo_results['results']:
+                avg_der = np.mean([r['der_metrics']['der'] for r in combo_results['results']])
+                avg_time = np.mean([r['timing'] for r in combo_results['results']])
+                logger.info(f"  Avg DER: {avg_der:.2f}%, Avg Time: {avg_time:.2f}s")
+
+            # Save checkpoint after each successful combination
+            try:
+                with open(checkpoint_file, 'w') as f:
+                    json.dump(results, f, indent=2)
+                logger.info(f"  Checkpoint saved ({len(results)}/{total_combinations} combinations)")
+            except Exception as e:
+                logger.warning(f"  Failed to save checkpoint: {e}")
+
+            # Clean up to free GPU memory
+            del pipeline
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+
+        except Exception as e:
+            logger.error(f"Failed to initialize combination {combo_name}: {e}")
+            results[combo_name] = {
+                'config': {
+                    'sod': sod_type.value,
+                    'sos': sos_type.value,
+                    'scd': scd_type.value,
+                    'embedding': emb_type.value,
+                    'clustering': cluster_type.value,
+                    'asr': ASR_MODEL
+                },
+                'error': str(e),
+                'results': []
+            }
+            # Clean up after error too
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                torch.cuda.synchronize()
+            continue
+
+    # Close progress bar
+    combo_pbar.close()
+
+    return results
+
+
+def aggregate_full_e2e_results(pipelines: Dict) -> Dict:
+    """
+    Aggregate full end-to-end pipeline results.
+
+    Computes mean and std for DER, WER, confusion, miss, false alarm, and timing.
+    Also identifies best combinations for each metric.
+
+    Args:
+        pipelines: Dict from compare_full_e2e_pipelines()
+
+    Returns:
+        Updated dict with 'aggregated' key for each pipeline and 'summary' with best configs
+    """
+    summary = {
+        'best_by_der': None,
+        'best_by_wer': None,
+        'best_by_time': None,
+        'rankings': []
+    }
+
+    best_der = float('inf')
+    best_wer = float('inf')
+    best_time = float('inf')
+
+    for combo_name, combo_data in pipelines.items():
+        if 'error' in combo_data:
+            continue
+
+        results = combo_data.get('results', [])
+        if not results:
+            logger.warning(f"No results for {combo_name}, skipping aggregation")
+            continue
+
+        # Extract metrics
+        ders = [r['der_metrics']['der'] for r in results]
+        misses = [r['der_metrics']['miss'] for r in results]
+        false_alarms = [r['der_metrics']['false_alarm'] for r in results]
+        confusions = [r['der_metrics']['confusion'] for r in results]
+        timings = [r['timing'] for r in results]
+        total_times = [r.get('total_time', r['timing']) for r in results]
+
+        aggregated = {
+            'der': {'mean': float(np.mean(ders)), 'std': float(np.std(ders))},
+            'miss': {'mean': float(np.mean(misses)), 'std': float(np.std(misses))},
+            'false_alarm': {'mean': float(np.mean(false_alarms)), 'std': float(np.std(false_alarms))},
+            'confusion': {'mean': float(np.mean(confusions)), 'std': float(np.std(confusions))},
+            'timing': {
+                'mean': float(np.mean(timings)),
+                'std': float(np.std(timings)),
+                'total': float(np.sum(timings))
+            },
+            'total_time': {
+                'mean': float(np.mean(total_times)),
+                'std': float(np.std(total_times)),
+                'total': float(np.sum(total_times))
+            }
+        }
+
+        # Aggregate WER if available
+        wers = [r['wer_metrics']['wer'] for r in results if r.get('wer_metrics')]
+        if wers:
+            aggregated['wer'] = {'mean': float(np.mean(wers)), 'std': float(np.std(wers))}
+
+        # Aggregate component timing if available
+        component_timings = [r['component_timing'] for r in results if r.get('component_timing')]
+        if component_timings:
+            component_keys = ['audio_loading', 'vad', 'overlap_detection', 'asr', 'phoneme',
+                              'scd', 'embedding', 'clustering', 'overlap_processing', 'formatting']
+            aggregated['component_timing'] = {}
+            for key in component_keys:
+                values = [ct.get(key, 0) for ct in component_timings if ct.get(key) is not None]
+                if values:
+                    aggregated['component_timing'][key] = {
+                        'mean': float(np.mean(values)),
+                        'std': float(np.std(values))
+                    }
+
+        combo_data['aggregated'] = aggregated
+
+        # Track best configurations
+        mean_der = aggregated['der']['mean']
+        mean_time = aggregated['timing']['mean']
+
+        if mean_der < best_der:
+            best_der = mean_der
+            summary['best_by_der'] = {
+                'name': combo_name,
+                'config': combo_data['config'],
+                'der': mean_der,
+                'miss': aggregated['miss']['mean'],
+                'false_alarm': aggregated['false_alarm']['mean'],
+                'confusion': aggregated['confusion']['mean'],
+                'timing': mean_time
+            }
+
+        if mean_time < best_time:
+            best_time = mean_time
+            summary['best_by_time'] = {
+                'name': combo_name,
+                'config': combo_data['config'],
+                'der': mean_der,
+                'timing': mean_time
+            }
+
+        if wers:
+            mean_wer = aggregated['wer']['mean']
+            if mean_wer < best_wer:
+                best_wer = mean_wer
+                summary['best_by_wer'] = {
+                    'name': combo_name,
+                    'config': combo_data['config'],
+                    'wer': mean_wer,
+                    'der': mean_der
+                }
+
+        # Add to rankings
+        summary['rankings'].append({
+            'name': combo_name,
+            'config': combo_data['config'],
+            'der': mean_der,
+            'miss': aggregated['miss']['mean'],
+            'false_alarm': aggregated['false_alarm']['mean'],
+            'confusion': aggregated['confusion']['mean'],
+            'wer': aggregated.get('wer', {}).get('mean'),
+            'timing': mean_time
+        })
+
+    # Sort rankings by DER
+    summary['rankings'].sort(key=lambda x: x['der'])
+
+    # Add summary to results
+    pipelines['_summary'] = summary
+
+    return pipelines

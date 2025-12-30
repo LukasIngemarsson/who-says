@@ -1,0 +1,482 @@
+{
+  "comparison_type": "sod",
+  "timestamp": "2025-12-14_20-22-29",
+  "system_info": {
+    "gpu": "NVIDIA GeForce RTX 3090 Ti",
+    "vram": "24 GB",
+    "device": "cuda"
+  },
+  "results": {
+    "ground_truth_count": 92,
+    "ground_truth_duration": 130.55900000000003,
+    "total_audio_duration": 1651.574125,
+    "pyannote_results": [
+      {
+        "onset": 0.1,
+        "detected_count": 105,
+        "detected_duration": 152.36913776336576,
+        "time": 21.1027193069458,
+        "frame_metrics": {
+          "precision": 61.56672352709618,
+          "recall": 58.952129664530716,
+          "f1": 60.23106546854942
+        },
+        "frame_metrics_strict": {
+          "precision": 42.789660149586666,
+          "recall": 49.95404411764706,
+          "f1": 46.09513039790798
+        },
+        "segment_metrics_iou05": {
+          "precision": 17.142857142857142,
+          "recall": 19.565217391304348,
+          "f1": 18.274111675126903
+        },
+        "segment_metrics_iou03": {
+          "precision": 27.61904761904762,
+          "recall": 31.521739130434785,
+          "f1": 29.441624365482237
+        }
+      },
+      {
+        "onset": 0.2,
+        "detected_count": 82,
+        "detected_duration": 94.08106579142394,
+        "time": 20.864139318466187,
+        "frame_metrics": {
+          "precision": 73.5566188197767,
+          "recall": 46.83184402924452,
+          "f1": 57.22794391363693
+        },
+        "frame_metrics_strict": {
+          "precision": 55.311004784689,
+          "recall": 39.84375,
+          "f1": 46.32028850006678
+        },
+        "segment_metrics_iou05": {
+          "precision": 24.390243902439025,
+          "recall": 21.73913043478261,
+          "f1": 22.98850574712644
+        },
+        "segment_metrics_iou03": {
+          "precision": 36.58536585365854,
+          "recall": 32.608695652173914,
+          "f1": 34.48275862068966
+        }
+      },
+      {
+        "onset": 0.3,
+        "detected_count": 74,
+        "detected_duration": 66.55708044508856,
+        "time": 20.731963396072388,
+        "frame_metrics": {
+          "precision": 76.54747596153845,
+          "recall": 36.162964014479385,
+          "f1": 49.12026994456495
+        },
+        "frame_metrics_strict": {
+          "precision": 61.027644230769226,
+          "recall": 31.112132352941174,
+          "f1": 41.21347402597402
+        },
+        "segment_metrics_iou05": {
+          "precision": 24.324324324324326,
+          "recall": 19.565217391304348,
+          "f1": 21.686746987951807
+        },
+        "segment_metrics_iou03": {
+          "precision": 39.189189189189186,
+          "recall": 31.521739130434785,
+          "f1": 34.93975903614458
+        }
+      },
+      {
+        "onset": 0.4,
+        "detected_count": 60,
+        "detected_duration": 49.51279767390811,
+        "time": 20.722795963287354,
+        "frame_metrics": {
+          "precision": 81.05050505050505,
+          "recall": 29.299642152924854,
+          "f1": 43.040283216220566
+        },
+        "frame_metrics_strict": {
+          "precision": 68.18181818181817,
+          "recall": 25.85018382352941,
+          "f1": 37.48750416527824
+        },
+        "segment_metrics_iou05": {
+          "precision": 25.0,
+          "recall": 16.304347826086957,
+          "f1": 19.73684210526316
+        },
+        "segment_metrics_iou03": {
+          "precision": 40.0,
+          "recall": 26.08695652173913,
+          "f1": 31.578947368421055
+        }
+      },
+      {
+        "onset": 0.5,
+        "detected_count": 47,
+        "detected_duration": 38.94871746127488,
+        "time": 20.714549779891968,
+        "frame_metrics": {
+          "precision": 83.38469440164356,
+          "recall": 24.053633602489075,
+          "f1": 37.33685965618353
+        },
+        "frame_metrics_strict": {
+          "precision": 72.00821777092963,
+          "recall": 21.47671568627451,
+          "f1": 33.08554572271387
+        },
+        "segment_metrics_iou05": {
+          "precision": 27.659574468085108,
+          "recall": 14.130434782608695,
+          "f1": 18.705035971223023
+        },
+        "segment_metrics_iou03": {
+          "precision": 46.808510638297875,
+          "recall": 23.91304347826087,
+          "f1": 31.654676258992808
+        }
+      },
+      {
+        "onset": 0.6,
+        "detected_count": 39,
+        "detected_duration": 29.228413623452127,
+        "time": 20.717679738998413,
+        "frame_metrics": {
+          "precision": 84.30232558139535,
+          "recall": 18.432662828086443,
+          "f1": 30.250966435540285
+        },
+        "frame_metrics_strict": {
+          "precision": 73.46101231190151,
+          "recall": 16.452205882352942,
+          "f1": 26.883604505632043
+        },
+        "segment_metrics_iou05": {
+          "precision": 23.076923076923077,
+          "recall": 9.782608695652174,
+          "f1": 13.740458015267174
+        },
+        "segment_metrics_iou03": {
+          "precision": 43.58974358974359,
+          "recall": 18.478260869565215,
+          "f1": 25.95419847328244
+        }
+      },
+      {
+        "onset": 0.7,
+        "detected_count": 29,
+        "detected_duration": 20.62189460038006,
+        "time": 20.735661268234253,
+        "frame_metrics": {
+          "precision": 87.20930232558139,
+          "recall": 13.55523759319226,
+          "f1": 23.463468682786942
+        },
+        "frame_metrics_strict": {
+          "precision": 76.40503875968993,
+          "recall": 12.078737745098039,
+          "f1": 20.85978835978836
+        },
+        "segment_metrics_iou05": {
+          "precision": 27.586206896551722,
+          "recall": 8.695652173913043,
+          "f1": 13.223140495867769
+        },
+        "segment_metrics_iou03": {
+          "precision": 44.827586206896555,
+          "recall": 14.130434782608695,
+          "f1": 21.487603305785125
+        }
+      },
+      {
+        "onset": 0.8,
+        "detected_count": 22,
+        "detected_duration": 13.837932546899992,
+        "time": 20.740318536758423,
+        "frame_metrics": {
+          "precision": 89.01734104046243,
+          "recall": 9.343242833308054,
+          "f1": 16.911461908030198
+        },
+        "frame_metrics_strict": {
+          "precision": 79.62427745664739,
+          "recall": 8.440563725490197,
+          "f1": 15.263157894736842
+        },
+        "segment_metrics_iou05": {
+          "precision": 27.27272727272727,
+          "recall": 6.521739130434782,
+          "f1": 10.526315789473683
+        },
+        "segment_metrics_iou03": {
+          "precision": 50.0,
+          "recall": 11.956521739130435,
+          "f1": 19.298245614035086
+        }
+      }
+    ],
+    "wavlm_results": [
+      {
+        "onset": 0.1,
+        "detected_count": 1096,
+        "detected_duration": 917.4388893293404,
+        "time": 3.1267611980438232,
+        "frame_metrics": {
+          "precision": 16.53914067098293,
+          "recall": 82.63805685655157,
+          "f1": 27.562030006902315
+        },
+        "frame_metrics_strict": {
+          "precision": 10.755782268436771,
+          "recall": 75.58210784313727,
+          "f1": 18.831701685082347
+        },
+        "segment_metrics_iou05": {
+          "precision": 2.4635036496350367,
+          "recall": 29.347826086956523,
+          "f1": 4.545454545454546
+        },
+        "segment_metrics_iou03": {
+          "precision": 4.927007299270073,
+          "recall": 58.69565217391305,
+          "f1": 9.090909090909092
+        }
+      },
+      {
+        "onset": 0.2,
+        "detected_count": 707,
+        "detected_duration": 429.50974027392624,
+        "time": 3.0391125679016113,
+        "frame_metrics": {
+          "precision": 25.11582427304263,
+          "recall": 65.36201151166313,
+          "f1": 36.28779979144942
+        },
+        "frame_metrics_strict": {
+          "precision": 17.086117384117525,
+          "recall": 56.21170343137255,
+          "f1": 26.20650252637969
+        },
+        "segment_metrics_iou05": {
+          "precision": 4.243281471004243,
+          "recall": 32.608695652173914,
+          "f1": 7.509386733416771
+        },
+        "segment_metrics_iou03": {
+          "precision": 7.355021216407355,
+          "recall": 56.52173913043478,
+          "f1": 13.016270337922403
+        }
+      },
+      {
+        "onset": 0.3,
+        "detected_count": 363,
+        "detected_duration": 214.26453936781323,
+        "time": 3.053410053253174,
+        "frame_metrics": {
+          "precision": 39.04237446331902,
+          "recall": 54.29294568109546,
+          "f1": 45.42172272443467
+        },
+        "frame_metrics_strict": {
+          "precision": 28.061414971065897,
+          "recall": 46.05545343137255,
+          "f1": 34.87414453079689
+        },
+        "segment_metrics_iou05": {
+          "precision": 8.264462809917356,
+          "recall": 32.608695652173914,
+          "f1": 13.18681318681319
+        },
+        "segment_metrics_iou03": {
+          "precision": 12.396694214876034,
+          "recall": 48.91304347826087,
+          "f1": 19.780219780219777
+        }
+      },
+      {
+        "onset": 0.4,
+        "detected_count": 190,
+        "detected_duration": 118.88019464270653,
+        "time": 3.2250359058380127,
+        "frame_metrics": {
+          "precision": 53.79698931965352,
+          "recall": 43.63276720551122,
+          "f1": 48.18469418499548
+        },
+        "frame_metrics_strict": {
+          "precision": 40.29938609032041,
+          "recall": 36.70343137254902,
+          "f1": 38.41744498336473
+        },
+        "segment_metrics_iou05": {
+          "precision": 14.210526315789473,
+          "recall": 29.347826086956523,
+          "f1": 19.148936170212764
+        },
+        "segment_metrics_iou03": {
+          "precision": 19.473684210526315,
+          "recall": 40.21739130434783,
+          "f1": 26.24113475177305
+        }
+      },
+      {
+        "onset": 0.5,
+        "detected_count": 129,
+        "detected_duration": 82.05535320456161,
+        "time": 3.5892016887664795,
+        "frame_metrics": {
+          "precision": 65.68818514007309,
+          "recall": 38.02439540294719,
+          "f1": 48.16683785111419
+        },
+        "frame_metrics_strict": {
+          "precision": 51.961023142509134,
+          "recall": 32.674632352941174,
+          "f1": 40.12037994921471
+        },
+        "segment_metrics_iou05": {
+          "precision": 20.155038759689923,
+          "recall": 28.26086956521739,
+          "f1": 23.52941176470588
+        },
+        "segment_metrics_iou03": {
+          "precision": 27.131782945736433,
+          "recall": 38.04347826086957,
+          "f1": 31.674208144796385
+        }
+      },
+      {
+        "onset": 0.6,
+        "detected_count": 98,
+        "detected_duration": 61.58154190498379,
+        "time": 3.1523449420928955,
+        "frame_metrics": {
+          "precision": 71.9013627514601,
+          "recall": 31.848232250646735,
+          "f1": 44.14342629482071
+        },
+        "frame_metrics_strict": {
+          "precision": 57.94938351719663,
+          "recall": 27.359068627450984,
+          "f1": 37.169614984391266
+        },
+        "segment_metrics_iou05": {
+          "precision": 22.448979591836736,
+          "recall": 23.91304347826087,
+          "f1": 23.157894736842106
+        },
+        "segment_metrics_iou03": {
+          "precision": 32.6530612244898,
+          "recall": 34.78260869565217,
+          "f1": 33.68421052631579
+        }
+      },
+      {
+        "onset": 0.7,
+        "detected_count": 74,
+        "detected_duration": 44.38994473358969,
+        "time": 3.3742525577545166,
+        "frame_metrics": {
+          "precision": 77.78027915353445,
+          "recall": 25.230027749379293,
+          "f1": 38.10101455668284
+        },
+        "frame_metrics_strict": {
+          "precision": 63.41737955875731,
+          "recall": 21.57628676470588,
+          "f1": 32.197965481769344
+        },
+        "segment_metrics_iou05": {
+          "precision": 22.972972972972975,
+          "recall": 18.478260869565215,
+          "f1": 20.481927710843376
+        },
+        "segment_metrics_iou03": {
+          "precision": 39.189189189189186,
+          "recall": 31.521739130434785,
+          "f1": 34.93975903614458
+        }
+      },
+      {
+        "onset": 0.8,
+        "detected_count": 50,
+        "detected_duration": 29.019576133319838,
+        "time": 3.236508846282959,
+        "frame_metrics": {
+          "precision": 87.05234159779614,
+          "recall": 18.937748145928534,
+          "f1": 31.108103119424108
+        },
+        "frame_metrics_strict": {
+          "precision": 76.96280991735537,
+          "recall": 17.118566176470587,
+          "f1": 28.007518796992482
+        },
+        "segment_metrics_iou05": {
+          "precision": 28.000000000000004,
+          "recall": 15.217391304347828,
+          "f1": 19.718309859154935
+        },
+        "segment_metrics_iou03": {
+          "precision": 42.0,
+          "recall": 22.82608695652174,
+          "f1": 29.577464788732396
+        }
+      }
+    ],
+    "nemo_results": {
+      "detected_count": 135,
+      "detected_duration": 203.21399999999937,
+      "time": 2.9483656883239746,
+      "frame_metrics": {
+        "precision": 31.80095486538367,
+        "recall": 43.98828976034858,
+        "f1": 36.914726467647476
+      },
+      "frame_metrics_strict": {
+        "precision": 23.76827287493232,
+        "recall": 36.986825980392155,
+        "f1": 28.939561921313636
+      },
+      "segment_metrics_iou05": {
+        "precision": 19.25925925925926,
+        "recall": 28.26086956521739,
+        "f1": 22.907488986784138
+      },
+      "segment_metrics_iou03": {
+        "precision": 25.185185185185183,
+        "recall": 36.95652173913043,
+        "f1": 29.955947136563875
+      }
+    },
+    "aggregated": {
+      "best_pyannote": {
+        "onset": 0.2,
+        "frame_precision": 73.5566188197767,
+        "frame_recall": 46.83184402924452,
+        "frame_f1": 57.22794391363693,
+        "segment_f1_iou05": 22.98850574712644
+      },
+      "optimize_metric": "frame_f1",
+      "best_wavlm": {
+        "onset": 0.8,
+        "frame_precision": 87.05234159779614,
+        "frame_recall": 18.937748145928534,
+        "frame_f1": 31.108103119424108,
+        "segment_f1_iou05": 19.718309859154935
+      },
+      "nemo": {
+        "frame_precision": 31.80095486538367,
+        "frame_recall": 43.98828976034858,
+        "frame_f1": 36.914726467647476,
+        "segment_f1_iou05": 22.907488986784138
+      }
+    }
+  }
+}

@@ -72,7 +72,7 @@ class PyannoteSOS(object):
 
         # Run separation inference
         with torch.no_grad():
-            waveform = waveform.to(self.device)
+            waveform = waveform.to(self.device).contiguous()
 
             # The separation model outputs separated sources
             # Shape: (batch, num_sources, num_samples)
@@ -80,12 +80,41 @@ class PyannoteSOS(object):
 
         # Convert to dictionary of individual speaker waveforms
         separated_waveforms = {}
-        num_sources = torch.tensor(separated).shape[1]
 
-        for i in range(num_sources):
-            # Extract each speaker's waveform and move to CPU
-            speaker_waveform = separated[0, i, :].cpu()
-            separated_waveforms[i] = speaker_waveform
+        # Handle different output formats from the model
+        if isinstance(separated, (list, tuple)):
+            # pyannote/separation-ami-1.0 returns tuple:
+            # - Element 0: some metadata/embedding (batch, frames, num_sources)
+            # - Element 1: separated audio (batch, num_samples, num_sources)
+            # We want element 1 (the actual separated audio)
+            if len(separated) >= 2 and isinstance(separated[1], torch.Tensor):
+                sources = separated[1]  # Shape: (batch, num_samples, num_sources)
+                if sources.ndim == 3:
+                    num_sources = sources.shape[2]
+                    for i in range(num_sources):
+                        speaker_waveform = sources[0, :, i].cpu()
+                        separated_waveforms[i] = speaker_waveform
+                else:
+                    # Fallback for unexpected shape
+                    speaker_waveform = sources.squeeze().cpu()
+                    separated_waveforms[0] = speaker_waveform
+            else:
+                # Fallback: treat as list of tensors
+                for i, source in enumerate(separated):
+                    if isinstance(source, torch.Tensor):
+                        speaker_waveform = source.squeeze().cpu()
+                        separated_waveforms[i] = speaker_waveform
+        elif isinstance(separated, torch.Tensor):
+            # Shape: (batch, num_sources, num_samples) or (batch, num_samples, num_sources)
+            if separated.ndim == 3:
+                # Assume (batch, num_sources, num_samples)
+                num_sources = separated.shape[1]
+                for i in range(num_sources):
+                    speaker_waveform = separated[0, i, :].cpu()
+                    separated_waveforms[i] = speaker_waveform
+            else:
+                speaker_waveform = separated.squeeze().cpu()
+                separated_waveforms[0] = speaker_waveform
 
         return separated_waveforms
 
@@ -119,11 +148,11 @@ class PyannoteSOS(object):
             start_sample = int(start_time * sample_rate)
             end_sample = int(end_time * sample_rate)
 
-            # Extract segment
-            segment = waveform[..., start_sample:end_sample]
+            # Extract segment - ensure it's contiguous and a fresh copy
+            segment = waveform[..., start_sample:end_sample].clone().contiguous()
 
             # Separate speakers in this segment
-            separated = self(segment, sample_rate)
+            separated = self(segment)
 
             separated_regions[(start_time, end_time)] = separated
 

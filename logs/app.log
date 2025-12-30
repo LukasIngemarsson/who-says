@@ -1,0 +1,173 @@
+2025-12-13 15:12:05 | INFO | Loading WhoSays pipeline... This may take a moment.
+2025-12-13 15:12:05 | INFO | Using device: cuda
+2025-12-13 15:12:05 | INFO | Initializing SOD with type: nemo
+2025-12-13 15:12:07 | INFO | Initializing SOS with type: TypeSOS.SPEECHBRAIN
+2025-12-13 15:12:07 | INFO | Initializing SCD with type: nemo
+2025-12-13 15:12:09 | INFO | Initializing ASR with type: faster_whisper
+2025-12-13 15:12:09 | INFO | Model: large-v3, Device: cuda, Compute type: float32
+2025-12-13 15:12:15 | INFO | Pipeline loaded successfully. Server is ready.
+2025-12-13 15:12:15 | INFO | Loaded 6 tuning presets from /home/marsa/tuning_presets.json
+2025-12-13 15:12:15 | INFO | Loaded 3 embeddings from /home/marsa/embeddings
+2025-12-13 15:12:34 | INFO | Serving /app/client
+2025-12-13 15:12:59 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:00 | INFO | [identify_speaker] No speech detected, waiting for next frame to verify
+2025-12-13 15:13:01 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:01 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:01 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:02 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:02 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:03 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:04 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:04 | INFO | [identify_speaker] Speech buffer: 0.60s, ASR buffer: 4.00s, min required: 0.4s
+2025-12-13 15:13:04 | DEBUG | Speaker Johan: score=0.011
+2025-12-13 15:13:04 | DEBUG | Speaker Lukas: score=0.121
+2025-12-13 15:13:04 | DEBUG | Speaker Marten: score=0.015
+2025-12-13 15:13:04 | DEBUG | Identified: Lukas (score=0.121, margin=0.106)
+2025-12-13 15:13:04 | INFO | Running overlap detection: buffer=4.00s, time_since_last=1765638784.58s
+2025-12-13 15:13:04 | INFO | Initializing PyannoteSOD detector on device: cuda
+2025-12-13 15:13:04 | INFO | Initialized PyannoteSOD detector for overlap detection successfully
+2025-12-13 15:13:05 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:06 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:06 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 5.00s, min required: 0.4s
+2025-12-13 15:13:06 | DEBUG | Speaker Johan: score=0.296
+2025-12-13 15:13:06 | DEBUG | Speaker Lukas: score=0.323
+2025-12-13 15:13:06 | DEBUG | Speaker Marten: score=0.231
+2025-12-13 15:13:06 | DEBUG | Low confidence: Lukas (score=0.323, margin=0.027, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:06 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:07 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:07 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 6.00s, min required: 0.4s
+2025-12-13 15:13:07 | DEBUG | Speaker Johan: score=0.211
+2025-12-13 15:13:07 | DEBUG | Speaker Lukas: score=0.160
+2025-12-13 15:13:07 | DEBUG | Speaker Marten: score=0.168
+2025-12-13 15:13:07 | DEBUG | Low confidence: Johan (score=0.211, margin=0.043, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:07 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:08 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:08 | INFO | [identify_speaker] No speech detected, waiting for next frame to verify
+2025-12-13 15:13:10 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:10 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:10 | INFO | Running overlap detection: buffer=5.00s, time_since_last=6.27s
+2025-12-13 15:13:10 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:11 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:11 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:12 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:13 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:13 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 10.00s, min required: 0.4s
+2025-12-13 15:13:13 | DEBUG | Speaker Johan: score=0.252
+2025-12-13 15:13:13 | DEBUG | Speaker Lukas: score=0.123
+2025-12-13 15:13:13 | DEBUG | Speaker Marten: score=0.113
+2025-12-13 15:13:13 | DEBUG | Identified: Johan (score=0.252, margin=0.129)
+2025-12-13 15:13:13 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:14 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:14 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 11.00s, min required: 0.4s
+2025-12-13 15:13:14 | DEBUG | Speaker Johan: score=-0.024
+2025-12-13 15:13:14 | DEBUG | Speaker Lukas: score=-0.011
+2025-12-13 15:13:14 | DEBUG | Speaker Marten: score=0.070
+2025-12-13 15:13:14 | DEBUG | Low confidence: Marten (score=0.070, margin=0.080, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:15 | INFO | Running overlap detection: buffer=4.00s, time_since_last=4.17s
+2025-12-13 15:13:15 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:16 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:16 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 12.00s, min required: 0.4s
+2025-12-13 15:13:16 | DEBUG | Speaker Johan: score=0.237
+2025-12-13 15:13:16 | DEBUG | Speaker Lukas: score=0.065
+2025-12-13 15:13:16 | DEBUG | Speaker Marten: score=0.106
+2025-12-13 15:13:16 | DEBUG | Identified: Johan (score=0.237, margin=0.131)
+2025-12-13 15:13:16 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:17 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:17 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 13.00s, min required: 0.4s
+2025-12-13 15:13:17 | DEBUG | Speaker Johan: score=0.162
+2025-12-13 15:13:17 | DEBUG | Speaker Lukas: score=0.151
+2025-12-13 15:13:17 | DEBUG | Speaker Marten: score=0.129
+2025-12-13 15:13:17 | DEBUG | Low confidence: Johan (score=0.162, margin=0.010, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:17 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:18 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:19 | INFO | [identify_speaker] No speech detected, waiting for next frame to verify
+2025-12-13 15:13:20 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:20 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:20 | INFO | Running overlap detection: buffer=5.00s, time_since_last=5.80s
+2025-12-13 15:13:20 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:21 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:21 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:22 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:23 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:23 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:23 | DEBUG | Speaker Johan: score=-0.099
+2025-12-13 15:13:23 | DEBUG | Speaker Lukas: score=-0.038
+2025-12-13 15:13:23 | DEBUG | Speaker Marten: score=0.178
+2025-12-13 15:13:23 | DEBUG | Identified: Marten (score=0.178, margin=0.215)
+2025-12-13 15:13:23 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:24 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:24 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:24 | DEBUG | Speaker Johan: score=0.052
+2025-12-13 15:13:24 | DEBUG | Speaker Lukas: score=0.076
+2025-12-13 15:13:24 | DEBUG | Speaker Marten: score=0.104
+2025-12-13 15:13:24 | DEBUG | Low confidence: Marten (score=0.104, margin=0.028, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:25 | INFO | Running overlap detection: buffer=4.00s, time_since_last=4.24s
+2025-12-13 15:13:25 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:26 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:26 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:26 | DEBUG | Speaker Johan: score=0.259
+2025-12-13 15:13:26 | DEBUG | Speaker Lukas: score=0.204
+2025-12-13 15:13:26 | DEBUG | Speaker Marten: score=0.214
+2025-12-13 15:13:26 | DEBUG | Low confidence: Johan (score=0.259, margin=0.045, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:26 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:27 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:27 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:27 | DEBUG | Speaker Johan: score=0.083
+2025-12-13 15:13:27 | DEBUG | Speaker Lukas: score=0.072
+2025-12-13 15:13:27 | DEBUG | Speaker Marten: score=0.258
+2025-12-13 15:13:27 | DEBUG | Identified: Marten (score=0.258, margin=0.176)
+2025-12-13 15:13:27 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:28 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:28 | INFO | [identify_speaker] No speech detected, waiting for next frame to verify
+2025-12-13 15:13:30 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:30 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:30 | DEBUG | Speaker Johan: score=-0.079
+2025-12-13 15:13:30 | DEBUG | Speaker Lukas: score=-0.083
+2025-12-13 15:13:30 | DEBUG | Speaker Marten: score=-0.047
+2025-12-13 15:13:30 | DEBUG | Low confidence: Marten (score=-0.047, margin=0.033, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:30 | INFO | Running overlap detection: buffer=5.00s, time_since_last=5.67s
+2025-12-13 15:13:30 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:31 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:31 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:31 | DEBUG | Speaker Johan: score=-0.056
+2025-12-13 15:13:31 | DEBUG | Speaker Lukas: score=0.006
+2025-12-13 15:13:31 | DEBUG | Speaker Marten: score=0.005
+2025-12-13 15:13:31 | DEBUG | Low confidence: Lukas (score=0.006, margin=0.001, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:32 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:33 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:33 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:33 | DEBUG | Speaker Johan: score=0.168
+2025-12-13 15:13:33 | DEBUG | Speaker Lukas: score=0.198
+2025-12-13 15:13:33 | DEBUG | Speaker Marten: score=0.106
+2025-12-13 15:13:33 | DEBUG | Low confidence: Lukas (score=0.198, margin=0.030, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:33 | DEBUG | Overlap buffer too short: 3.00s < 4.0s
+2025-12-13 15:13:34 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:34 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:34 | DEBUG | Speaker Johan: score=0.049
+2025-12-13 15:13:34 | DEBUG | Speaker Lukas: score=0.200
+2025-12-13 15:13:34 | DEBUG | Speaker Marten: score=0.131
+2025-12-13 15:13:34 | DEBUG | Low confidence: Lukas (score=0.200, margin=0.069, min_conf=0.1, min_margin=0.1)
+2025-12-13 15:13:35 | INFO | Running overlap detection: buffer=4.00s, time_since_last=4.29s
+2025-12-13 15:13:35 | INFO | SOD detection returned 0 overlap segments
+2025-12-13 15:13:36 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:36 | INFO | [identify_speaker] Speech buffer: 0.40s, ASR buffer: 15.00s, min required: 0.4s
+2025-12-13 15:13:36 | DEBUG | Speaker Johan: score=-0.006
+2025-12-13 15:13:36 | DEBUG | Speaker Lukas: score=0.036
+2025-12-13 15:13:36 | DEBUG | Speaker Marten: score=0.136
+2025-12-13 15:13:36 | DEBUG | Identified: Marten (score=0.136, margin=0.101)
+2025-12-13 15:13:36 | DEBUG | Overlap buffer too short: 2.00s < 4.0s
+2025-12-13 15:13:37 | INFO | [identify_speaker] Incoming audio: 1.00s (16000 samples @ 16000Hz)
+2025-12-13 15:13:37 | INFO | [identify_speaker] No speech detected, waiting for next frame to verify
+2025-12-13 15:13:38 | INFO | [identify_speaker] Incoming audio: 0.77s (12386 samples @ 16000Hz)
+2025-12-13 15:13:38 | INFO | [identify_speaker] No speech confirmed (two consecutive frames)
+2025-12-13 15:13:38 | DEBUG | Overlap buffer too short: 3.77s < 4.0s
+2025-12-13 15:14:08 | INFO | Loading WhoSays pipeline... This may take a moment.
+2025-12-13 15:14:08 | INFO | Using device: cuda
+2025-12-13 15:14:08 | INFO | Initializing SOD with type: nemo
+2025-12-13 15:14:10 | INFO | Initializing SOS with type: TypeSOS.SPEECHBRAIN
+2025-12-13 15:14:10 | INFO | Initializing SCD with type: nemo
+2025-12-13 15:14:12 | INFO | Initializing ASR with type: faster_whisper
+2025-12-13 15:14:12 | INFO | Model: large-v3, Device: cuda, Compute type: float32
+2025-12-13 15:14:17 | INFO | Pipeline loaded successfully. Server is ready.
+2025-12-13 15:14:17 | INFO | Loaded 6 tuning presets from /home/marsa/tuning_presets.json
+2025-12-13 15:14:17 | INFO | Loaded 3 embeddings from /home/marsa/embeddings

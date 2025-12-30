@@ -1,3 +1,12 @@
+# Fix for PyTorch 2.6+ weights_only default change - must run before any model loading
+# Monkey-patch torch.load to force weights_only=False for pyannote compatibility
+import torch
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs['weights_only'] = False  # Force False, override any explicit True
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
+
 from loguru import logger
 import argparse
 from pathlib import Path
@@ -11,7 +20,7 @@ from dotenv import load_dotenv
 
 from pipeline.ASR import ASR
 from pipeline.speaker_segmentation import SO, SCD, SileroVAD
-from pipeline.speaker_recognition import SklearnClustering
+from pipeline.speaker_recognition import SklearnClustering, CosineSimilarityClustering
 from pipeline.speaker_recognition import SpeechBrainEmbedding
 from pipeline.speaker_recognition import SpeechBrainSpeakerRecognition
 from pipeline.phoene import SpeechBrainPhoneme
@@ -24,18 +33,36 @@ load_dotenv(".env")
 class WhoSays(object):
     def __init__(self, config=Config()):
         self.config = config
-        
+
         logger.info(f"Using device: {self.config.device}")
         
-        #self.sod = SO(self.config.so)
-        self.scd = SCD(**self.config.scd.pyannote.to_dict())
+        self.sod = SO(self.config.so)
+        self.scd = SCD(**self.config.scd.get_config().to_dict(), scd_type=self.config.scd.scd_type)
         
         self.vad = SileroVAD(**self.config.vad.silero.to_dict())
         self.asr = ASR(**self.config.asr.to_dict())
         self.phoneme = SpeechBrainPhoneme(**self.config.phoneme.speechbrain.to_dict())
 
-        self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
-        self.clustering = SklearnClustering(**self.config.clustering.kmeans.to_dict()) 
+        # Initialize embedding based on config type
+        from config import TypeEmbedding
+        from pipeline.speaker_recognition.embedding._pyannote import PyAnnoteEmbedding
+        from pipeline.speaker_recognition.embedding.wav2vec2 import Wav2Vec2Embedding
+
+        if self.config.embedding.embedding_type == TypeEmbedding.PYANNOTE:
+            self.embedder = PyAnnoteEmbedding(**self.config.embedding.pyannote.to_dict())
+        elif self.config.embedding.embedding_type == TypeEmbedding.WAV2VEC2:
+            self.embedder = Wav2Vec2Embedding(**self.config.embedding.wav2vec2.to_dict())
+        else:
+            self.embedder = SpeechBrainEmbedding(**self.config.embedding.speechbrain.to_dict())
+
+        # Initialize clustering based on config type
+        from config import TypeClustering
+        clustering_config = self.config.clustering.get_config()
+        if self.config.clustering.clustering_type == TypeClustering.COSINE_SIMILARITY:
+            self.clustering = CosineSimilarityClustering(**clustering_config.to_dict())
+        else:
+            self.clustering = SklearnClustering(**clustering_config.to_dict())
+
         self.recognition = SpeechBrainSpeakerRecognition(**self.config.recognition.speechbrain.to_dict())
 
     def get_reference_embedding(self, audio_file: str):
@@ -59,7 +86,7 @@ class WhoSays(object):
         # Return the first (and only) embedding vector
         return emb[0]
 
-    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.5):
+    def _identify_clusters(self, segment_embeddings, clusters, known_speakers, threshold=0.4):
         """
         Compare cluster centroids to known speaker embeddings.
         Returns a dictionary mapping Cluster ID (int) -> Name (str).
@@ -102,12 +129,125 @@ class WhoSays(object):
             logger.info(f"Cluster {c_id} identified as '{best_name}' (Score: {best_score:.4f})")
 
         return cluster_mapping
-    
+
+    def _process_overlap_regions(
+        self,
+        separated_regions: dict,
+        overlap_embedding_info: list[dict],
+        overlap_clusters: torch.Tensor,
+        all_embeddings: torch.Tensor,
+        all_clusters: torch.Tensor,
+        cluster_names: dict,
+        sr: int,
+        min_confidence: float = 0.7
+    ) -> list[dict]:
+        """
+        Process separated overlap regions: transcribe and assign speakers from clustering.
+
+        Args:
+            separated_regions: Dict mapping (start, end) to {speaker_idx: waveform}
+            overlap_embedding_info: List of {region, speaker_idx, embedding_idx} for overlap embeddings
+            overlap_clusters: Cluster assignments for overlap embeddings (from main clustering)
+            all_embeddings: All embeddings (main + overlap) used in clustering
+            all_clusters: All cluster assignments
+            cluster_names: Mapping from cluster ID to speaker name
+            sr: Sample rate
+            min_confidence: Minimum cosine similarity to cluster centroid to accept assignment
+
+        Returns:
+            List of processed overlap regions with transcriptions and speaker IDs
+        """
+        processed_overlaps = []
+
+        # Compute cluster centroids for confidence scoring
+        cluster_centroids = {}
+        unique_clusters = set(all_clusters.tolist())
+        for c_id in unique_clusters:
+            indices = [i for i, x in enumerate(all_clusters) if x == c_id]
+            cluster_embs = all_embeddings[indices]
+            cluster_centroids[c_id] = torch.mean(cluster_embs, dim=0)
+
+        # Create lookup from (region, speaker_idx) to (cluster assignment, embedding index)
+        overlap_cluster_lookup = {}
+        for i, info in enumerate(overlap_embedding_info):
+            key = (info['region'], info['speaker_idx'])
+            if i < len(overlap_clusters):
+                overlap_cluster_lookup[key] = {
+                    'cluster_id': int(overlap_clusters[i].item()),
+                    'embedding_idx': info['embedding_idx']
+                }
+
+        for (start_time, end_time), speaker_waveforms in separated_regions.items():
+            overlap_info = {
+                'start': start_time,
+                'end': end_time,
+                'duration': end_time - start_time,
+                'speakers': []
+            }
+
+            for spk_idx, spk_waveform in speaker_waveforms.items():
+                # Look up cluster assignment from clustering step
+                lookup_key = ((start_time, end_time), spk_idx)
+                lookup_data = overlap_cluster_lookup.get(lookup_key)
+
+                cluster_id = -1
+                confidence = 0.0
+                speaker_name = 'UNKNOWN'
+
+                if lookup_data:
+                    cluster_id = lookup_data['cluster_id']
+                    emb_idx = lookup_data['embedding_idx']
+
+                    # Compute confidence as cosine similarity to cluster centroid
+                    if cluster_id in cluster_centroids and emb_idx < all_embeddings.shape[0]:
+                        emb = all_embeddings[emb_idx]
+                        centroid = cluster_centroids[cluster_id]
+                        confidence = F.cosine_similarity(
+                            emb.unsqueeze(0), centroid.unsqueeze(0)
+                        ).item()
+
+                    # Only accept assignment if confidence meets threshold
+                    if confidence >= min_confidence:
+                        speaker_name = cluster_names.get(cluster_id, f"SPEAKER_{cluster_id}")
+                    else:
+                        logger.debug(f"Rejected overlap speaker {spk_idx} assignment (confidence {confidence:.2f} < {min_confidence})")
+                        cluster_id = -1
+
+                speaker_data = {
+                    'separated_speaker_idx': spk_idx,
+                    'speaker': speaker_name,
+                    'cluster_id': cluster_id,
+                    'confidence': confidence,
+                    'transcription': None
+                }
+
+                # Ensure waveform is on correct device
+                if spk_waveform.device != torch.device(self.config.device):
+                    spk_waveform = spk_waveform.to(self.config.device)
+
+                # Transcribe this separated speaker's audio
+                try:
+                    segments = [{'start': 0.0, 'end': spk_waveform.shape[-1] / sr}]
+                    trans = self.asr.transcribe_segments(
+                        spk_waveform, segments, return_timestamps=True
+                    )
+                    if trans:
+                        speaker_data['transcription'] = trans[0].get('text', '')
+                except Exception as e:
+                    logger.warning(f"Failed to transcribe separated speaker {spk_idx}: {e}")
+
+                overlap_info['speakers'].append(speaker_data)
+
+            processed_overlaps.append(overlap_info)
+
+        return processed_overlaps
+
     def __call__(
         self,
         audio_file: str,
         num_speakers: int = 2,
         include_timing: bool = False,
+        return_diarization_time: bool = False,
         known_speakers: dict | None = None
     ):
         """
@@ -117,6 +257,8 @@ class WhoSays(object):
             audio_file: Path to audio file
             num_speakers: Expected number of speakers
             include_timing: Whether to include timing metrics for each model run
+            return_diarization_time: Whether to compute and return diarization-only time
+                                    (excludes ASR/phoneme for fair comparison with diarization-only pipelines)
 
         Returns:
             dict: Structured diarization results containing:
@@ -124,9 +266,10 @@ class WhoSays(object):
                 - speakers: List of speaker segments with IDs and timestamps
                 - segments: Detailed segment information with speaker assignments
                 - timing: (optional) Timing information for each pipeline step
+                - diarization_time: (optional) Diarization-only time if return_diarization_time=True
         """
         with torch.no_grad():
-            timing = {} if include_timing else None
+            timing = {} if (include_timing or return_diarization_time) else None
 
             logger.info(f"Loading audio from {audio_file}")
             if include_timing:
@@ -165,77 +308,168 @@ class WhoSays(object):
                 timing['vad'] = time.time() - start_time
             logger.info(f"Found {len(speech_segments)} speech segments")
 
+            # Speaker Overlap Detection & Separation
+            overlap_segments = []
+            separated_regions = {}
+            if not self.config.skip_overlap:
+                logger.info("Detecting and separating speaker overlaps...")
+                if include_timing:
+                    start_time = time.time()
+                overlap_result = self.sod(waveform, sr)
+                overlap_segments = overlap_result['overlap_segments']
+                separated_regions = overlap_result['separated_regions']
+                if include_timing:
+                    timing['overlap_detection'] = time.time() - start_time
+                logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
+            else:
+                logger.info("Skipping overlap detection (skip_overlap=True)")
+
+            # Clear GPU memory after overlap detection before ASR
+            if torch.cuda.is_available():
+                torch.cuda.synchronize()
+                torch.cuda.empty_cache()
+
             # Step 2: Automatic Speech Recognition
             logger.info("Transcribing speech segments...")
-            if include_timing:
+            if include_timing or return_diarization_time:
                 start_time = time.time()
             transcriptions = self.asr.transcribe_segments(
                 waveform,
                 speech_segments,
                 return_timestamps=True
             )
+            if include_timing or return_diarization_time:
+                timing['asr'] = time.time() - start_time
 
-        # Step 3: Phoneme Conversion
-        logger.info("Converting transcriptions to phonemes...")
-        if include_timing:
-            start_time = time.time()
-        transcriptions = self.phoneme(transcriptions)
-        if include_timing:
-            timing['phoneme'] = time.time() - start_time
-        logger.info(f"Added phonemes to {len(transcriptions)} segments")
+            # Step 3: Phoneme Conversion
+            logger.info("Converting transcriptions to phonemes...")
+            if include_timing or return_diarization_time:
+                start_time = time.time()
+            transcriptions = self.phoneme(transcriptions)
+            if include_timing or return_diarization_time:
+                timing['phoneme'] = time.time() - start_time
+            logger.info(f"Added phonemes to {len(transcriptions)} segments")
 
-        # Step 4: Speaker Overlap Detection
-        logger.info("Detecting speaker overlaps...")
-        #overlap_segments = self.sod.sod_pipeline(waveform)
-        #logger.info(f"Found {len(overlap_segments)} overlapping speech regions")
 
-        # Step 5: Speaker Change Detection
-        logger.info("Detecting speaker change points...")
-        if include_timing:
-            start_time = time.time()
-        change_points = self.scd(waveform)
-        if include_timing:
-            timing['scd'] = time.time() - start_time
-        logger.info(f"Found {len(change_points)} speaker change points")
+            # Step 5: Speaker Change Detection
+            logger.info("Detecting speaker change points...")
+            if include_timing or return_diarization_time:
+                start_time = time.time()
+            change_points = self.scd(waveform)
+            if include_timing or return_diarization_time:
+                timing['scd'] = time.time() - start_time
+            logger.info(f"Found {len(change_points)} speaker change points")
 
-        # Step 6: Speaker Embedding
-        logger.info("Extracting speaker embeddings...")
-        if include_timing:
-            start_time = time.time()
-        segment_embeddings = self.embedder.embed_segments(waveform, sr, change_points)
-        if include_timing:
-            timing['embedding'] = time.time() - start_time
-        logger.info(f"Extracted embeddings for {segment_embeddings.shape[0]} segments")
+            # Step 6: Speaker Embedding (main segments + separated overlap audio)
+            logger.info("Extracting speaker embeddings...")
+            if include_timing or return_diarization_time:
+                start_time = time.time()
 
-        # Step 7: Speaker Clustering
-        logger.info(f"Clustering speaker segments into {num_speakers} clusters...")
-        if include_timing:
-            start_time = time.time()
-        segment_clusters = self.clustering.cluster_segments(segment_embeddings, n_clusters=num_speakers)
-        if include_timing:
-            timing['clustering'] = time.time() - start_time
-        logger.info(f"Identified {len(set(segment_clusters.tolist()))} speaker clusters")
+            # Embed main segments - get indices of which segments were actually embedded
+            segment_embeddings, embedded_segment_indices = self.embedder.embed_segments(
+                waveform, sr, change_points, return_indices=True
+            )
+            n_main_segments = segment_embeddings.shape[0]
 
-        logger.info("Identifying speakers against known registry...")
-        if known_speakers:
-            cluster_names = self._identify_clusters(segment_embeddings, segment_clusters, known_speakers)
-        else:
-            cluster_names = {c: f"SPEAKER_{c}" for c in set(segment_clusters.tolist())}
+            # Embed separated overlap speakers and track their metadata
+            overlap_embedding_info = []  # List of {region: (start, end), speaker_idx: int, embedding_idx: int}
+            overlap_embeddings_list = []
 
-        # Step 8: Merge results into structured output
+            if separated_regions and not self.config.skip_overlap:
+                logger.info(f"Embedding {len(separated_regions)} separated overlap regions...")
+                for (start_time_ovlp, end_time_ovlp), speaker_waveforms in separated_regions.items():
+                    for spk_idx, spk_waveform in speaker_waveforms.items():
+                        try:
+                            # Ensure waveform is on correct device
+                            if spk_waveform.device != torch.device(self.config.device):
+                                spk_waveform = spk_waveform.to(self.config.device)
+
+                            # Get embedding for separated speaker
+                            duration = spk_waveform.shape[-1] / sr
+                            spk_embedding = self.embedder.embed_segments(spk_waveform, sr, [duration])
+
+                            if spk_embedding.shape[0] > 0:
+                                overlap_embeddings_list.append(spk_embedding[0])
+                                overlap_embedding_info.append({
+                                    'region': (start_time_ovlp, end_time_ovlp),
+                                    'speaker_idx': spk_idx,
+                                    'embedding_idx': n_main_segments + len(overlap_embeddings_list) - 1
+                                })
+                        except Exception as e:
+                            logger.warning(f"Failed to embed separated speaker {spk_idx} in region {start_time_ovlp}-{end_time_ovlp}: {e}")
+
+            # Combine main and overlap embeddings for clustering
+            if overlap_embeddings_list:
+                overlap_embeddings = torch.stack(overlap_embeddings_list)
+                all_embeddings = torch.cat([segment_embeddings, overlap_embeddings], dim=0)
+            else:
+                all_embeddings = segment_embeddings
+
+            if include_timing or return_diarization_time:
+                timing['embedding'] = time.time() - start_time
+            logger.info(f"Extracted embeddings for {n_main_segments} main segments + {len(overlap_embeddings_list)} overlap speakers")
+
+            # Step 7: Speaker Clustering (all embeddings together)
+            n_all_segments = all_embeddings.shape[0]
+            if num_speakers is not None and n_all_segments < num_speakers:
+                logger.warning(f"Only {n_all_segments} segments detected but {num_speakers} speakers requested, using {n_all_segments} clusters")
+                num_speakers = n_all_segments
+
+            logger.info(f"Clustering all segments into {num_speakers} clusters...")
+            if include_timing or return_diarization_time:
+                start_time = time.time()
+            all_clusters = self.clustering.cluster_segments(all_embeddings, n_clusters=num_speakers)
+            if include_timing or return_diarization_time:
+                timing['clustering'] = time.time() - start_time
+
+            # Split clusters back into main segments and overlap speakers
+            segment_clusters = all_clusters[:n_main_segments]
+            overlap_clusters = all_clusters[n_main_segments:] if len(overlap_embeddings_list) > 0 else torch.tensor([])
+
+            logger.info(f"Identified {len(set(all_clusters.tolist()))} speaker clusters")
+
+            logger.info("Identifying speakers against known registry...")
+            if known_speakers:
+                cluster_names = self._identify_clusters(all_embeddings, all_clusters, known_speakers)
+            else:
+                cluster_names = {c: f"SPEAKER_{c}" for c in set(all_clusters.tolist())}
+
+            # Step 8: Process overlap regions (transcribe and assign speakers from clustering)
+            processed_overlaps = []
+            if separated_regions and not self.config.skip_overlap:
+                logger.info("Processing separated overlap regions...")
+                if include_timing or return_diarization_time:
+                    start_time = time.time()
+                processed_overlaps = self._process_overlap_regions(
+                    separated_regions=separated_regions,
+                    overlap_embedding_info=overlap_embedding_info,
+                    overlap_clusters=overlap_clusters,
+                    all_embeddings=all_embeddings,
+                    all_clusters=all_clusters,
+                    cluster_names=cluster_names,
+                    sr=sr,
+                    min_confidence=self.config.so.min_overlap_confidence
+                )
+                if include_timing or return_diarization_time:
+                    timing['overlap_processing'] = time.time() - start_time
+                logger.info(f"Processed {len(processed_overlaps)} overlap regions")
+
+        # Step 9: Merge results into structured output
         logger.info("Merging results...")
-        if include_timing:
+        if include_timing or return_diarization_time:
             start_time = time.time()
         result = self._format_output(
             change_points=change_points,
             clusters=segment_clusters,
+            embedded_segment_indices=embedded_segment_indices,
             cluster_names=cluster_names,
             transcriptions=transcriptions,
-            overlap_segments= [],# overlap_segments,
+            overlap_segments=overlap_segments,
+            processed_overlaps=processed_overlaps,
             waveform_duration=waveform.shape[-1] / sr,
             vad_segments=speech_segments
         )
-        if include_timing:
+        if include_timing or return_diarization_time:
             timing['formatting'] = time.time() - start_time
 
         # Add timing to result if requested
@@ -244,6 +478,15 @@ class WhoSays(object):
             total_time = sum(timing.values())
             result['total_time'] = total_time
             logger.info(f"Total pipeline time: {total_time:.2f}s")
+
+        if return_diarization_time:
+            diarization_components = [
+                'audio_loading', 'vad', 'overlap_detection',
+                'scd', 'embedding', 'clustering', 'formatting'
+            ]
+            diarization_time = sum(timing.get(k, 0) for k in diarization_components)
+            result['diarization_time'] = diarization_time
+            logger.info(f"Diarization-only time: {diarization_time:.2f}s (excludes ASR: {timing.get('asr', 0):.2f}s, phoneme: {timing.get('phoneme', 0):.2f}s, overlap_processing: {timing.get('overlap_processing', 0):.2f}s)")
 
         result['embeddings'] = segment_embeddings.cpu().numpy()
         result['cluster_labels'] = segment_clusters.cpu().numpy()
@@ -255,9 +498,11 @@ class WhoSays(object):
         self,
         change_points: list[float],
         clusters: list[int],
+        embedded_segment_indices: list[int],
         cluster_names: dict,
         transcriptions: list[dict],
         overlap_segments: list[tuple[float, float]],
+        processed_overlaps: list[dict],
         waveform_duration: float,
         vad_segments: list[dict]
     ) -> dict:
@@ -266,29 +511,80 @@ class WhoSays(object):
 
         Args:
             change_points: Speaker change timestamps
-            clusters: Cluster IDs for each segment
+            clusters: Cluster IDs for each embedded segment
+            embedded_segment_indices: Indices of segments that were embedded (some short
+                segments may have been skipped)
             transcriptions: Transcription results with timestamps
             overlap_segments: List of (start, end) tuples where speaker overlap occurs
+            processed_overlaps: Processed overlap data with transcriptions and speaker IDs
             waveform_duration: Total audio duration in seconds
 
         Returns:
             dict: Structured output with speaker segments and transcriptions
         """
+        # Create mapping from segment index to cluster ID
+        # Only embedded segments have cluster assignments
+        segment_to_cluster = {}
+        for emb_idx, seg_idx in enumerate(embedded_segment_indices):
+            if emb_idx < len(clusters):
+                segment_to_cluster[seg_idx] = int(clusters[emb_idx])
+
         # Create speaker segments from change points and clusters
-        speaker_segments = []
+        # First, create raw segments from change points
+        raw_segments = []
         segment_times = [0.0] + change_points + [waveform_duration]
 
         for i in range(len(segment_times) - 1):
-            c_id = int(clusters[i]) if i < len(clusters) else -1
+            # Use the segment_to_cluster mapping to get correct cluster ID
+            c_id = segment_to_cluster.get(i, -1)
             speaker_name = cluster_names.get(c_id, "UNKNOWN")
 
-            speaker_segments.append({
+            raw_segments.append({
                 'start': segment_times[i],
                 'end': segment_times[i + 1],
                 'speaker': speaker_name,
                 'cluster_id': c_id,
-                'duration': segment_times[i + 1] - segment_times[i]
             })
+
+        # Intersect speaker segments with VAD to only output speech regions
+        # This is critical for reducing false alarms
+        speaker_segments = []
+        for raw_seg in raw_segments:
+            for vad_seg in vad_segments:
+                # Compute intersection
+                intersect_start = max(raw_seg['start'], vad_seg['start'])
+                intersect_end = min(raw_seg['end'], vad_seg['end'])
+
+                if intersect_start < intersect_end:
+                    # There's an overlap - create a segment for this speech region
+                    speaker_segments.append({
+                        'start': intersect_start,
+                        'end': intersect_end,
+                        'speaker': raw_seg['speaker'],
+                        'cluster_id': raw_seg['cluster_id'],
+                        'duration': intersect_end - intersect_start
+                    })
+
+        # Add overlap speakers to speaker_segments
+        # This is critical for proper DER evaluation - overlap regions have multiple speakers
+        for ovlp in processed_overlaps:
+            ovlp_start = ovlp['start']
+            ovlp_end = ovlp['end']
+            for spk_data in ovlp.get('speakers', []):
+                if spk_data.get('speaker') and spk_data['speaker'] != 'UNKNOWN':
+                    speaker_segments.append({
+                        'start': ovlp_start,
+                        'end': ovlp_end,
+                        'speaker': spk_data['speaker'],
+                        'cluster_id': spk_data.get('cluster_id', -1),
+                        'duration': ovlp_end - ovlp_start,
+                        'is_overlap': True
+                    })
+
+        # Index processed overlaps by time for quick lookup
+        overlap_lookup = {}
+        for ovlp in processed_overlaps:
+            overlap_lookup[(ovlp['start'], ovlp['end'])] = ovlp
 
         # Align transcriptions with speaker segments and check for overlaps
         segments_with_text = []
@@ -311,24 +607,28 @@ class WhoSays(object):
 
             # Check if this segment has speaker overlap
             has_overlap = False
+            overlap_info = None
             for ovlp_start, ovlp_end in overlap_segments:
                 # Check if overlap region intersects with this speaker segment
                 if max(segment['start'], ovlp_start) < min(segment['end'], ovlp_end):
                     has_overlap = True
+                    # Get processed overlap data
+                    if (ovlp_start, ovlp_end) in overlap_lookup:
+                        processed = overlap_lookup[(ovlp_start, ovlp_end)]
+                        overlap_info = {
+                            'overlap_start': ovlp_start,
+                            'overlap_end': ovlp_end,
+                            'speakers': processed.get('speakers', [])
+                        }
                     break
 
             segments_with_text.append({
                 **segment,
                 'transcriptions': segment_text,
                 'text': ' '.join([t['text'] for t in segment_text]).strip(),
-                'has_overlap': has_overlap
+                'has_overlap': has_overlap,
+                'overlap_info': overlap_info
             })
-
-        # Format overlap segments for output
-        overlap_regions = [
-            {'start': start, 'end': end, 'duration': end - start}
-            for start, end in overlap_segments
-        ]
 
         # Create final structured output
         return {
@@ -338,7 +638,7 @@ class WhoSays(object):
             'transcription': transcriptions,
             'speaker_segments': speaker_segments,
             'vad_segments': vad_segments,
-            'overlap_regions': overlap_regions,
+            'overlap_regions': processed_overlaps,
             'segments': segments_with_text
         }
 
@@ -428,16 +728,24 @@ if __name__ == "__main__":
     if 'timing' in result:
         print(format_timing_report(result['timing'], result['total_time']))
 
+    def make_serializable(obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, dict):
+            return {k: make_serializable(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [make_serializable(i) for i in obj]
+        return obj
+
     # Save to file if requested
     if args.output:
         with open(args.output, 'w', encoding='utf-8') as f:
-            json.dump(result, f, indent=2 if args.pretty else None, ensure_ascii=False)
+            json.dump(make_serializable(result), f, indent=2 if args.pretty else None, ensure_ascii=False)
         logger.info(f"Results saved to {args.output}")
 
     # Print JSON if pretty flag is set
     if args.pretty and not args.output:
         print("\nJSON OUTPUT:")
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        print(json.dumps(make_serializable(result), indent=2, ensure_ascii=False))
 
     logger.info("Done!")
-

@@ -81,6 +81,32 @@ python compare.py --component asr \
     --language english
 ```
 
+**E2E (End-to-End) Comparison** (Complete pipeline comparison):
+```bash
+# Base comparison (WhoSays + Pyannote 3.1)
+python compare.py --component e2e \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+
+# Include WhisperX - runs in separate environment component because of conflicting dependencies with the main pipeline (only english version of whisperX is used for now)
+python compare.py --component e2e \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english \
+    --include-whisperx
+```
+
+**Regenerate E2E plots from existing JSON results:**
+
+If you've made changes to plot styling or want to regenerate plots without re-running the entire comparison (which can take time), you can use the plot regeneration script:
+
+```bash
+python e2e_plot_result_from_json.py \
+    --json-file results/comparison/english/e2e_comparison_2025-12-19_21-11-41.json
+
+```
+
 #### Single file comparison
 **VAD:**
 ```bash

@@ -103,12 +103,22 @@ class WhoSays(object):
 
         for c_id in unique_clusters:
             # 1. Find indices of all segments belonging to this cluster
-            indices = [i for i, x in enumerate(clusters) if x == c_id]
-            
-            # 2. Calculate the average embedding (Centroid) for this cluster
-            # segment_embeddings is likely a Tensor or Numpy array. 
-            # If Tensor:
-            cluster_embs = segment_embeddings[indices]
+            # Ensure clusters is a list of ints
+            if torch.is_tensor(clusters):
+                clusters_list = clusters.cpu().tolist()
+            else:
+                clusters_list = clusters
+
+            indices = [i for i, x in enumerate(clusters_list) if int(x) == int(c_id)]
+
+            if not indices:
+                continue
+
+            # Convert indices → LongTensor for PyTorch indexing
+            index_tensor = torch.tensor(indices, dtype=torch.long, device=segment_embeddings.device)
+
+            cluster_embs = segment_embeddings[index_tensor]
+
             centroid = torch.mean(cluster_embs, dim=0)
 
             # 3. Compare Centroid vs Known Speakers

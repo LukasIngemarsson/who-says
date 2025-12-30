@@ -1,7 +1,6 @@
 """
 Global configuration, constants, and state for the WhoSays backend.
 """
-import os
 import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional

@@ -7,6 +7,7 @@ from backend.routes.tuning import tuning_bp
 from backend.routes.speakers import speakers_bp
 from backend.routes.overlap import overlap_bp
 from backend.routes.session import session_bp
+from backend.routes.process import process_bp
 
 __all__ = [
     'static_bp',
@@ -15,4 +16,5 @@ __all__ = [
     'speakers_bp',
     'overlap_bp',
     'session_bp',
+    'process_bp',
 ]

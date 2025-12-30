@@ -52,6 +52,7 @@ def create_app():
         speakers_bp,
         overlap_bp,
         session_bp,
+        process_bp,
     )
 
     app.register_blueprint(static_bp)
@@ -60,5 +61,6 @@ def create_app():
     app.register_blueprint(speakers_bp)
     app.register_blueprint(overlap_bp)
     app.register_blueprint(session_bp)
+    app.register_blueprint(process_bp)
 
     return app

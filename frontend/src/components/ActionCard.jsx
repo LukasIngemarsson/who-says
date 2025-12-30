@@ -77,7 +77,11 @@ const ActionCard = ({
               disabled={isProcessing || isDemoMode}
               className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-900/20"
             >
-              {isDemoMode ? "Demo in progress..." : isProcessing ? "Processing..." : "Select Audio File"}
+              {isDemoMode
+                ? "Demo in progress..."
+                : isProcessing
+                ? "Processing..."
+                : "Select Audio File"}
             </button>
           </div>
           <p className="text-slate-500 text-sm">Supports MP3, WAV, M4A</p>
@@ -109,7 +113,9 @@ const ActionCard = ({
                 {isDemoMode ? "Demo in progress..." : "Start Recording"}
               </button>
               <p className="text-slate-500 text-sm">
-                {isDemoMode ? "Stop the demo first to record" : "Click to start capturing audio"}
+                {isDemoMode
+                  ? "Stop the demo first to record"
+                  : "Click to start capturing audio"}
               </p>
             </>
           )}

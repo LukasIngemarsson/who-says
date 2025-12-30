@@ -77,7 +77,9 @@ const App = () => {
   const [pendingSpeakerInfo, setPendingSpeakerInfo] = useState(null);
   const [knownSpeakersList, setKnownSpeakersList] = useState([]);
   const [asrBackend, setAsrBackend] = useState(null);
-  const sessionIdRef = useRef(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const sessionIdRef = useRef(
+    `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  );
 
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -138,7 +140,6 @@ const App = () => {
     loadPresets();
   }, []);
 
-
   const decodeAudioForVisualization = async (arrayBuffer) => {
     const audioContext = new (window.AudioContext ||
       window.webkitAudioContext)();
@@ -170,15 +171,43 @@ const App = () => {
     if (!file) return;
 
     handleReset();
-    // Offline /process has been removed. Live-only app.
-    setProcessing(false);
-    setErrorMsg("Offline processing is disabled. Use Live recording or the testsound runner.");
+    setProcessing(true);
+    setErrorMsg("");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("num_speakers", numSpeakers);
 
     const url = URL.createObjectURL(file);
     setAudioUrl(url);
 
     const fileBufferForWaveform = await file.arrayBuffer();
     await decodeAudioForVisualization(fileBufferForWaveform);
+
+    try {
+      const response = await fetch("/process", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Processing failed");
+      }
+
+      if (data.segments) {
+        setSegments(data.segments);
+        setFullTranscriptionResult(data);
+      } else {
+        console.warn("No segments found in response", data);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setErrorMsg(error.message);
+    } finally {
+      setProcessing(false);
+    }
   };
 
   const handleDownloadJson = () => {
@@ -203,7 +232,7 @@ const App = () => {
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute(
       "download",
-      `testsound_run_${testRunJson?.meta?.session_id || "session"}.json`,
+      `testsound_run_${testRunJson?.meta?.session_id || "session"}.json`
     );
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
@@ -244,7 +273,10 @@ const App = () => {
     return normalized;
   };
 
-  const decodeWavToFloat32_16k = async (arrayBuffer, shouldNormalize = true) => {
+  const decodeWavToFloat32_16k = async (
+    arrayBuffer,
+    shouldNormalize = true
+  ) => {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const decoded = await audioCtx.decodeAudioData(arrayBuffer.slice(0));
     const srcRate = decoded.sampleRate;
@@ -285,7 +317,11 @@ const App = () => {
       output = normalizeAudio(output);
     }
 
-    console.log(`Audio decoded: ${(output.length / 16000).toFixed(1)}s, ${srcRate}Hz -> 16kHz, normalized=${shouldNormalize}`);
+    console.log(
+      `Audio decoded: ${(output.length / 16000).toFixed(
+        1
+      )}s, ${srcRate}Hz -> 16kHz, normalized=${shouldNormalize}`
+    );
     return output;
   };
 
@@ -296,7 +332,8 @@ const App = () => {
     float32Copy.set(float32);
     const bytes = new Uint8Array(float32Copy.buffer);
     let binary = "";
-    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    for (let i = 0; i < bytes.length; i++)
+      binary += String.fromCharCode(bytes[i]);
     return btoa(binary);
   };
 
@@ -320,9 +357,11 @@ const App = () => {
           session_id: sessionId,
           reset_global: "1",
         }),
-      }).catch(err => console.warn("Failed to reset session:", err));
+      }).catch((err) => console.warn("Failed to reset session:", err));
 
-      const tuningSnap = await fetch("/tuning").then((r) => r.json()).catch(() => null);
+      const tuningSnap = await fetch("/tuning")
+        .then((r) => r.json())
+        .catch(() => null);
       const wavBuf = await fetch("/testaudio/thetestsound.wav").then((r) => {
         if (!r.ok) throw new Error("Could not fetch testsound from server");
         return r.arrayBuffer();
@@ -333,10 +372,12 @@ const App = () => {
 
       const responses = [];
       for (let i = 0; i < audio16k.length; i += chunkSamples) {
-        const chunk = audio16k.slice(i, Math.min(i + chunkSamples, audio16k.length));
+        const chunk = audio16k.slice(
+          i,
+          Math.min(i + chunkSamples, audio16k.length)
+        );
         const base64Audio = float32ToBase64(chunk);
 
-        // eslint-disable-next-line no-await-in-loop
         const data = await fetch("/identify_speaker", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -355,20 +396,22 @@ const App = () => {
         });
 
         // Use appendSimple for testsound (simpler rendering)
-        const segments = Array.isArray(data.transcript_segments) && data.transcript_segments.length > 0
-          ? data.transcript_segments
-          : (typeof data.transcript === "string" && data.transcript.trim()
-              ? [{ speaker: data.speaker, text: data.transcript.trim() }]
-              : []);
+        const segments =
+          Array.isArray(data.transcript_segments) &&
+          data.transcript_segments.length > 0
+            ? data.transcript_segments
+            : typeof data.transcript === "string" && data.transcript.trim()
+            ? [{ speaker: data.speaker, text: data.transcript.trim() }]
+            : [];
         for (const seg of segments) {
           const snippet = (seg.text || "").trim();
           if (!snippet) continue;
-          const segSpeaker = seg.speaker || data.transcript_speaker || data.speaker;
+          const segSpeaker =
+            seg.speaker || data.transcript_speaker || data.speaker;
           transcriptAccumulator.appendSimple(segSpeaker, snippet);
         }
 
         if (testSleepMs > 0) {
-          // eslint-disable-next-line no-await-in-loop
           await sleep(testSleepMs);
         }
       }
@@ -392,20 +435,21 @@ const App = () => {
     }
   };
 
-  const handleTuningFieldChange = (section, field, parser = (v) => v) => (e) => {
-    // Normalise decimal separator so locales using "," still work.
-    const raw = e.target.value;
-    const normalised =
-      typeof raw === "string" ? raw.replace(",", ".") : raw;
-    const value = parser(normalised);
-    setTuning((prev) => ({
-      ...(prev || {}),
-      [section]: {
-        ...(prev?.[section] || {}),
-        [field]: value,
-      },
-    }));
-  };
+  const handleTuningFieldChange =
+    (section, field, parser = (v) => v) =>
+    (e) => {
+      // Normalise decimal separator so locales using "," still work.
+      const raw = e.target.value;
+      const normalised = typeof raw === "string" ? raw.replace(",", ".") : raw;
+      const value = parser(normalised);
+      setTuning((prev) => ({
+        ...(prev || {}),
+        [section]: {
+          ...(prev?.[section] || {}),
+          [field]: value,
+        },
+      }));
+    };
 
   const handleApplyTuning = async () => {
     if (!tuning) return;
@@ -495,8 +539,8 @@ const App = () => {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 16000
-        }
+          sampleRate: 16000,
+        },
       });
 
       streamRef.current = stream;
@@ -506,7 +550,8 @@ const App = () => {
 
       // Set up Web Audio API for raw audio capture
       // Note: ScriptProcessorNode is deprecated but AudioWorklet requires more setup
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
       audioContextRef.current = audioContext;
 
       const nativeSampleRate = audioContext.sampleRate;
@@ -538,17 +583,22 @@ const App = () => {
         // Calculate target size at native sample rate that corresponds to desired 16kHz chunk
         // Larger chunks = more stable speaker detection, less flickering
         const TARGET_16K_SIZE = 8000; // 0.5 seconds at 16kHz
-        const TARGET_SIZE = Math.ceil(TARGET_16K_SIZE * (nativeSampleRate / 16000));
+        const TARGET_SIZE = Math.ceil(
+          TARGET_16K_SIZE * (nativeSampleRate / 16000)
+        );
 
         while (bufferAccumulator.length >= TARGET_SIZE) {
           const slice = bufferAccumulator.slice(0, TARGET_SIZE);
           bufferAccumulator = bufferAccumulator.slice(TARGET_SIZE);
 
           // Resample to 16kHz before sending
-          const resampled = resampleTo16k(new Float32Array(slice), nativeSampleRate);
+          const resampled = resampleTo16k(
+            new Float32Array(slice),
+            nativeSampleRate
+          );
           const audioBytes = new Uint8Array(resampled.buffer);
 
-          let binary = '';
+          let binary = "";
           for (let i = 0; i < audioBytes.length; i++) {
             binary += String.fromCharCode(audioBytes[i]);
           }
@@ -560,16 +610,16 @@ const App = () => {
             body: new URLSearchParams({
               audio_data: base64Audio,
               sample_rate: "16000",
-              session_id: sessionIdRef.current
-            })
+              session_id: sessionIdRef.current,
+            }),
           })
-            .then(r => r.json())
-            .then(data => {
+            .then((r) => r.json())
+            .then((data) => {
               // Use shared hooks for speaker detection and transcript accumulation
               speakerDetection.processResponse(data);
               transcriptAccumulator.appendFromResponse(data);
             })
-            .catch(err => {
+            .catch((err) => {
               console.error("Error identifying speaker:", err);
             });
         }
@@ -610,9 +660,13 @@ const App = () => {
         try {
           const blobType = mimeType || "audio/webm";
           const blob = new Blob(chunksRef.current, { type: blobType });
-          const file = new File([blob], `recording.${blobType.includes('ogg') ? 'ogg' : 'webm'}`, {
-            type: blobType
-          });
+          const file = new File(
+            [blob],
+            `recording.${blobType.includes("ogg") ? "ogg" : "webm"}`,
+            {
+              type: blobType,
+            }
+          );
           const fakeEvent = { target: { files: [file] } };
           await handleFileUpload(fakeEvent);
         } catch (error) {
@@ -635,7 +689,9 @@ const App = () => {
       speakerDetection.reset();
 
       setErrorMsg("");
-      sessionIdRef.current = `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+      sessionIdRef.current = `session_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 11)}`;
 
       // Reset backend session state before starting recording
       fetch("/reset_session", {
@@ -645,7 +701,7 @@ const App = () => {
           session_id: sessionIdRef.current,
           reset_global: "1",
         }),
-      }).catch(err => console.warn("Failed to reset session:", err));
+      }).catch((err) => console.warn("Failed to reset session:", err));
 
       recordingTimerRef.current = setInterval(() => {
         setRecordingTime((prev) => prev + 1);
@@ -654,9 +710,11 @@ const App = () => {
       console.error("Error accessing microphone:", err);
       let errorMessage = "Microphone access failed.";
       if (err.name === "NotAllowedError") {
-        errorMessage = "Microphone access denied. Please allow microphone access and try again.";
+        errorMessage =
+          "Microphone access denied. Please allow microphone access and try again.";
       } else if (err.name === "NotFoundError") {
-        errorMessage = "No microphone found. Please connect a microphone and try again.";
+        errorMessage =
+          "No microphone found. Please connect a microphone and try again.";
       } else if (err.name === "NotReadableError") {
         errorMessage = "Microphone is already in use by another application.";
       }
@@ -706,7 +764,10 @@ const App = () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
         mediaRecorderRef.current.stop();
       }
     };
@@ -740,7 +801,7 @@ const App = () => {
           isOpen={isAddSpeakerModalOpen}
           onClose={() => {
             setIsAddSpeakerModalOpen(false);
-            setSpeakerRefreshTrigger(prev => prev + 1); // Trigger refresh
+            setSpeakerRefreshTrigger((prev) => prev + 1); // Trigger refresh
           }}
         />
 
@@ -750,14 +811,14 @@ const App = () => {
             setIsSpeakerModalOpen(false);
             setPendingAudioData(null);
             setPendingSpeakerInfo(null);
-            setSpeakerRefreshTrigger(prev => prev + 1);
+            setSpeakerRefreshTrigger((prev) => prev + 1);
           }}
           audioData={pendingAudioData}
           speakerInfo={pendingSpeakerInfo}
           knownSpeakers={knownSpeakersList}
           onRefresh={() => {
             fetchKnownSpeakers();
-            setSpeakerRefreshTrigger(prev => prev + 1);
+            setSpeakerRefreshTrigger((prev) => prev + 1);
           }}
         />
 
@@ -828,8 +889,16 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.streaming?.asr_min_new_sec ?? presetDetails[selectedPreset]?.asr_min_new_sec ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "asr_min_new_sec", (v) => parseFloat(v || "0"))}
+                    value={
+                      tuning?.streaming?.asr_min_new_sec ??
+                      presetDetails[selectedPreset]?.asr_min_new_sec ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "streaming",
+                      "asr_min_new_sec",
+                      (v) => parseFloat(v || "0")
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -838,8 +907,16 @@ const App = () => {
                     type="number"
                     step="0.01"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.streaming?.cross_tail_dup_pad_sec ?? presetDetails[selectedPreset]?.cross_tail_dup_pad_sec ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "cross_tail_dup_pad_sec", (v) => parseFloat(v || "0"))}
+                    value={
+                      tuning?.streaming?.cross_tail_dup_pad_sec ??
+                      presetDetails[selectedPreset]?.cross_tail_dup_pad_sec ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "streaming",
+                      "cross_tail_dup_pad_sec",
+                      (v) => parseFloat(v || "0")
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -848,8 +925,16 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.streaming?.min_asr_interval_sec ?? presetDetails[selectedPreset]?.min_asr_interval_sec ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "min_asr_interval_sec", (v) => parseFloat(v || "0"))}
+                    value={
+                      tuning?.streaming?.min_asr_interval_sec ??
+                      presetDetails[selectedPreset]?.min_asr_interval_sec ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "streaming",
+                      "min_asr_interval_sec",
+                      (v) => parseFloat(v || "0")
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -858,8 +943,16 @@ const App = () => {
                     type="number"
                     step="0.5"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.streaming?.max_asr_buffer_sec ?? presetDetails[selectedPreset]?.max_asr_buffer_sec ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "max_asr_buffer_sec", (v) => parseFloat(v || "0"))}
+                    value={
+                      tuning?.streaming?.max_asr_buffer_sec ??
+                      presetDetails[selectedPreset]?.max_asr_buffer_sec ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "streaming",
+                      "max_asr_buffer_sec",
+                      (v) => parseFloat(v || "0")
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -869,8 +962,16 @@ const App = () => {
                     step="0.25"
                     min="0"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.streaming?.wcpp_context_sec ?? presetDetails[selectedPreset]?.wcpp_context_sec ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "wcpp_context_sec", (v) => parseFloat(v || "0"))}
+                    value={
+                      tuning?.streaming?.wcpp_context_sec ??
+                      presetDetails[selectedPreset]?.wcpp_context_sec ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "streaming",
+                      "wcpp_context_sec",
+                      (v) => parseFloat(v || "0")
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -878,7 +979,11 @@ const App = () => {
                   <input
                     type="checkbox"
                     className="accent-indigo-500"
-                    checked={tuning?.streaming?.use_initial_prompt ?? presetDetails[selectedPreset]?.use_initial_prompt ?? true}
+                    checked={
+                      tuning?.streaming?.use_initial_prompt ??
+                      presetDetails[selectedPreset]?.use_initial_prompt ??
+                      true
+                    }
                     onChange={(e) =>
                       setTuning((prev) => ({
                         ...(prev || {}),
@@ -897,8 +1002,16 @@ const App = () => {
                     step="20"
                     min="0"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.streaming?.asr_prompt_max_chars ?? presetDetails[selectedPreset]?.asr_prompt_max_chars ?? ""}
-                    onChange={handleTuningFieldChange("streaming", "asr_prompt_max_chars", (v) => parseInt(v || "0", 10))}
+                    value={
+                      tuning?.streaming?.asr_prompt_max_chars ??
+                      presetDetails[selectedPreset]?.asr_prompt_max_chars ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "streaming",
+                      "asr_prompt_max_chars",
+                      (v) => parseInt(v || "0", 10)
+                    )}
                   />
                 </label>
               </div>
@@ -911,8 +1024,14 @@ const App = () => {
                   <input
                     type="number"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.asr?.beam_size ?? presetDetails[selectedPreset]?.beam_size ?? ""}
-                    onChange={handleTuningFieldChange("asr", "beam_size", (v) => parseInt(v || "0", 10))}
+                    value={
+                      tuning?.asr?.beam_size ??
+                      presetDetails[selectedPreset]?.beam_size ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange("asr", "beam_size", (v) =>
+                      parseInt(v || "0", 10)
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -920,8 +1039,14 @@ const App = () => {
                   <input
                     type="number"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.asr?.best_of ?? presetDetails[selectedPreset]?.best_of ?? ""}
-                    onChange={handleTuningFieldChange("asr", "best_of", (v) => parseInt(v || "0", 10))}
+                    value={
+                      tuning?.asr?.best_of ??
+                      presetDetails[selectedPreset]?.best_of ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange("asr", "best_of", (v) =>
+                      parseInt(v || "0", 10)
+                    )}
                   />
                 </label>
               </div>
@@ -935,8 +1060,14 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.vad?.threshold ?? presetDetails[selectedPreset]?.vad_threshold ?? ""}
-                    onChange={handleTuningFieldChange("vad", "threshold", (v) => parseFloat(v || "0"))}
+                    value={
+                      tuning?.vad?.threshold ??
+                      presetDetails[selectedPreset]?.vad_threshold ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange("vad", "threshold", (v) =>
+                      parseFloat(v || "0")
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -944,8 +1075,16 @@ const App = () => {
                   <input
                     type="number"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.vad?.min_speech_duration_ms ?? presetDetails[selectedPreset]?.vad_min_speech_ms ?? ""}
-                    onChange={handleTuningFieldChange("vad", "min_speech_duration_ms", (v) => parseInt(v || "0", 10))}
+                    value={
+                      tuning?.vad?.min_speech_duration_ms ??
+                      presetDetails[selectedPreset]?.vad_min_speech_ms ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "vad",
+                      "min_speech_duration_ms",
+                      (v) => parseInt(v || "0", 10)
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -953,8 +1092,16 @@ const App = () => {
                   <input
                     type="number"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.vad?.min_silence_duration_ms ?? presetDetails[selectedPreset]?.vad_min_silence_ms ?? ""}
-                    onChange={handleTuningFieldChange("vad", "min_silence_duration_ms", (v) => parseInt(v || "0", 10))}
+                    value={
+                      tuning?.vad?.min_silence_duration_ms ??
+                      presetDetails[selectedPreset]?.vad_min_silence_ms ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "vad",
+                      "min_silence_duration_ms",
+                      (v) => parseInt(v || "0", 10)
+                    )}
                   />
                 </label>
                 <label className="flex items-center justify-between gap-2">
@@ -962,8 +1109,16 @@ const App = () => {
                   <input
                     type="number"
                     className="w-20 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.vad?.speech_pad_ms ?? presetDetails[selectedPreset]?.vad_speech_pad_ms ?? ""}
-                    onChange={handleTuningFieldChange("vad", "speech_pad_ms", (v) => parseInt(v || "0", 10))}
+                    value={
+                      tuning?.vad?.speech_pad_ms ??
+                      presetDetails[selectedPreset]?.vad_speech_pad_ms ??
+                      ""
+                    }
+                    onChange={handleTuningFieldChange(
+                      "vad",
+                      "speech_pad_ms",
+                      (v) => parseInt(v || "0", 10)
+                    )}
                   />
                 </label>
               </div>
@@ -971,14 +1126,21 @@ const App = () => {
 
             {/* Overlap Detection Settings */}
             <div className="border-t border-slate-800 pt-3 mt-3">
-              <div className="font-semibold text-slate-200 text-xs mb-2">Overlap Detection</div>
+              <div className="font-semibold text-slate-200 text-xs mb-2">
+                Overlap Detection
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-slate-300">
                 <label className="flex items-center justify-between gap-2">
                   <span>Enabled</span>
                   <input
                     type="checkbox"
                     className="accent-indigo-500"
-                    checked={tuning?.overlap?.enabled ?? presetDetails[selectedPreset]?.overlap_detection_enabled ?? true}
+                    checked={
+                      tuning?.overlap?.enabled ??
+                      presetDetails[selectedPreset]
+                        ?.overlap_detection_enabled ??
+                      true
+                    }
                     onChange={(e) =>
                       setTuning((prev) => ({
                         ...(prev || {}),
@@ -996,7 +1158,11 @@ const App = () => {
                     type="number"
                     step="0.1"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.overlap?.buffer_sec ?? presetDetails[selectedPreset]?.overlap_buffer_sec ?? ""}
+                    value={
+                      tuning?.overlap?.buffer_sec ??
+                      presetDetails[selectedPreset]?.overlap_buffer_sec ??
+                      ""
+                    }
                     onChange={(e) =>
                       setTuning((prev) => ({
                         ...(prev || {}),
@@ -1014,13 +1180,20 @@ const App = () => {
                     type="number"
                     step="0.5"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.overlap?.detection_interval_sec ?? presetDetails[selectedPreset]?.overlap_detection_interval_sec ?? ""}
+                    value={
+                      tuning?.overlap?.detection_interval_sec ??
+                      presetDetails[selectedPreset]
+                        ?.overlap_detection_interval_sec ??
+                      ""
+                    }
                     onChange={(e) =>
                       setTuning((prev) => ({
                         ...(prev || {}),
                         overlap: {
                           ...(prev?.overlap || {}),
-                          detection_interval_sec: parseFloat(e.target.value || "0"),
+                          detection_interval_sec: parseFloat(
+                            e.target.value || "0"
+                          ),
                         },
                       }))
                     }
@@ -1032,7 +1205,11 @@ const App = () => {
                     type="number"
                     step="0.05"
                     className="w-16 bg-slate-950 border border-slate-700 rounded px-1 py-0.5 text-right"
-                    value={tuning?.overlap?.min_duration_sec ?? presetDetails[selectedPreset]?.overlap_min_duration_sec ?? ""}
+                    value={
+                      tuning?.overlap?.min_duration_sec ??
+                      presetDetails[selectedPreset]?.overlap_min_duration_sec ??
+                      ""
+                    }
                     onChange={(e) =>
                       setTuning((prev) => ({
                         ...(prev || {}),
@@ -1105,9 +1282,12 @@ const App = () => {
         <div className="mt-4 bg-slate-900/40 border border-slate-800/60 rounded-lg p-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div>
-              <div className="text-slate-200 font-semibold">Debug: testsound runner</div>
+              <div className="text-slate-200 font-semibold">
+                Debug: testsound runner
+              </div>
               <div className="text-xs text-slate-400">
-                Streams `thetestsound.wav` through `/identify_speaker` and lets you download the raw JSON.
+                Streams `thetestsound.wav` through `/identify_speaker` and lets
+                you download the raw JSON.
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -1119,7 +1299,12 @@ const App = () => {
                   min="0.2"
                   className="w-20 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right"
                   value={testChunkSec}
-                  onChange={(e) => setTestChunkSec(parseFloat((e.target.value || "1").replace(",", ".")) || 1.0)}
+                  onChange={(e) =>
+                    setTestChunkSec(
+                      parseFloat((e.target.value || "1").replace(",", ".")) ||
+                        1.0
+                    )
+                  }
                   disabled={testRunning}
                 />
               </label>
@@ -1131,7 +1316,9 @@ const App = () => {
                   min="0"
                   className="w-24 bg-slate-950 border border-slate-700 rounded px-2 py-1 text-right"
                   value={testSleepMs}
-                  onChange={(e) => setTestSleepMs(parseInt(e.target.value || "0", 10) || 0)}
+                  onChange={(e) =>
+                    setTestSleepMs(parseInt(e.target.value || "0", 10) || 0)
+                  }
                   disabled={testRunning}
                 />
               </label>
@@ -1140,7 +1327,11 @@ const App = () => {
                 disabled={testRunning || isRecording || isDemoMode}
                 className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold"
               >
-                {testRunning ? "Running…" : isDemoMode ? "Demo running…" : "Run testsound"}
+                {testRunning
+                  ? "Running…"
+                  : isDemoMode
+                  ? "Demo running…"
+                  : "Run testsound"}
               </button>
               <button
                 onClick={handleDownloadTestJson}

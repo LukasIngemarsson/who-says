@@ -153,6 +153,38 @@ def word_error_rate(reference: str, hypothesis: str) -> float:
     wer = 100 * d[len(ref_words)][len(hyp_words)] / N if N > 0 else 0.0
     return wer
 
+
+def character_error_rate(reference: str, hypothesis: str) -> float:
+    """
+    Compute Character Error Rate (CER) between reference and hypothesis strings.
+    CER = (S + D + I) / N
+    S = substitutions, D = deletions, I = insertions, N = number of characters in reference
+    """
+    ref_chars = list(reference.strip())
+    hyp_chars = list(hypothesis.strip())
+    N = len(ref_chars)
+
+    d = np.zeros((len(ref_chars)+1, len(hyp_chars)+1), dtype=np.uint32)
+    for i in range(len(ref_chars)+1):
+        d[i][0] = i
+    for j in range(len(hyp_chars)+1):
+        d[0][j] = j
+
+    for i in range(1, len(ref_chars)+1):
+        for j in range(1, len(hyp_chars)+1):
+            if ref_chars[i-1] == hyp_chars[j-1]:
+                cost = 0
+            else:
+                cost = 1
+            d[i][j] = min(
+                d[i-1][j] + 1,      # deletion
+                d[i][j-1] + 1,      # insertion
+                d[i-1][j-1] + cost  # substitution
+            )
+    cer = 100 * d[len(ref_chars)][len(hyp_chars)] / N if N > 0 else 0.0
+    return cer
+
+
 #Phoneme
 def phoneme_error_rate(reference: str, hypothesis: str) -> float:
     """
@@ -291,14 +323,15 @@ def evaluate_asr(reference_transcriptions, hypothesis_transcriptions):
     reference = " ".join(reference_transcriptions)
     hypothesis = " ".join(hypothesis_transcriptions)
     wer = word_error_rate(reference, hypothesis)
+    cer = character_error_rate(reference, hypothesis)
 
-    metrics = {"wer": wer}
+    metrics = {"wer": wer, "cer": cer}
 
     return metrics
 
 def evaluate_phonemes(reference_phoneme_sequences, hypothesis_phoneme_sequences):
     if not reference_phoneme_sequences or not hypothesis_phoneme_sequences:
-        return {"per": None}
+        return {"per": 0.0}
     # Evaluate PER over a list of phoneme sequences.
     reference = " ".join(reference_phoneme_sequences)
     hypothesis = " ".join(hypothesis_phoneme_sequences)
@@ -306,7 +339,7 @@ def evaluate_phonemes(reference_phoneme_sequences, hypothesis_phoneme_sequences)
     return {"per": per}
 
 
-def evaluate_diarization(reference_segments, hypothesis_segments):
+def evaluate_diarization(reference_segments, hypothesis_segments, total_duration=None):
     """
     Compute Diarization Error Rate (DER) between reference and hypothesis.
 
@@ -315,6 +348,9 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
             Gold-standard segments with start, end, and speaker keys.
         hypothesis_segments : list of dict
             Predicted segments with start, end, and speaker keys.
+        total_duration : float, optional
+            Total audio duration. If provided, UEM will be entire audio.
+            If None, UEM will be only reference segment regions.
 
     Returns:
         Dictionary containing:
@@ -328,10 +364,13 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
     reference = segments_to_annotation(reference_segments)
     hypothesis = segments_to_annotation(hypothesis_segments)
 
-    uem = Timeline(uri="audio")
-    for seg in reference_segments:
-        uem.add(Segment(seg['start'], seg['end']))
-    uem = uem.support()  # Merge overlapping segments
+    if total_duration is not None:
+        uem = Timeline([Segment(0, total_duration)], uri="audio")
+    else:
+        uem = Timeline(uri="audio")
+        for seg in reference_segments:
+            uem.add(Segment(seg['start'], seg['end']))
+        uem = uem.support() 
 
     metric = DiarizationErrorRate()
     # Compute overall DER with UEM (returns a single value between 0 and 1)
@@ -356,6 +395,68 @@ def evaluate_diarization(reference_segments, hypothesis_segments):
     }
 
 
+def si_sdr(reference: np.ndarray, estimated: np.ndarray) -> float:
+    """
+    Compute Scale-Invariant Signal-to-Distortion Ratio (SI-SDR).
+
+    SI-SDR is a standard metric for evaluating source separation quality.
+    Higher values indicate better separation (measured in dB).
+
+    Parameters
+    ----------
+    reference : np.ndarray
+        Reference (clean) signal, shape (num_samples,)
+    estimated : np.ndarray
+        Estimated (separated) signal, shape (num_samples,)
+
+    Returns
+    -------
+    float
+        SI-SDR value in dB. Higher is better.
+
+    References
+    ----------
+    Le Roux et al., "SDR - Half-Baked or Well Done?", ICASSP 2019
+    """
+    # Ensure 1D arrays
+    reference = np.asarray(reference).flatten()
+    estimated = np.asarray(estimated).flatten()
+
+    # Ensure same length
+    min_len = min(len(reference), len(estimated))
+    reference = reference[:min_len]
+    estimated = estimated[:min_len]
+
+    # Remove mean (zero-mean signals)
+    reference = reference - np.mean(reference)
+    estimated = estimated - np.mean(estimated)
+
+    # Compute scaling factor: <s', s> / <s, s>
+    dot_product = np.dot(reference, estimated)
+    ref_energy = np.dot(reference, reference)
+
+    if ref_energy < 1e-8:
+        return float('-inf')
+
+    # Target signal (scaled reference)
+    scaling = dot_product / ref_energy
+    s_target = scaling * reference
+
+    # Noise/error signal
+    e_noise = estimated - s_target
+
+    # SI-SDR = 10 * log10(||s_target||^2 / ||e_noise||^2)
+    target_energy = np.dot(s_target, s_target)
+    noise_energy = np.dot(e_noise, e_noise)
+
+    if noise_energy < 1e-8:
+        return float('inf')
+
+    si_sdr_value = 10 * np.log10(target_energy / noise_energy)
+
+    return float(si_sdr_value)
+
+
 def evaluate_clustering(embeddings: np.ndarray, labels: np.ndarray) -> dict:
     """
     Compute clustering quality using silhouette score (unsupervised).
@@ -374,7 +475,7 @@ def evaluate_clustering(embeddings: np.ndarray, labels: np.ndarray) -> dict:
     n_clusters = len(unique_labels)
     n_samples = len(embeddings)
 
-    if n_clusters < 2 or n_samples < 2:
+    if n_clusters < 2 or n_samples <= n_clusters:
         logger.warning(f"Cannot compute clustering metrics: {n_clusters} clusters, {n_samples} samples")
         return {'silhouette': 0.0}
 
@@ -382,7 +483,6 @@ def evaluate_clustering(embeddings: np.ndarray, labels: np.ndarray) -> dict:
 
 
 def evaluate_pipeline(pipeline_output, annotation_data):
-    # TODO: Add other component metrics
     logger.info("Computing metrics...")
 
     total_duration = pipeline_output['duration']
@@ -421,7 +521,7 @@ def evaluate_pipeline(pipeline_output, annotation_data):
         phoneme_metrics = evaluate_phonemes(ref_phoneme_sequences, hyp_phoneme_sequences)
     else:
         logger.warning("No phoneme ground truth available – PER not computed.")
-        phoneme_metrics = {"per": None}
+        phoneme_metrics = {"per": 0.0}
 
     diarization_metrics = evaluate_diarization(
         reference_segments,
@@ -445,51 +545,52 @@ def evaluate_pipeline(pipeline_output, annotation_data):
     }
 
 def format_metrics_report(metrics):
+    WIDTH = 100
     lines = []
 
     lines.append("")
-    lines.append("=" * 60)
+    lines.append("=" * WIDTH)
     lines.append("EVALUATION METRICS")
-    lines.append("=" * 60)
-    lines.append(f"{'Component':<25} {'Precision':>10} {'Recall':>10} {'F1':>10} {'WER':>10} {'PER':>10}")
-    lines.append("-" * 60)
+    lines.append("=" * WIDTH)
+    lines.append(f"{'Component':<25} {'Precision':>10} {'Recall':>10} {'F1':>10} {'WER':>10} {'PER':>10} {'CER':>10}")
+    lines.append("-" * WIDTH)
 
-    vad = metrics['vad']
-    lines.append(f"{'Voice Activity (VAD)':<25} {vad['precision']:>9.2f}% {vad['recall']:>9.2f}% {vad['f1']:>9.2f}% {0:>9.2f}% {0:>9.2f}%")
+    # Define the components and their corresponding metric keys
+    components = [
+        ("Voice Activity (VAD)", "vad"),
+        ("Speaker Change (SCD)", "scd"),
+        ("ASR", "asr"),
+        ("Phoneme", "phoneme"),
+    ]
 
-    scd = metrics['scd']
-    lines.append(f"{'Speaker Change (SCD)':<25} {scd['precision']:>9.2f}% {scd['recall']:>9.2f}% {scd['f1']:>9.2f}% {0:>9.2f}% {0:>9.2f}%")
-
-    asr = metrics['asr']
-    lines.append(f"{'ASR':<25} {0:>9.2f}% {0:>9.2f}% {0:>9.2f}% {asr['wer']:>9.2f}% {0:>9.2f}%")
-
-    phoneme = metrics['phoneme']
-    per_val = phoneme.get('per') if phoneme is not None else None
-    if per_val is None:
-        per_val = 0.0  # or you could choose to display this as 0.0% meaning "not computed"
-    
-    lines.append(
-        f"{'Phoneme':<25} "
-        f"{0:>9.2f}% {0:>9.2f}% {0:>9.2f}% "
-        f"{0:>9.2f}% {per_val:>9.2f}%"
-    )
+    for display_name, key in components:
+        comp = metrics.get(key, {})
+        precision = comp.get('precision', 0.0)
+        recall = comp.get('recall', 0.0)
+        f1 = comp.get('f1', 0.0)
+        wer = comp.get('wer', 0.0)
+        per = comp.get('per', 0.0)
+        cer = comp.get('cer', 0.0)
+        lines.append(
+            f"{display_name:<25} {precision:>9.2f}% {recall:>9.2f}% {f1:>9.2f}% {wer:>9.2f}% {per:>9.2f}% {cer:>9.2f}%"
+        )
 
     lines.append("")
     lines.append("Diarization Error Rate (DER)")
-    lines.append("-" * 60)
+    lines.append("-" * WIDTH)
 
-    der = metrics['diarization']
-    lines.append(f"  Overall DER:            {der['der']:>9.2f}%")
-    lines.append(f"  Miss Rate:              {der['miss']:>9.2f}%")
-    lines.append(f"  False Alarm:            {der['false_alarm']:>9.2f}%")
-    lines.append(f"  Speaker Confusion:      {der['confusion']:>9.2f}%")
+    der = metrics.get('diarization', {})
+    lines.append(f"  Overall DER:            {der.get('der', 0.0):>9.2f}%")
+    lines.append(f"  Miss Rate:              {der.get('miss', 0.0):>9.2f}%")
+    lines.append(f"  False Alarm:            {der.get('false_alarm', 0.0):>9.2f}%")
+    lines.append(f"  Speaker Confusion:      {der.get('confusion', 0.0):>9.2f}%")
 
     if 'clustering' in metrics:
         lines.append("")
         lines.append("Clustering Quality")
-        lines.append("-" * 60)
+        lines.append("-" * WIDTH)
         clustering = metrics['clustering']
-        lines.append(f"  Silhouette Score:       {clustering['silhouette']:>9.4f}  (higher is better, -1 to 1)")
+        lines.append(f"  Silhouette Score:       {clustering.get('silhouette', 0.0):>9.4f}  (higher is better, -1 to 1)")
 
     lines.append("=" * 60)
 

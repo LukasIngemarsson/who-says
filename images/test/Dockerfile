@@ -1,9 +1,21 @@
+FROM node:18-alpine AS build-step
+WORKDIR /build
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ .
+RUN npm run build
+
 FROM pytorch/pytorch:2.7.0-cuda12.8-cudnn9-runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg libsndfile1 git ca-certificates wget curl && \
+    ffmpeg libsndfile1 git ca-certificates wget curl build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 18 for frontend rebuilds inside container
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /app
-COPY ../../requirements.txt requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir ctranslate2==4.3.1
@@ -12,6 +24,13 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86
 RUN dpkg -i cuda-keyring_1.0-1_all.deb 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libcudnn8 libcudnn8-dev
 
-COPY ../../ /app
+COPY . .
+
+RUN pip install --no-cache-dir torch==2.7.0 torchaudio==2.7.0
+
+COPY --from=build-step /build/dist ./client
+
+ENV FLASK_STATIC_FOLDER=/app/client
+
 EXPOSE 6006
 CMD ["bash"]

@@ -10,7 +10,7 @@ class FasterWhisperASR:
         self,
         model: str = "large-v3-turbo",
         device: str = "cuda",
-        compute_type: str = "float16"
+        compute_type: str = "float32"
     ) -> None:
         """
         Initialize Faster-Whisper ASR model.
@@ -37,7 +37,8 @@ class FasterWhisperASR:
         audio: torch.Tensor,
         return_timestamps: bool = True,
         language: str | None = None,
-        word_timestamps: bool = True
+        word_timestamps: bool = True,
+        **decode_kwargs,
     ) -> dict:
         """
         Transcribe audio using Faster-Whisper model.
@@ -63,11 +64,12 @@ class FasterWhisperASR:
         if len(audio_input.shape) > 1:
             audio_input = audio_input.squeeze()
 
-        # Run transcription
+        # Run transcription with optional decoding controls
         segments, info = self.model.transcribe(
             audio_input,
             language=language,
-            word_timestamps=word_timestamps
+            word_timestamps=word_timestamps,
+            **decode_kwargs,
         )
 
         # Collect segments into result format
@@ -108,7 +110,8 @@ class FasterWhisperASR:
         sample_rate: int = SR,
         return_timestamps: bool = True,
         language: str | None = None,
-        word_timestamps: bool = True
+        word_timestamps: bool = True,
+        **decode_kwargs,
     ) -> list[dict]:
         """
         Transcribe only speech segments from audio detected by VAD.
@@ -158,12 +161,13 @@ class FasterWhisperASR:
             if segment_audio.dim() > 1:
                 segment_audio = segment_audio.squeeze()
 
-            # Transcribe the segment
+            # Transcribe the segment with optional decoding controls
             transcription = self.transcribe(
                 segment_audio,
                 return_timestamps=return_timestamps,
                 language=language,
-                word_timestamps=word_timestamps
+                word_timestamps=word_timestamps,
+                **decode_kwargs,
             )
 
             # Add segment timing information

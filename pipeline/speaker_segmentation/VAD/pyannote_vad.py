@@ -1,6 +1,7 @@
 import os
 import argparse
 import time
+import threading
 import numpy as np
 import torch
 from pathlib import Path
@@ -45,9 +46,15 @@ class PyannoteVAD:
         self.min_duration_off = min_duration_off
         self.model = None
         self.inference = None
+        self._load_lock = threading.Lock()
 
     def load(self):
-        if self.model is None:
+        if self.model is not None:
+            return
+        with self._load_lock:
+            # Double-check after acquiring lock
+            if self.model is not None:
+                return
             use_auth_token = os.getenv("HF_TOKEN")
             if use_auth_token is None:
                 raise ValueError("HF_TOKEN not set")

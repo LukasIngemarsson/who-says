@@ -14,21 +14,21 @@ To use all the models, create a `.env`-file in root based on the existing `examp
 HF_TOKEN=yourToken
 ```
 
-You will need to create a token with read rights on [HuggingFace](https://huggingface.co). Then, to use the models in the WhoSays pipeline, you will also need to manually accept terms for a few of the models. These are:
+You will first need to create a token with read rights on [HuggingFace](https://huggingface.co). Then, to use the models in the WhoSays pipeline, you will also need to manually accept terms for a few of the models. These are:
 
 - [`pyannote/speaker-diarization-3.1`](https://huggingface.co/pyannote/speaker-diarization-3.1),
 - [`pyannote/segmentation-3.0`](https://huggingface.co/pyannote/segmentation-3.0),
 - [`pyannote/embedding`](https://huggingface.co/pyannote/embedding),
 - [`pyannote/separation-ami-1.0`](https://huggingface.co/pyannote/separation-ami-1.0).
 
-Once this is done, add exectution rights to `run_docker.sh`, and run the script:
+Once this is done and the token is set in the `.env`-file, add exectution rights to `run_docker.sh` and run the script:
 
 ```bash
 chmod +x run_docker.sh
 ./run_docker.sh
 ```
 
-This will build a docker image containing both the pipeline, backend, and frontend for the website.
+This will build a docker image containing the pipeline, backend, and frontend for the website.
 
 Once the pipeline is successfully built, you can access the website in your browser at [localhost:8000](http://localhost:8000).
 

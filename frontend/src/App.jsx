@@ -59,6 +59,7 @@ const App = () => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [doneRecording, setDoneRecording] = useState(false);
 
   // Use shared hooks for speaker detection and transcript accumulation
   const speakerDetection = useSpeakerDetection({
@@ -69,6 +70,12 @@ const App = () => {
   const transcriptAccumulator = useTranscriptAccumulator({
     maxWordsPerBubble: MAX_WORDS_PER_BUBBLE,
   });
+
+  const latestTranscriptRef = useRef([]);
+
+  useEffect(() => {
+    latestTranscriptRef.current = transcriptAccumulator.messages;
+  }, [transcriptAccumulator.messages]);
 
   const [isAddSpeakerModalOpen, setIsAddSpeakerModalOpen] = useState(false);
   const [speakerRefreshTrigger, setSpeakerRefreshTrigger] = useState(0);
@@ -667,8 +674,11 @@ const App = () => {
               type: blobType,
             }
           );
-          const fakeEvent = { target: { files: [file] } };
-          await handleFileUpload(fakeEvent);
+          const url = URL.createObjectURL(file);
+          setAudioUrl(url);
+
+          const fileBuffer = await file.arrayBuffer();
+          await decodeAudioForVisualization(fileBuffer);
         } catch (error) {
           console.error("Error processing recording:", error);
           setErrorMsg("Failed to process recording: " + error.message);
@@ -679,11 +689,13 @@ const App = () => {
             });
             streamRef.current = null;
           }
+          setDoneRecording(true);
         }
       };
 
       recorder.start(1000);
       setIsRecording(true);
+      setDoneRecording(false);
       handleReset();
       setRecordingTime(0);
       speakerDetection.reset();
@@ -1244,6 +1256,7 @@ const App = () => {
         {/* Current speaker indicator during recording */}
         <LiveRecordingDisplay
           isRecording={isRecording}
+          doneRecording={doneRecording}
           recordingTime={recordingTime}
           displayedSpeaker={speakerDetection.displayedSpeaker}
           displayedOverlap={speakerDetection.displayedOverlap}

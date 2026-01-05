@@ -17,6 +17,7 @@ const TEST_PHRASES = [
  */
 const LiveRecordingDisplay = ({
   isRecording,
+  doneRecording,
   recordingTime,
   displayedSpeaker,
   displayedOverlap,
@@ -34,7 +35,7 @@ const LiveRecordingDisplay = ({
     }
   }, [messages]);
 
-  if (!isRecording) return null;
+  if (!doneRecording && !isRecording) return null;
 
   return (
     <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
@@ -45,7 +46,7 @@ const LiveRecordingDisplay = ({
           </h3>
 
           {/* Speaker display */}
-          {displayedSpeaker === "Unknown" ? (
+          {!doneRecording && displayedSpeaker === "Unknown" ? (
             <div className="flex items-center gap-3">
               <span className="text-slate-400">Speech detected:</span>
               <span className="text-xl font-semibold text-yellow-400">
@@ -114,10 +115,7 @@ const LiveRecordingDisplay = ({
             >
               <div className="space-y-3">
                 {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className="flex flex-col items-start gap-1"
-                  >
+                  <div key={msg.id} className="flex flex-col items-start gap-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-slate-400 tracking-wide uppercase">
                         {msg.speaker || "Identifying..."}

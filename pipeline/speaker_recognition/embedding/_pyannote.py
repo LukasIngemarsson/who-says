@@ -83,13 +83,13 @@ class PyAnnoteEmbedding:
         Raises
         ------
         ValueError
-            If HF_TOKEN_PYANNOTE_EMBEDDING is missing in environment variables.
+            If HF_TOKEN is missing in environment variables.
         """
         load_dotenv("./.env")
         # .env is in root and not ignored
-        token = os.getenv("HF_TOKEN_PYANNOTE_EMBEDDING") or os.getenv("HF_TOKEN")
+        token = os.getenv("HF_TOKEN")
         if token is None:
-            raise ValueError("Missing HF_TOKEN_PYANNOTE_EMBEDDING or HF_TOKEN in environment variables.")
+            raise ValueError("Missing HF_TOKEN in environment variables.")
         
         self.model = Model.from_pretrained(model, use_auth_token=token)
         # pyannote 3.x: duration in seconds, step as ratio of duration

@@ -1,5 +1,6 @@
 import argparse
 import time
+import threading
 import torch
 from pathlib import Path
 from typing import Optional
@@ -62,15 +63,21 @@ class SileroVAD:
         self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = None
         self.utils = None
+        self._load_lock = threading.Lock()
+        self._inference_lock = threading.Lock()
 
     def load(self):
-        if self.model is None:
+        if self.model is not None:
+            return
+        with self._load_lock:
+            # Double-check after acquiring lock
+            if self.model is not None:
+                return
             self.model, self.utils = torch.hub.load(
                 repo_or_dir=self.model_repo,
                 model=self.model_name,
                 trust_repo=True
             )
-
             self.model.to(self.device)
 
     def __call__(
@@ -99,23 +106,24 @@ class SileroVAD:
             waveform = torch.mean(waveform, dim=0)
         elif waveform.dim() == 2:
             waveform = waveform[0]
-            
+
         waveform = waveform.to(self.device)
 
-        # Get speech timestamps
-        get_speech_timestamps = self.utils[0]
-        speech_timestamps = get_speech_timestamps(
-            waveform,
-            self.model,
-            sampling_rate=self.sample_rate,
-            threshold=self.threshold,
-            min_speech_duration_ms=self.min_speech_duration_ms,
-            max_speech_duration_s=self.max_speech_duration_s,
-            min_silence_duration_ms=self.min_silence_duration_ms,
-            window_size_samples=self.window_size_samples,
-            speech_pad_ms=self.speech_pad_ms,
-            return_seconds=self.return_seconds
-        )
+        # Serialize inference - Silero VAD has internal state
+        with self._inference_lock:
+            get_speech_timestamps = self.utils[0]
+            speech_timestamps = get_speech_timestamps(
+                waveform,
+                self.model,
+                sampling_rate=self.sample_rate,
+                threshold=self.threshold,
+                min_speech_duration_ms=self.min_speech_duration_ms,
+                max_speech_duration_s=self.max_speech_duration_s,
+                min_silence_duration_ms=self.min_silence_duration_ms,
+                window_size_samples=self.window_size_samples,
+                speech_pad_ms=self.speech_pad_ms,
+                return_seconds=self.return_seconds
+            )
 
         return [
             {'start': seg['start'], 'end': seg['end']}

@@ -1,7 +1,7 @@
 import json
 import argparse
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any
 
 import torch
 
@@ -48,6 +48,10 @@ class SpeechBrainPhoneme:
         """
         self.model_id = model
         self.savedir = savedir
+        # SpeechBrain requires "cuda:0" format, not just "cuda"
+        # See: https://github.com/speechbrain/speechbrain/issues/652
+        if device == "cuda":
+            device = "cuda:0"
         self.device = device
 
         # Lazy import SpeechBrain and load G2P model
@@ -81,9 +85,27 @@ class SpeechBrainPhoneme:
         """
         if not texts:
             return []
-        tokens_batch = self._g2p(texts)  # list of list-of-tokens
-        # SpeechBrain returns list[list[str]]; join each to a string
-        return [" ".join(tokens) for tokens in tokens_batch]
+
+        # Filter out empty/whitespace-only texts to avoid SpeechBrain tensor dtype issues
+        results: List[str] = []
+        non_empty_indices: List[int] = []
+        non_empty_texts: List[str] = []
+
+        for i, text in enumerate(texts):
+            stripped = text.strip()
+            if stripped:
+                non_empty_indices.append(i)
+                non_empty_texts.append(stripped)
+
+        # Process non-empty texts if any
+        phonemes_map: Dict[int, str] = {}
+        if non_empty_texts:
+            tokens_batch = self._g2p(non_empty_texts)  # list of list-of-tokens
+            for idx, tokens in zip(non_empty_indices, tokens_batch):
+                phonemes_map[idx] = " ".join(tokens)
+
+        # Build result list preserving original order, empty string for empty inputs
+        return [phonemes_map.get(i, "") for i in range(len(texts))]
 
     # ------------------------------------------------------------------
     # Public API for pipeline use

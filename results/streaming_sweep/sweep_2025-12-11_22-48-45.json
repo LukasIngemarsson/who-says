@@ -1,0 +1,370 @@
+{
+  "timestamp": "2025-12-11_22-48-45",
+  "audio_file": "thetestsound.wav",
+  "chunk_sec": 1.0,
+  "sleep_sec": 0.0,
+  "reference": {
+    "text": "now interesting interesting are you working why aren't you working now that's super interesting okay okay okay let's try this again are you doing that are you there are you working this is so weird this is really really weird",
+    "is_pseudo": false,
+    "source_file": "thetestsound_ground_truth.txt",
+    "pseudo_model": null
+  },
+  "weights": {
+    "wer": 1.0,
+    "adj_dup": 60.0,
+    "trigram_repeat": 40.0,
+    "latency": 15.0,
+    "no_speech": 25.0
+  },
+  "best": {
+    "name": "baseline",
+    "objective": 35.450806293957,
+    "wer": 18.6046511627907,
+    "mean_latency_sec": 0.32224885139452375,
+    "has_speech_rate": 0.5652173913043478,
+    "repetition": {
+      "total_words": 37.0,
+      "adj_dup_rate": 0.0,
+      "trigram_repeat_rate": 0.02857142857142857
+    },
+    "applied_tuning": {
+      "asr": {
+        "beam_size": 1,
+        "best_of": 1,
+        "chunk_length": 15,
+        "compression_ratio_threshold": 2.4,
+        "condition_on_previous_text": false,
+        "log_prob_threshold": -1.2,
+        "no_repeat_ngram_size": 3,
+        "no_speech_threshold": 0.45,
+        "patience": 1.0,
+        "repetition_penalty": 1.15,
+        "temperature": 0.0
+      },
+      "streaming": {
+        "asr_min_new_frames": 2,
+        "asr_tail_frames": 0,
+        "cross_tail_dup_pad_sec": 0.05,
+        "emit_boundary_pad_sec": 0.08,
+        "emit_min_overlap_ratio": 0.6,
+        "emit_min_overlap_sec": 0.06,
+        "frame_samples": 4096,
+        "max_asr_buffer_sec": 12.0,
+        "micro_tail_sec": 0.6,
+        "min_asr_interval_sec": 0.45,
+        "min_speech_frames": 1,
+        "overlap_frames": 0,
+        "overlap_ratio": 0.0,
+        "stutter_gap_sec": 0.12
+      },
+      "vad": {
+        "min_silence_duration_ms": 150,
+        "min_speech_duration_ms": 150,
+        "speech_pad_ms": 40,
+        "threshold": 0.55
+      }
+    }
+  },
+  "results": [
+    {
+      "name": "baseline",
+      "objective": 35.450806293957,
+      "wer": 18.6046511627907,
+      "mean_latency_sec": 0.32224885139452375,
+      "has_speech_rate": 0.5652173913043478,
+      "repetition": {
+        "total_words": 37.0,
+        "adj_dup_rate": 0.0,
+        "trigram_repeat_rate": 0.02857142857142857
+      },
+      "applied_tuning": {
+        "asr": {
+          "beam_size": 1,
+          "best_of": 1,
+          "chunk_length": 15,
+          "compression_ratio_threshold": 2.4,
+          "condition_on_previous_text": false,
+          "log_prob_threshold": -1.2,
+          "no_repeat_ngram_size": 3,
+          "no_speech_threshold": 0.45,
+          "patience": 1.0,
+          "repetition_penalty": 1.15,
+          "temperature": 0.0
+        },
+        "streaming": {
+          "asr_min_new_frames": 2,
+          "asr_tail_frames": 0,
+          "cross_tail_dup_pad_sec": 0.05,
+          "emit_boundary_pad_sec": 0.08,
+          "emit_min_overlap_ratio": 0.6,
+          "emit_min_overlap_sec": 0.06,
+          "frame_samples": 4096,
+          "max_asr_buffer_sec": 12.0,
+          "micro_tail_sec": 0.6,
+          "min_asr_interval_sec": 0.45,
+          "min_speech_frames": 1,
+          "overlap_frames": 0,
+          "overlap_ratio": 0.0,
+          "stutter_gap_sec": 0.12
+        },
+        "vad": {
+          "min_silence_duration_ms": 150,
+          "min_speech_duration_ms": 150,
+          "speech_pad_ms": 40,
+          "threshold": 0.55
+        }
+      },
+      "hypothesis_text": "Now, enter. interest. are you working? Why aren't you working now? that's super interesting Okay, Let's try this again are you doing that? you there? Are you working? is so weird. is really, weird."
+    },
+    {
+      "name": "boundary_looser",
+      "objective": 36.355630720194334,
+      "wer": 18.6046511627907,
+      "mean_latency_sec": 0.34904254193458223,
+      "has_speech_rate": 0.6086956521739131,
+      "repetition": {
+        "total_words": 38.0,
+        "adj_dup_rate": 0.02702702702702703,
+        "trigram_repeat_rate": 0.027777777777777776
+      },
+      "applied_tuning": {
+        "asr": {
+          "beam_size": 1,
+          "best_of": 1,
+          "chunk_length": 15,
+          "compression_ratio_threshold": 2.4,
+          "condition_on_previous_text": false,
+          "log_prob_threshold": -1.2,
+          "no_repeat_ngram_size": 3,
+          "no_speech_threshold": 0.45,
+          "patience": 1.0,
+          "repetition_penalty": 1.15,
+          "temperature": 0.0
+        },
+        "streaming": {
+          "asr_min_new_frames": 2,
+          "asr_tail_frames": 0,
+          "cross_tail_dup_pad_sec": 0.05,
+          "emit_boundary_pad_sec": 0.05,
+          "emit_min_overlap_ratio": 0.5,
+          "emit_min_overlap_sec": 0.04,
+          "frame_samples": 4096,
+          "max_asr_buffer_sec": 12.0,
+          "micro_tail_sec": 0.6,
+          "min_asr_interval_sec": 0.45,
+          "min_speech_frames": 1,
+          "overlap_frames": 0,
+          "overlap_ratio": 0.0,
+          "stutter_gap_sec": 0.12
+        },
+        "vad": {
+          "min_silence_duration_ms": 150,
+          "min_speech_duration_ms": 150,
+          "speech_pad_ms": 40,
+          "threshold": 0.55
+        }
+      },
+      "hypothesis_text": "Now, enter. interest. are you working? wire. aren't you working now? that's super interesting okay. okay. Let's try this again are you doing that? you there? Are you working? is so weird. is really, weird."
+    },
+    {
+      "name": "vad_more_strict",
+      "objective": 41.97750513243401,
+      "wer": 25.58139534883721,
+      "mean_latency_sec": 0.295972536297758,
+      "has_speech_rate": 0.5217391304347826,
+      "repetition": {
+        "total_words": 34.0,
+        "adj_dup_rate": 0.0,
+        "trigram_repeat_rate": 0.0
+      },
+      "applied_tuning": {
+        "asr": {
+          "beam_size": 1,
+          "best_of": 1,
+          "chunk_length": 15,
+          "compression_ratio_threshold": 2.4,
+          "condition_on_previous_text": false,
+          "log_prob_threshold": -1.2,
+          "no_repeat_ngram_size": 3,
+          "no_speech_threshold": 0.45,
+          "patience": 1.0,
+          "repetition_penalty": 1.15,
+          "temperature": 0.0
+        },
+        "streaming": {
+          "asr_min_new_frames": 2,
+          "asr_tail_frames": 0,
+          "cross_tail_dup_pad_sec": 0.05,
+          "emit_boundary_pad_sec": 0.08,
+          "emit_min_overlap_ratio": 0.6,
+          "emit_min_overlap_sec": 0.06,
+          "frame_samples": 4096,
+          "max_asr_buffer_sec": 12.0,
+          "micro_tail_sec": 0.6,
+          "min_asr_interval_sec": 0.45,
+          "min_speech_frames": 1,
+          "overlap_frames": 0,
+          "overlap_ratio": 0.0,
+          "stutter_gap_sec": 0.12
+        },
+        "vad": {
+          "min_silence_duration_ms": 150,
+          "min_speech_duration_ms": 150,
+          "speech_pad_ms": 30,
+          "threshold": 0.65
+        }
+      },
+      "hypothesis_text": "Now, enter. interest. are you working? Why aren't you working now? that's super interesting Okay, Let's try this again are you doing that? you there? working? is so weird. really, weird."
+    },
+    {
+      "name": "vad_more_lenient",
+      "objective": 42.84479117405406,
+      "wer": 27.906976744186046,
+      "mean_latency_sec": 0.3436803822810559,
+      "has_speech_rate": 0.6086956521739131,
+      "repetition": {
+        "total_words": 33.0,
+        "adj_dup_rate": 0.0,
+        "trigram_repeat_rate": 0.0
+      },
+      "applied_tuning": {
+        "asr": {
+          "beam_size": 1,
+          "best_of": 1,
+          "chunk_length": 15,
+          "compression_ratio_threshold": 2.4,
+          "condition_on_previous_text": false,
+          "log_prob_threshold": -1.2,
+          "no_repeat_ngram_size": 3,
+          "no_speech_threshold": 0.45,
+          "patience": 1.0,
+          "repetition_penalty": 1.15,
+          "temperature": 0.0
+        },
+        "streaming": {
+          "asr_min_new_frames": 2,
+          "asr_tail_frames": 0,
+          "cross_tail_dup_pad_sec": 0.05,
+          "emit_boundary_pad_sec": 0.08,
+          "emit_min_overlap_ratio": 0.6,
+          "emit_min_overlap_sec": 0.06,
+          "frame_samples": 4096,
+          "max_asr_buffer_sec": 12.0,
+          "micro_tail_sec": 0.6,
+          "min_asr_interval_sec": 0.45,
+          "min_speech_frames": 1,
+          "overlap_frames": 0,
+          "overlap_ratio": 0.0,
+          "stutter_gap_sec": 0.12
+        },
+        "vad": {
+          "min_silence_duration_ms": 150,
+          "min_speech_duration_ms": 150,
+          "speech_pad_ms": 60,
+          "threshold": 0.45
+        }
+      },
+      "hypothesis_text": "Now, enter. interest. you working? Why aren't you working now? That's super interesting. Okay, Let's try... this again. are you doing that? you there? working? is so weird. really, weird."
+    },
+    {
+      "name": "boundary_stricter",
+      "objective": 43.519000356872844,
+      "wer": 27.906976744186046,
+      "mean_latency_sec": 0.31616389301969955,
+      "has_speech_rate": 0.5652173913043478,
+      "repetition": {
+        "total_words": 33.0,
+        "adj_dup_rate": 0.0,
+        "trigram_repeat_rate": 0.0
+      },
+      "applied_tuning": {
+        "asr": {
+          "beam_size": 1,
+          "best_of": 1,
+          "chunk_length": 15,
+          "compression_ratio_threshold": 2.4,
+          "condition_on_previous_text": false,
+          "log_prob_threshold": -1.2,
+          "no_repeat_ngram_size": 3,
+          "no_speech_threshold": 0.45,
+          "patience": 1.0,
+          "repetition_penalty": 1.15,
+          "temperature": 0.0
+        },
+        "streaming": {
+          "asr_min_new_frames": 2,
+          "asr_tail_frames": 0,
+          "cross_tail_dup_pad_sec": 0.05,
+          "emit_boundary_pad_sec": 0.1,
+          "emit_min_overlap_ratio": 0.7,
+          "emit_min_overlap_sec": 0.08,
+          "frame_samples": 4096,
+          "max_asr_buffer_sec": 12.0,
+          "micro_tail_sec": 0.6,
+          "min_asr_interval_sec": 0.45,
+          "min_speech_frames": 1,
+          "overlap_frames": 0,
+          "overlap_ratio": 0.0,
+          "stutter_gap_sec": 0.12
+        },
+        "vad": {
+          "min_silence_duration_ms": 150,
+          "min_speech_duration_ms": 150,
+          "speech_pad_ms": 40,
+          "threshold": 0.55
+        }
+      },
+      "hypothesis_text": "Now, enter. interest. are you working? Why aren't you working now? That's super interesting. Okay, Let's try this again are you doing that? you there? working? is so weird. really,"
+    },
+    {
+      "name": "asr_more_accurate",
+      "objective": 45.31917157293371,
+      "wer": 25.58139534883721,
+      "mean_latency_sec": 0.3212865308817962,
+      "has_speech_rate": 0.4782608695652174,
+      "repetition": {
+        "total_words": 33.0,
+        "adj_dup_rate": 0.03125,
+        "trigram_repeat_rate": 0.0
+      },
+      "applied_tuning": {
+        "asr": {
+          "beam_size": 3,
+          "best_of": 3,
+          "chunk_length": 20,
+          "compression_ratio_threshold": 2.4,
+          "condition_on_previous_text": false,
+          "log_prob_threshold": -1.2,
+          "no_repeat_ngram_size": 3,
+          "no_speech_threshold": 0.45,
+          "patience": 1.0,
+          "repetition_penalty": 1.12,
+          "temperature": 0.0
+        },
+        "streaming": {
+          "asr_min_new_frames": 2,
+          "asr_tail_frames": 0,
+          "cross_tail_dup_pad_sec": 0.05,
+          "emit_boundary_pad_sec": 0.08,
+          "emit_min_overlap_ratio": 0.6,
+          "emit_min_overlap_sec": 0.06,
+          "frame_samples": 4096,
+          "max_asr_buffer_sec": 12.0,
+          "micro_tail_sec": 0.6,
+          "min_asr_interval_sec": 0.45,
+          "min_speech_frames": 1,
+          "overlap_frames": 0,
+          "overlap_ratio": 0.0,
+          "stutter_gap_sec": 0.12
+        },
+        "vad": {
+          "min_silence_duration_ms": 150,
+          "min_speech_duration_ms": 150,
+          "speech_pad_ms": 40,
+          "threshold": 0.55
+        }
+      },
+      "hypothesis_text": "Now, enter... you working? Why aren't you working now? That's super interesting! okay. okay. Let's try this again. are you doing that? you there? working? is so weird. really, weird."
+    }
+  ]
+}

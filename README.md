@@ -6,6 +6,32 @@ The following diagram illustrates the complete pipeline flow, showing how audio 
 
 ![Pipeline Architecture](Pipeline.png)
 
+## Set-up, build and run
+
+To use all the models, create a `.env`-file in root based on the existing `example.env`, which should look like this:
+
+```
+HF_TOKEN=yourToken
+```
+
+You will need to create a token with read rights on [HuggingFace](https://huggingface.co). Then, to use the models in the WhoSays pipeline, you will also need to manually accept terms for a few of the models. These are:
+
+- [`pyannote/speaker-diarization-3.1`](https://huggingface.co/pyannote/speaker-diarization-3.1),
+- [`pyannote/segmentation-3.0`](https://huggingface.co/pyannote/segmentation-3.0),
+- [`pyannote/embedding`](https://huggingface.co/pyannote/embedding),
+- [`pyannote/separation-ami-1.0`](https://huggingface.co/pyannote/separation-ami-1.0).
+
+Once this is done, add exectution rights to `run_docker.sh`, and run the script:
+
+```bash
+chmod +x run_docker.sh
+./run_docker.sh
+```
+
+This will build a docker image containing both the pipeline, backend, and frontend for the website.
+
+Once the pipeline is successfully built, you can access the website in your browser at [localhost:8000](http://localhost:8000).
+
 ## Run with docker
 
 You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.
@@ -36,19 +62,21 @@ docker build -t my-diarization-api .
 docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
 ```
 
- - "audio_file", type=Path, help="Path to the audio file to process"
- - "--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)"
- - "--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)"
- - "--output", "-o", type=Path, help="Output JSON file path (optional)"
- - "--pretty", action="store_true", help="Pretty print the output"
- - "--timing", action="store_true", help="Include timing metrics for each model run"
+- "audio_file", type=Path, help="Path to the audio file to process"
+- "--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)"
+- "--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)"
+- "--output", "-o", type=Path, help="Output JSON file path (optional)"
+- "--pretty", action="store_true", help="Pretty print the output"
+- "--timing", action="store_true", help="Include timing metrics for each model run"
 
 ### Compare pipeline models
+
 Run from inside docker (after running `./run.sh start`)
 
 #### Compare models with benchmark datasets
 
 **Options:**
+
 - `--component`: Component to compare (`vad` or `sc`)
 - `--audio-dir`: Directory containing audio files (required)
 - `--annotation-dir`: Directory containing annotation JSON files (required)
@@ -56,8 +84,8 @@ Run from inside docker (after running `./run.sh start`)
 - `--limit`: Limit number of files for quick testing
 - `--output-dir`: Output directory (default: `results/comparison/english`)
 
-
 **VAD Comparison** (Silero vs Pyannote):
+
 ```bash
 python compare.py --component vad \
     --audio-dir samples/meetings/meeting3-en/chunks \
@@ -66,6 +94,7 @@ python compare.py --component vad \
 ```
 
 **Speaker Clustering Comparison**:
+
 ```bash
 python compare.py --component sc \
     --audio-dir samples/meetings/meeting3-en/chunks \
@@ -74,6 +103,7 @@ python compare.py --component sc \
 ```
 
 **ASR Comparison** (7 Whisper models from tiny to large):
+
 ```bash
 python compare.py --component asr \
     --audio-dir samples/meetings/meeting3-en/chunks \
@@ -81,17 +111,47 @@ python compare.py --component asr \
     --language english
 ```
 
+**E2E (End-to-End) Comparison** (Complete pipeline comparison):
+
+```bash
+# Base comparison (WhoSays + Pyannote 3.1)
+python compare.py --component e2e \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english
+
+# Include WhisperX - runs in separate environment component because of conflicting dependencies with the main pipeline (only english version of whisperX is used for now)
+python compare.py --component e2e \
+    --audio-dir samples/meetings/meeting3-en/chunks \
+    --annotation-dir samples/benchmarks/english \
+    --language english \
+    --include-whisperx
+```
+
+**Regenerate E2E plots from existing JSON results:**
+
+If you've made changes to plot styling or want to regenerate plots without re-running the entire comparison (which can take time), you can use the plot regeneration script:
+
+```bash
+python e2e_plot_result_from_json.py \
+    --json-file results/comparison/english/e2e_comparison_2025-12-19_21-11-41.json
+
+```
+
 #### Single file comparison
+
 **VAD:**
+
 ```bash
 python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
 ```
 
 **Speaker embedding and clustering:**
+
 ```bash
 python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
 ```
- 
+
 <!-- Running w/o the script: -->
 <!-- Build image -->
 <!---->
@@ -122,7 +182,6 @@ python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <
 3. Import in `main.py`: `from pipeline.[component] import YourClass`
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
-
 
 ## Update `requirements.txt`
 

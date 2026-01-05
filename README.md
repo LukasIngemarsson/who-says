@@ -32,48 +32,14 @@ This will build a docker image containing both the pipeline, backend, and fronte
 
 Once the pipeline is successfully built, you can access the website in your browser at [localhost:8000](http://localhost:8000).
 
-## Run with docker
-
-You can use `docker_run.py` to conveniently build the image, and run the full pipeline or test a single component w/ Docker.
-Use `chmod +x docker_run.py` to make the script runnable as `./docker_run.py` (only needed once).
-
 > **Note:**  
 > To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
 
-Usage:
+## Compare pipeline models
 
-```bash
-./docker_run.py pipeline <audio_file> # (runs main / full pipeline)
-./docker_run.py component <module_path> # (runs specified module / isolated component)
-```
+Run from inside docker (after running `./run.sh start`).
 
-### Running with evaluation metrics
-
-To evaluate pipeline performance against gold standard annotations, use the `--annotation` flag:
-
-For example:
-
-```bash
-./docker_run.py pipeline samples/multi_speaker_sample.mp3 --annotation samples/annotations/multi_speaker_sample.json
-```
-
-```bash
-docker build -t my-diarization-api .
-docker run -p 8000:8000 -v .env:/app/.env my-diarization-api
-```
-
-- "audio_file", type=Path, help="Path to the audio file to process"
-- "--num-speakers", type=int, default=2, help="Expected number of speakers (default: 2)"
-- "--annotation", type=Path, help="Path to gold-standard annotation JSON for metrics evaluation (optional)"
-- "--output", "-o", type=Path, help="Output JSON file path (optional)"
-- "--pretty", action="store_true", help="Pretty print the output"
-- "--timing", action="store_true", help="Include timing metrics for each model run"
-
-### Compare pipeline models
-
-Run from inside docker (after running `./run.sh start`)
-
-#### Compare models with benchmark datasets
+### Compare models with benchmark datasets
 
 **Options:**
 
@@ -138,7 +104,7 @@ python e2e_plot_result_from_json.py \
 
 ```
 
-#### Single file comparison
+### Single file comparison
 
 **VAD:**
 

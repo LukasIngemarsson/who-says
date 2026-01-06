@@ -6,6 +6,8 @@ The following diagram illustrates the complete pipeline flow, showing how audio 
 
 ![Pipeline Architecture](Pipeline.png)
 
+For further insight, look at the [demo](./demo_short.mp4) or the [final presentation](./who-says.pptx) of the project.
+
 ## Set-up, build and run
 
 To use all the models, create a `.env`-file in root based on the existing `example.env`, which should look like this:
@@ -149,23 +151,7 @@ python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <
 4. Add dependencies to `requirements.txt`
 5. Rebuild Docker: `docker build -t who-says-pipeline .`
 
-## Update `requirements.txt`
+## Updating `requirements.txt`
 
-For now, manually add necessary packages that are not yet installed in the Docker container, i.e.,
+Add necessary packages that are not yet installed in the Docker container, i.e.,
 add the library (and if needed, the specific version) as a new line in `requirements.txt`.
-
-<!-- We can try this more automated alternative as well, but we need to ensure that it properly includes -->
-<!-- the necessary packages (and their version requirements). -->
-<!-- Install `pipreqs` -->
-<!---->
-<!-- ```bash -->
-<!-- pip install pipreqs -->
-<!-- ``` -->
-<!---->
-<!-- Use this command to create a new version of `requirements.txt` while in the root directory -->
-<!---->
-<!-- ```bash -->
-<!-- python -m pipreqs.pipreqs . --force -->
-<!-- ``` -->
-<!---->
-<!-- This will override the current `requirements.txt` file with a new one.  -->

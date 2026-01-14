@@ -130,7 +130,7 @@ class OnlineKMeansSpeakerRecognition:
 if __name__ == "__main__":
     #### ONLINE KMEANS TEST WITH REFERENCE EMBEDDINGS
     print("\nRunning online K-Means test...")
-    path_annot = "samples/benchmarks/english/001.json"
+    path_annot = "data/benchmark/annotations/001.json"
     with open(path_annot, "r") as f:
         annotations = json.load(f)
     segments = annotations["segments"]
@@ -152,32 +152,26 @@ if __name__ == "__main__":
                 speakers.append(seg["speaker"])
         return speakers 
 
-    path_comb = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
+    path_comb = "data/benchmark/chunks/combined_part001.mp3"
     audio_comb, sr_comb = load_audio_from_file(path_comb, convert_to_mono=True)
 
     reference_audio = {
-        "lukas": [
-            load_audio_from_file("samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3", convert_to_mono=True),
-            # Add more (audio, sr) tuples as needed
+        "speaker1": [
+            load_audio_from_file("data/benchmark/speaker_references/lukas.mp3", convert_to_mono=True),
         ],
-        "marten": [
-            load_audio_from_file("samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3", convert_to_mono=True),
-            # Add more (audio, sr) tuples as needed
+        "speaker2": [
+            load_audio_from_file("data/benchmark/speaker_references/marten.mp3", convert_to_mono=True),
         ],
-        "gor": [
-            load_audio_from_file("samples/meetings/meeting3-en/gor/audio_chunks/meeting3_gor_002.mp3", convert_to_mono=True),
-            # Add more (audio, sr) tuples as needed
-        ]
     }
 
     # New audio to identify
-    new_audio_path = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
+    new_audio_path = "data/benchmark/chunks/combined_part001.mp3"
     new_audio, new_sr = load_audio_from_file(new_audio_path, convert_to_mono=True)
     duration = int(new_audio.shape[-1] / new_sr)
 
     STEP_SIZE = 2
 
-    recognizer_online = OnlineKMeansSpeakerRecognition(reference_audio, n_speakers=3)
+    recognizer_online = OnlineKMeansSpeakerRecognition(reference_audio, n_speakers=2)
     # reference embeddings and kmeans are initialized in __init__
 
     print("Cluster ID to Speaker mapping:")

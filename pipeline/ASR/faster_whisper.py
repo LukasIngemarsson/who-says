@@ -206,7 +206,7 @@ if __name__ == "__main__":
         device="cpu",
         compute_type="float32"
     )
-    file_path = "single_speaker_sample.wav"
+    file_path = "data/single_speaker_sample.wav"
     audio, freq = load_audio_from_file(file_path, SR)
     audio = match_frequency(audio, freq, SR)
     result = asr.transcribe(audio)

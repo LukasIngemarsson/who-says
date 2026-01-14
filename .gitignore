@@ -15,11 +15,20 @@ __pycache__/
 .DS_Store
 .cache/
 .env
+embeddings/
+results/
 venv
 venv/
 .venv*/
 pretrained_models/
 *.pt
+
+# Vite cache (should never be committed)
+.vite/
+**/.vite/
+
+# Runtime logs
+logs/*.log
 
 node-*
 

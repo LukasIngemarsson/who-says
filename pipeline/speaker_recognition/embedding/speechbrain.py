@@ -153,7 +153,7 @@ class SpeechBrainEmbedding:
 
 if __name__ == "__main__":
     embedder = SpeechBrainEmbedding()
-    file_path = "samples/single_speaker_sample.wav"
+    file_path = "data/single_speaker_sample.wav"
     audio, freq = load_audio_from_file(file_path)
     print(f"\naudio dim: {audio.shape}, freq: {freq}")
     embd = embedder.embed(audio, freq)

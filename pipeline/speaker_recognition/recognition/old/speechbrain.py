@@ -48,22 +48,22 @@ class SpeechBrainSpeakerRecognition:
 if __name__ == "__main__":
     embedder = SpeechBrainEmbedding()
 
-    path_multi = "samples/multi_speaker_sample.mp3"
+    path_multi = "data/multi_speaker_sample.mp3"
     audio_multi, sr_multi = load_audio_from_file(path_multi)
     emb_multi = embedder.embed(audio_multi, sr_multi)
 
     # should be true
-    path_sep_1 = "samples/sep_1.wav"
+    path_sep_1 = "data/sep_1.wav"
     audio_sep_1, sr_sep_1 = load_audio_from_file(path_sep_1)
     emb_sep_1 = embedder.embed(audio_sep_1, sr_sep_1)
 
     # should be true
-    path_sep_2 = "samples/sep_2.wav"
+    path_sep_2 = "data/sep_2.wav"
     audio_sep_2, sr_sep_2 = load_audio_from_file(path_sep_2)
     emb_sep_2 = embedder.embed(audio_sep_2, sr_sep_2)
 
     # should be false
-    path_single = "samples/single_speaker_sample.wav"
+    path_single = "data/single_speaker_sample.wav"
     audio_single, sr_single = load_audio_from_file(path_single)
     emb_single = embedder.embed(audio_single, sr_single)
 

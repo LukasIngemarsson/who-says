@@ -2,6 +2,7 @@
 Static file serving routes for the WhoSays backend.
 """
 import os
+from pathlib import Path
 
 from flask import Blueprint, send_from_directory, send_file, current_app
 
@@ -27,7 +28,8 @@ def catch_all(path: str):
 def serve_testsound():
     """Serve the built-in test WAV for UI-based streaming tests."""
     from flask import jsonify
-    wav_path = os.path.join(os.getcwd(), "thetestsound.wav")
-    if not os.path.exists(wav_path):
+    repo_root = Path(__file__).resolve().parents[2]
+    wav_path = repo_root / "data" / "thetestsound.wav"
+    if not wav_path.exists():
         return jsonify({"error": "thetestsound.wav not found on server"}), 404
-    return send_file(wav_path, mimetype="audio/wav")
+    return send_file(str(wav_path), mimetype="audio/wav")

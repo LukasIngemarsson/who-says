@@ -89,10 +89,10 @@ if __name__ == "__main__":
     print("1. Running offline test...")
     embedder = SpeechBrainEmbedding()
 
-    path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
+    path1 = "data/benchmark/speaker_references/lukas.mp3"
     audio1, sr1 = load_audio_from_file(path1, convert_to_mono=True)
 
-    path2 = "samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3"
+    path2 = "data/benchmark/speaker_references/marten.mp3"
     audio2, sr2 = load_audio_from_file(path2, convert_to_mono=True)
 
     recognizer = NaiveSpeakerRecognition()
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     #### ONLINE RECOG TEST W/ SINGLE REFERENCE (NO CLUSTERING)
     print("2. Running online test...")
 
-    path_annot = "samples/benchmarks/english/001.json"
+    path_annot = "data/benchmark/annotations/001.json"
     with open(path_annot, "r") as f:
         annotations = json.load(f)
     segments = annotations["segments"]
@@ -115,29 +115,25 @@ if __name__ == "__main__":
                 speakers.append(seg["speaker"])
         return speakers 
 
-    path_comb = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
+    path_comb = "data/benchmark/chunks/combined_part001.mp3"
     audio_comb, sr_comb = load_audio_from_file(path_comb, convert_to_mono=True)
 
     reference_audio = {
-        "lukas": [
-            load_audio_from_file("samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3", convert_to_mono=True),
+        "speaker1": [
+            load_audio_from_file("data/benchmark/speaker_references/lukas.mp3", convert_to_mono=True),
             # Add more (audio, sr) tuples as needed
         ],
-        "marten": [
-            load_audio_from_file("samples/meetings/meeting3-en/marten/audio_chunks/marten_chunk_010.mp3", convert_to_mono=True),
+        "speaker2": [
+            load_audio_from_file("data/benchmark/speaker_references/marten.mp3", convert_to_mono=True),
             # Add more (audio, sr) tuples as needed
         ],
-        "gor": [
-            load_audio_from_file("samples/meetings/meeting3-en/gor/audio_chunks/meeting3_gor_002.mp3", convert_to_mono=True),
-            # Add more (audio, sr) tuples as needed
-        ]
     }
 
     recognizer = NaiveSpeakerRecognition()
     recognizer.create_reference_embeddings(reference_audio)
 
     # New audio to identify
-    new_audio_path = "samples/meetings/meeting3-en/chunks/combined_part001.mp3"
+    new_audio_path = "data/benchmark/chunks/combined_part001.mp3"
     new_audio, new_sr = load_audio_from_file(new_audio_path, convert_to_mono=True)
     duration = int(new_audio.shape[-1] / new_sr)
 

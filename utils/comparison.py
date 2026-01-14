@@ -1960,7 +1960,7 @@ def load_speaker_chunk_audio(
     Parameters
     ----------
     speaker_dir : Path
-        Base directory containing speaker folders (e.g., meeting3-en/)
+        Base directory containing speaker folders
     speaker_name : str
         Speaker name (e.g., 'JOHAN', 'GOR')
     chunk_idx : int
@@ -1983,7 +1983,6 @@ def load_speaker_chunk_audio(
         (speaker_lower, "audio_chunks", f"{speaker_lower}_{chunk_idx:03d}.mp3"),
         (speaker_lower, "audio", f"{speaker_lower}_chunk_{chunk_idx:03d}.mp3"),
         (speaker_lower, "audio", f"{speaker_lower}_{chunk_idx:03d}.mp3"),
-        # Additional patterns found in meeting3-en
         (speaker_lower, "audio_chunks", f"{speaker_lower}_part{chunk_idx:03d}.mp3"),
         (speaker_lower, "audio_chunks", f"meeting3_{speaker_lower}_{chunk_idx:03d}.mp3"),
         (speaker_lower, "audio", f"{speaker_lower}_part{chunk_idx:03d}.mp3"),
@@ -2112,7 +2111,7 @@ def compare_sos_models(
             abs_end = overlap['abs_end']
             chunk_idx = overlap['chunk_idx']
 
-            # Create synthetic mix from speaker audio files instead of using combined.mp3
+            # Create synthetic mix from speaker audio files instead of using data/benchmark/combined.mp3
             # This ensures the ground truth and mix are perfectly aligned
             start_sample = int(abs_start * sr)
             end_sample = int(abs_end * sr)
@@ -2949,7 +2948,7 @@ def compare_cluster_viz(
 
     # Build alignment from directory structure or load from file
     alignment = {}
-    reference_files = set()  # Track which files are reference/speaking_alignment samples
+    reference_files = set()  # Track which files are reference samples
 
     if alignment_file is not None and alignment_file.exists():
         # Load alignment file
@@ -2980,18 +2979,18 @@ def compare_cluster_viz(
 
         logger.info(f"Discovered {len(alignment)} audio files from directory structure")
 
-    # Also check for speaking_alignment folder with reference audio
-    speaking_alignment_dir = audio_folder / "speaking_alignment"
-    if speaking_alignment_dir.exists():
-        logger.info(f"Found speaking_alignment folder, loading reference audio...")
-        for ext in ['*.mp3', '*.wav', '*.flac', '*.m4a']:
-            for audio_file in speaking_alignment_dir.glob(ext):
-                # Speaker name from filename (e.g., marten.mp3 -> MARTEN)
-                speaker_name = audio_file.stem.upper()
-                rel_path = audio_file.relative_to(audio_folder)
-                alignment[str(rel_path)] = speaker_name
-                reference_files.add(str(rel_path))
-        logger.info(f"Loaded {len(reference_files)} reference audio files from speaking_alignment")
+    # Also check for a folder with reference speaker clips.
+    # Canonical: speaker_references/
+    reference_dir = audio_folder / "speaker_references"
+    if reference_dir.exists():
+        logger.info("Found speaker_references folder, loading reference audio...")
+        for audio_file in reference_dir.glob("*.mp3"):
+            # Speaker name from filename (e.g., marten.mp3 -> MARTEN)
+            speaker_name = audio_file.stem.upper()
+            rel_path = audio_file.relative_to(audio_folder)
+            alignment[str(rel_path)] = speaker_name
+            reference_files.add(str(rel_path))
+        logger.info(f"Loaded {len(reference_files)} reference audio files from speaker_references")
 
     if not alignment:
         raise ValueError("No audio files found. Provide alignment file or use speaker directory structure.")
@@ -3019,7 +3018,7 @@ def compare_cluster_viz(
     embeddings = []
     labels = []
     filenames = []
-    is_reference = []  # Track which samples are from speaking_alignment
+    is_reference = []  # Track which samples are from the reference folder
 
     # Suppress MP3 decoding warnings
     import warnings
@@ -3085,7 +3084,7 @@ def compare_cluster_viz(
         'speakers': unique_speakers,
         'ground_truth_labels': labels,
         'filenames': filenames,
-        'is_reference': is_reference,  # Boolean list indicating reference/speaking_alignment samples
+        'is_reference': is_reference,  # Boolean list indicating reference-folder samples
         'clustering_results': {}
     }
     logger.info(f"Reference samples: {sum(is_reference)} out of {len(is_reference)} total")
@@ -3122,7 +3121,7 @@ def compare_cluster_viz(
         return f1_score(true_filtered[valid_mask], aligned[valid_mask], average='macro', zero_division=0)
 
     # Separate reference samples from samples to be clustered
-    # Reference samples (from speaking_alignment) are static and should not be clustered
+    # Reference samples (from the reference folder) are static and should not be clustered
     is_ref_arr = np.array(is_reference)
     non_ref_mask = ~is_ref_arr
     n_non_ref = np.sum(non_ref_mask)

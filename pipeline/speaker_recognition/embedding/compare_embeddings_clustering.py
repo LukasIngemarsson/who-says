@@ -8,7 +8,7 @@ Compares SpeechBrain ECAPA vs Wav2Vec2 embeddings by:
 
 Usage:
     python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering \
-        samples/multi_speaker_sample.mp3 --num-speakers 2
+        data/multi_speaker_sample.mp3 --num-speakers 2
 """
 import argparse
 import time

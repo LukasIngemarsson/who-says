@@ -113,7 +113,7 @@ class Wav2Vec2Embedding:
 
 if __name__ == "__main__":
     embedder = Wav2Vec2Embedding()
-    file_path = "samples/single_speaker_sample.wav"
+    file_path = "data/single_speaker_sample.wav"
     audio, freq = load_audio_from_file(file_path)
     print(f"Audio shape: {audio.shape}, freq: {freq}")
     emb = embedder.embed(audio, freq)

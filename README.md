@@ -1,157 +1,91 @@
-# Who says pipeline
+# WhoSays
 
-In many real-world speech systems—like smart home assistants, meeting transcribers, or secure voice interfaces—it's crucial not only to transcribe multi-person conversations accurately but also to distinguish who spoke when and to recognize specific users for access control or personalization. This project will build a pipeline that integrates voice activity detection (VAD), speaker diarization, and speaker recognition, enabling systems to selectively trust and process commands from authorized individuals.
+WhoSays is a real-time pipeline for multi-speaker diarization and transcription that answers three practical questions: who spoke, when, and what did they say?
 
-The following diagram illustrates the complete pipeline flow, showing how audio input is processed through VAD, speaker diarization, speaker recognition, and ASR components to produce the final transcribed output with speaker labels:
+It combines voice activity detection (VAD), speaker change/overlap handling, speaker embedding, clustering and recognition, and automatic speech recognition (ASR) into a streaming workflow. This project is primarily optimized for speaker recognition quality; transcription accuracy was a secondary goal.
 
-![Pipeline Architecture](Pipeline.png)
+The following diagram illustrates the complete pipeline flow, showing how audio input is processed through speaker segmentation, diarization, and ASR components to produce the final transcribed output with speaker labels:
 
-For further insight, look at the [demo](./demo_short.mp4) or the [final presentation](./who-says.pptx) of the project.
+![Pipeline Architecture](docs/Pipeline.png)
 
-## Set-up, build and run
+For further insight, see the [demo](docs/demo.mp4) or the [final presentation](docs/who-says.pptx).
 
-To use all the models, create a `.env`-file in root based on the existing `example.env`, which should look like this:
+## Setup, Build, and Run
+
+Create a `.env` file at the root of the repo containing:
 
 ```
 HF_TOKEN=yourToken
 ```
 
-You will first need to create a token with read rights on [HuggingFace](https://huggingface.co). Then, to use the models in the WhoSays pipeline, you will also need to manually accept terms for a few of the models. These are:
+You can create an HF token with read access on [HuggingFace](https://huggingface.co) and must also accept the model terms for:
 
 - [`pyannote/speaker-diarization-3.1`](https://huggingface.co/pyannote/speaker-diarization-3.1),
 - [`pyannote/segmentation-3.0`](https://huggingface.co/pyannote/segmentation-3.0),
 - [`pyannote/embedding`](https://huggingface.co/pyannote/embedding),
 - [`pyannote/separation-ami-1.0`](https://huggingface.co/pyannote/separation-ami-1.0).
 
-Once this is done and the token is set in the `.env`-file, add exectution rights to `run_docker.sh` and run the script:
+Once the token is set in `.env`, add execution rights to `run_docker.sh` and run it:
 
 ```bash
 chmod +x run_docker.sh
 ./run_docker.sh
 ```
 
-This will build a docker image containing the pipeline, backend, and frontend for the website.
+This builds a Docker image containing the pipeline, backend, and frontend.
 
-Once the pipeline is successfully built, you can access the website in your browser at [localhost:8000](http://localhost:8000).
+Once it’s up, you can open the app at [localhost:8000](http://localhost:8000).
 
 > **Note:**  
 > To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
+> Furthermore, since everything runs locally, low-end hardware will cause the build process to take a long time, and will cause the performance of the app to be highly unreliable. Therefore, it is recommended to use a modern graphics card if available.
 
-## Compare pipeline models
-
-Run from inside docker (after running `./run.sh start`).
-
-### Compare models with benchmark datasets
-
-**Options:**
-
-- `--component`: Component to compare (`vad` or `sc`)
-- `--audio-dir`: Directory containing audio files (required)
-- `--annotation-dir`: Directory containing annotation JSON files (required)
-- `--language`: Language of dataset (default: `unknown`)
-- `--limit`: Limit number of files for quick testing
-- `--output-dir`: Output directory (default: `results/comparison/english`)
-
-**VAD Comparison** (Silero vs Pyannote):
+To stop the container:
 
 ```bash
-python compare.py --component vad \
-    --audio-dir samples/meetings/meeting3-en/chunks \
-    --annotation-dir samples/benchmarks/english \
-    --language english
+docker stop whosays-container
 ```
 
-**Speaker Clustering Comparison**:
+To follow logs:
 
 ```bash
-python compare.py --component sc \
-    --audio-dir samples/meetings/meeting3-en/chunks \
-    --annotation-dir samples/benchmarks/english \
-    --language english
+docker logs -f whosays-container
 ```
 
-**ASR Comparison** (7 Whisper models from tiny to large):
+## Compare Pipeline Models
 
-```bash
-python compare.py --component asr \
-    --audio-dir samples/meetings/meeting3-en/chunks \
-    --annotation-dir samples/benchmarks/english \
-    --language english
-```
+Benchmark/analysis CLIs live under `scripts/`.
 
-**E2E (End-to-End) Comparison** (Complete pipeline comparison):
+- Host: `python -m scripts.compare --help`
+- Container: `docker exec -it whosays-container python -m scripts.compare --help`
+
+### Compare Models with Benchmark Datasets
+
+See `python -m scripts.compare --help` for all options and components. A typical end-to-end run looks like:
 
 ```bash
 # Base comparison (WhoSays + Pyannote 3.1)
-python compare.py --component e2e \
-    --audio-dir samples/meetings/meeting3-en/chunks \
-    --annotation-dir samples/benchmarks/english \
+python -m scripts.compare --component e2e \
+    --audio-dir data/benchmark/chunks \
+    --annotation-dir data/benchmark/annotations \
     --language english
 
 # Include WhisperX - runs in separate environment component because of conflicting dependencies with the main pipeline (only english version of whisperX is used for now)
-python compare.py --component e2e \
-    --audio-dir samples/meetings/meeting3-en/chunks \
-    --annotation-dir samples/benchmarks/english \
+python -m scripts.compare --component e2e \
+    --audio-dir data/benchmark/chunks \
+    --annotation-dir data/benchmark/annotations \
     --language english \
     --include-whisperx
 ```
 
-**Regenerate E2E plots from existing JSON results:**
+By default, comparison JSON files and plots are written under `results/`. This folder is intentionally gitignored and won’t exist in a fresh clone until you run a comparison. You can alternatively choose your own directory with `--output-dir`.
+
+**Regenerate E2E Plots From Existing JSON Results:**
 
 If you've made changes to plot styling or want to regenerate plots without re-running the entire comparison (which can take time), you can use the plot regeneration script:
 
 ```bash
-python e2e_plot_result_from_json.py \
-    --json-file results/comparison/english/e2e_comparison_2025-12-19_21-11-41.json
+python -m scripts.e2e_plot_result_from_json \
+    --json-file "results/comparison/english/e2e_comparison_*.json"
 
 ```
-
-### Single file comparison
-
-**VAD:**
-
-```bash
-python -m pipeline.speaker_segmentation.VAD.compare_vad_models <audioFile> --annotation <annotationFile>
-```
-
-**Speaker embedding and clustering:**
-
-```bash
-python -m pipeline.speaker_recognition.embedding.compare_embeddings_clustering <audioFile> --num-speakers 2
-```
-
-<!-- Running w/o the script: -->
-<!-- Build image -->
-<!---->
-<!-- ```bash -->
-<!-- docker build -t who-says-pipeline . -->
-<!-- ``` -->
-<!-- ```bash -->
-<!-- docker run --rm who-says-pipeline python main.py multi_speaker_sample.mp3 -->
-<!-- ``` -->
-<!-- To run any module that isn’t at the project root, use the -m flag so Python treats the project as a package. -->
-<!-- ```bash -->
-<!-- docker run --rm who-says-pipeline python -m pipeline.<component_name>.<library_name>.<etc.> -->
-<!-- ``` -->
-<!-- This ensures imports (e.g. from `utils/`) work correctly. -->
-
-> **Note:**  
-> Every code-containing subfolder (e.g. `pipeline/`, `speaker_recognition/`, `embedding/`, `utils/`, etc.)  
-> must include an empty `__init__.py` file so Python recognizes it as a package.
-
-## Adding new pipeline components
-
-1. Create your class in `pipeline/[component]/your_file.py`
-2. Export it in `pipeline/[component]/__init__.py`:
-   ```python
-   from .your_file import YourClass
-   __all__ = ["YourClass"]
-   ```
-3. Import in `main.py`: `from pipeline.[component] import YourClass`
-4. Add dependencies to `requirements.txt`
-5. Rebuild Docker: `docker build -t who-says-pipeline .`
-
-## Updating `requirements.txt`
-
-Add necessary packages that are not yet installed in the Docker container, i.e.,
-add the library (and if needed, the specific version) as a new line in `requirements.txt`.

@@ -31,12 +31,12 @@ if __name__ == "__main__":
     embedder = SpeechBrainEmbedding()
 
     print("Embed 1...")
-    path1 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part000.mp3"
+    path1 = "data/benchmark/speaker_references/lukas.mp3"
     emb1 = embedder.embed_from_file(path1).squeeze(0)
     print(emb1.shape)
 
     print("Embed 2...")
-    path2 = "samples/meetings/meeting3-en/lukas/audio_chunks/lukas_part001.mp3"
+    path2 = "data/benchmark/speaker_references/marten.mp3"
     emb2 = embedder.embed_from_file(path2).squeeze(0)
     print(emb2.shape)
 

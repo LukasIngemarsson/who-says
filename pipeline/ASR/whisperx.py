@@ -17,10 +17,10 @@ class WhsiperXASR:
 
 if __name__ == "__main__":
     asr = WhsiperXASR(device="cpu")
-    file_path = "samples/single_speaker_sample.wav"
+    file_path = "data/single_speaker_sample.wav"
     audio, freq = load_audio_from_file(file_path)
     print(f"single speaker: audio dim: {audio.shape}, freq: {freq}")
-    file_path = "samples/multi_speaker_sample.mp3"
+    file_path = "data/multi_speaker_sample.mp3"
     audio, freq = load_audio_from_file(file_path)
     print(f"multi speaker: audio dim: {audio.shape}, freq: {freq}")
     audio = match_frequency(audio, freq)

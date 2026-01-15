@@ -38,7 +38,7 @@ Once it’s up, you can open the app at [localhost:8000](http://localhost:8000).
 
 > **Note:**  
 > To get Docker to run you need to have Docker Desktop or simply the Docker process running in the background.
-> Furthermore, since everything runs locally, low-end hardware will cause the build process to take a long time, and will cause the performance of the app to be highly unreliable. Therefore, it is recommended to use a modern graphics card if available.
+> Furthermore, since everything runs locally, low-end hardware will cause the build process to take a long time, and the performance of the app to be highly unreliable. Therefore, it is recommended to use a modern graphics card if available.
 
 To stop the container:
 

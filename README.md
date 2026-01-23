@@ -70,7 +70,8 @@ python -m scripts.compare --component e2e \
     --annotation-dir data/benchmark/annotations \
     --language english
 
-# Include WhisperX - runs in separate environment component because of conflicting dependencies with the main pipeline (only english version of whisperX is used for now)
+# Include WhisperX - runs in separate environment component because of conflicting 
+# dependencies with the main pipeline (only english version of whisperX is used for now)
 python -m scripts.compare --component e2e \
     --audio-dir data/benchmark/chunks \
     --annotation-dir data/benchmark/annotations \

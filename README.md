@@ -10,6 +10,9 @@ The following diagram illustrates the complete pipeline flow, showing how audio 
 
 For further insight, see the [demo](docs/demo.mp4) or the [final presentation](docs/who-says.pptx).
 
+> **Note:**  
+> The design of the pipeline is the key point of this project. The code quality is not on par with the intended design as the project was finished prematurely.
+
 ## Setup, Build, and Run
 
 Create a `.env` file at the root of the repo containing:
